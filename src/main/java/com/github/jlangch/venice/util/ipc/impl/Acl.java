@@ -33,7 +33,7 @@ import com.github.jlangch.venice.util.ipc.AccessMode;
 public class Acl {
 
     public Acl(
-            final String subject,
+            final String subject,   // queue/topic name
             final String principal,
             final AccessMode mode
     ) {

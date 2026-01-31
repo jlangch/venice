@@ -45,16 +45,20 @@ public enum MessageType {
 
     CLIENT_CONFIG(40),
 
-    DIFFIE_HELLMAN_KEY_REQUEST(50),
+    SERVER_STATUS(50),
+    SERVER_THREAD_POOL_STAT(51),
+    SERVER_NEXT_ERROR(52),
 
-    AUTHENTICATION(60),
-    HEARTBEAT(61),
-    TEST(62),
+    DIFFIE_HELLMAN_KEY_REQUEST(60),
+
+    AUTHENTICATION(70),
+    HEARTBEAT(71),
+    TEST(72),
 
 
     // responses
 
-    RESPONSE(70),
+    RESPONSE(80),
 
 
     // null, message type not yet determined

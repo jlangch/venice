@@ -64,13 +64,6 @@ public abstract class Messages {
     public static final long MIMETYPE_MAX_LEN = 100;
     public static final long CHARSET_MAX_LEN = 50;
 
-    // Server requests
-    public static final String SUBJECT_SERVER_PREFIX = "ipc-server/";
-    public static final String SUBJECT_SERVER_STATUS = "ipc-server/status";
-    public static final String SUBJECT_SERVER_THREAD_POOL_STATS = "ipc-server/thread-pool-statistics";
-    public static final String SUBJECT_SERVER_ERROR = "ipc-server/error";
-    public static final String SUBJECT_SERVER_CLIENT_CONFIG = "ipc-server/client-config";
-
 
     // Client requests
     public static final String SUBJECT_CLIENT_THREAD_POOL_STATS = "ipc-client/thread-pool-statistics";

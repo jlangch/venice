@@ -26,12 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
 
@@ -76,70 +74,27 @@ public class TcpTempQueueTest {
             assertFalse(client2.existsQueue("queue/---"));
             assertTrue(client2.existsQueue(tmpQueue));
 
-            final IMessage request = MessageFactory.text(
-                                        null,
-                                        Messages.SUBJECT_SERVER_STATUS,
-                                        "appliaction/json",
-                                        "UTF-8",
-                                        "");
-
             // client 1
-
-            final IMessage response1 = client1.sendMessage(request);
-
-            final VncMap data1 = (VncMap)response1.getVeniceData();
-
-            assertEquals(2L, Coerce
-                                .toVncLong(data1.get(new VncKeyword("queue-count")))
-                                .toJavaLong());
-
-            assertEquals(1L, Coerce
-                                .toVncLong(data1.get(new VncKeyword("temp-queue-total-count")))
-                                .toJavaLong());
-
-            assertEquals(1L, Coerce
-                                .toVncLong(data1.get(new VncKeyword("temp-queue-connection-count")))
-                                .toJavaLong());
+            final Map<String,Object> status1 = client1.getServerStatus();
+            assertEquals(2L, status1.get("queue-count"));
+            assertEquals(1L, status1.get("temp-queue-total-count"));
+            assertEquals(1L, status1.get("temp-queue-connection-count"));
 
             // client 2
-
-            final IMessage response2 = client2.sendMessage(request);
-
-            final VncMap data2 = (VncMap)response2.getVeniceData();
-
-            assertEquals(2L, Coerce
-                                .toVncLong(data2.get(new VncKeyword("queue-count")))
-                                .toJavaLong());
-
-            assertEquals(1L, Coerce
-                                .toVncLong(data2.get(new VncKeyword("temp-queue-total-count")))
-                                .toJavaLong());
-
-            assertEquals(0L, Coerce
-                                .toVncLong(data2.get(new VncKeyword("temp-queue-connection-count")))
-                                .toJavaLong());
+            final Map<String,Object> status2 = client2.getServerStatus();
+            assertEquals(2L, status2.get("queue-count"));
+            assertEquals(1L, status2.get("temp-queue-total-count"));
+            assertEquals(0L, status2.get("temp-queue-connection-count"));
 
             client1.close();
 
             IO.sleep(100);
 
             // client 2 (after closing client 1) => removed temporary queue
-
-            final IMessage response3 = client2.sendMessage(request);
-
-            final VncMap data3 = (VncMap)response3.getVeniceData();
-
-            assertEquals(2L, Coerce
-                                .toVncLong(data3.get(new VncKeyword("queue-count")))
-                                .toJavaLong());
-
-            assertEquals(0L, Coerce
-                                .toVncLong(data3.get(new VncKeyword("temp-queue-total-count")))
-                                .toJavaLong());
-
-            assertEquals(0L, Coerce
-                                .toVncLong(data3.get(new VncKeyword("temp-queue-connection-count")))
-                                .toJavaLong());
+            final Map<String,Object> status2b = client2.getServerStatus();
+            assertEquals(2L, status2b.get("queue-count"));
+            assertEquals(0L, status2b.get("temp-queue-total-count"));
+            assertEquals(0L, status2b.get("temp-queue-connection-count"));
 
             IO.sleep(50);
         }

@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.BindException;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -203,11 +204,8 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text(null, Messages.SUBJECT_SERVER_STATUS, "text/plain", "UTF-8", "");
-
-            final IMessage response2 = client.sendMessage(request2);
-            assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals(Messages.SUBJECT_SERVER_STATUS, response2.getSubject());
+            final Map<String,Object> status = client.getServerStatus();
+            assertNotNull(status);
 
             // System.out.println(response2.getText());
         }
@@ -243,11 +241,8 @@ public class TcpServerTest {
             final IMessage response1 = client.sendMessage(request1);
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
-            final IMessage request2 = MessageFactory.text(null, Messages.SUBJECT_SERVER_THREAD_POOL_STATS, "text/plain", "UTF-8", "");
-
-            final IMessage response2 = client.sendMessage(request2);
-            assertEquals(ResponseStatus.OK, response2.getResponseStatus());
-            assertEquals(Messages.SUBJECT_SERVER_THREAD_POOL_STATS, response2.getSubject());
+            final Map<String,Object> status = client.getServerThreadPoolStatistics();
+            assertNotNull(status);
 
             // System.out.println(response2.getText());
         }

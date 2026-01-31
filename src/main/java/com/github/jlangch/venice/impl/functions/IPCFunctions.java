@@ -1794,25 +1794,8 @@ public class IPCFunctions {
 
                 final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
 
-                final IMessage response = client.sendMessage(
-                                            MessageFactory.text(
-                                                null,
-                                                Messages.SUBJECT_SERVER_STATUS,
-                                                "appliaction/json",
-                                                "UTF-8",
-                                                ""));
-
-                if (response.getResponseStatus() == ResponseStatus.OK) {
-                    try {
-                        return response.getVeniceData();
-                    }
-                    catch(Exception ex) {
-                        throw new VncException ("Failed to get server status", ex);
-                    }
-                }
-                else {
-                    throw new VncException ("Failed to get server status");
-                }
+                final Map<String,Object> status = client.getServerStatus();
+                return JavaInteropUtil.convertToVncVal(status, true);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1851,25 +1834,8 @@ public class IPCFunctions {
 
                 final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
 
-                final IMessage response = client.sendMessage(
-                                            MessageFactory.text(
-                                                null,
-                                                Messages.SUBJECT_SERVER_THREAD_POOL_STATS,
-                                                "appliaction/json",
-                                                "UTF-8",
-                                                ""));
-
-                if (response.getResponseStatus() == ResponseStatus.OK) {
-                    try {
-                        return response.getVeniceData();
-                    }
-                    catch(Exception ex) {
-                        throw new VncException ("Failed to get server thread pool statistics", ex);
-                    }
-                }
-                else {
-                    throw new VncException ("Failed to get server thread pool statistics");
-                }
+                final Map<String,Object> statistics = client.getServerThreadPoolStatistics();
+                return JavaInteropUtil.convertToVncVal(statistics, true);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

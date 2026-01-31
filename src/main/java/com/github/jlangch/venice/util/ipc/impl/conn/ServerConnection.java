@@ -35,6 +35,9 @@ import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_QUEUE;
 import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_TOPIC;
 import static com.github.jlangch.venice.util.ipc.MessageType.REQUEST;
 import static com.github.jlangch.venice.util.ipc.MessageType.RESPONSE;
+import static com.github.jlangch.venice.util.ipc.MessageType.SERVER_NEXT_ERROR;
+import static com.github.jlangch.venice.util.ipc.MessageType.SERVER_STATUS;
+import static com.github.jlangch.venice.util.ipc.MessageType.SERVER_THREAD_POOL_STAT;
 import static com.github.jlangch.venice.util.ipc.MessageType.STATUS_QUEUE;
 import static com.github.jlangch.venice.util.ipc.MessageType.STATUS_TOPIC;
 import static com.github.jlangch.venice.util.ipc.MessageType.SUBSCRIBE;
@@ -225,11 +228,15 @@ public class ServerConnection implements IPublisher, Runnable {
         handlers.put(STATUS_QUEUE,               this::handleStatusQueueRequest);
         handlers.put(STATUS_TOPIC,               this::handleStatusTopicRequest);
         handlers.put(CLIENT_CONFIG,              this::handleClientConfigRequest);
+        handlers.put(SERVER_STATUS,              this::handleServerStatusRequest);
+        handlers.put(SERVER_THREAD_POOL_STAT,    this::handleServerThreadPoolStatisticsRequest);
+        handlers.put(SERVER_NEXT_ERROR,          this::handleServerNextErrorRequest);
         handlers.put(DIFFIE_HELLMAN_KEY_REQUEST, this::handleDiffieHellmanKeyExchange);
         handlers.put(AUTHENTICATION,             this::handleAuthentication);
         handlers.put(HEARTBEAT,                  this::handleHeartbeat);
         handlers.put(TEST,                       this::handleTest);
     }
+
 
     private boolean isStop() {
         if (stop.get()) {
@@ -373,9 +380,8 @@ public class ServerConnection implements IPublisher, Runnable {
                   || type == DIFFIE_HELLMAN_KEY_REQUEST
                   || type == AUTHENTICATION)
             ) {
-                return createTextResponse(
+                return createNoPermissionResponse(
                         request,
-                        NO_PERMISSION,
                         "Authentication is required!");
             }
         }
@@ -409,44 +415,16 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message handleSend(final Message request) {
-        if (request.getSubject().startsWith(Messages.SUBJECT_SERVER_PREFIX)) {
-            if (!adminAuthorization) {
-                return createNoPermissionResponse(
-                        request,
-                        "The clients isnot permitted to manage the server!");
-            }
+        // note: exceptions are handled upstream
+        final IMessage response = handler.apply(request);
 
-            if (Messages.SUBJECT_SERVER_STATUS.equals(request.getSubject())) {
-                return getTcpServerStatus(request);
-            }
-            else if (Messages.SUBJECT_SERVER_THREAD_POOL_STATS.equals(request.getSubject())) {
-                return getTcpServerThreadPoolStatistics(request);
-            }
-            else if (Messages.SUBJECT_SERVER_ERROR.equals(request.getSubject())) {
-                return getTcpServerNextError(request);
-            }
-            else {
-                return createBadRequestResponse(
-                        request,
-                        "Unknown server request subject. \n"
-                          + "Valid topics are:\n"
-                          + "  • " + Messages.SUBJECT_SERVER_STATUS + "\n"
-                          + "  • " + Messages.SUBJECT_SERVER_THREAD_POOL_STATS + "\n"
-                          + "  • " + Messages.SUBJECT_SERVER_ERROR);
-            }
+        if (response == null) {
+            // create an empty text response
+            return createOkTextResponse(request, "");
         }
         else {
-            // note: exceptions are handled upstream
-            final IMessage response = handler.apply(request);
-
-            if (response == null) {
-                // create an empty text response
-                return createTextResponse(request, OK, "");
-            }
-            else {
-                return ((Message)response).withTypeAndResponseStatus(
-                            RESPONSE, true, request.getId(), OK);
-            }
+            return ((Message)response).withTypeAndResponseStatus(
+                        RESPONSE, true, request.getId(), OK);
         }
     }
 
@@ -455,16 +433,12 @@ public class ServerConnection implements IPublisher, Runnable {
 
         final IpcTopic topic = topicManager.getTopic(topicName);
         if (topic == null) {
-            return createTextResponse(
-                    request,
-                    TOPIC_NOT_FOUND,
-                    "The topic " + topicName + " does not exist! Create it first!");
+            return createTopicNotFoundResponse(request);
         }
 
         if (authenticated && !adminAuthorization && !topic.canRead(principal)) {
-            return createTextResponse(
+            return createNoPermissionResponse(
                     request,
-                    NO_PERMISSION,
                     "Not authenticated for topic subscription!");
         }
 
@@ -482,10 +456,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
         final IpcTopic topic = topicManager.getTopic(topicName);
         if (topic == null) {
-            return createTextResponse(
-                    request,
-                    TOPIC_NOT_FOUND,
-                    "The topic " + topicName + " does not exist! Create it first!");
+            return createTopicNotFoundResponse(request);
         }
 
         // unregister subscription
@@ -502,16 +473,12 @@ public class ServerConnection implements IPublisher, Runnable {
 
         final IpcTopic topic = topicManager.getTopic(topicName);
         if (topic == null) {
-            return createTextResponse(
-                    request,
-                    TOPIC_NOT_FOUND,
-                    "The topic " + topicName + " does not exist! Create it first!");
+            return createTopicNotFoundResponse(request);
         }
 
         if (authenticated && !adminAuthorization && !topic.canWrite(principal)) {
-            return createTextResponse(
+            return createNoPermissionResponse(
                     request,
-                    NO_PERMISSION,
                     "Not authenticated for topic publication!");
         }
 
@@ -528,10 +495,7 @@ public class ServerConnection implements IPublisher, Runnable {
         try {
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue == null) {
-                return createTextResponse(
-                        request,
-                        QUEUE_NOT_FOUND,
-                        "Offer to " + queueName + " rejected! The queue does not exist.");
+                return createQueueNotFoundResponse(request);
             }
 
             if (authenticated
@@ -539,9 +503,8 @@ public class ServerConnection implements IPublisher, Runnable {
                 && !queue.isTemporary()
                 && !queue.canWrite(principal)
             ) {
-                return createTextResponse(
+                return createNoPermissionResponse(
                         request,
-                        NO_PERMISSION,
                         "Not authenticated for queue offer!");
             }
 
@@ -553,9 +516,8 @@ public class ServerConnection implements IPublisher, Runnable {
                                 ? queue.offer(msg)
                                 : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
             if (ok) {
-                return createTextResponse(
+                return createOkTextResponse(
                         request,
-                        OK,
                         "Offered the message to the queue " + queueName);
             }
             else {
@@ -580,10 +542,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final long timeout = request.getTimeout();
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue == null) {
-                return createTextResponse(
-                        request,
-                        QUEUE_NOT_FOUND,
-                        "Poll from queue " + queueName + " rejected! The queue does not exist.");
+                return createQueueNotFoundResponse(request);
             }
 
             if (authenticated
@@ -591,9 +550,8 @@ public class ServerConnection implements IPublisher, Runnable {
                 && !queue.isTemporary()
                 && !queue.canRead(principal)
             ) {
-                return createTextResponse(
+                return createNoPermissionResponse(
                         request,
-                        NO_PERMISSION,
                         "Not authenticated for queue poll!");
             }
 
@@ -941,18 +899,18 @@ public class ServerConnection implements IPublisher, Runnable {
                 principal = payload.get(0);
                 adminAuthorization = authenticator.isAdmin(payload.get(0));
                 logInfo("Authenticated user '" + payload.get(0) + "'");
-                return createTextResponse(request, OK, "");
+                return createOkTextResponse(request, "");
             }
         }
 
         logError("Authentication failure '" + payload.get(0) + "'");
-        return createTextResponse(request, NO_PERMISSION, "");
+        return createNoPermissionResponse(request, "");
     }
 
     private Message handleHeartbeat(final Message request) {
         lastHeartbeat = System.currentTimeMillis();
         logInfo("Heartbeat");
-        return createTextResponse(request, OK, "");
+        return createOkTextResponse(request, "");
     }
 
     private Message handleTest(final Message request) {
@@ -973,10 +931,135 @@ public class ServerConnection implements IPublisher, Runnable {
                         new byte[0]);
     }
 
+    private Message handleServerStatusRequest(final Message request) {
+        if (!adminAuthorization) {
+            return createNoPermissionResponse(
+                    request,
+                    "The clients is not permitted to get the server status!");
+        }
+
+        final WalQueueManager wal = queueManager.getWalQueueManager();
+
+        int sndBufSize = -1;
+        int rcvBufSize = -1;
+
+        try { sndBufSize = ch.socket().getSendBufferSize(); } catch (Exception ignore) { }
+        try { rcvBufSize = ch.socket().getReceiveBufferSize(); } catch (Exception ignore) { }
+
+        return createJsonResponse(
+                   request,
+                   OK,
+                   new JsonBuilder()
+                           .add("running", server.isRunning())
+                            // config
+                           .add("encryption", encryptor.get().isActive())
+                           .add("max-queues", maxQueues)
+                           .add("message-size-max", maxMessageSize)
+                           .add("admin", adminAuthorization)
+                           .add("compression-cutoff-size", compressor.cutoffSize())
+                           .add("write-ahead-log-dir", wal.isEnabled()
+                                                            ? wal.getWalDir().getAbsolutePath()
+                                                            : "-" )
+                           .add("write-ahead-log-count", wal.isEnabled()
+                                                            ? wal.countLogFiles()
+                                                            : 0 )
+                           .add("hearbeat-interval", heartbeatInterval)
+                           .add("logger-enabled", logger.isEnabled())
+                           .add("logger-file", logger.getLogFile() != null
+                                                ? logger.getLogFile().getAbsolutePath()
+                                                : "-")
+                           .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
+                           .add("publish-queue-capacity", publishQueueCapacity)
+                            // statistics
+                           .add("connection_count", statistics.getConnectionCount())
+                           .add("message-count", statistics.getMessageCount())
+                           .add("publish-count", statistics.getPublishCount())
+                           .add("response-discarded-count", statistics.getDiscardedResponseCount())
+                           .add("publish-discarded-count", statistics.getDiscardedPublishCount())
+                           .add("subscription-client-count", subscriptions.getClientSubscriptionCount())
+                           .add("subscription-topic-count", subscriptions.getTopicSubscriptionCount())
+                           .add("queue-count", queueManager.countStandardQueues())
+                           .add("temp-queue-total-count", queueManager.countTemporaryQueues())
+                           .add("temp-queue-connection-count", (long)tmpQueues.size())
+                           .add("socket-snd-buf-size", sndBufSize)
+                           .add("socket-rcv-buf-size", rcvBufSize)
+                           .toJson(false));
+    }
+
+    private Message handleServerThreadPoolStatisticsRequest(final Message request) {
+        if (!adminAuthorization) {
+            return createNoPermissionResponse(
+                    request,
+                    "The client is not permitted to get the server thread pool statistics!");
+        }
+
+        final VncMap statistics = serverThreadPoolStatistics.get();
+
+        return createJsonResponse(request, OK, Json.writeJson(statistics, true));
+    }
+
+    private Message handleServerNextErrorRequest(final Message request) {
+        if (!adminAuthorization) {
+            return createNoPermissionResponse(
+                    request,
+                    "The client is not permitted to get the next server error!");
+        }
+
+        try {
+            final Error err = errorBuffer.poll();
+            if (err == null) {
+                return createJsonResponse(
+                        request,
+                        QUEUE_EMPTY,
+                        new JsonBuilder()
+                                .add("status", "no_errors_available")
+                                .toJson(false));
+            }
+            else {
+                final String description = err.getDescription();
+                final Exception ex = err.getException();
+                final String exMsg = ex == null ? null :  ex.getMessage();
+
+                return createJsonResponse(
+                        request,
+                        OK,
+                        new JsonBuilder()
+                                .add("status", "error")
+                                .add("description", description)
+                                .add("exception", exMsg)
+                                .add("errors-left", errorBuffer.size())
+                                .toJson(false));
+            }
+        }
+        catch(Exception ex) {
+            return createJsonResponse(
+                    request,
+                    HANDLER_ERROR,
+                    new JsonBuilder()
+                            .add("status", "temporarily_unavailable")
+                            .toJson(false));
+        }
+    }
+
+
 
     // ------------------------------------------------------------------------
     // Create response messages
     // ------------------------------------------------------------------------
+
+    private Message createTopicNotFoundResponse(final Message request) {
+        return createTextResponse(
+                request,
+                TOPIC_NOT_FOUND,
+                "The topic " + request.getTopicName() + " does not exist!");
+    }
+
+    private Message createQueueNotFoundResponse(final Message request) {
+        return createTextResponse(
+                request,
+                QUEUE_NOT_FOUND,
+                "The queue " + request.getQueueName() + " does not exist!");
+    }
 
     private Message createBadRequestResponse(
             final Message request,
@@ -1060,102 +1143,6 @@ public class ServerConnection implements IPublisher, Runnable {
                 text == null || text.isEmpty()
                     ? new byte[0]
                     : toBytes(text, "UTF-8"));
-    }
-
-    // ------------------------------------------------------------------------
-    // Server utilities
-    // ------------------------------------------------------------------------
-
-    private Message getTcpServerStatus(final Message request) {
-        final WalQueueManager wal = queueManager.getWalQueueManager();
-
-        int sndBufSize = -1;
-        int rcvBufSize = -1;
-
-        try { sndBufSize = ch.socket().getSendBufferSize(); } catch (Exception ignore) { }
-        try { rcvBufSize = ch.socket().getReceiveBufferSize(); } catch (Exception ignore) { }
-
-        return createJsonResponse(
-                   request,
-                   OK,
-                   new JsonBuilder()
-                           .add("running", server.isRunning())
-                            // config
-                           .add("encryption", encryptor.get().isActive())
-                           .add("max-queues", maxQueues)
-                           .add("message-size-max", maxMessageSize)
-                           .add("admin", adminAuthorization)
-                           .add("compression-cutoff-size", compressor.cutoffSize())
-                           .add("write-ahead-log-dir", wal.isEnabled()
-                                                            ? wal.getWalDir().getAbsolutePath()
-                                                            : "-" )
-                           .add("write-ahead-log-count", wal.isEnabled()
-                                                            ? wal.countLogFiles()
-                                                            : 0 )
-                           .add("hearbeat-interval", heartbeatInterval)
-                           .add("logger-enabled", logger.isEnabled())
-                           .add("logger-file", logger.getLogFile() != null
-                                                ? logger.getLogFile().getAbsolutePath()
-                                                : "-")
-                           .add("error-queue-capacity", ERROR_QUEUE_CAPACITY)
-                           .add("publish-queue-capacity", publishQueueCapacity)
-                            // statistics
-                           .add("connection_count", statistics.getConnectionCount())
-                           .add("message-count", statistics.getMessageCount())
-                           .add("publish-count", statistics.getPublishCount())
-                           .add("response-discarded-count", statistics.getDiscardedResponseCount())
-                           .add("publish-discarded-count", statistics.getDiscardedPublishCount())
-                           .add("subscription-client-count", subscriptions.getClientSubscriptionCount())
-                           .add("subscription-topic-count", subscriptions.getTopicSubscriptionCount())
-                           .add("queue-count", queueManager.countStandardQueues())
-                           .add("temp-queue-total-count", queueManager.countTemporaryQueues())
-                           .add("temp-queue-connection-count", (long)tmpQueues.size())
-                           .add("socket-snd-buf-size", sndBufSize)
-                           .add("socket-rcv-buf-size", rcvBufSize)
-                           .toJson(false));
-    }
-
-    private Message getTcpServerThreadPoolStatistics(final Message request) {
-        final VncMap statistics = serverThreadPoolStatistics.get();
-
-        return createJsonResponse(request, OK, Json.writeJson(statistics, true));
-    }
-
-    private Message getTcpServerNextError(final Message request) {
-        try {
-            final Error err = errorBuffer.poll();
-            if (err == null) {
-                return createJsonResponse(
-                        request,
-                        QUEUE_EMPTY,
-                        new JsonBuilder()
-                                .add("status", "no_errors_available")
-                                .toJson(false));
-            }
-            else {
-                final String description = err.getDescription();
-                final Exception ex = err.getException();
-                final String exMsg = ex == null ? null :  ex.getMessage();
-
-                return createJsonResponse(
-                        request,
-                        OK,
-                        new JsonBuilder()
-                                .add("status", "error")
-                                .add("description", description)
-                                .add("exception", exMsg)
-                                .add("errors-left", errorBuffer.size())
-                                .toJson(false));
-            }
-        }
-        catch(Exception ex) {
-            return createJsonResponse(
-                    request,
-                    HANDLER_ERROR,
-                    new JsonBuilder()
-                            .add("status", "temporarily_unavailable")
-                            .toJson(false));
-        }
     }
 
     private void auditResponseError(final Message request, final String errorMsg) {

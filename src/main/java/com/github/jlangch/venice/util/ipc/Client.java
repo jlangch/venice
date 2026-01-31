@@ -1012,13 +1012,13 @@ public class Client implements Cloneable, AutoCloseable {
     private VncMap getServerStatusRaw() {
         final Message m = new Message(
                                 null,
-                                MessageType.REQUEST,
+                                MessageType.SERVER_STATUS,
                                 ResponseStatus.NULL,
                                 false,
                                 false,
                                 false,
                                 1_000L,
-                                Messages.SUBJECT_SERVER_STATUS,
+                                "",
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
@@ -1036,13 +1036,13 @@ public class Client implements Cloneable, AutoCloseable {
     private VncMap getServerThreadPoolStatisticsRaw() {
         final Message m = new Message(
                                 null,
-                                MessageType.REQUEST,
+                                MessageType.SERVER_THREAD_POOL_STAT,
                                 ResponseStatus.NULL,
                                 false,
                                 false,
                                 false,
                                 1_000L,
-                                Messages.SUBJECT_SERVER_THREAD_POOL_STATS,
+                                "",
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
@@ -1060,13 +1060,13 @@ public class Client implements Cloneable, AutoCloseable {
     private VncMap getNextServerErrorRaw() {
         final Message m = new Message(
                                 null,
-                                MessageType.REQUEST,
+                                MessageType.SERVER_NEXT_ERROR,
                                 ResponseStatus.NULL,
                                 false,
                                 false,
                                 false,
                                 1_000L,
-                                Messages.SUBJECT_SERVER_ERROR,
+                                "",
                                 "text/plain",
                                 "UTF-8",
                                 new byte[0]);
