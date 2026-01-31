@@ -44,7 +44,7 @@ public abstract class Destination implements IDestination {
         }
         else {
             final Acl acl = acls.get(principal);
-            return acl != null ? acl.canRead() : false;
+            return acl != null ? acl.canRead() : noAcls;
         }
     }
 
@@ -55,16 +55,17 @@ public abstract class Destination implements IDestination {
         }
         else {
             final Acl acl = acls.get(principal);
-            return acl != null ? acl.canWrite() : false;
+            return acl != null ? acl.canWrite() : noAcls;
         }
     }
 
     @Override
     public void updateAcls(final Map<String,Acl>  acls) {
-        acls.clear();
+        this.acls.clear();
         if (acls != null) {
-            acls.putAll(acls);
+            this.acls.putAll(acls);
         }
+        noAcls = this.acls.isEmpty();
     }
 
     @Override
@@ -76,5 +77,6 @@ public abstract class Destination implements IDestination {
     private final String name;
 
     // ACL mapped by principal -> ACL
+    private volatile boolean noAcls = true;
     private final ConcurrentHashMap<String, Acl> acls = new ConcurrentHashMap<>();
 }

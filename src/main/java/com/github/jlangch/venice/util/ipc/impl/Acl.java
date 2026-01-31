@@ -67,6 +67,12 @@ public class Acl {
         return mode == WRITE || mode == READ_WRITE;
     }
 
+    @Override
+    public String toString() {
+        return String.format("principal=%s, subject=%s, mode=%s", principal,subject,  mode.name());
+    }
+
+
 
     private final String subject;
     private final String principal;

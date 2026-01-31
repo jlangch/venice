@@ -527,43 +527,42 @@ public class ServerConnection implements IPublisher, Runnable {
 
         try {
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
-            if (queue != null) {
-                if (authenticated
-                    && !adminAuthorization
-                    && !queue.isTemporary()
-                    && !queue.canWrite(principal)
-                ) {
-                    return createTextResponse(
-                            request,
-                            NO_PERMISSION,
-                            "Not authenticated for queue offer!");
-                }
-
-                // convert message type from OFFER to REQUEST
-                final Message msg = request.withType(REQUEST, request.isOneway());
-                final long timeout = msg.getTimeout();
-
-                final boolean ok = timeout < 0
-                                    ? queue.offer(msg)
-                                    : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
-                if (ok) {
-                    return createTextResponse(
-                            request,
-                            OK,
-                            "Offered the message to the queue " + queueName);
-                }
-                else {
-                    return createTextResponse(
-                            request,
-                            QUEUE_FULL,
-                            "Offer to " + queueName + " rejected! The queue is full.");
-                }
-            }
-            else {
+            if (queue == null) {
                 return createTextResponse(
                         request,
                         QUEUE_NOT_FOUND,
                         "Offer to " + queueName + " rejected! The queue does not exist.");
+            }
+
+            if (authenticated
+                && !adminAuthorization
+                && !queue.isTemporary()
+                && !queue.canWrite(principal)
+            ) {
+                return createTextResponse(
+                        request,
+                        NO_PERMISSION,
+                        "Not authenticated for queue offer!");
+            }
+
+            // convert message type from OFFER to REQUEST
+            final Message msg = request.withType(REQUEST, request.isOneway());
+            final long timeout = msg.getTimeout();
+
+            final boolean ok = timeout < 0
+                                ? queue.offer(msg)
+                                : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
+            if (ok) {
+                return createTextResponse(
+                        request,
+                        OK,
+                        "Offered the message to the queue " + queueName);
+            }
+            else {
+                return createTextResponse(
+                        request,
+                        QUEUE_FULL,
+                        "Offer to " + queueName + " rejected! The queue is full.");
             }
         }
         catch(InterruptedException ex) {
@@ -580,49 +579,48 @@ public class ServerConnection implements IPublisher, Runnable {
         try {
             final long timeout = request.getTimeout();
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
-            if (queue != null) {
-                if (authenticated
-                    && !adminAuthorization
-                    && !queue.isTemporary()
-                    && !queue.canRead(principal)
-                ) {
-                    return createTextResponse(
-                            request,
-                            NO_PERMISSION,
-                            "Not authenticated for queue poll!");
-                }
-
-                while(true) {
-                    final Message msg = timeout < 0
-                                            ? queue.poll()
-                                            : queue.poll(timeout, TimeUnit.MILLISECONDS);
-                    if (msg == null) {
-                        return createTextResponse(
-                                request,
-                                QUEUE_EMPTY,
-                                "Poll from queue " + queueName + " rejected! The queue is empty.");
-                    }
-                    else if (msg.hasExpired()) {
-                        // discard expired message -> try next message from the queue
-                        auditResponseError(
-                            request,
-                            String.format(
-                                "Discarded expired message (request-id: %s)" +
-                                "polling from queue %s!",
-                                msg.getRequestId(),
-                                queueName));
-                        continue;
-                    }
-                    else {
-                        return msg.withTypeAndResponseStatus(RESPONSE, true, request.getId(), OK);
-                    }
-                }
-            }
-            else {
+            if (queue == null) {
                 return createTextResponse(
                         request,
                         QUEUE_NOT_FOUND,
                         "Poll from queue " + queueName + " rejected! The queue does not exist.");
+            }
+
+            if (authenticated
+                && !adminAuthorization
+                && !queue.isTemporary()
+                && !queue.canRead(principal)
+            ) {
+                return createTextResponse(
+                        request,
+                        NO_PERMISSION,
+                        "Not authenticated for queue poll!");
+            }
+
+            while(true) {
+                final Message msg = timeout < 0
+                                        ? queue.poll()
+                                        : queue.poll(timeout, TimeUnit.MILLISECONDS);
+                if (msg == null) {
+                    return createTextResponse(
+                            request,
+                            QUEUE_EMPTY,
+                            "Poll from queue " + queueName + " rejected! The queue is empty.");
+                }
+                else if (msg.hasExpired()) {
+                    // discard expired message -> try next message from the queue
+                    auditResponseError(
+                        request,
+                        String.format(
+                            "Discarded expired message (request-id: %s)" +
+                            "polling from queue %s!",
+                            msg.getRequestId(),
+                            queueName));
+                    continue;
+                }
+                else {
+                    return msg.withTypeAndResponseStatus(RESPONSE, true, request.getId(), OK);
+                }
             }
         }
         catch(InterruptedException ex) {
