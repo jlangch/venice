@@ -1742,13 +1742,22 @@ public class IPCFunctions {
                         "connected to.")
                     .examples(
                         "(do                                                               \n" +
-                        "  (defn echo-handler [m] m)                                       \n" +
-                        "  (try-with [server (ipc/server 33333)                            \n" +
-                        "             client (ipc/client \"localhost\" 33333)]             \n" +
-                        "    (ipc/create-function server :echo echo-handler)               \n" +
-                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
-                        "         (ipc/send client :echo))                                 \n" +
-                        "    (println \"STATUS:\" (ipc/server-status client))))            ")
+                        "  (let [auth (ipc/authenticator)]                                 \n" +
+                        "    (ipc/add-credentials auth \"admin\" \"3-kio\" :admin)         \n" +
+                        "                                                                  \n" +
+                        "    (try-with [server (ipc/server 33333                           \n" +
+                        "                                  :encrypt true                   \n" +
+                        "                                  :authenticator auth)            \n" +
+                        "               client (ipc/client \"localhost\" 33333             \n" +
+                        "                                  :user-name \"admin\"            \n" +
+                        "                                  :password \"3-kio\")]           \n" +
+                        "      (ipc/create-function server :echo (fn [m] m))               \n" +
+                        "                                                                  \n" +
+                        "      (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")      \n" +
+                        "           (ipc/send client :echo))                               \n" +
+                        "                                                                  \n" +
+                        "      ;; requires a user with admin authorization                 \n" +
+                        "      (println \"STATUS:\" (ipc/server-status client)))))         ")
                      .seeAlso(
                          "ipc/server-thread-pool-statistics",
                          "ipc/server",
@@ -1781,14 +1790,24 @@ public class IPCFunctions {
                         "Returns the server's thread pool statistics the client is " +
                         "connected to.")
                     .examples(
-                        "(do                                                                   \n" +
-                        "  (defn echo-handler [m] m)                                           \n" +
-                        "  (try-with [server (ipc/server 33333)                                \n" +
-                        "             client (ipc/client \"localhost\" 33333)]                 \n" +
-                        "    (ipc/create-function server :echo echo-handler)                   \n" +
-                        "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")            \n" +
-                        "         (ipc/send client :echo))                                     \n" +
-                        "    (println \"STATS:\" (ipc/server-thread-pool-statistics client)))) ")
+                        "(do                                                               \n" +
+                        "  (let [auth (ipc/authenticator)]                                 \n" +
+                        "    (ipc/add-credentials auth \"admin\" \"3-kio\" :admin)         \n" +
+                        "                                                                  \n" +
+                        "    (try-with [server (ipc/server 33333                           \n" +
+                        "                                  :encrypt true                   \n" +
+                        "                                  :authenticator auth)            \n" +
+                        "               client (ipc/client \"localhost\" 33333             \n" +
+                        "                                  :user-name \"admin\"            \n" +
+                        "                                  :password \"3-kio\")]           \n" +
+                        "      (ipc/create-function server :echo (fn [m] m))               \n" +
+                        "                                                                  \n" +
+                        "      (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")      \n" +
+                        "           (ipc/send client :echo))                               \n" +
+                        "                                                                  \n" +
+                        "      ;; requires a user with admin authorization                 \n" +
+                        "      (println \"STATS:\"                                         \n" +
+                        "               (ipc/server-thread-pool-statistics client)))))     ")
                      .seeAlso(
                          "ipc/server-status",
                          "ipc/server",
