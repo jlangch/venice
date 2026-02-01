@@ -85,6 +85,7 @@ import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.QueueValidator;
+import com.github.jlangch.venice.util.ipc.impl.ServerFunctionManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.ServerTopicManager;
@@ -113,6 +114,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final ServerContext context,
             final ServerQueueManager queueManager,
             final ServerTopicManager topicManager,
+            final ServerFunctionManager functionManager,
             final SocketChannel ch,
             final long connectionId
     ) {
@@ -122,6 +124,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.context = context;
         this.queueManager = queueManager;
         this.topicManager = topicManager;
+        this.functionManager = functionManager;
 
         this.maxMessageSize = config.getMaxMessageSize();
         this.maxQueues = config.getMaxQueues();
@@ -1265,6 +1268,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private final ServerQueueManager queueManager;
     private final ServerTopicManager topicManager;
+    private final ServerFunctionManager functionManager;
 
     // compression
     private final Compressor compressor;

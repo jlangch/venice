@@ -39,6 +39,7 @@ public class ServerConfig {
             final int maxQueues,
             final int maxTempQueuesPerConnection,
             final int maxTopics,
+            final int maxFunctions,
             final int sndBufSize,
             final int rcvBufSize,
             final int maxConnections,
@@ -55,6 +56,7 @@ public class ServerConfig {
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
         this.maxTopics = maxTopics;
+        this.maxFunctions = maxFunctions;
         this.maxTempQueuesPerConnection = maxTempQueuesPerConnection;
         this.sndBufSize = sndBufSize;
         this.rcvBufSize = rcvBufSize;
@@ -107,6 +109,10 @@ public class ServerConfig {
 
     public int getMaxTopics() {
         return maxTopics;
+    }
+
+    public int getMaxFunctions() {
+        return maxFunctions;
     }
 
     public Authenticator getAuthenticator() {
@@ -324,6 +330,25 @@ public class ServerConfig {
         }
 
         /**
+         * Set the max number of functions.
+         *
+         * <p>Defaults to 20
+         *
+         * @param maxFunctions the max number of functions.
+         * @return this builder
+         */
+        public Builder maxFunctions(final int maxFunctions) {
+            if (maxFunctions < Server.FUNCTIONS_MIN || maxFunctions > Server.FUNCTIONS_MAX) {
+                throw new IllegalArgumentException(
+                        "The max number of functions is limited to "
+                        + Server.FUNCTIONS_MIN + " .. " + Server.FUNCTIONS_MAX + "!");
+            }
+
+            this.maxFunctions = maxFunctions;
+            return this;
+        }
+
+        /**
          * Set the socket's send buffer size. -1 keeps the default.
          *
          * @param bufSize a send buffer size
@@ -447,6 +472,7 @@ public class ServerConfig {
                     maxQueues,
                     maxTempQueuesPerConnection,
                     maxTopics,
+                    maxFunctions,
                     sndBufSize,
                     rcvBufSize,
                     maxConnections,
@@ -466,6 +492,7 @@ public class ServerConfig {
         private int maxQueues = Server.QUEUES_MAX_DEFAULT;
         private int maxTempQueuesPerConnection = Server.QUEUES_MAX;
         private int maxTopics = Server.TOPICS_MAX_DEFAULT;
+        private int maxFunctions = Server.FUNCTIONS_MAX_DEFAULT;
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
         private int maxConnections = Server.MAX_CONNECTIONS_DEFAULT;
@@ -485,6 +512,7 @@ public class ServerConfig {
     private final int maxQueues;
     private final int maxTempQueuesPerConnection;
     private final int maxTopics;
+    private final int maxFunctions;
     private final int sndBufSize;
     private final int rcvBufSize;
     private final int maxConnections;

@@ -287,30 +287,6 @@ public class IPCFunctions {
 
                 final Authenticator authenticator = Coerce.toVncJavaObjectOrNull(authenticatorVal, Authenticator.class);
 
-                // -- Setup the handler function ------------------------------
-
-                final Function<IMessage,IMessage> handlerWrapper;
-
-                if (handler == null) {
-                    handlerWrapper = null; // no handler passed
-                }
-                else {
-                    final CallFrame[] cf = new CallFrame[] {
-                                                new CallFrame(this, args),
-                                                new CallFrame(handler) };
-
-                    // Create a wrapper that inherits the Venice thread context!
-                    final ThreadBridge threadBridge = ThreadBridge.create("tcp-server-handler", cf);
-
-                    handlerWrapper = threadBridge.bridgeFunction((IMessage m) -> {
-                                          final VncVal request = new VncJavaObject(m);
-                                          final VncVal response = handler.applyOf(request);
-                                          return response == null || response == Nil
-                                                  ? null
-                                                  : Coerce.toVncJavaObject(response, IMessage.class);
-                                     });
-                }
-
                 // -- Create and configure the server ------------------------------------
 
                 // -- Configure the server ------------------------------------
@@ -349,6 +325,7 @@ public class IPCFunctions {
 
                 // -- Start the server ----------------------------------------
 
+                final Function<IMessage,IMessage> handlerWrapper = wrapFunction(this, args, handler);
                 if (handlerWrapper == null) {
                     server.start();
                 }
@@ -3799,6 +3776,32 @@ public class IPCFunctions {
         }
     }
 
+    private static Function<IMessage,IMessage> wrapFunction(
+            final VncFunction callingFunction,
+            final VncList callingFunctionArgs,
+            final VncFunction handler
+    ) {
+        if (handler == null) {
+            return null; // no handler passed
+        }
+        else {
+            final CallFrame[] cf = new CallFrame[] {
+                                        new CallFrame(callingFunction, callingFunctionArgs),
+                                        new CallFrame(handler) };
+
+            // Create a wrapper that inherits the Venice thread context!
+            final ThreadBridge threadBridge = ThreadBridge.create("tcp-server-handler", cf);
+
+            return threadBridge.bridgeFunction((IMessage m) -> {
+                          final VncVal request = new VncJavaObject(m);
+                          final VncVal response = handler.applyOf(request);
+                          return response == null || response == Nil
+                                  ? null
+                                  : Coerce.toVncJavaObject(response, IMessage.class);
+                     });
+        }
+
+    }
     private static class FutureWrapper implements Future<VncVal> {
 
         public FutureWrapper(final Future<IMessage> d) {

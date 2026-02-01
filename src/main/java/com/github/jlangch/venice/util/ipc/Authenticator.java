@@ -211,6 +211,36 @@ public class Authenticator {
     }
 
 
+    public void setFunctionAcl(
+            final String functionName,
+            final AccessMode accessMode,
+            final String principal
+    ) {
+        Objects.requireNonNull(functionName);
+        Objects.requireNonNull(accessMode);
+
+        final Acl acl = new Acl(functionName, principal, accessMode);
+
+        Map<String,Acl> acls = functionAcls.get(functionName);
+        if (acls == null) {
+            acls = new HashMap<>();
+        }
+        acls.put(acl.getPrincipal(), acl);
+        functionAcls.put(functionName, acls);
+    }
+
+    public Map<String,Acl> getFunctionAclsMappedByPrincipal(final String functionName) {
+        Objects.requireNonNull(functionName);
+
+        Map<String,Acl> acls = functionAcls.get(functionName);
+        return acls == null ? new HashMap<>() : acls;
+    }
+
+    public void clearFunctionAcls() {
+        functionAcls.clear();
+    }
+
+
     // ------------------------------------------------------------------------
     // Load/Save
     // ------------------------------------------------------------------------
@@ -230,6 +260,7 @@ public class Authenticator {
             final VncList auths = (VncList)map.get(new VncString("authorizations"));
             final VncList qacls = (VncList)map.get(new VncString("queue-acls"));
             final VncList tacls = (VncList)map.get(new VncString("topic-acls"));
+            final VncList facls = (VncList)map.get(new VncString("function-acls"));
 
             auths.forEach(a -> { Auth auth = toAuth((VncMap)a);
                                  authorizations.put(auth.principal, auth); });
@@ -239,6 +270,9 @@ public class Authenticator {
 
             tacls.forEach(a -> { Acl acl = toAcl((VncMap)a);
                                  setTopicAcl(acl.getSubject(), acl.getMode(), acl.getPrincipal()); });
+
+            facls.forEach(a -> { Acl acl = toAcl((VncMap)a);
+                                 setFunctionAcl(acl.getSubject(), acl.getMode(), acl.getPrincipal()); });
 
             // automatically active after loading credentials
             activate(true);
@@ -267,13 +301,20 @@ public class Authenticator {
                                     .map(a->toVncMap(a))
                                     .collect(Collectors.toList());
 
+        final List<VncVal> facls = toAclList(functionAcls)
+                                    .stream()
+                                    .map(a->toVncMap(a))
+                                    .collect(Collectors.toList());
+
         final VncHashMap data = VncHashMap.of(
                                     new VncString("authorizations"),
                                     VncList.ofColl(auths),
                                     new VncString("queue-acls"),
                                     VncList.ofColl(qacls),
                                     new VncString("topic-acls"),
-                                    VncList.ofColl(tacls));
+                                    VncList.ofColl(tacls),
+                                    new VncString("function-acls"),
+                                    VncList.ofColl(facls));
 
         final String json = Json.writeJson(data, true);
 
@@ -393,4 +434,7 @@ public class Authenticator {
 
     // Mapped by topicName -> principal -> ACL
     private final ConcurrentHashMap<String, Map<String, Acl>> topicAcls = new ConcurrentHashMap<>();
+
+    // Mapped by functionName -> principal -> ACL
+    private final ConcurrentHashMap<String, Map<String, Acl>> functionAcls = new ConcurrentHashMap<>();
 }

@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.ipc.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.util.ipc.Authenticator;
@@ -46,6 +47,8 @@ public class ServerTopicManager {
 
 
     public IpcTopic getTopic(final String topicName) {
+        Objects.requireNonNull(topicName);
+
         return topics.get(topicName);
     }
 
@@ -74,10 +77,14 @@ public class ServerTopicManager {
     }
 
     public void removeTopic(final String topicName) {
+        Objects.requireNonNull(topicName);
+
         topics.remove(topicName);
     }
 
     public boolean existsTopic(final String topicName) {
+        Objects.requireNonNull(topicName);
+
         return topics.containsKey(topicName);
     }
 
@@ -88,6 +95,8 @@ public class ServerTopicManager {
      * @return the topic or <code>null</code> if the topic does not exist
      */
     public Map<String,Object> getTopicStatus(final String topicName) {
+        Objects.requireNonNull(topicName);
+
         final IpcTopic q = topics.get(topicName);
 
         final Map<String,Object> status = new HashMap<>();

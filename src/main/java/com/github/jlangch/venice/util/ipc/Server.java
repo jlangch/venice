@@ -38,6 +38,7 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.util.ipc.impl.Message;
+import com.github.jlangch.venice.util.ipc.impl.ServerFunctionManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.ServerTopicManager;
@@ -80,6 +81,9 @@ public class Server implements AutoCloseable {
                                     config,
                                     this.logger);
 
+        this.functionManager = new ServerFunctionManager(
+                                    config,
+                                    this.logger);
     }
 
 
@@ -353,6 +357,43 @@ public class Server implements AutoCloseable {
     }
 
 
+    /**
+     * Create a new function.
+     *
+     * <p>A function name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * Up to 80 characters are allowed.
+     *
+     * @param functionName a function name
+     * @param func a function
+     * @throws IpcException if the function name does not follow the convention
+     *                      for function names or if the
+     */
+    public void createFunction(
+            final String functionName,
+            final Function<Message,Message> func
+    ) {
+        functionManager.createFunction(functionName, func);
+    }
+
+    /**
+     * Remove a function.
+     *
+     * @param functionName a function name
+     */
+    public void removeFunction(final String functionName) {
+        functionManager.removeFunction(functionName);
+    }
+
+    /**
+     * Exists function.
+     *
+     * @param functionName a function name
+     * @return <code>true</code> if the topic exists else <code>false</code>
+     */
+    public boolean existsFunction(final String functionName) {
+        return functionManager.existsFunction(functionName);
+    }
+
     private void startNewConnection(
         final SocketChannel channel,
         final Function<IMessage,IMessage> handler
@@ -390,6 +431,7 @@ public class Server implements AutoCloseable {
                                                        () -> mngdExecutor.info()),
                                                queueManager,
                                                topicManager,
+                                               functionManager,
                                                channel,
                                                connId);
 
@@ -482,13 +524,17 @@ public class Server implements AutoCloseable {
     }
 
 
-    public static final int QUEUES_MIN =  1;
+    public static final int QUEUES_MIN = 1;
     public static final int QUEUES_MAX_DEFAULT = 20;
     public static final int QUEUES_MAX = 50;
 
-    public static final int TOPICS_MIN =  1;
+    public static final int TOPICS_MIN = 1;
     public static final int TOPICS_MAX_DEFAULT = 20;
     public static final int TOPICS_MAX = 50;
+
+    public static final int FUNCTIONS_MIN = 0;
+    public static final int FUNCTIONS_MAX_DEFAULT = 20;
+    public static final int FUNCTIONS_MAX = 50;
 
     public static final int MAX_CONNECTIONS_DEFAULT = 20;
 
@@ -508,6 +554,7 @@ public class Server implements AutoCloseable {
     private final int publishQueueCapacity = 50;
     private final ServerQueueManager queueManager;
     private final ServerTopicManager topicManager;
+    private final ServerFunctionManager functionManager;
     private final ServerStatistics statistics = new ServerStatistics();
     private final Subscriptions subscriptions = new Subscriptions();
     private final ServerLogger logger = new ServerLogger();

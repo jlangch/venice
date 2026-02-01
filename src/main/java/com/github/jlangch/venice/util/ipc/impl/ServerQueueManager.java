@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -132,6 +133,8 @@ public class ServerQueueManager {
      * @return the queue or <code>null</code> if the queue does not exist
      */
     public IpcQueue<Message> getQueue(final String queueName) {
+        Objects.requireNonNull(queueName);
+
         return queues.get(queueName);
     }
 
@@ -145,6 +148,8 @@ public class ServerQueueManager {
      * @return <code>true</code> if the queue has been removed else <code>false</code>
      */
     public boolean removeQueue(final String queueName) {
+        Objects.requireNonNull(queueName);
+
         final IpcQueue<Message> queue = queues.get(queueName);
         if (queue != null) {
             if (queue.isTemporary()) {
@@ -169,6 +174,8 @@ public class ServerQueueManager {
      * @return <code>true</code> if the queue exists else <code>false</code>
      */
     public boolean existsQueue(final String queueName) {
+        Objects.requireNonNull(queueName);
+
         final IpcQueue<Message> queue = queues.get(queueName);
         return queue != null && !queue.isTemporary();
     }
@@ -236,6 +243,8 @@ public class ServerQueueManager {
      * @return the queue or <code>null</code> if the queue does not exist
      */
     public Map<String,Object> getQueueStatus(final String queueName) {
+        Objects.requireNonNull(queueName);
+
         final IpcQueue<Message> q = queues.get(queueName);
 
         final Map<String,Object> status = new HashMap<>();
