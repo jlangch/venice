@@ -38,7 +38,7 @@ import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.QueueFactory;
-import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
 
 
 public class WalQueueManagerTest {

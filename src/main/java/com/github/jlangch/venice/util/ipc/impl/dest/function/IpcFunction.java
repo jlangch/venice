@@ -19,35 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.queue;
-
-import java.util.concurrent.TimeUnit;
+package com.github.jlangch.venice.util.ipc.impl.dest.function;
 
 import com.github.jlangch.venice.util.ipc.impl.IDestination;
 
 
-public interface IpcQueue<T> extends IDestination {
-
-    QueueType type();
-
-    boolean isTemporary();
-
-    boolean isDurable();
-
-    boolean isEmpty();
-
-    int size();
-
-    int capacity();
-
-    T poll() throws InterruptedException;
-
-    T poll(long timeout, TimeUnit unit) throws InterruptedException;
-
-    boolean offer(T item) throws InterruptedException;
-
-    boolean offer(T item, long timeout, TimeUnit unit) throws InterruptedException;
-
-    void onRemove();
+public interface IpcFunction extends IDestination {
 
 }

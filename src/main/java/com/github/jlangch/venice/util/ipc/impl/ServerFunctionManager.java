@@ -29,8 +29,8 @@ import java.util.function.Function;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
-import com.github.jlangch.venice.util.ipc.impl.function.Func;
-import com.github.jlangch.venice.util.ipc.impl.function.IpcFunction;
+import com.github.jlangch.venice.util.ipc.impl.dest.function.Func;
+import com.github.jlangch.venice.util.ipc.impl.dest.function.IpcFunction;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 
 

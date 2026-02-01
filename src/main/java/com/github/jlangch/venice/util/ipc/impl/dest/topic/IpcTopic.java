@@ -19,31 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.queue;
+package com.github.jlangch.venice.util.ipc.impl.dest.topic;
+
+import com.github.jlangch.venice.util.ipc.impl.IDestination;
 
 
-public enum QueueType {
+public interface IpcTopic extends IDestination {
 
-    BOUNDED(0),
-
-    CIRCULAR(1);
-
-
-    public static QueueType fromCode(int code) {
-        for (QueueType s : QueueType.values()) {
-            if (s.value == code) {
-                return s;
-            }
-        }
-        throw new IllegalArgumentException("Unknown queue type code: " + code);
-    }
-
-    private final int value;
-
-    private QueueType(final int val) {
-        value = val;
-    }
-
-
-    public int getValue() { return value; }
 }

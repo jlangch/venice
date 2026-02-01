@@ -24,9 +24,9 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.io.File;
 
 import com.github.jlangch.venice.util.ipc.IpcException;
-import com.github.jlangch.venice.util.ipc.impl.queue.BoundedQueue;
-import com.github.jlangch.venice.util.ipc.impl.queue.CircularBuffer;
-import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.BoundedQueue;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.CircularBuffer;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.wal.DurableBoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalLogger;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;

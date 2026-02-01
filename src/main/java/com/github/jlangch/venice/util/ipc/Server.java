@@ -46,7 +46,7 @@ import com.github.jlangch.venice.util.ipc.impl.conn.ServerConnection;
 import com.github.jlangch.venice.util.ipc.impl.conn.ServerContext;
 import com.github.jlangch.venice.util.ipc.impl.conn.SocketChannelFactory;
 import com.github.jlangch.venice.util.ipc.impl.conn.Subscriptions;
-import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;

@@ -19,15 +19,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.topic;
+package com.github.jlangch.venice.util.ipc.impl.dest.queue;
 
-import com.github.jlangch.venice.util.ipc.impl.Destination;
+import java.util.concurrent.TimeUnit;
+
+import com.github.jlangch.venice.util.ipc.impl.IDestination;
 
 
-public class Topic extends Destination implements IpcTopic {
+public interface IpcQueue<T> extends IDestination {
 
-    public Topic(final String name) {
-        super(name);
-    }
+    QueueType type();
+
+    boolean isTemporary();
+
+    boolean isDurable();
+
+    boolean isEmpty();
+
+    int size();
+
+    int capacity();
+
+    T poll() throws InterruptedException;
+
+    T poll(long timeout, TimeUnit unit) throws InterruptedException;
+
+    boolean offer(T item) throws InterruptedException;
+
+    boolean offer(T item, long timeout, TimeUnit unit) throws InterruptedException;
+
+    void onRemove();
 
 }

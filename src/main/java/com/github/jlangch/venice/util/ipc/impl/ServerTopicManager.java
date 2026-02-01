@@ -29,8 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
-import com.github.jlangch.venice.util.ipc.impl.topic.IpcTopic;
-import com.github.jlangch.venice.util.ipc.impl.topic.Topic;
+import com.github.jlangch.venice.util.ipc.impl.dest.topic.IpcTopic;
+import com.github.jlangch.venice.util.ipc.impl.dest.topic.Topic;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 
 

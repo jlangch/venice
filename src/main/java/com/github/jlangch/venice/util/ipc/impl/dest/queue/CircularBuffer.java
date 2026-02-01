@@ -19,22 +19,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.queue;
+package com.github.jlangch.venice.util.ipc.impl.dest.queue;
 
 import java.util.Objects;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.github.jlangch.venice.resilience4j.circularbuffer.ConcurrentEvictingQueue;
 import com.github.jlangch.venice.util.ipc.impl.Destination;
 
 
 
 /**
- * A bounded, thread-safe queue based on LinkedBlockingQueue
+ * Circular buffer.
  */
-public class BoundedQueue<T> extends Destination implements IpcQueue<T> {
+public class CircularBuffer<T> extends Destination implements IpcQueue<T> {
 
-    public BoundedQueue(
+    public CircularBuffer(
             final String name,
             final int capacity,
             final boolean temporary
@@ -44,7 +44,7 @@ public class BoundedQueue<T> extends Destination implements IpcQueue<T> {
         this.name = name;
         this.capacity = capacity;
         this.temporary = temporary;
-        this.queue = new LinkedBlockingQueue<>(capacity);
+        this.buffer = new ConcurrentEvictingQueue<>(capacity);
     }
 
 
@@ -55,7 +55,7 @@ public class BoundedQueue<T> extends Destination implements IpcQueue<T> {
 
     @Override
     public QueueType type() {
-        return QueueType.BOUNDED;
+        return QueueType.CIRCULAR;
     }
 
     @Override
@@ -75,46 +75,44 @@ public class BoundedQueue<T> extends Destination implements IpcQueue<T> {
 
     @Override
     public boolean isEmpty() {
-        return queue.isEmpty();
+        return buffer.isEmpty();
     }
 
     @Override
     public int size() {
-        return queue.size();
+        return buffer.size();
     }
 
     @Override
-    public T poll() throws InterruptedException {
-        return queue.poll(0, TimeUnit.MILLISECONDS);
+    public T poll() {
+        return buffer.poll();
     }
 
     @Override
-    public T poll(final long timeout, final TimeUnit unit) throws InterruptedException {
-        return queue.poll(timeout, unit);
+    public T poll(long timeout, TimeUnit unit) {
+        return buffer.poll();
     }
 
     @Override
-    public boolean offer(final T item) throws InterruptedException {
+    public boolean offer(final T item) {
         Objects.requireNonNull(item);
-
-       return queue.offer(item, 0, TimeUnit.MILLISECONDS);
+        return buffer.offer(item);
     }
 
     @Override
-    public boolean offer(final T item, final long timeout, final TimeUnit unit) throws InterruptedException {
+    public boolean offer(final T item, long timeout, TimeUnit unit) {
         Objects.requireNonNull(item);
-
-       return queue.offer(item, timeout, unit);
+        return buffer.offer(item);
     }
 
     @Override
     public void onRemove() {
-        queue.clear();
+        buffer.clear();
     }
 
 
     private final String name;
     private final boolean temporary;
     private final int capacity;
-    private final LinkedBlockingQueue<T> queue;
+    private final ConcurrentEvictingQueue<T> buffer;
 }

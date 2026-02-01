@@ -19,11 +19,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.function;
+package com.github.jlangch.venice.util.ipc.impl.dest.function;
 
-import com.github.jlangch.venice.util.ipc.impl.IDestination;
+import java.util.Objects;
+import java.util.function.Function;
+
+import com.github.jlangch.venice.util.ipc.impl.Destination;
+import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
-public interface IpcFunction extends IDestination {
+public class Func extends Destination implements IpcFunction {
 
+    public Func(final String name, Function<Message,Message> func) {
+        super(name);
+
+        Objects.requireNonNull(func);
+
+        this.func = func;
+    }
+
+    public Function<Message,Message> getFunction() {
+        return func;
+    }
+
+    private final Function<Message,Message> func;
 }

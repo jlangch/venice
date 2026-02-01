@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
-import com.github.jlangch.venice.util.ipc.impl.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
