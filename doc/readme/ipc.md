@@ -23,7 +23,15 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
  
  
 
-Note: For API details please see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/75dc49a/cheatsheet.pdf) under *Overview* -> *I/O* -> *Inter Process Communication*
+> [!NOTE]
+> All examples require Venice 1.12.75+
+>
+ 
+ 
+
+> [!NOTE]
+> For API details please see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/75dc49a/cheatsheet.pdf) under *Overview* -> *I/O* -> *Inter Process Communication*
+>
 
  
  
@@ -50,11 +58,14 @@ pluggable handler function computes the response from the request.
     (println "REQUEST:" (ipc/message->json true m)) 
     m)
 
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo echo-handler)
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (->> (ipc/plain-text-message "1" :test "hello")
-         (ipc/send client)
+         (ipc/send client :echo)  ;; send to echo-handler
          (ipc/message->json true)
          (println "RESPONSE:"))))
 ```
@@ -72,10 +83,13 @@ pluggable handler function computes the response from the request.
           result     {:z (+ (:x request) (:y request))}]
       (ipc/venice-message request-id topic result)))
 
-  (try-with [server (ipc/server 33333 handler)
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :handler handler)
+
     (->> (ipc/venice-message "1" :add {:x 100 :y 200})
-         (ipc/send client)
+         (ipc/send client :handler)
          (ipc/message->json true)
          (println))))
 ```
@@ -92,11 +106,14 @@ pluggable handler function computes the response from the request.
     (println "REQUEST:" (ipc/message->json true m)) 
     m)
 
-  (try-with [server (ipc/server 33333 echo-handler)
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo echo-handler)
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (let [msg       (ipc/plain-text-message "1" :test "hello")
-          response  (ipc/send-async client msg)]  ;; returns a future
+          response  (ipc/send-async client :echo msg)]  ;; returns a future
       (->> (deref response 1_000 :timeout)  ;; deref the response future with 1s timeout
            (ipc/message->json true)
            (println "RESPONSE:")))))
@@ -114,11 +131,14 @@ pluggable handler function computes the response from the request.
     (println "REQUEST:" (ipc/message->json true m)) 
     nil)
 
-  (try-with [server (ipc/server 33333 handler)
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :handler handler)
+
     ;; send a plain text messages: requestId="1" and "2", subject=:test, payload="hello"
-    (ipc/send-oneway client (ipc/plain-text-message "1" :test "hello"))
-    (ipc/send-oneway client (ipc/plain-text-message "2" :test "hello"))))
+    (ipc/send-oneway client :handler (ipc/plain-text-message "1" :test "hello"))
+    (ipc/send-oneway client :handler (ipc/plain-text-message "2" :test "hello"))))
 ```
 
 
@@ -431,14 +451,17 @@ authorized users/applications can access the messaging infrastructure.
   (let [auth (ipc/authenticator)]                ;; create an authenticator
     (ipc/add-credentials auth "tom" "3,kio")     ;; add test credentials
     
-    (try-with [server (ipc/server 33333 echo-handler
+    (try-with [server (ipc/server 33333
                                   :encrypt true         ;; enable encryption
                                   :authenticator auth)  ;; pass the authenticator to the server
                client (ipc/client "localhost" 33333
                                   :user-name "tom"
                                   :password "3,kio")]   ;; client connection with the credentials
+
+    (ipc/create-function server :echo echo-handler)
+
       (->> (ipc/plain-text-message "1" :test "hello")
-           (ipc/send client)
+           (ipc/send client :echo)
            (ipc/message->map)
            (println "RESPONSE: ")))))
 ```
@@ -465,8 +488,11 @@ Load the authenticator from a file:
                client (ipc/client "localhost" 33333
                                   :user-name "tom"
                                   :password "3-kio")]
+
+    (ipc/create-function server :echo (fn [m] m))
+
       (->> (ipc/plain-text-message "1" :test "hello")
-           (ipc/send client)
+           (ipc/send client :echo)
            (ipc/message->map)
            (println "RESPONSE: ")))))
 ```
@@ -503,7 +529,7 @@ Load the authenticator from a file:
  ├───────────────────────────────┤
  │ Subject                       │   client
  ├───────────────────────────────┤
- │ Queue/Topic Name              │   client  (offer/poll & publish/subscribe, else null)
+ │ Destination Name              │   client  
  ├───────────────────────────────┤
  │ ReplyTo Queue Name            │   client  (offer, may be null)
  ├───────────────────────────────┤
@@ -529,21 +555,24 @@ Load the authenticator from a file:
   * `:STATUS_QUEUE`       - a queue status request message
   * `:CREATE_TOPIC`       - a topic create request message
   * `:REMOVE_TOPIC`       - a topic remove request message
+  * `:CREATE_FUNCTION`    - a function create request message
+  * `:REMOVE_FUNCTION`    - a function remove request message
   * `:RESPONSE`           - a response to a request message
   * `:NULL`               - a message with yet undefined type
 
 
 **Response Status**
 
-  * `:OK`              - a response message for a successfully processed request
-  * `:SERVER_ERROR`    - a response indicating a server side error while processing the request 
-  * `:BAD_REQUEST`     - invalid request
-  * `:HANDLER_ERROR`   - a server handler error in the server's request processing
-  * `:QUEUE_NOT_FOUND` - the required queue does not exist
-  * `:QUEUE_EMPTY`     - the adressed queue in a poll request is empty
-  * `:QUEUE_FULL`      - the adressed queue in offer request is full
-  * `:TOPIC_NOT_FOUND` - the required topic does not exist
-  * `:NULL`            - a message with yet undefined status, filled when processing the message
+  * `:OK`               - a response message for a successfully processed request
+  * `:SERVER_ERROR`      - a response indicating a server side error while processing the request 
+  * `:BAD_REQUEST`       - invalid request
+  * `:HANDLER_ERROR`     - a server handler error in the server's request processing
+  * `:QUEUE_NOT_FOUND`   - the required queue does not exist
+  * `:QUEUE_EMPTY`       - the adressed queue in a poll request is empty
+  * `:QUEUE_FULL`        - the adressed queue in offer request is full
+  * `:TOPIC_NOT_FOUND`   - the required topic does not exist
+  * `:FUNCTION_NOT_FOUND` - the required function does not exist
+  * `:NULL`              - a message with yet undefined status, filled when processing the message
 
 
 
@@ -632,11 +661,15 @@ By default messages are limited to 20 MB size (not encrypted, not compressed).
 The message size limit can be configured on the server in the range of 2KB ... 250MB.
 
 ```clojure
-(ipc/server 33333 :max-message-size :100MB)
+(try-with [server (ipc/server 33333 :max-message-size :100MB)]
+  ;;
+  )
 ```
 
 ```clojure
-(ipc/server 33333 :max-message-size :200KB)
+(try-with [server (ipc/server 33333 :max-message-size :200KB)]
+  ;;
+  )
 ```
 
 
@@ -665,11 +698,14 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
     m)
   
   ;; transparently compress/decompress messages with a size > 1KB
-  (try-with [server (ipc/server 33333 echo-handler :compress-cutoff-size :1KB)
+  (try-with [server (ipc/server 33333 :compress-cutoff-size :1KB)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo echo-handler)
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (->> (ipc/plain-text-message "1" :test "hello")
-         (ipc/send client)
+         (ipc/send client :echo)
          (ipc/message->json true)
          (println "RESPONSE:"))))
 ```
@@ -696,11 +732,14 @@ exchanged using the Diffie-Hellman key exchange algorithm.
     m)
 
   ;; transparently encrypt messages
-  (try-with [server (ipc/server 33333 echo-handler :encrypt true)
+  (try-with [server (ipc/server 33333 :encrypt true)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo echo-handler)
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (->> (ipc/plain-text-message "1" :test "hello")
-         (ipc/send client)
+         (ipc/send client :echo)
          (ipc/message->json true)
          (println "RESPONSE:"))))
 ```
@@ -835,22 +874,9 @@ for bounded or circular queues
     (ipc/create-queue server :queue/1 100)
      
     (ipc/offer client "queue/1" 300 
-                 (ipc/plain-text-message "1" :test "hello"))
+               (ipc/plain-text-message "1" :test "hello"))
     ;; ...
     (ipc/queue-status server :queue/1)))
-```
-
-for temporary queues
-
-```clojure
-(do
-  (try-with [server (ipc/server 33333)
-             client (ipc/client 33333)]
-    (let [queue-name (ipc/create-temporary-queue client 100)]
-      (ipc/offer client queue-name 300 
-                 (ipc/plain-text-message "1" :test "hello"))
-      ;; ...
-      (ipc/queue-status client queue-name))))
 ```
 
  
@@ -883,9 +909,12 @@ for temporary queues
 
 ```clojure
 (do
-  (try-with [server (ipc/server 33333 (fn [m] m))
+  (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (let [m (ipc/send client (ipc/text-message "1" "test" "text/plain" :UTF-8"Hello!"))]
+
+    (ipc/create-function server :echo (fn [m] m))
+
+    (let [m (ipc/send client :echo (ipc/text-message "1" "test" "text/plain" :UTF-8"Hello!"))]
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
       (println (ipc/message-field m :oneway?))
@@ -922,9 +951,12 @@ Hello!
 
 ```clojure
 (do
-  (try-with [server (ipc/server 33333 (fn [m] m))
+  (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (let [m (ipc/send client (ipc/binary-message "1" "test" 
+
+    (ipc/create-function server :echo (fn [m] m))
+
+    (let [m (ipc/send client :echo (ipc/binary-message "1" "test" 
                                                  "application/octet-stream" 
                                                  (bytebuf [0 1 2 3 4 5 6 7])))]
       (println (ipc/message-field m :id))
@@ -959,9 +991,12 @@ nil
 
 ```clojure
 (do
-  (try-with [server (ipc/server 33333 (fn [m] m))
+  (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
-    (let [m (ipc/send client (ipc/venice-message "1" "test" {:a 100, :b 200} ))]
+
+    (ipc/create-function server :echo (fn [m] m))
+
+    (let [m (ipc/send client :echo (ipc/venice-message "1" "test" {:a 100, :b 200} ))]
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
       (println (ipc/message-field m :oneway?))
@@ -996,11 +1031,14 @@ application/json
 
 ```clojure
 (do
-  (try-with [server (ipc/server 33333 (fn [m] m))
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo (fn [m] m))
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (->> (ipc/plain-text-message "1" :test "hello")
-         (ipc/send client)
+         (ipc/send client :echo)
          (ipc/message->json true)    ;; formatted JSON enabled
          (println "RESPONSE:"))))
 ```
@@ -1010,11 +1048,14 @@ application/json
 
 ```clojure
 (do
-  (try-with [server (ipc/server 33333 (fn [m] m))
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo (fn [m] m))
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (->> (ipc/plain-text-message "1" :test "hello")
-         (ipc/send client)
+         (ipc/send client :echo)
          (ipc/message->map)
          (println "RESPONSE:"))))
 ```
@@ -1024,11 +1065,14 @@ application/json
 
 ```clojure
 (do
-  (try-with [server (ipc/server 33333 (fn [m] m))
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo (fn [m] m))
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (->> (ipc/plain-text-message "1" :test "hello")
-         (ipc/send client)
+         (ipc/send client :echo)
          (ipc/response-ok?)
          (println "RESPONSE OK:"))))
 ```
@@ -1038,11 +1082,14 @@ application/json
 
 ```clojure
 (do
-  (try-with [server (ipc/server 33333 (fn [m] m))
+  (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
+
+    (ipc/create-function server :echo (fn [m] m))
+
     ;; send a plain text message: requestId="1", subject=:test, payload="hello"
     (->> (ipc/plain-text-message "1" :test "hello")
-         (ipc/send client)
+         (ipc/send client :echo)
          (ipc/response-err?)
          (println "RESPONSE ERR:"))))
 ```
