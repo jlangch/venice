@@ -118,7 +118,7 @@ public class TcpAuthorizationAclFunctionTest {
         authenticator.addCredentials("jak", "123");
         authenticator.addCredentials("admin", "123", true);
 
-        authenticator.setFunctionAcl("echo", AccessMode.READ_WRITE, "tom");
+        authenticator.setFunctionAcl("echo", AccessMode.EXECUTE, "tom");
 
         try (final Server server = Server.of(ServerConfig
                                             .builder()

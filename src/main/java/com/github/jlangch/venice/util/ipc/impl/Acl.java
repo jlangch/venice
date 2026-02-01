@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import static com.github.jlangch.venice.util.ipc.AccessMode.EXECUTE;
 import static com.github.jlangch.venice.util.ipc.AccessMode.READ;
 import static com.github.jlangch.venice.util.ipc.AccessMode.READ_WRITE;
 import static com.github.jlangch.venice.util.ipc.AccessMode.WRITE;
@@ -65,6 +66,10 @@ public class Acl {
 
     public boolean canWrite() {
         return mode == WRITE || mode == READ_WRITE;
+    }
+
+    public boolean canExecute() {
+        return mode == EXECUTE;
     }
 
     @Override

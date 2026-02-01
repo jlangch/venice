@@ -426,10 +426,10 @@ public class ServerConnection implements IPublisher, Runnable {
             return createFunctionNotFoundResponse(request);
         }
 
-        if (authenticated && !adminAuthorization && !fn.canRead(principal)) {
+        if (authenticated && !adminAuthorization && !fn.canExecute(principal)) {
             return createNoPermissionResponse(
                     request,
-                    "Not authenticated for function subscription!");
+                    "Not authenticated for function calling!");
         }
 
         // note: exceptions are handled upstream

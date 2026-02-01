@@ -60,6 +60,17 @@ public abstract class Destination implements IDestination {
     }
 
     @Override
+    public boolean canExecute(final String principal) {
+        if (principal == null) {
+            return true;
+        }
+        else {
+            final Acl acl = acls.get(principal);
+            return acl != null ? acl.canExecute() : noAcls;
+        }
+    }
+
+    @Override
     public void updateAcls(final Map<String,Acl>  acls) {
         this.acls.clear();
         if (acls != null) {

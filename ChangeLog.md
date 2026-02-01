@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.75] - 2026-01-xx
+## [1.12.76] - 2026-01-xx
 
 ### Enhancements
 
@@ -15,8 +15,15 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+
+
+## [1.12.75] - 2026-02-01
+
+### Enhancements
+
 - Added IPC authorization for creating queues and topics
 - Added IPC authorization for getting server statistics and info
+- Added IPC destinations functions (send/receive)
 
 
 

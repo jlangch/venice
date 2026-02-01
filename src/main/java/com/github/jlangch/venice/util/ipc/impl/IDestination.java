@@ -32,6 +32,8 @@ public interface IDestination {
 
     boolean canWrite(String principal);
 
+    boolean canExecute(String principal);
+
     void updateAcls(Map<String,Acl>  acls);
 
     void clearAcls();
