@@ -370,7 +370,7 @@ public class Server implements AutoCloseable {
      */
     public void createFunction(
             final String functionName,
-            final Function<Message,Message> func
+            final Function<IMessage,IMessage> func
     ) {
         functionManager.createFunction(functionName, func);
     }

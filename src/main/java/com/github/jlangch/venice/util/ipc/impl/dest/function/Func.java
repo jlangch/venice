@@ -24,13 +24,13 @@ package com.github.jlangch.venice.util.ipc.impl.dest.function;
 import java.util.Objects;
 import java.util.function.Function;
 
+import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.Destination;
-import com.github.jlangch.venice.util.ipc.impl.Message;
 
 
 public class Func extends Destination implements IpcFunction {
 
-    public Func(final String name, Function<Message,Message> func) {
+    public Func(final String name, Function<IMessage,IMessage> func) {
         super(name);
 
         Objects.requireNonNull(func);
@@ -38,9 +38,10 @@ public class Func extends Destination implements IpcFunction {
         this.func = func;
     }
 
-    public Function<Message,Message> getFunction() {
-        return func;
+    @Override
+	public IMessage apply(final IMessage m) {
+        return func.apply(m);
     }
 
-    private final Function<Message,Message> func;
+    private final Function<IMessage,IMessage> func;
 }

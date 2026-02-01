@@ -21,9 +21,12 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.dest.function;
 
+import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.IDestination;
 
 
 public interface IpcFunction extends IDestination {
+
+    IMessage apply(IMessage m);
 
 }

@@ -3554,7 +3554,7 @@ public class IPCFunctions {
 
 
     // ------------------------------------------------------------------------
-    // Queues
+    // Topics
     // ------------------------------------------------------------------------
 
     public static VncFunction ipc_create_topic =
@@ -3568,7 +3568,7 @@ public class IPCFunctions {
                         "Creates a named topic on the server. \n\n" +
                         "A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'. " +
                         "Up to 80 characters are allowed.\n\n" +
-                        "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
+                        "Returns always `nil` or throws an exception if the named topic already exists.\n\n" +
                         "*Arguments:* \n\n" +
                         "| node s     | A server or a client|\n" +
                         "| name s     | A topic name (string or keyword)|")
@@ -3619,7 +3619,7 @@ public class IPCFunctions {
                         "(ipc/remove-topic node name)")
                     .doc(
                         "Removes a named topic.\n\n" +
-                        "Returns always `nil` or throws an exception.\n\n" +
+                        "Returns always `nil`.\n\n" +
                         "*Arguments:* \n\n" +
                         "| node s | A server or a client |\n" +
                         "| name n | A topic name (string or keyword)|")
@@ -3706,6 +3706,139 @@ public class IPCFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+
+
+
+    // ------------------------------------------------------------------------
+    // Functions
+    // ------------------------------------------------------------------------
+
+    public static VncFunction ipc_create_function =
+        new VncFunction(
+                "ipc/create-function",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/create-function server name func)")
+                    .doc(
+                        "Creates a named function on the server. \n\n" +
+                        "A function name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'. " +
+                        "Up to 80 characters are allowed.\n\n" +
+                        "Returns always `nil`.")
+                    .examples(
+                        "(try-with [server  (ipc/server 33333)            \n" +
+                        "           client1 (ipc/client 33333)]           \n" +
+                        "  (ipc/create-topic server :orders-closed)       \n" +
+                        "    ;;                                           \n" +
+                        "  (ipc/exists-topic? server :orders-closed))     ")
+                    .seeAlso(
+                        "ipc/remove-function",
+                        "ipc/exists-function?",
+                        "ipc/server")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    final VncFunction handler = Coerce.toVncFunction(args.third());
+
+                    final Function<IMessage,IMessage> fnWrapper = wrapFunction(this, args, handler);
+                    server.createFunction(name, fnWrapper);
+                    return Nil;
+                }
+                else {
+                    throw new VncException (
+                            "ipc/create-function: the first arg must be a server.");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_remove_function =
+        new VncFunction(
+                "ipc/remove-function",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/remove-function server name)")
+                    .doc(
+                        "Removes a named topic.\n\n" +
+                        "Returns always `nil` or throws an exception.")
+                    .examples(
+                        "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
+                        "  (ipc/create-topic server :orders-closed 100)       \n" +
+                        "  ;; ...                                             \n" +
+                        "  (ipc/remove-topic server :orders-closed))          ")
+                    .seeAlso(
+                        "ipc/create-function",
+                        "ipc/exists-function?",
+                        "ipc/server")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    server.removeFunction(name);
+                    return Nil;
+                }
+                else {
+                    throw new VncException (
+                            "ipc/remove-function: the first arg must be a server.");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_exists_functionQ =
+        new VncFunction(
+                "ipc/exists-function?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/exists-function? node name)")
+                    .doc(
+                        "Returns `true` if the named topic exists else `false`.")
+                    .examples(
+                        "(try-with [server (ipc/server 33333)]            \n" +
+                        "  (ipc/create-topic server :orders-closed 100)   \n" +
+                        "  ;; ...                                         \n" +
+                        "  (ipc/exists-topic? server :orders-closed))     ")
+                    .seeAlso(
+                        "ipc/create-function",
+                        "ipc/remove-function",
+                        "ipc/server")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                if (Types.isVncJavaObject(args.first(), Server.class)) {
+                    final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
+                    final String name = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(server.existsFunction(name));
+                }
+                else {
+                    throw new VncException (
+                            "ipc/exists-function?: the first arg must be a server.");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
 
 
     // ------------------------------------------------------------------------

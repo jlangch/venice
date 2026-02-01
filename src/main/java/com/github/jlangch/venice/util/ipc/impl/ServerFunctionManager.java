@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.util.ipc.Authenticator;
+import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.dest.function.Func;
@@ -54,7 +55,7 @@ public class ServerFunctionManager {
 
     public void createFunction(
             final String functionName,
-            final Function<Message,Message> func
+            final Function<IMessage,IMessage> func
     ) {
         Objects.requireNonNull(functionName);
         Objects.requireNonNull(func);
