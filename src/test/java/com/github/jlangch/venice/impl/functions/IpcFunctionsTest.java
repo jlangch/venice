@@ -40,6 +40,59 @@ import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
 public class IpcFunctionsTest {
 
     @Test
+    public void test_plain_text_message_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(str (ipc/text-message \"1\" :test \"text/plain\" :UTF-8 \"hello\"))";
+
+        assertNotNull(venice.eval(script));
+    }
+
+    @Test
+    public void test_plain_text_message_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(str (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\"))";
+
+        assertNotNull(venice.eval(script));
+    }
+
+    @Test
+    public void test_plain_text_message_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(str (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\" false))";
+
+        assertNotNull(venice.eval(script));
+    }
+
+    @Test
+    public void test_plain_text_message_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(str (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\" false 33333333))";
+
+        assertNotNull(venice.eval(script));
+    }
+
+    @Test
+    public void test_plain_text_message_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(str (ipc/text-message \"1\" \"test\" \"text/plain\" :UTF-8 \"hello\" false 2 :hours))";
+
+        assertNotNull(venice.eval(script));
+    }
+
+
+
+
+    @Test
     public void test_plain_text_message_expiry_1() {
         final Venice venice = new Venice();
 

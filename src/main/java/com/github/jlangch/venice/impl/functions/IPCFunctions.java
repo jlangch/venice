@@ -148,7 +148,7 @@ public class IPCFunctions {
                         "    (println \"REQUEST:  \" (ipc/message->map m))             \n" +
                         "    m)                                                        \n" +
                         "                                                              \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)           \n" +
+                        "  (try-with [server (ipc/server 33333 )                       \n" +
                         "             client (ipc/client \"localhost\" 33333)]         \n" +
                         "    (ipc/create-function server :echo echo-handler)           \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
@@ -160,8 +160,7 @@ public class IPCFunctions {
                         "    (println \"REQUEST:  \" (ipc/message->map m))               \n" +
                         "    m)                                                          \n" +
                         "                                                                \n" +
-                        "  (try-with [server (ipc/server \"af-inet://localhost:33333\"   \n" +
-                        "                                echo-handler)                   \n" +
+                        "  (try-with [server (ipc/server \"af-inet://localhost:33333\")  \n" +
                         "             client (ipc/client \"af-inet://localhost:33333\")] \n" +
                         "    (ipc/create-function server :echo echo-handler)             \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")      \n" +
@@ -175,7 +174,7 @@ public class IPCFunctions {
                         "                                                                \n" +
                         "  (let [a (ipc/authenticator)]                                  \n" +
                         "    (ipc/add-credentials a \"tom\" \"3-kio\")                   \n" +
-                        "    (try-with [server (ipc/server 33333 echo-handler            \n" +
+                        "    (try-with [server (ipc/server 33333                         \n" +
                         "                                  :encrypt true                 \n" +
                         "                                  :authenticator a)             \n" +
                         "               client (ipc/client \"localhost\" 33333           \n" +
@@ -372,7 +371,7 @@ public class IPCFunctions {
                         "         (ipc/message->map)                                                     \n" +
                         "         (println \"RESPONSE: \")))                                             \n" +
                         "                                                                                \n" +
-                        "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
+                        "  (try-with [server   (ipc/server 33333)                                        \n" +
                         "             client-1 (ipc/client 33333)                                        \n" +
                         "             client-2 (ipc/client \"localhost\" 33333)                          \n" +
                         "             client-3 (ipc/client :localhost 33333)                             \n" +
@@ -876,7 +875,7 @@ public class IPCFunctions {
                         "      (ipc/plain-text-message (. m :getRequestId)                 \n" +
                         "                              (. m :getTopic)                     \n" +
                         "                              result)))                           \n" +
-                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :exec exec)                       \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")      \n" +
@@ -940,7 +939,7 @@ public class IPCFunctions {
                         ";; echo handler                                                   \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"              \n" +
                         "(do                                                               \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :echo (fn [m] m))                 \n" +
                         "    (-<> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
@@ -959,7 +958,7 @@ public class IPCFunctions {
                         "                        (. m :getTopic)                           \n" +
                         "                        \"application/json\" :UTF-8               \n" +
                         "                        result)))                                 \n" +
-                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :handler handler)                 \n" +
                         "    (-<> (ipc/text-message \"1\"                                  \n" +
@@ -980,7 +979,7 @@ public class IPCFunctions {
                         "      (ipc/plain-text-message (. m :getRequestId)                 \n" +
                         "                              (. m :getTopic)                     \n" +
                         "                              result)))                           \n" +
-                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :exec exec)                       \n" +
                         "    (-<> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")      \n" +
@@ -1038,7 +1037,7 @@ public class IPCFunctions {
                         "    (println \"REQUEST:\" (ipc/message->json true m))                             \n" +
                         "    nil)                                                                          \n" +
                         "                                                                                  \n" +
-                        "  (try-with [server (ipc/server 33333 handler)                                    \n" +
+                        "  (try-with [server (ipc/server 33333)                                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]                             \n" +
                         "                                                                                  \n" +
                         "    (ipc/create-function server :handler handler)                                 \n" +
@@ -1114,13 +1113,13 @@ public class IPCFunctions {
                         "    (ipc/create-topic server :test)                                  \n" +
                         "                                                                     \n" +
                         "    ;; client1 subscribes to messages with topic 'test'              \n" +
-                        "    (ipc/subscribe client1 \"test\" client-subscribe-handler)        \n" +
+                        "    (ipc/subscribe client1 :test client-subscribe-handler)           \n" +
                         "                                                                     \n" +
                         "    ;; client2 publishes a plain text message:                       \n" +
                         "    ;;   requestId=\"1\", subject=\"test\", payload=\"hello\"        \n" +
                         "    (let [m (ipc/plain-text-message \"1\" \"test\" \"hello\")]       \n" +
                         "      (println \"PUBLISHED:\" (ipc/message->json true m))            \n" +
-                        "      (ipc/publish client2 m))                                       \n" +
+                        "      (ipc/publish client2 :test m))                                 \n" +
                         "                                                                     \n" +
                         "    (sleep 300)))                                                    ")
                     .seeAlso(
@@ -1744,7 +1743,7 @@ public class IPCFunctions {
                     .examples(
                         "(do                                                               \n" +
                         "  (defn echo-handler [m] m)                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
@@ -1784,7 +1783,7 @@ public class IPCFunctions {
                     .examples(
                         "(do                                                                   \n" +
                         "  (defn echo-handler [m] m)                                           \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)                   \n" +
+                        "  (try-with [server (ipc/server 33333)                                \n" +
                         "             client (ipc/client \"localhost\" 33333)]                 \n" +
                         "    (ipc/create-function server :echo echo-handler)                   \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")            \n" +
@@ -2995,7 +2994,7 @@ public class IPCFunctions {
                         "  (defn echo-handler [m]                                          \n" +
                         "     (if (ipc/oneway? m) nil m))                                  \n" +
                         "                                                                  \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
@@ -3038,7 +3037,7 @@ public class IPCFunctions {
                     .examples(
                         "(do                                                               \n" +
                         "  (defn echo-handler [m] m)                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
@@ -3080,7 +3079,7 @@ public class IPCFunctions {
                     .examples(
                         "(do                                                               \n" +
                         "  (defn echo-handler [m] m)                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
@@ -3350,7 +3349,7 @@ public class IPCFunctions {
                         "| node s | A server or a client |\n" +
                         "| name n | A queue name (string or keyword)|")
                     .examples(
-                        "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
+                        "(try-with [server (ipc/server 33333)]               \n" +
                         "  (ipc/create-queue server :orders 100)              \n" +
                         "  ;; ...                                             \n" +
                         "  (ipc/remove-queue server :orders))                 ",
@@ -3423,7 +3422,7 @@ public class IPCFunctions {
                         "                                :authenticator auth) \n" +
                         "             client (ipc/client 33333                \n" +
                         "                                :user-name \"tom\"   \n" +
-                        "                                :password \"123\")   \n" +
+                        "                                :password \"123\")]  \n" +
                         "    (ipc/create-queue client :orders 100)            \n" +
                         "    ;; ...                                           \n" +
                         "    (ipc/exists-queue? client :orders)))             ")
@@ -3620,8 +3619,8 @@ public class IPCFunctions {
                         "| node s | A server or a client |\n" +
                         "| name n | A topic name (string or keyword)|")
                     .examples(
-                        "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
-                        "  (ipc/create-topic server :orders-closed 100)       \n" +
+                        "(try-with [server (ipc/server 33333)]                \n" +
+                        "  (ipc/create-topic server :orders-closed)           \n" +
                         "  ;; ...                                             \n" +
                         "  (ipc/remove-topic server :orders-closed))          ")
                     .seeAlso(
@@ -3670,7 +3669,7 @@ public class IPCFunctions {
                         "| name n | A topic name (string or keyword)|")
                     .examples(
                         "(try-with [server (ipc/server 33333)]            \n" +
-                        "  (ipc/create-topic server :orders-closed 100)   \n" +
+                        "  (ipc/create-topic server :orders-closed)       \n" +
                         "  ;; ...                                         \n" +
                         "  (ipc/exists-topic? server :orders-closed))     ")
                     .seeAlso(
@@ -3767,7 +3766,7 @@ public class IPCFunctions {
                         "Removes a named topic.\n\n" +
                         "Returns always `nil` or throws an exception.")
                     .examples(
-                        "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
+                        "(try-with [server (ipc/server 33333)]                \n" +
                         "  (ipc/create-function server :echo (fn [m] m))      \n" +
                         "  ;; ...                                             \n" +
                         "  (ipc/remove-function server :echo))                ")
