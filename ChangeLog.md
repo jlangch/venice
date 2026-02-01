@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 
 - Added IPC authorization for creating queues and topics
 - Added IPC authorization for getting server statistics and info
-- Added IPC destinations functions (send/receive)
+- Added IPC destination functions (send/receive)
 
 
 
