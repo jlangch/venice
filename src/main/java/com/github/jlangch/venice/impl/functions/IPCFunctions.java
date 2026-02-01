@@ -1854,7 +1854,11 @@ public class IPCFunctions {
                     .seeAlso(
                         "ipc/load-authenticator",
                         "ipc/store-authenticator",
-                        "ipc/add-credentials")
+                        "ipc/add-credentials",
+                        "ipc/remove-credentials",
+                        "ipc/clear-credentials",
+                        "ipc/add-acl",
+                        "ipc/remove-acl")
                     .build()
         ) {
             @Override
@@ -1884,8 +1888,7 @@ public class IPCFunctions {
                         "     ))                                                       ")
                     .seeAlso(
                         "ipc/authenticator",
-                        "ipc/store-authenticator",
-                        "ipc/add-credentials")
+                        "ipc/store-authenticator")
                     .build()
         ) {
             @Override
@@ -1928,8 +1931,7 @@ public class IPCFunctions {
                         "  (ipc/store-authenticator auth (io/file \"./ipc.cred\")))  ")
                     .seeAlso(
                         "ipc/authenticator",
-                        "ipc/load-authenticator",
-                        "ipc/add-credentials")
+                        "ipc/load-authenticator")
                     .build()
         ) {
             @Override
@@ -1973,11 +1975,9 @@ public class IPCFunctions {
                         "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
                         "  (ipc/add-credentials auth \"max\" \"456\" :admin)) ")
                     .seeAlso(
-                        "ipc/remove-credentials",
-                        "ipc/clear-credentials",
                         "ipc/authenticator",
-                        "ipc/load-authenticator",
-                        "ipc/store-authenticator")
+                        "ipc/remove-credentials",
+                        "ipc/clear-credentials")
                     .build()
         ) {
             @Override
@@ -2020,11 +2020,9 @@ public class IPCFunctions {
                         "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
                         "  (ipc/remove-credentials auth \"tom\"))             ")
                     .seeAlso(
-                        "ipc/add-credentials",
-                        "ipc/clear-credentials",
                         "ipc/authenticator",
-                        "ipc/load-authenticator",
-                        "ipc/store-authenticator")
+                        "ipc/add-credentials",
+                        "ipc/clear-credentials")
                     .build()
         ) {
             @Override
@@ -2057,11 +2055,9 @@ public class IPCFunctions {
                         "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
                         "  (ipc/clear-credentials auth))                      ")
                     .seeAlso(
-                        "ipc/add-credentials",
-                        "ipc/remove-credentials",
                         "ipc/authenticator",
-                        "ipc/load-authenticator",
-                        "ipc/store-authenticator")
+                        "ipc/add-credentials",
+                        "ipc/remove-credentials")
                     .build()
         ) {
             @Override
@@ -2078,85 +2074,142 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction ipc_acl =
-            new VncFunction(
-                    "ipc/acl",
-                    VncFunction
-                        .meta()
-                        .arglists("(ipc/acl authenticator dest-type dest-name access principal)")
-                        .doc(
-                            "Manages ACLs.\n\n" +
-                            "*Arguments:* \n\n" +
-                            "| authenticator | An authenticator |\n" +
-                            "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
-                            "| dest-name     | A destination name |\n" +
-                            "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:none` } |" +
-                            "| principal     | A principal |\n\n" +
-                            "*ACL configurations:* \n\n" +
-                            "| queue offer      | `:queue` -> one of { `:write`, `:read-write`, `:none` } |\n" +
-                            "| queue poll       | `:queue` -> one of { `:read`, `:read-write`, `:none` } |\n" +
-                            "| topic subscribe  | `:topic` -> one of { `:write`, `:read-write`, `:none` } |\n" +
-                            "| topic publish    | `:topic` -> one of { `:read`, `:read-write`, `:none` } |" +
-                            "| function execute | `:function` -> one of { `:execute`, `:none` }|\n\n")
-                        .examples(
-                            "(let [auth (ipc/authenticator)]                      \n" +
-                            "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
-                            "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
-                            "  (ipc/acl auth :queue :queue/1 :read-write \"tom\") \n" +
-                            "  (ipc/acl auth :queue :queue/2 :read \"tom\")       \n" +
-                            "  (ipc/acl auth :topic :topic/1 :write \"tom\")      \n" +
-                            "  (ipc/acl auth :queue :topic/2 :read-write \"tom\") \n" +
-                            "  (ipc/acl auth :function :echo :execute \"tom\"))   ")
-                        .seeAlso(
-                            "ipc/load-authenticator",
-                            "ipc/store-authenticator",
-                            "ipc/add-credentials")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 5);
+    public static VncFunction ipc_add_acl =
+        new VncFunction(
+                "ipc/add-acl",
+                VncFunction
+                    .meta()
+                    .arglists("(ipc/add-acl authenticator dest-type dest-name access principal)")
+                    .doc(
+                        "Add ACL item for a destination and principal\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| authenticator | An authenticator |\n" +
+                        "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
+                        "| dest-name     | A destination name |\n" +
+                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute` } |" +
+                        "| principal     | A principal |\n\n" +
+                        "*ACL configurations:* \n\n" +
+                        "| queue offer      | `:queue` -> one of { `:write`, `:read-write` } |\n" +
+                        "| queue poll       | `:queue` -> one of { `:read`, `:read-write` } |\n" +
+                        "| topic subscribe  | `:topic` -> one of { `:write`, `:read-write` } |\n" +
+                        "| topic publish    | `:topic` -> one of { `:read`, `:read-write` } |" +
+                        "| function execute | `:function` -> one of { `:execute` }|\n\n")
+                    .examples(
+                        "(let [auth (ipc/authenticator)]                          \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")             \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)      \n" +
+                        "  (ipc/add-acl auth :queue :queue/1 :read-write \"tom\") \n" +
+                        "  (ipc/add-acl auth :queue :queue/2 :read \"tom\")       \n" +
+                        "  (ipc/add-acl auth :topic :topic/1 :write \"tom\")      \n" +
+                        "  (ipc/add-acl auth :queue :topic/2 :read-write \"tom\") \n" +
+                        "  (ipc/add-acl auth :function :echo :execute \"tom\"))   ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/remove-acl")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 5);
 
-                    final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
-                    final String destType = Coerce.toVncString(args.nth(1)).toString();
-                    final String destName = Coerce.toVncString(args.nth(2)).toString();
-                    final String access = Coerce.toVncString(args.nth(3)).toString();
-                    final String principal = Coerce.toVncString(args.nth(4)).toString();
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
+                final String destType = Coerce.toVncString(args.nth(1)).toString();
+                final String destName = Coerce.toVncString(args.nth(2)).toString();
+                final String access = Coerce.toVncString(args.nth(3)).toString();
+                final String principal = Coerce.toVncString(args.nth(4)).toString();
 
-                    AccessMode mode = null;
-                    switch(access) {
-                        case "read":       mode = AccessMode.READ;        break;
-                        case "write":      mode = AccessMode.WRITE;       break;
-                        case "read-write": mode = AccessMode.READ_WRITE;  break;
-                        case "execute":    mode = AccessMode.EXECUTE;     break;
-                        case "none":       mode = null;                   break;
-                        default:
-                            throw new IpcException(
-                                    "Invalid access '" + access + "'! "
-                                    + "Use one of {:read, :write, :read-write, :execute, :none}");
-                    }
-
-                    switch(destType) {
-                        case "queue":
-                            authenticator.setQueueAcl(destName, mode, principal);
-                            break;
-                        case "topic":
-                            authenticator.setTopicAcl(destName, mode, principal);
-                            break;
-                        case "function":
-                            authenticator.setFunctionAcl(destName, mode, principal);
-                            break;
-                        default:
-                            throw new IpcException(
-                                    "Invalid destination type '" + destType + "'! "
-                                    + "Use one of {:queue, :topic, :function}");
-                    }
-
-                    return new VncJavaObject(authenticator);
+                AccessMode mode = null;
+                switch(access) {
+                    case "read":       mode = AccessMode.READ;        break;
+                    case "write":      mode = AccessMode.WRITE;       break;
+                    case "read-write": mode = AccessMode.READ_WRITE;  break;
+                    case "execute":    mode = AccessMode.EXECUTE;     break;
+                    default:
+                        throw new IpcException(
+                                "Invalid access '" + access + "'! "
+                                + "Use one of {:read, :write, :read-write, :execute, :none}");
                 }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+                switch(destType) {
+                    case "queue":
+                        authenticator.setQueueAcl(destName, mode, principal);
+                        break;
+                    case "topic":
+                        authenticator.setTopicAcl(destName, mode, principal);
+                        break;
+                    case "function":
+                        authenticator.setFunctionAcl(destName, mode, principal);
+                        break;
+                    default:
+                        throw new IpcException(
+                                "Invalid destination type '" + destType + "'! "
+                                + "Use one of {:queue, :topic, :function}");
+                }
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_remove_acl =
+        new VncFunction(
+                "ipc/remove-acl",
+                VncFunction
+                    .meta()
+                    .arglists("(ipc/acl authenticator dest-type dest-name principal)")
+                    .doc(
+                        "Remove an ACL item for a destination and principal.\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| authenticator | An authenticator |\n" +
+                        "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
+                        "| dest-name     | A destination name |\n" +
+                        "| principal     | A principal |")
+                    .examples(
+                        "(let [auth (ipc/authenticator)]                      \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
+                        "  (ipc/remove-acl auth :queue :queue/1 \"tom\")      \n" +
+                        "  (ipc/remove-acl auth :queue :queue/2 \"tom\")      \n" +
+                        "  (ipc/remove-acl auth :topic :topic/1 \"tom\")      \n" +
+                        "  (ipc/remove-acl auth :queue :topic/2 \"tom\")      \n" +
+                        "  (ipc/remove-acl auth :function :echo \"tom\"))     ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/add-acl")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 4);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
+                final String destType = Coerce.toVncString(args.nth(1)).toString();
+                final String destName = Coerce.toVncString(args.nth(2)).toString();
+                final String principal = Coerce.toVncString(args.nth(3)).toString();
+
+                switch(destType) {
+                    case "queue":
+                        authenticator.removeQueueAcl(destName, principal);
+                        break;
+                    case "topic":
+                        authenticator.removeTopicAcl(destName, principal);
+                        break;
+                    case "function":
+                        authenticator.removeFunctionAcl(destName, principal);
+                        break;
+                    default:
+                        throw new IpcException(
+                                "Invalid destination type '" + destType + "'! "
+                                + "Use one of {:queue, :topic, :function}");
+                }
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
 
     // ------------------------------------------------------------------------
@@ -4100,7 +4153,8 @@ public class IPCFunctions {
                     .add(ipc_add_credentials)
                     .add(ipc_remove_credentials)
                     .add(ipc_clear_credentials)
-                    .add(ipc_acl)
+                    .add(ipc_add_acl)
+                    .add(ipc_remove_acl)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)

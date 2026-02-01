@@ -78,7 +78,8 @@ public class IpcSection implements ISectionBuilder {
 
         final DocSection acl = new DocSection("ACL", "ipc.acl");
         all.addSection(acl);
-        acl.addItem(diBuilder.getDocItem("ipc/acl", false));
+        acl.addItem(diBuilder.getDocItem("ipc/add-acl", false));
+        acl.addItem(diBuilder.getDocItem("ipc/remove-acl", false));
 
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);
