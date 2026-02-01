@@ -157,16 +157,27 @@ public class Authenticator {
             final String principal
     ) {
         Objects.requireNonNull(queueName);
-        Objects.requireNonNull(accessMode);
-
-        final Acl acl = new Acl(queueName, principal, accessMode);
 
         Map<String,Acl> acls = queueAcls.get(queueName);
         if (acls == null) {
             acls = new HashMap<>();
         }
-        acls.put(acl.getPrincipal(), acl);
-        queueAcls.put(queueName, acls);
+
+        if (accessMode == null) {
+            acls.remove(principal);
+        }
+        else {
+            final Acl acl = new Acl(queueName, principal, accessMode);
+            acls.put(acl.getPrincipal(), acl);
+            queueAcls.put(queueName, acls);
+        }
+    }
+
+    public void removeQueueAcl(
+            final String queueName,
+            final String principal
+    ) {
+        setQueueAcl(queueName, null, principal);
     }
 
     public Map<String,Acl> getQueueAclsMappedByPrincipal(final String queueName) {
@@ -187,16 +198,27 @@ public class Authenticator {
             final String principal
     ) {
         Objects.requireNonNull(topicName);
-        Objects.requireNonNull(accessMode);
-
-        final Acl acl = new Acl(topicName, principal, accessMode);
 
         Map<String,Acl> acls = topicAcls.get(topicName);
         if (acls == null) {
             acls = new HashMap<>();
         }
-        acls.put(acl.getPrincipal(), acl);
-        topicAcls.put(topicName, acls);
+
+        if (accessMode == null) {
+            acls.remove(principal);
+        }
+        else {
+            final Acl acl = new Acl(topicName, principal, accessMode);
+            acls.put(acl.getPrincipal(), acl);
+            topicAcls.put(topicName, acls);
+        }
+    }
+
+    public void removeTopicAcl(
+            final String topicName,
+            final String principal
+    ) {
+        setTopicAcl(topicName, null, principal);
     }
 
     public Map<String,Acl> getTopicAclsMappedByPrincipal(final String topicName) {
@@ -217,16 +239,27 @@ public class Authenticator {
             final String principal
     ) {
         Objects.requireNonNull(functionName);
-        Objects.requireNonNull(accessMode);
-
-        final Acl acl = new Acl(functionName, principal, accessMode);
 
         Map<String,Acl> acls = functionAcls.get(functionName);
         if (acls == null) {
             acls = new HashMap<>();
         }
-        acls.put(acl.getPrincipal(), acl);
-        functionAcls.put(functionName, acls);
+
+        if (accessMode == null) {
+            acls.remove(principal);
+        }
+        else {
+            final Acl acl = new Acl(functionName, principal, accessMode);
+            acls.put(acl.getPrincipal(), acl);
+            functionAcls.put(functionName, acls);
+        }
+    }
+
+    public void removeFunctionAcl(
+            final String functionName,
+            final String principal
+    ) {
+        setFunctionAcl(functionName, null, principal);
     }
 
     public Map<String,Acl> getFunctionAclsMappedByPrincipal(final String functionName) {

@@ -539,7 +539,9 @@ public class DocGenerator {
                 new LicenseSection(diBuilder).section(),
                 new MBeanSection(diBuilder).section(),
                 new InetSection(diBuilder).section(),
-                new CidrSection(diBuilder).section());
+                new CidrSection(diBuilder).section(),
+                new JsonSection(diBuilder).section(),
+                new CsvSection(diBuilder).section());
     }
 
     private List<DocSection> getRightSections() {
@@ -558,9 +560,7 @@ public class DocGenerator {
                 new IoSection(diBuilder).section(),
                 new IoFileSection(diBuilder).section(),
                 new IoFileWatchSection(diBuilder).section(),
-                new IpcSection(diBuilder).section(),
-                new JsonSection(diBuilder).section(),
-                new CsvSection(diBuilder).section());
+                new IpcSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesLeftSections() {

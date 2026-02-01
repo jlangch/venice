@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.util.ipc.AccessMode;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.Benchmark;
 import com.github.jlangch.venice.util.ipc.Client;
@@ -2077,6 +2078,85 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction ipc_acl =
+            new VncFunction(
+                    "ipc/acl",
+                    VncFunction
+                        .meta()
+                        .arglists("(ipc/acl authenticator dest-type dest-name access principal)")
+                        .doc(
+                            "Manages ACLs.\n\n" +
+                            "*Arguments:* \n\n" +
+                            "| authenticator | An authenticator |\n" +
+                            "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
+                            "| dest-name     | A destination name |\n" +
+                            "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:none` } |" +
+                            "| principal     | A principal |\n\n" +
+                            "*ACL configurations:* \n\n" +
+                            "| queue offer      | `:queue` -> one of { `:write`, `:read-write`, `:none` } |\n" +
+                            "| queue poll       | `:queue` -> one of { `:read`, `:read-write`, `:none` } |\n" +
+                            "| topic subscribe  | `:topic` -> one of { `:write`, `:read-write`, `:none` } |\n" +
+                            "| topic publish    | `:topic` -> one of { `:read`, `:read-write`, `:none` } |" +
+                            "| function execute | `:function` -> one of { `:execute`, `:none` }|\n\n")
+                        .examples(
+                            "(let [auth (ipc/authenticator)]                      \n" +
+                            "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
+                            "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
+                            "  (ipc/acl auth :queue :queue/1 :read-write \"tom\") \n" +
+                            "  (ipc/acl auth :queue :queue/2 :read \"tom\")       \n" +
+                            "  (ipc/acl auth :topic :topic/1 :write \"tom\")      \n" +
+                            "  (ipc/acl auth :queue :topic/2 :read-write \"tom\") \n" +
+                            "  (ipc/acl auth :function :echo :execute \"tom\"))   ")
+                        .seeAlso(
+                            "ipc/load-authenticator",
+                            "ipc/store-authenticator",
+                            "ipc/add-credentials")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 5);
+
+                    final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
+                    final String destType = Coerce.toVncString(args.nth(1)).toString();
+                    final String destName = Coerce.toVncString(args.nth(2)).toString();
+                    final String access = Coerce.toVncString(args.nth(3)).toString();
+                    final String principal = Coerce.toVncString(args.nth(4)).toString();
+
+                    AccessMode mode = null;
+                    switch(access) {
+                        case "read":       mode = AccessMode.READ;        break;
+                        case "write":      mode = AccessMode.WRITE;       break;
+                        case "read-write": mode = AccessMode.READ_WRITE;  break;
+                        case "execute":    mode = AccessMode.EXECUTE;     break;
+                        case "none":       mode = null;                   break;
+                        default:
+                            throw new IpcException(
+                                    "Invalid access '" + access + "'! "
+                                    + "Use one of {:read, :write, :read-write, :execute, :none}");
+                    }
+
+                    switch(destType) {
+                        case "queue":
+                            authenticator.setQueueAcl(destName, mode, principal);
+                            break;
+                        case "topic":
+                            authenticator.setTopicAcl(destName, mode, principal);
+                            break;
+                        case "function":
+                            authenticator.setFunctionAcl(destName, mode, principal);
+                            break;
+                        default:
+                            throw new IpcException(
+                                    "Invalid destination type '" + destType + "'! "
+                                    + "Use one of {:queue, :topic, :function}");
+                    }
+
+                    return new VncJavaObject(authenticator);
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
 
     // ------------------------------------------------------------------------
@@ -4020,6 +4100,7 @@ public class IPCFunctions {
                     .add(ipc_add_credentials)
                     .add(ipc_remove_credentials)
                     .add(ipc_clear_credentials)
+                    .add(ipc_acl)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)
