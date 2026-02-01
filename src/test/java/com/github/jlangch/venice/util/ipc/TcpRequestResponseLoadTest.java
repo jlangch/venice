@@ -38,7 +38,8 @@ public class TcpRequestResponseLoadTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -48,7 +49,7 @@ public class TcpRequestResponseLoadTest {
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
             for(int ii=0; ii<10_000; ii++) {
-                final IMessage response = client.sendMessage(request);
+                final IMessage response = client.sendMessage(request, "echo");
 
                 validateResponse(request, response);
             }
@@ -77,7 +78,8 @@ public class TcpRequestResponseLoadTest {
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -88,8 +90,8 @@ public class TcpRequestResponseLoadTest {
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
             for(int ii=0; ii<5_000; ii++) {
-                final IMessage response1 = client1.sendMessage(request);
-                final IMessage response2 = client2.sendMessage(request);
+                final IMessage response1 = client1.sendMessage(request, "echo");
+                final IMessage response2 = client2.sendMessage(request, "echo");
 
                 validateResponse(request, response1);
                 validateResponse(request, response2);
@@ -122,7 +124,8 @@ public class TcpRequestResponseLoadTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -132,7 +135,7 @@ public class TcpRequestResponseLoadTest {
             final IMessage request = MessageFactory.text(null, "hello-onway", "text/plain", "UTF-8", "Hello!");
 
             for(int ii=0; ii<10_000; ii++) {
-                client.sendMessageOneway(request);
+                client.sendMessageOneway(request, "echo");
             }
 
             // send a final message with a response to guarantee
@@ -140,7 +143,7 @@ public class TcpRequestResponseLoadTest {
             // and then do the count checks
 
             final IMessage finalRequest = MessageFactory.text(null, "hello-final", "text/plain", "UTF-8", "Hello!");
-            final IMessage response = client.sendMessage(finalRequest);
+            final IMessage response = client.sendMessage(finalRequest, "echo");
             validateResponse(finalRequest, response);
 
 
@@ -164,7 +167,6 @@ public class TcpRequestResponseLoadTest {
     private void validateResponse(final IMessage request, final IMessage response) {
         assertNotNull(response);
         assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-        assertEquals(request.getTimestamp(), response.getTimestamp());
         assertEquals(request.getSubject(),   response.getSubject());
         assertEquals(request.getMimetype(),  response.getMimetype());
         assertEquals(request.getCharset(),   response.getCharset());

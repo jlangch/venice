@@ -119,24 +119,9 @@ public class Server implements AutoCloseable {
     }
 
     /**
-     * Start the server without handler for incoming messages.
-     *
-     * <p>A handler is required for send/receive message passing only.
+     * Start the server
      */
     public void start() {
-        start(m -> { throw new IpcException(
-                                "There is no send/receive handler defined for this server!"); });
-    }
-
-    /**
-     * Start the server
-     *
-     * @param handler to handle the incoming messages. The handler may return a
-     *        <code>null</code> message
-     */
-    public void start(final Function<IMessage,IMessage> handler) {
-        Objects.requireNonNull(handler);
-
         // configuration
         mngdExecutor.setMaximumThreadPoolSize(config.getMaxConnections() + 1);
         if (config.getWalDir() != null) {
@@ -170,7 +155,7 @@ public class Server implements AutoCloseable {
                             // wait for an incoming client connection
                             final SocketChannel channel = ch.accept();
 
-                            startNewConnection(channel, handler);
+                            startNewConnection(channel);
                         }
                         catch (IOException ex) {
                             logger.warn(
@@ -395,8 +380,7 @@ public class Server implements AutoCloseable {
     }
 
     private void startNewConnection(
-        final SocketChannel channel,
-        final Function<IMessage,IMessage> handler
+        final SocketChannel channel
     ) throws IOException {
         final int maxThreadPoolSize = mngdExecutor.getMaximumThreadPoolSize();
         final int threadPoolSize = mngdExecutor.getThreadPoolSize();
@@ -423,7 +407,6 @@ public class Server implements AutoCloseable {
                                                new ServerContext(
                                                        authenticator,
                                                        logger,
-                                                       handler,
                                                        compressor,
                                                        subscriptions,
                                                        publishQueueCapacity,

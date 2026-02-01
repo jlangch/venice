@@ -394,7 +394,6 @@ public class Message implements IMessage {
                    padRight("Id:", 12),
                    id.toString()));
 
-
        sb.append(String.format(
                    "%s %s\n",
                    padRight("Request Id:", 12),

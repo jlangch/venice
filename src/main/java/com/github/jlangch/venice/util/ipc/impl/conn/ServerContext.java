@@ -21,12 +21,10 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.util.ipc.Authenticator;
-import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
@@ -37,7 +35,6 @@ public class ServerContext {
     public ServerContext(
             final Authenticator authenticator,
             final ServerLogger logger,
-            final Function<IMessage,IMessage> handler,
             final Compressor compressor,
             final Subscriptions subscriptions,
             final int publishQueueCapacity,
@@ -46,7 +43,6 @@ public class ServerContext {
     ) {
         this.authenticator = authenticator;
         this.logger = logger;
-        this.handler = handler;
         this.compressor = compressor;
         this.subscriptions = subscriptions;
         this.publishQueueCapacity = publishQueueCapacity;
@@ -57,7 +53,6 @@ public class ServerContext {
 
     public final Authenticator authenticator;
     public final ServerLogger logger;
-    public final Function<IMessage,IMessage> handler;
     public final Compressor compressor;
     public final Subscriptions subscriptions;
     public final int publishQueueCapacity;

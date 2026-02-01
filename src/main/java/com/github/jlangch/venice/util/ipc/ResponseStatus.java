@@ -38,6 +38,8 @@ public enum ResponseStatus {
 
     TOPIC_NOT_FOUND(15),
 
+    FUNCTION_NOT_FOUND(18),
+
     DIFFIE_HELLMAN_ACK(20),
     DIFFIE_HELLMAN_NAK(21),
 

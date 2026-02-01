@@ -39,7 +39,7 @@ public class TcpAuthorizationAclQueueTest {
         ) {
             server.createQueue("queue/1", 100, false, false);
 
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 
@@ -87,7 +87,7 @@ public class TcpAuthorizationAclQueueTest {
         ) {
             server.createQueue("queue/1", 100, false, false);
 
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 
@@ -162,7 +162,7 @@ public class TcpAuthorizationAclQueueTest {
         ) {
             server.createQueue("queue/1", 100, false, false);
 
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 

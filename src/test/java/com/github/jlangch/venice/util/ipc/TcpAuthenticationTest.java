@@ -48,7 +48,8 @@ public class TcpAuthenticationTest {
         final Client clientTom = Client.of(33333);
         final Client clientAdmin = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -58,22 +59,20 @@ public class TcpAuthenticationTest {
         try {
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            IMessage response = clientTom.sendMessage(request);
+            IMessage response = clientTom.sendMessage(request, "echo");
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals(request.getSubject(),   response.getSubject());
             assertEquals(request.getMimetype(),  response.getMimetype());
             assertEquals(request.getCharset(),   response.getCharset());
             assertEquals(request.getText(),      response.getText());
 
 
-            response = clientAdmin.sendMessage(request);
+            response = clientAdmin.sendMessage(request, "echo");
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals(request.getSubject(),   response.getSubject());
             assertEquals(request.getMimetype(),  response.getMimetype());
             assertEquals(request.getCharset(),   response.getCharset());
@@ -101,7 +100,8 @@ public class TcpAuthenticationTest {
 
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -110,7 +110,7 @@ public class TcpAuthenticationTest {
 
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            client.sendMessage(request);
+            client.sendMessage(request, "echo");
 
             fail("Should not reach here");
         }
@@ -139,7 +139,8 @@ public class TcpAuthenticationTest {
 
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -148,7 +149,7 @@ public class TcpAuthenticationTest {
 
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            client.sendMessage(request);
+            client.sendMessage(request, "echo");
 
             fail("Should not reach here");
         }

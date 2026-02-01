@@ -244,16 +244,21 @@ public class Client implements Cloneable, AutoCloseable {
      * the request, consider to use <i>offer/poll</i> with a reply queue to improve the system throughput!
      *
      * @param msg a message
+     * @param functionName the of the server handler function function
      * @return the response
      */
-    public IMessage sendMessage(final IMessage msg) {
+    public IMessage sendMessage(
+            final IMessage msg,
+            final String functionName
+    ) {
         Objects.requireNonNull(msg);
+        Objects.requireNonNull(functionName);
 
         if (!opened.get()) {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
+        final Message m = createSendRequestMessage(msg, functionName, false);
         return send(m);
     }
 
@@ -266,15 +271,20 @@ public class Client implements Cloneable, AutoCloseable {
      * and processed it.
      *
      * @param msg a message
+     * @param functionName the of the server handler function function
      */
-    public void sendMessageOneway(final IMessage msg) {
+    public void sendMessageOneway(
+            final IMessage msg,
+            final String functionName
+    ) {
         Objects.requireNonNull(msg);
+        Objects.requireNonNull(functionName);
 
         if (!opened.get()) {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final Message m = ((Message)msg).withType(MessageType.REQUEST, true);
+        final Message m = createSendRequestMessage(msg, functionName, true);
         send(m);
     }
 
@@ -289,16 +299,21 @@ public class Client implements Cloneable, AutoCloseable {
      * the request, consider to use <i>offer/poll</i> with a reply queue to improve the system throughput!
      *
      * @param msg a message
+     * @param functionName the of the server handler function function
      * @return a future with the server's message response
      */
-    public Future<IMessage> sendMessageAsync(final IMessage msg) {
+    public Future<IMessage> sendMessageAsync(
+            final IMessage msg,
+            final String functionName
+    ) {
         Objects.requireNonNull(msg);
+        Objects.requireNonNull(functionName);
 
         if (!opened.get()) {
             throw new IllegalStateException("The client is not open!");
         }
 
-        final Message m = ((Message)msg).withType(MessageType.REQUEST, false);
+        final Message m = createSendRequestMessage(msg, functionName, false);
         return sendAsync(m);
     }
 
@@ -1242,6 +1257,31 @@ public class Client implements Cloneable, AutoCloseable {
                 msg.isDurable(),
                 false,
                 topicName,
+                null,
+                System.currentTimeMillis(),
+                Messages.EXPIRES_NEVER,
+                Messages.NO_TIMEOUT,
+                msg.getSubject(),
+                msg.getMimetype(),
+                msg.getCharset(),
+                msg.getData());
+    }
+
+    private static Message createSendRequestMessage(
+            final IMessage msg,
+            final String functionName,
+            final boolean oneway
+
+    ) {
+        return new Message(
+                null,
+                msg.getRequestId(),
+                MessageType.REQUEST,
+                ResponseStatus.NULL,
+                oneway,
+                msg.isDurable(),
+                false,
+                functionName,
                 null,
                 System.currentTimeMillis(),
                 Messages.EXPIRES_NEVER,

@@ -42,7 +42,7 @@ public class TcpAuthorizationAclTopicTest {
         ) {
             server.createTopic("topic/1");
 
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 
@@ -100,7 +100,7 @@ public class TcpAuthorizationAclTopicTest {
         ) {
             server.createTopic("topic/1");
 
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 
@@ -198,7 +198,7 @@ public class TcpAuthorizationAclTopicTest {
         ) {
             server.createTopic("topic/1");
 
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 

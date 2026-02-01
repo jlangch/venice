@@ -47,7 +47,7 @@ public class TcpAuthorizationAdminTest {
              final Client clientTom = Client.of(33333);
              final Client clientAdmin = Client.of(33333)
         ) {
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 
@@ -123,7 +123,7 @@ public class TcpAuthorizationAdminTest {
              final Client clientTom = Client.of(33333);
              final Client clientAdmin = Client.of(33333)
         ) {
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 

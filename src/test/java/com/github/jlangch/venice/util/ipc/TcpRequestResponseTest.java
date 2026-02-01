@@ -47,7 +47,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -56,9 +57,9 @@ public class TcpRequestResponseTest {
         try {
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            client.sendMessageOneway(request);
-            client.sendMessageOneway(request);
-            client.sendMessageOneway(request);
+            client.sendMessageOneway(request, "echo");
+            client.sendMessageOneway(request, "echo");
+            client.sendMessageOneway(request, "echo");
         }
         finally {
             client.close();
@@ -72,7 +73,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -81,7 +83,7 @@ public class TcpRequestResponseTest {
         try {
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request, "echo");
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
@@ -102,7 +104,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -113,7 +116,7 @@ public class TcpRequestResponseTest {
 
             final IMessage request = MessageFactory.binary(null, "hello", "application/octet", data);
 
-            final IMessage response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request, "echo");
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
@@ -134,7 +137,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(m -> null);
+        server.createFunction("echo", m -> null);
+        server.start();
 
         IO.sleep(300);
 
@@ -143,11 +147,10 @@ public class TcpRequestResponseTest {
         try {
             final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request, "echo");
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,   response.getResponseStatus());
-            assertEquals(request.getId(),     response.getId());
             assertEquals(request.getSubject(),response.getSubject());
             assertEquals("",                  response.getText());
         }
@@ -162,7 +165,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -173,7 +177,7 @@ public class TcpRequestResponseTest {
 
             final IMessage request = MessageFactory.binary(null, "hello", "application/octet", data);
 
-            final IMessage response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request, "echo");
 
             // modify the request binary data to verify that the data buffer
             // is not looped through to the response
@@ -201,7 +205,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -216,7 +221,7 @@ public class TcpRequestResponseTest {
 
                 final IMessage request = MessageFactory.text(null, subject, mimetype, charset, msg);
 
-                final IMessage response = client.sendMessage(request);
+                final IMessage response = client.sendMessage(request, "echo");
 
                 assertNotNull(response);
                 assertEquals(ResponseStatus.OK,      response.getResponseStatus());
@@ -242,7 +247,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -255,7 +261,7 @@ public class TcpRequestResponseTest {
                 final IMessage request = MessageFactory.text(null, "hello", "text/plain", "UTF-8", msg);
 
                 // one way message -> no response
-                client.sendMessageOneway(request);
+                client.sendMessageOneway(request, "echo");
             }
         }
         finally {
@@ -273,7 +279,8 @@ public class TcpRequestResponseTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -282,15 +289,18 @@ public class TcpRequestResponseTest {
         try {
             for(int ii=0; ii<10; ii++) {
                 client.sendMessageOneway(
-                    MessageFactory.text(null, "hello" + ii, "text/plain", "UTF-8", "Hello " + ii));
+                    MessageFactory.text(null, "hello" + ii, "text/plain", "UTF-8", "Hello " + ii),
+                    "echo");
 
                 final IMessage r1 = client.sendMessage(
-                                        MessageFactory.text(null, "hello" + ii, "text/plain", "UTF-8", "Hello-2 " + ii));
+                                        MessageFactory.text(null, "hello" + ii, "text/plain", "UTF-8", "Hello-2 " + ii),
+                                        "echo");
                 assertEquals(ResponseStatus.OK, r1.getResponseStatus());
                 assertEquals("Hello-2 " + ii, r1.getText());
 
                 final IMessage r2 = client.sendMessage(
-                                        MessageFactory.text(null, "hello" + ii, "text/plain", "UTF-8", "Hello-3 " + ii));
+                                        MessageFactory.text(null, "hello" + ii, "text/plain", "UTF-8", "Hello-3 " + ii),
+                                        "echo");
                 assertEquals("Hello-3 " + ii, r2.getText());
             }
         }
@@ -315,7 +325,8 @@ public class TcpRequestResponseTest {
         final int clients = 10;
         final int messagesPerClient = 25;
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -345,7 +356,7 @@ public class TcpRequestResponseTest {
                             final IMessage request = MessageFactory.text(null, subject, mimetype, charset, msg);
 
                             try {
-                                final IMessage response = client.sendMessage(request);
+                                final IMessage response = client.sendMessage(request, "echo");
 
                                 assertNotNull(response);
                                 assertEquals(ResponseStatus.OK,  response.getResponseStatus());
@@ -401,7 +412,8 @@ public class TcpRequestResponseTest {
                         result);
         };
 
-        server.start(execHandler);
+        server.createFunction("echo", execHandler);
+        server.start();
 
         IO.sleep(300);
 
@@ -415,7 +427,7 @@ public class TcpRequestResponseTest {
                                         "UTF-8",
                                         "(+ 1 2)");
 
-            final IMessage response = client.sendMessage(request);
+            final IMessage response = client.sendMessage(request, "echo");
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,  response.getResponseStatus());
@@ -444,7 +456,8 @@ public class TcpRequestResponseTest {
 
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -475,7 +488,8 @@ public class TcpRequestResponseTest {
 
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -506,7 +520,8 @@ public class TcpRequestResponseTest {
         final int threads = 10;
         final int messagesPerClient = 50;
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -535,7 +550,7 @@ public class TcpRequestResponseTest {
                             final IMessage request = MessageFactory.text(null, subject, mimetype, charset, msg);
 
                             try {
-                                final IMessage response = client.sendMessage(request);
+                                final IMessage response = client.sendMessage(request, "echo");
 
                                 assertNotNull(response);
                                 assertEquals(ResponseStatus.OK,  response.getResponseStatus());

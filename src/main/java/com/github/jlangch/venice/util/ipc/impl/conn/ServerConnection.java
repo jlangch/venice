@@ -46,6 +46,7 @@ import static com.github.jlangch.venice.util.ipc.MessageType.UNSUBSCRIBE;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.BAD_REQUEST;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.DIFFIE_HELLMAN_ACK;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.DIFFIE_HELLMAN_NAK;
+import static com.github.jlangch.venice.util.ipc.ResponseStatus.FUNCTION_NOT_FOUND;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.HANDLER_ERROR;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.NO_PERMISSION;
 import static com.github.jlangch.venice.util.ipc.ResponseStatus.OK;
@@ -90,6 +91,7 @@ import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerStatistics;
 import com.github.jlangch.venice.util.ipc.impl.ServerTopicManager;
 import com.github.jlangch.venice.util.ipc.impl.TopicValidator;
+import com.github.jlangch.venice.util.ipc.impl.dest.function.IpcFunction;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
@@ -138,7 +140,6 @@ public class ServerConnection implements IPublisher, Runnable {
 
         this.authenticator = context.authenticator;
         this.logger = context.logger;
-        this.handler = context.handler;
         this.compressor = context.compressor;
         this.subscriptions = context.subscriptions;
         this.publishQueueCapacity = context.publishQueueCapacity;
@@ -418,8 +419,21 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
 
     private Message handleSend(final Message request) {
+        final String functionName = request.getDestinationName();
+
+        final IpcFunction fn = functionManager.getFunction(functionName);
+        if (fn == null) {
+            return createFunctionNotFoundResponse(request);
+        }
+
+        if (authenticated && !adminAuthorization && !fn.canRead(principal)) {
+            return createNoPermissionResponse(
+                    request,
+                    "Not authenticated for function subscription!");
+        }
+
         // note: exceptions are handled upstream
-        final IMessage response = handler.apply(request);
+        final IMessage response = fn.apply(request);
 
         if (response == null) {
             // create an empty text response
@@ -1050,6 +1064,13 @@ public class ServerConnection implements IPublisher, Runnable {
     // Create response messages
     // ------------------------------------------------------------------------
 
+    private Message createQueueNotFoundResponse(final Message request) {
+        return createTextResponse(
+                request,
+                QUEUE_NOT_FOUND,
+                "The queue " + request.getDestinationName() + " does not exist!");
+    }
+
     private Message createTopicNotFoundResponse(final Message request) {
         return createTextResponse(
                 request,
@@ -1057,11 +1078,11 @@ public class ServerConnection implements IPublisher, Runnable {
                 "The topic " + request.getDestinationName() + " does not exist!");
     }
 
-    private Message createQueueNotFoundResponse(final Message request) {
+    private Message createFunctionNotFoundResponse(final Message request) {
         return createTextResponse(
                 request,
-                QUEUE_NOT_FOUND,
-                "The queue " + request.getDestinationName() + " does not exist!");
+                FUNCTION_NOT_FOUND,
+                "The function " + request.getDestinationName() + " does not exist!");
     }
 
     private Message createBadRequestResponse(
@@ -1247,7 +1268,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final ServerContext context;
     private final ServerLogger logger;
 
-    private final Function<IMessage,IMessage> handler;
     private final Subscriptions subscriptions;
     private final int publishQueueCapacity;
     private final ServerStatistics statistics;

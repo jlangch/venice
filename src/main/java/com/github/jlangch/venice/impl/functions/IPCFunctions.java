@@ -81,9 +81,7 @@ public class IPCFunctions {
                     .meta()
                     .arglists(
                         "(ipc/server port & options)",
-                        "(ipc/server port handler & options)",
-                        "(ipc/server conn-uri & options)",
-                        "(ipc/server conn-uri handler & options)")
+                        "(ipc/server conn-uri & options)")
                     .doc(
                         "Create a new server on the specified port or connection URI.\n\n" +
                         "*Arguments:* \n\n" +
@@ -94,13 +92,6 @@ public class IPCFunctions {
                                       " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
                                       " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
                                       " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
-                        "| handler h  | A single argument handler function.¶" +
-                                      " E.g.: a simple echo handler: `(fn [m] m)`.¶" +
-                                      " The handler receives the request messsage and returns a response" +
-                                      " message. In case of a one-way request message the server discards" +
-                                      " the handler's response if it is not `nil`.¶" +
-                                      " A handler is only required for send/receive message passing style. It "+
-                                      " is not required for offer/poll and publish/subscribe!|\n\n" +
                         "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
                         "| :max-connections n           | The number of the max connections the server can handle" +
@@ -159,8 +150,9 @@ public class IPCFunctions {
                         "                                                              \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)           \n" +
                         "             client (ipc/client \"localhost\" 33333)]         \n" +
+                        "    (ipc/create-function server :echo echo-handler)           \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
-                        "         (ipc/send client)                                    \n" +
+                        "         (ipc/send client :echo)                              \n" +
                         "         (ipc/message->map)                                   \n" +
                         "         (println \"RESPONSE: \"))))                          ",
                         "(do                                                             \n" +
@@ -171,8 +163,9 @@ public class IPCFunctions {
                         "  (try-with [server (ipc/server \"af-inet://localhost:33333\"   \n" +
                         "                                echo-handler)                   \n" +
                         "             client (ipc/client \"af-inet://localhost:33333\")] \n" +
+                        "    (ipc/create-function server :echo echo-handler)             \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")      \n" +
-                        "         (ipc/send client)                                      \n" +
+                        "         (ipc/send client :echo)                                \n" +
                         "         (ipc/message->map)                                     \n" +
                         "         (println \"RESPONSE: \"))))                            ",
                         "(do                                                             \n" +
@@ -188,8 +181,9 @@ public class IPCFunctions {
                         "               client (ipc/client \"localhost\" 33333           \n" +
                         "                                  :user-name \"tom\"            \n" +
                         "                                  :password \"3-kio\")]         \n" +
+                        "      (ipc/create-function server :echo echo-handler)           \n" +
                         "      (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")    \n" +
-                        "           (ipc/send client)                                    \n" +
+                        "           (ipc/send client :echo)                              \n" +
                         "           (ipc/message->map)                                   \n" +
                         "           (println \"RESPONSE: \")))))                         ")
                     .seeAlso(
@@ -219,16 +213,8 @@ public class IPCFunctions {
 
                 // -- Parse arguments -----------------------------------------
 
-                final VncVal handlerVal = args.second();
-
-                // note: keywords are functions of type IVncFunction but not of type VncFunction!
-                final boolean hasHandler = Types.isVncFunction(handlerVal);
-
-                // arguments: handler
-                final VncFunction handler = hasHandler ? Coerce.toVncFunction(handlerVal) : null;
-
                 // options
-                final VncHashMap options = VncHashMap.ofAll(args.slice(hasHandler ? 2 : 1));
+                final VncHashMap options = VncHashMap.ofAll(args.slice(1));
 
                 final VncVal maxConnVal = options.get(new VncKeyword("max-connections"));
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
@@ -325,13 +311,7 @@ public class IPCFunctions {
 
                 // -- Start the server ----------------------------------------
 
-                final Function<IMessage,IMessage> handlerWrapper = wrapFunction(this, args, handler);
-                if (handlerWrapper == null) {
-                    server.start();
-                }
-                else {
-                    server.start(handlerWrapper);
-                }
+                server.start();
 
                 return new VncJavaObject(server);
             }
@@ -388,7 +368,7 @@ public class IPCFunctions {
                         "    m)                                                                          \n" +
                         "                                                                                \n" +
                         "  (defn send [client msg]                                                       \n" +
-                        "    (->> (ipc/send client msg)                                                  \n" +
+                        "    (->> (ipc/send client :echo msg)                                            \n" +
                         "         (ipc/message->map)                                                     \n" +
                         "         (println \"RESPONSE: \")))                                             \n" +
                         "                                                                                \n" +
@@ -397,6 +377,7 @@ public class IPCFunctions {
                         "             client-2 (ipc/client \"localhost\" 33333)                          \n" +
                         "             client-3 (ipc/client :localhost 33333)                             \n" +
                         "             client-4 (ipc/client \"af-inet://localhost:33333\")]               \n" +
+                        "    (ipc/create-function server :echo echo-handler)                             \n" +
                         "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello\"))           \n" +
                         "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello\"))           \n" +
                         "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello\"))           \n" +
@@ -518,14 +499,15 @@ public class IPCFunctions {
                         "    m)                                                                          \n" +
                         "                                                                                \n" +
                         "  (defn send [client msg]                                                       \n" +
-                        "    (->> (ipc/send client msg)                                                  \n" +
+                        "    (->> (ipc/send client :echo msg)                                            \n" +
                         "         (ipc/message->map)                                                     \n" +
                         "         (println \"RESPONSE: \")))                                             \n" +
                         "                                                                                \n" +
-                        "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
+                        "  (try-with [server   (ipc/server 33333)                                        \n" +
                         "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
                         "             client-2 (ipc/clone client-1)                                      \n" +
                         "             client-3 (ipc/clone client-1)]                                     \n" +
+                        "    (ipc/create-function server :echo echo-handler)                             \n" +
                         "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))         \n" +
                         "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))         \n" +
                         "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))))       ")
@@ -562,8 +544,7 @@ public class IPCFunctions {
                         "Return `true` if the server or client is running else `false`")
                     .examples(
                         "(do                                                         \n" +
-                        "  (defn echo-handler [m] m)                                 \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                        "  (try-with [server (ipc/server 33333)                      \n" +
                         "             client (ipc/client \"localhost\" 33333)]       \n" +
                         "    (println \"Server running:\" (ipc/running? server))     \n" +
                         "    (println \"Client running:\" (ipc/running? client))))   ")
@@ -607,16 +588,14 @@ public class IPCFunctions {
                     .examples(
                         ";; prefer try-with-resources to safely close server and client    \n" +
                         "(do                                                               \n" +
-                        "  (defn echo-handler [m] m)                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
                         "    (println \"Server running:\" (ipc/running? server))           \n" +
                         "    (println \"Client running:\" (ipc/running? client))))         ",
 
                         ";; explicitly closing server and client                           \n" +
                         "(do                                                               \n" +
-                        "  (defn echo-handler [m] m)                                       \n" +
-                        "  (let [server (ipc/server 33333 echo-handler)                    \n" +
+                        "  (let [server (ipc/server 33333)                                 \n" +
                         "        client (ipc/client \"localhost\" 33333)]                  \n" +
                         "    (println \"Server running:\" (ipc/running? server))           \n" +
                         "    (println \"Client running:\" (ipc/running? client))           \n" +
@@ -836,7 +815,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/send client message)")
+                        "(ipc/send client fn-name message)")
                     .doc(
                         "Sends a message to the server the client is associated with. \n\n" +
                         "Returns the server's response message or `nil` if the message is " +
@@ -849,6 +828,7 @@ public class IPCFunctions {
                         "  * `:HANDLER_ERROR` - an error in the server's request processing handler\n\n" +
                         "*Arguments:* \n\n" +
                         "| client c  | A client to send the message from|\n" +
+                        "| fn-name n  | The server function the message is sent to|\n" +
                         "| message m | The message to send|\n\n" +
                         "**Note**\n\n" +
                         "If the server's handler function takes more than a couple of 10 milliseconds " +
@@ -858,11 +838,11 @@ public class IPCFunctions {
                         ";; echo handler                                                   \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"              \n" +
                         "(do                                                               \n" +
-                        "  (defn echo-handler [m] m)                                       \n" +
-                        "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :echo (fn [m] m))                 \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
-                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/send client :echo)                                  \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ",
 
@@ -876,20 +856,21 @@ public class IPCFunctions {
                         "                        (. m :getTopic)                           \n" +
                         "                        \"application/json\" :UTF-8               \n" +
                         "                        result)))                                 \n" +
-                        "  (try-with [server (ipc/server 33333 handler)                    \n" +
+                        "  (try-with [server (ipc/server 33333)                            \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :handler handler)                 \n" +
                         "    (->> (ipc/text-message \"1\"                                  \n" +
                         "                           \"test\"                               \n" +
                         "                           \"application/json\" :UTF-8            \n" +
                         "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
-                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/send client :handler)                               \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ",
 
                         ";; handler with remote code execution                             \n" +
                         ";; request: \"(+ 1 2)\" => exec => response: \"3\"                \n" +
                         "(do                                                               \n" +
-                        "  (defn handler [m]                                               \n" +
+                        "  (defn exec [m]                                                  \n" +
                         "    (let [cmd    (. m :getText)                                   \n" +
                         "          result (str (eval (read-string cmd)))]                  \n" +
                         "      (ipc/plain-text-message (. m :getRequestId)                 \n" +
@@ -897,8 +878,9 @@ public class IPCFunctions {
                         "                              result)))                           \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :exec exec)                       \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")      \n" +
-                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/send client :exec)                                  \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
                     .seeAlso(
@@ -917,12 +899,13 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 3);
 
-                final Client client = Coerce.toVncJavaObject(args.nth(0), Client.class);
-                final IMessage request = Coerce.toVncJavaObject(args.nth(1), IMessage.class);
+                final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
+                final String fnName = Coerce.toVncString(args.second()).getValue();
+                final IMessage request = Coerce.toVncJavaObject(args.third(), IMessage.class);
 
-                final IMessage response = client.sendMessage(request);
+                final IMessage response = client.sendMessage(request, fnName);
                 return response == null ? Nil : new VncJavaObject(response);
             }
 
@@ -935,7 +918,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/send-async client message)")
+                        "(ipc/send-async client fn-name message)")
                     .doc(
                         "Sends a message to the server the client is associated with. \n\n" +
                         "Returns a future with the server's response message. The response " +
@@ -946,8 +929,9 @@ public class IPCFunctions {
                         "  * `:BAD_REQUEST`   - invalid request, details in the payload\n" +
                         "  * `:HANDLER_ERROR` - an error in the server's request processing handler\n\n" +
                         "*Arguments:* \n\n" +
-                        "| client c  | A client to send the message from|\n" +
-                        "| message m | The message to send|\n\n" +
+                        "| client c   | A client to send the message from|\n" +
+                        "| fn-name n  | The server function the message is sent to|\n" +
+                        "| message m  | The message to send|\n\n" +
                         "**Note**\n\n" +
                         "If the server's handler function takes more than a couple of 10 milliseconds " +
                         "to process the request, consider to use *offer/poll* with a reply queue " +
@@ -956,11 +940,11 @@ public class IPCFunctions {
                         ";; echo handler                                                   \n" +
                         ";; request: \"hello\" => echo => response: \"hello\"              \n" +
                         "(do                                                               \n" +
-                        "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :echo (fn [m] m))                 \n" +
                         "    (-<> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
-                        "         (ipc/send-async client <>)                               \n" +
+                        "         (ipc/send-async client :echo <>)                         \n" +
                         "         (deref <> 1_000 :timeout)                                \n" +
                         "         (ipc/message->map <>)                                    \n" +
                         "         (println <>))))                                          ",
@@ -977,11 +961,12 @@ public class IPCFunctions {
                         "                        result)))                                 \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :handler handler)                 \n" +
                         "    (-<> (ipc/text-message \"1\"                                  \n" +
                         "                           \"test\"                               \n" +
                         "                           \"application/json\" :UTF-8            \n" +
                         "                           (json/write-str {\"x\" 100 \"y\" 200}))\n" +
-                        "         (ipc/send-async client <>)                               \n" +
+                        "         (ipc/send-async client :handler <>)                      \n" +
                         "         (deref <> 1_000 :timeout)                                \n" +
                         "         (ipc/message->map <>)                                    \n" +
                         "         (println <>))))                                          ",
@@ -989,7 +974,7 @@ public class IPCFunctions {
                         ";; handler with remote code execution                             \n" +
                         ";; request: \"(+ 1 2)\" => exec => response: \"3\"                \n" +
                         "(do                                                               \n" +
-                        "  (defn handler [m]                                               \n" +
+                        "  (defn exec [m]                                                  \n" +
                         "    (let [cmd    (. m :getText)                                   \n" +
                         "          result (str (eval (read-string cmd)))]                  \n" +
                         "      (ipc/plain-text-message (. m :getRequestId)                 \n" +
@@ -997,8 +982,9 @@ public class IPCFunctions {
                         "                              result)))                           \n" +
                         "  (try-with [server (ipc/server 33333 handler)                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :exec exec)                       \n" +
                         "    (-<> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")      \n" +
-                        "         (ipc/send-async client <>)                               \n" +
+                        "         (ipc/send-async client :exec <>)                         \n" +
                         "         (deref <> 1_000 :timeout)                                \n" +
                         "         (ipc/message->map <>)                                    \n" +
                         "         (println <>))))                                          ")
@@ -1018,14 +1004,15 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 3);
 
                 final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
-                final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
+                final String fnName = Coerce.toVncString(args.second()).getValue();
+                final IMessage request = Coerce.toVncJavaObject(args.third(), IMessage.class);
 
                 return new VncJavaObject(
                         new FutureWrapper(
-                            client.sendMessageAsync(request)));
+                            client.sendMessageAsync(request, fnName)));
              }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1038,7 +1025,7 @@ public class IPCFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/send-oneway client message)")
+                        "(ipc/send-oneway client fn-name message)")
                     .doc(
                         "Sends a one-way message to the server the client is associated with. \n\n" +
                         "Does not wait for a response and returns always `nil`.")
@@ -1053,10 +1040,13 @@ public class IPCFunctions {
                         "                                                                                  \n" +
                         "  (try-with [server (ipc/server 33333 handler)                                    \n" +
                         "             client (ipc/client \"localhost\" 33333)]                             \n" +
-                        "    ;; send a plain text messages:                                                \n" +
-                        "    ;;    requestId=\"1\" and \"2\", subject=\"test\", payload=\"hello\"            \n" +
-                        "    (ipc/send-oneway client (ipc/plain-text-message \"1\" \"test\" \"hello\"))    \n" +
-                        "    (ipc/send-oneway client (ipc/plain-text-message \"2\" \"test\" \"hello\"))))  ")
+                        "                                                                                  \n" +
+                        "    (ipc/create-function server :handler handler)                                 \n" +
+                        "                                                                                  \n" +
+                        "    ;; send a plain text messages:                                                         \n" +
+                        "    ;;    requestId=\"1\" and \"2\", subject=\"test\", payload=\"hello\"                   \n" +
+                        "    (ipc/send-oneway client :handler (ipc/plain-text-message \"1\" \"test\" \"hello\"))    \n" +
+                        "    (ipc/send-oneway client :handler (ipc/plain-text-message \"2\" \"test\" \"hello\"))))  ")
                     .seeAlso(
                         "ipc/send",
                         "ipc/send-async",
@@ -1073,12 +1063,13 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 3);
 
                 final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
-                final IMessage request = Coerce.toVncJavaObject(args.second(), IMessage.class);
+                final String fnName = Coerce.toVncString(args.second()).getValue();
+                final IMessage request = Coerce.toVncJavaObject(args.third(), IMessage.class);
 
-                client.sendMessageOneway(request);
+                client.sendMessageOneway(request, fnName);
 
                 return Nil;
             }
@@ -1755,8 +1746,9 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
-                        "         (ipc/send client))                                       \n" +
+                        "         (ipc/send client :echo))                                 \n" +
                         "    (println \"STATUS:\" (ipc/server-status client))))            ")
                      .seeAlso(
                          "ipc/server-thread-pool-statistics",
@@ -1794,8 +1786,9 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                           \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)                   \n" +
                         "             client (ipc/client \"localhost\" 33333)]                 \n" +
+                        "    (ipc/create-function server :echo echo-handler)                   \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")            \n" +
-                        "         (ipc/send client))                                           \n" +
+                        "         (ipc/send client :echo))                                     \n" +
                         "    (println \"STATS:\" (ipc/server-thread-pool-statistics client)))) ")
                      .seeAlso(
                          "ipc/server-status",
@@ -2601,7 +2594,7 @@ public class IPCFunctions {
                         " ├───────────────────────────────┤   \n" +
                         " │ Subject                       │   client\n" +
                         " ├───────────────────────────────┤   \n" +
-                        " │ Queue Name                    │   client  (offer/poll, else null)\n" +
+                        " │ Destination Name              │   client\n" +
                         " ├───────────────────────────────┤   \n" +
                         " │ ReplyTo Queue Name            │   client  (offer/poll, may be null)\n" +
                         " ├───────────────────────────────┤   \n" +
@@ -2622,7 +2615,7 @@ public class IPCFunctions {
                         "  * `:expires-at`          - the message's expiry timestamp in milliseconds since epoch (may be nil)\n" +
                         "  * `:request-id`          - the request ID (may be nil)\n" +
                         "  * `:subject`             - the subject\n" +
-                        "  * `:queue-name`          - the queue name\n" +
+                        "  * `:destination-name`    - the destination name (queue/topic/function name)\n" +
                         "  * `:reply-to-queue-name` - the reply to queue name\n" +
                         "  * `:payload-mimetype`    - the payload data mimetype\n" +
                         "  * `:payload-charset`     - the payload data charset (if payload is a text form)\n" +
@@ -3004,8 +2997,9 @@ public class IPCFunctions {
                         "                                                                  \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
-                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/send client :echo)                                  \n" +
                         "         (ipc/message->map)                                       \n" +
                         "         (println))))                                             ")
                     .seeAlso(
@@ -3046,8 +3040,9 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
-                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/send client :echo)                                  \n" +
                         "         (ipc/response-ok?))))                                    ")
                     .seeAlso(
                         "ipc/oneway?",
@@ -3087,8 +3082,9 @@ public class IPCFunctions {
                         "  (defn echo-handler [m] m)                                       \n" +
                         "  (try-with [server (ipc/server 33333 echo-handler)               \n" +
                         "             client (ipc/client \"localhost\" 33333)]             \n" +
+                        "    (ipc/create-function server :echo echo-handler)               \n" +
                         "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")        \n" +
-                        "         (ipc/send client)                                        \n" +
+                        "         (ipc/send client :echo)                                  \n" +
                         "         (ipc/response-err?))))                                   ")
                     .seeAlso(
                         "ipc/oneway?",
@@ -3729,9 +3725,9 @@ public class IPCFunctions {
                     .examples(
                         "(try-with [server  (ipc/server 33333)            \n" +
                         "           client1 (ipc/client 33333)]           \n" +
-                        "  (ipc/create-topic server :orders-closed)       \n" +
+                        "  (ipc/create-function server :echo (fn [m] m))  \n" +
                         "    ;;                                           \n" +
-                        "  (ipc/exists-topic? server :orders-closed))     ")
+                        "  (ipc/exists-topic? server :echo))     ")
                     .seeAlso(
                         "ipc/remove-function",
                         "ipc/exists-function?",
@@ -3772,9 +3768,9 @@ public class IPCFunctions {
                         "Returns always `nil` or throws an exception.")
                     .examples(
                         "(try-with [server (ipc/server 33333 echo-handler)]   \n" +
-                        "  (ipc/create-topic server :orders-closed 100)       \n" +
+                        "  (ipc/create-function server :echo (fn [m] m))      \n" +
                         "  ;; ...                                             \n" +
-                        "  (ipc/remove-topic server :orders-closed))          ")
+                        "  (ipc/remove-function server :echo))                ")
                     .seeAlso(
                         "ipc/create-function",
                         "ipc/exists-function?",
@@ -3811,9 +3807,9 @@ public class IPCFunctions {
                         "Returns `true` if the named topic exists else `false`.")
                     .examples(
                         "(try-with [server (ipc/server 33333)]            \n" +
-                        "  (ipc/create-topic server :orders-closed 100)   \n" +
+                        "  (ipc/create-function server :echo (fn [m] m))  \n" +
                         "  ;; ...                                         \n" +
-                        "  (ipc/exists-topic? server :orders-closed))     ")
+                        "  (ipc/exists-function? server :echo))           ")
                     .seeAlso(
                         "ipc/create-function",
                         "ipc/remove-function",
@@ -4029,6 +4025,10 @@ public class IPCFunctions {
                     .add(ipc_create_topic)
                     .add(ipc_remove_topic)
                     .add(ipc_exists_topicQ)
+
+                    .add(ipc_create_function)
+                    .add(ipc_remove_function)
+                    .add(ipc_exists_functionQ)
 
                     .add(ipc_server_status)
                     .add(ipc_server_thread_pool_statistics)

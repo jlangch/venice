@@ -45,9 +45,7 @@ public class TcpServerTest {
     public void test_start_stop() throws Exception {
         final Server server = Server.of(33333);
 
-        final Function<IMessage,IMessage> handler = req -> null;
-
-        server.start(handler);
+        server.start();
 
         IO.sleep(300);
 
@@ -63,10 +61,9 @@ public class TcpServerTest {
         final Server server = Server.of(33333);
         final Server server2 = Server.of(33333);
 
-        final Function<IMessage,IMessage> handler = req -> null;
 
         try {
-            server.start(handler);
+            server.start();
 
             IO.sleep(300);
 
@@ -74,7 +71,7 @@ public class TcpServerTest {
 
             // try to start a 2nd server on the same port -> expecting BindException, port already in use!
             try {
-                server2.start(handler);
+                server2.start();
                 fail();
             }
             catch(VncException ex) {
@@ -109,7 +106,8 @@ public class TcpServerTest {
 
         final Function<IMessage,IMessage> echoHandler = req -> { IO.sleep(1000); return req; };
 
-        server.start(echoHandler);
+        server.createFunction("echo", echoHandler);
+        server.start();
 
         IO.sleep(300);
 
@@ -123,7 +121,7 @@ public class TcpServerTest {
             th.start();
 
             // the server waits 1000ms with replying on the received request
-            client.sendMessage(request);
+            client.sendMessage(request, "echo");
 
             fail("Expected exception");
         }
@@ -141,7 +139,8 @@ public class TcpServerTest {
         final Server server = Server.of(33333);
         final Client client = Client.of(33333);
 
-        server.start(Server.echoHandler());
+        server.createFunction("echo", Server.echoHandler());
+        server.start();
 
         IO.sleep(300);
 
@@ -151,7 +150,7 @@ public class TcpServerTest {
 
         // Phase 1: send a message => OK
         try {
-            IMessage response = client.sendMessage(request);
+            IMessage response = client.sendMessage(request, "echo");
             assertNotNull(response);
         }
         catch(Exception ex) {
@@ -166,7 +165,7 @@ public class TcpServerTest {
         // Phase 3: send a message => FAIL
         try {
             // this will cause a EofException or a VncException "broken pipe"
-            client.sendMessage(request);
+            client.sendMessage(request, "echo");
 
             fail("should not reach here");
         }
@@ -193,7 +192,8 @@ public class TcpServerTest {
         final Client client = Client.of(33333);
 
         try {
-            server.start(Server.echoHandler());
+            server.createFunction("echo", Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 
@@ -201,7 +201,7 @@ public class TcpServerTest {
 
             final IMessage request1 = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage response1 = client.sendMessage(request1);
+            final IMessage response1 = client.sendMessage(request1, "echo");
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
             final Map<String,Object> status = client.getServerStatus();
@@ -230,7 +230,8 @@ public class TcpServerTest {
         final Client client = Client.of(33333);
 
         try {
-            server.start(Server.echoHandler());
+            server.createFunction("echo", Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 
@@ -238,7 +239,7 @@ public class TcpServerTest {
 
             final IMessage request1 = MessageFactory.text(null, "hello", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage response1 = client.sendMessage(request1);
+            final IMessage response1 = client.sendMessage(request1, "echo");
             assertEquals(ResponseStatus.OK, response1.getResponseStatus());
 
             final Map<String,Object> status = client.getServerThreadPoolStatistics();
@@ -326,7 +327,7 @@ public class TcpServerTest {
         final Client client3 = Client.of(33333);
 
         try {
-            server.start(Server.echoHandler());
+            server.start();
 
             IO.sleep(300);
 

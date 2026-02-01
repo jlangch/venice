@@ -269,17 +269,18 @@ public class IpcFunctionsTest {
                 "                                                                                \n" +
                 "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
                 "                                                                                \n" +
-                "  (try-with [server   (ipc/server 33333 echo-handler)                           \n" +
+                "  (try-with [server   (ipc/server 33333)                                        \n" +
                 "             client-1 (ipc/client 33333)                                        \n" +
                 "             client-2 (ipc/client \"localhost\" 33333)                          \n" +
                 "             client-3 (ipc/client :localhost 33333)                             \n" +
                 "             client-4 (ipc/client \"af-inet://localhost:33333\")]               \n" +
-                "    (ipc/send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))     \n" +
-                "    (ipc/send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))     \n" +
-                "    (ipc/send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
-                "    (ipc/send client-4 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
-                "    (sleep 100))                                                                \n" +
-                "                                                                                \n" +
+                "    (ipc/create-function server :echo echo-handler)                             \n" +
+                "    (ipc/send client-1 :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\")) \n" +
+                "    (ipc/send client-2 :echo (ipc/plain-text-message \"2\" \"test\" \"hello 2\")) \n" +
+                "    (ipc/send client-3 :echo (ipc/plain-text-message \"3\" \"test\" \"hello 3\")) \n" +
+                "    (ipc/send client-4 :echo (ipc/plain-text-message \"3\" \"test\" \"hello 3\")) \n" +
+                "    (sleep 100))                                                                  \n" +
+                "                                                                                  \n" +
                 "  (deref counter))";
 
         assertEquals(4L, venice.eval(script));
@@ -298,7 +299,7 @@ public class IpcFunctionsTest {
                 "  (let [ac (ipc/authenticator)]                                                   \n" +
                 "    (ipc/add-credentials ac \"joe\" \"123\")                                      \n" +
                 "                                                                                  \n" +
-                "    (try-with [server   (ipc/server 33333 echo-handler                            \n" +
+                "    (try-with [server   (ipc/server 33333                                         \n" +
                 "                                    :authenticator ac                             \n" +
                 "                                    :encrypt true)                                \n" +
                 "               client-1 (ipc/client 33333                                         \n" +
@@ -309,12 +310,13 @@ public class IpcFunctionsTest {
                 "                                    :user-name \"joe\" :password \"123\")         \n" +
                 "               client-4 (ipc/client \"af-inet://localhost:33333\"                 \n" +
                 "                                    :user-name \"joe\" :password \"123\")]        \n" +
-                "      (ipc/send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))     \n" +
-                "      (ipc/send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))     \n" +
-                "      (ipc/send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
-                "      (ipc/send client-4 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))     \n" +
-                "      (sleep 100)))                                                               \n" +
-                "                                                                                  \n" +
+                "      (ipc/create-function server :echo echo-handler)                             \n" +
+                "      (ipc/send client-1 :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))  \n" +
+                "      (ipc/send client-2 :echo (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))  \n" +
+                "      (ipc/send client-3 :echo (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))  \n" +
+                "      (ipc/send client-4 :echo (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))  \n" +
+                "      (sleep 100)))                                                                  \n" +
+                "                                                                                     \n" +
                 "  (deref counter))";
 
         assertEquals(4L, venice.eval(script));
@@ -330,7 +332,7 @@ public class IpcFunctionsTest {
                 "                                                                                \n" +
                 "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
                 "                                                                                \n" +
-                "  (try-with [server    (ipc/server 33333 echo-handler)                          \n" +
+                "  (try-with [server    (ipc/server 33333)                                       \n" +
                 "             client-1  (ipc/client 33333)                                       \n" +
                 "             client-2  (ipc/client \"localhost\" 33333)                         \n" +
                 "             client-3  (ipc/client :localhost 33333)                            \n" +
@@ -339,12 +341,13 @@ public class IpcFunctionsTest {
                 "             client-2c (ipc/clone client-2)                                     \n" +
                 "             client-3c (ipc/clone client-3)                                     \n" +
                 "             client-4c (ipc/clone client-4)]                                    \n" +
-                "    (ipc/send client-1c (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))    \n" +
-                "    (ipc/send client-2c (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))    \n" +
-                "    (ipc/send client-3c (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))    \n" +
-                "    (ipc/send client-4c (ipc/plain-text-message \"4\" \"test\" \"hello 4\"))    \n" +
-                "    (sleep 100))                                                                \n" +
-                "                                                                                \n" +
+                "    (ipc/create-function server :echo echo-handler)                             \n" +
+                "    (ipc/send client-1c :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\")) \n" +
+                "    (ipc/send client-2c :echo (ipc/plain-text-message \"2\" \"test\" \"hello 2\")) \n" +
+                "    (ipc/send client-3c :echo (ipc/plain-text-message \"3\" \"test\" \"hello 3\")) \n" +
+                "    (ipc/send client-4c :echo (ipc/plain-text-message \"4\" \"test\" \"hello 4\")) \n" +
+                "    (sleep 100))                                                                   \n" +
+                "                                                                                   \n" +
                 "  (deref counter))";
 
         assertEquals(4L, venice.eval(script));
@@ -363,7 +366,7 @@ public class IpcFunctionsTest {
                 "  (let [ac (ipc/authenticator)]                                                 \n" +
                 "    (ipc/add-credentials ac \"joe\" \"123\")                                    \n" +
                 "                                                                                \n" +
-                "    (try-with [server   (ipc/server 33333 echo-handler                          \n" +
+                "    (try-with [server   (ipc/server 33333                                       \n" +
                 "                                    :authenticator ac                           \n" +
                 "                                    :encrypt true)                              \n" +
                 "               client-1 (ipc/client 33333                                       \n" +
@@ -378,12 +381,13 @@ public class IpcFunctionsTest {
                 "               client-2c (ipc/clone client-2)                                   \n" +
                 "               client-3c (ipc/clone client-3)                                   \n" +
                 "               client-4c (ipc/clone client-4)]                                  \n" +
-                "    (ipc/send client-1c (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))    \n" +
-                "    (ipc/send client-2c (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))    \n" +
-                "    (ipc/send client-3c (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))    \n" +
-                "    (ipc/send client-4c (ipc/plain-text-message \"4\" \"test\" \"hello 4\"))    \n" +
-                "    (sleep 100)))                                                               \n" +
-                "                                                                                \n" +
+                "    (ipc/create-function server :echo echo-handler)                             \n" +
+                "    (ipc/send client-1c :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\")) \n" +
+                "    (ipc/send client-2c :echo (ipc/plain-text-message \"2\" \"test\" \"hello 2\")) \n" +
+                "    (ipc/send client-3c :echo (ipc/plain-text-message \"3\" \"test\" \"hello 3\")) \n" +
+                "    (ipc/send client-4c :echo (ipc/plain-text-message \"4\" \"test\" \"hello 4\")) \n" +
+                "    (sleep 100)))                                                                 \n" +
+                "                                                                                  \n" +
                 "  (deref counter))";
 
         assertEquals(4L, venice.eval(script));
@@ -402,14 +406,15 @@ public class IpcFunctionsTest {
                 "                                                                                \n" +
                 "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
                 "                                                                                \n" +
-                "  (try-with [server (ipc/server conn-uri echo-handler                           \n" +
+                "  (try-with [server (ipc/server conn-uri                                        \n" +
                 "                                :socket-snd-buf-size :64KB                      \n" +
                 "                                :socket-rcv-buf-size :64KB)                     \n" +
                 "             client (ipc/client conn-uri                                        \n" +
                 "                                :socket-snd-buf-size :64KB                      \n" +
                 "                                :socket-rcv-buf-size :64KB)]                    \n" +
-                "    (ipc/send client (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))       \n" +
-                "    (ipc/send client (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))       \n" +
+                "    (ipc/create-function server :echo echo-handler)                             \n" +
+                "    (ipc/send client :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\")) \n" +
+                "    (ipc/send client :echo (ipc/plain-text-message \"2\" \"test\" \"hello 2\")) \n" +
                 "    (sleep 100))                                                                \n" +
                 "                                                                                \n" +
                 "  (deref counter))";
@@ -425,10 +430,11 @@ public class IpcFunctionsTest {
                 "(do                                                         \n" +
                 "  (defn echo-handler [m] m)                                 \n" +
                 "                                                            \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                "  (try-with [server (ipc/server 33333)                      \n" +
                 "             client (ipc/client \"localhost\" 33333)]       \n" +
+                "    (ipc/create-function server :echo echo-handler)         \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")  \n" +
-                "         (ipc/send client)                                  \n" +
+                "         (ipc/send client :echo)                            \n" +
                 "         (ipc/message->map)                                 \n" +
                 "         (:text ))))                                        ";
 
@@ -443,10 +449,11 @@ public class IpcFunctionsTest {
                 "(do                                                         \n" +
                 "  (defn echo-handler [m] m)                                 \n" +
                 "                                                            \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                "  (try-with [server (ipc/server 33333)                      \n" +
                 "             client (ipc/client \"localhost\" 33333)]       \n" +
+                "    (ipc/create-function server :echo echo-handler)         \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")  \n" +
-                "         (ipc/send-async client)                            \n" +
+                "         (ipc/send-async client :echo)                      \n" +
                 "         (deref)                                            \n" +
                 "         (ipc/message->map)                                 \n" +
                 "         (:text ))))                                        ";
@@ -462,10 +469,11 @@ public class IpcFunctionsTest {
                 "(do                                                         \n" +
                 "  (defn echo-handler [m] nil)                               \n" +
                 "                                                            \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler)         \n" +
+                "  (try-with [server (ipc/server 33333)                      \n" +
                 "             client (ipc/client \"localhost\" 33333)]       \n" +
+                "    (ipc/create-function server :echo echo-handler)         \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" \"hello\")  \n" +
-                "         (ipc/send-oneway client))))                        ";
+                "         (ipc/send-oneway client :echo))))                  ";
 
         assertEquals(null, venice.eval(script));
     }
@@ -478,11 +486,11 @@ public class IpcFunctionsTest {
                 "(do                                                                           \n" +
                 "  (defn echo-handler [m] m)                                                   \n" +
                 "                                                                              \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
-                "                                :compress-cutoff-size -1)                     \n" +
+                "  (try-with [server (ipc/server 33333 :compress-cutoff-size -1)               \n" +
                 "             client (ipc/client \"localhost\" 33333 )]                        \n" +
+                "    (ipc/create-function server :echo echo-handler)                           \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                                    \n" +
+                "         (ipc/send client :echo)                                              \n" +
                 "         (ipc/message->map)                                                   \n" +
                 "         (:text ))))                                                          ";
 
@@ -495,13 +503,11 @@ public class IpcFunctionsTest {
 
         final String script =
                 "(do                                                                           \n" +
-                "  (defn echo-handler [m] m)                                                   \n" +
-                "                                                                              \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
-                "                                :compress-cutoff-size 0)                      \n" +
+                "  (try-with [server (ipc/server 33333 :compress-cutoff-size 0)                \n" +
                 "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (ipc/create-function server :echo (fn [m] m))                             \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                                    \n" +
+                "         (ipc/send client :echo)                                              \n" +
                 "         (ipc/message->map)                                                   \n" +
                 "         (:text ))))                                                          ";
 
@@ -516,11 +522,11 @@ public class IpcFunctionsTest {
                 "(do                                                                           \n" +
                 "  (defn echo-handler [m] m)                                                   \n" +
                 "                                                                              \n" +
-                "  (try-with [server (ipc/server 33333 echo-handler                            \n" +
-                "                                :compress-cutoff-size :2KB)                   \n" +
+                "  (try-with [server (ipc/server 33333 :compress-cutoff-size :2KB)             \n" +
                 "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (ipc/create-function server :echo echo-handler)                           \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                                    \n" +
+                "         (ipc/send client :echo)                                              \n" +
                 "         (ipc/message->map)                                                   \n" +
                 "         (:text ))))                                                          ";
 
@@ -535,10 +541,11 @@ public class IpcFunctionsTest {
                 "(do                                                                           \n" +
                 "  (defn handler [m] (throw (ex :VncException \"rejected\")))                  \n" +
                 "                                                                              \n" +
-                "  (try-with [server (ipc/server 33333 handler)                                \n" +
+                "  (try-with [server (ipc/server 33333)                                        \n" +
                 "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (ipc/create-function server :echo handler)                                \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                                    \n" +
+                "         (ipc/send client :echo)                                              \n" +
                 "         (ipc/response-err?))))                                               ";
 
         assertTrue((Boolean)venice.eval(script));
@@ -552,10 +559,11 @@ public class IpcFunctionsTest {
                 "(do                                                                           \n" +
                 "  (defn handler [m] 1)  ;; should actually return nil or an IMessage          \n" +
                 "                                                                              \n" +
-                "  (try-with [server (ipc/server 33333 handler)                                \n" +
+                "  (try-with [server (ipc/server 33333)                                        \n" +
                 "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (ipc/create-function server :echo handler)                                \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                                    \n" +
+                "         (ipc/send client :echo)                                              \n" +
                 "         (ipc/response-err?))))                                                ";
 
         assertTrue((Boolean)venice.eval(script));
@@ -569,10 +577,11 @@ public class IpcFunctionsTest {
                 "(do                                                                           \n" +
                 "  (defn handler [m] nil)                                                      \n" +
                 "                                                                              \n" +
-                "  (try-with [server (ipc/server 33333 handler)                                \n" +
+                "  (try-with [server (ipc/server 33333)                                        \n" +
                 "             client (ipc/client \"localhost\" 33333)]                         \n" +
+                "    (ipc/create-function server :echo handler)                                \n" +
                 "    (->> (ipc/plain-text-message \"1\" \"test\" (str/repeat \"hello\" 1_000)) \n" +
-                "         (ipc/send client)                                                    \n" +
+                "         (ipc/send client :echo)                                              \n" +
                 "         (ipc/response-ok?))))                                                ";
 
         assertTrue((Boolean)venice.eval(script));
@@ -591,10 +600,11 @@ public class IpcFunctionsTest {
                 "                              (. m :getSubject)               \n" +
                 "                              result)))                       \n" +
                 "                                                              \n" +
-                "  (try-with [server (ipc/server 33333 handler)                \n" +
+                "  (try-with [server (ipc/server 33333)                        \n" +
                 "             client (ipc/client \"localhost\" 33333)]         \n" +
+                "    (ipc/create-function server :echo handler)                \n" +
                 "    (-<> (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")  \n" +
-                "         (ipc/send client <>)                                 \n" +
+                "         (ipc/send client :echo <>)                           \n" +
                 "         (. <> :getText))))                                   ";
 
         assertEquals("3", venice.eval(script));
@@ -791,14 +801,13 @@ public class IpcFunctionsTest {
                 "(do                                                              \n" +
                 "  (ns junit)                                                     \n" +
                 "                                                                 \n" +
-                "  (defn handler [m]                                              \n" +
-                "    (let [cmd (. m :getText)]                                    \n" +
-                "      (throw :VncException \"TEST\")))                           \n" +
+                "  (defn ex-handler [m] (throw :VncException \"TEST\"))           \n" +
                 "                                                                 \n" +
-                "  (try-with [server (ipc/server 33333 handler)                   \n" +
+                "  (try-with [server (ipc/server 33333)                           \n" +
                 "             client (ipc/client \"localhost\" 33333)]            \n" +
+                "    (ipc/create-function server :handler ex-handler)             \n" +
                 "    (let [m (ipc/plain-text-message \"1\" \"exec\" \"(+ 1 2)\")  \n" +
-                "          r        (ipc/send client m)                           \n" +
+                "          r        (ipc/send client :handler m)                  \n" +
                 "          status   (ipc/message-field r :response-status)        \n" +
                 "          subject  (ipc/message-field r :subject)                \n" +
                 "          mimetype (ipc/message-field r :payload-mimetype)       \n" +
@@ -810,9 +819,9 @@ public class IpcFunctionsTest {
 
         assertEquals(
                 "Failed to handle 'REQUEST' request!\n"
-                + "throw (test-script: line 6, col 8)\n"
-                + "junit/handler (test-script: line 4, col 9)\n"
-                + "ipc/server (unknown: line -1, col -1)",
+                + "throw (test-script: line 4, col 25)\n"
+                + "junit/ex-handler (test-script: line 4, col 9)\n"
+                + "ipc/create-function (unknown: line -1, col -1)",
                 venice.eval("test-script", script));
     }
 
