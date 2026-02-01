@@ -76,7 +76,7 @@ public class Message implements IMessage {
         this.oneway = oneway;
         this.durable = durable;
         this.subscriptionReply = subscriptionReply;
-        this.queueOrTopicName = null;
+        this.destinationName = null;
         this.replyToQueueName = null;
         this.timestamp = Instant.now().toEpochMilli();
         this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
@@ -118,7 +118,7 @@ public class Message implements IMessage {
         this.oneway = oneway;
         this.durable = durable;
         this.subscriptionReply = subscriptionReply;
-        this.queueOrTopicName = null;
+        this.destinationName = null;
         this.replyToQueueName = null;
         this.timestamp = Instant.now().toEpochMilli();
         this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
@@ -137,7 +137,7 @@ public class Message implements IMessage {
             final boolean oneway,
             final boolean durable,
             final boolean subscriptionReply,
-            final String queueOrTopicName,
+            final String destinationName,
             final String replyToQueueName,
             final long timestamp,
             final long expiresAt,
@@ -164,7 +164,7 @@ public class Message implements IMessage {
         this.oneway = oneway;
         this.durable = durable;
         this.subscriptionReply = subscriptionReply;
-        this.queueOrTopicName = StringUtil.trimToNull(queueOrTopicName);
+        this.destinationName = StringUtil.trimToNull(destinationName);
         this.replyToQueueName = replyToQueueName;
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
         this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
@@ -193,7 +193,7 @@ public class Message implements IMessage {
         return new Message(
                 id, requestId,
                 type, responseStatus, oneway, durable, subscriptionReply,
-                queueOrTopicName, replyToQueueName, timestamp, expiresAt,
+                destinationName, replyToQueueName, timestamp, expiresAt,
                 timeout, subject, mimetype, charset, data);
   }
 
@@ -218,7 +218,7 @@ public class Message implements IMessage {
         return new Message(
                 id, requestId,
                 type, responseStatus, oneway, durable, subscriptionReply,
-                queueOrTopicName, replyToQueueName, timestamp, expiresAt,
+                destinationName, replyToQueueName, timestamp, expiresAt,
                 timeout, subject, mimetype, charset, data);
     }
 
@@ -235,7 +235,7 @@ public class Message implements IMessage {
         return new Message(
                 id, requestId,
                 type, responseStatus, oneway, durable, subscriptionReply,
-                queueOrTopicName, replyToQueueName, timestamp, expiresAt,
+                destinationName, replyToQueueName, timestamp, expiresAt,
                 timeout, subject, mimetype, charset, data);
   }
 
@@ -294,13 +294,8 @@ public class Message implements IMessage {
     }
 
     @Override
-    public String getQueueName() {
-        return queueOrTopicName;
-    }
-
-    @Override
-    public String getTopicName() {
-        return queueOrTopicName;
+    public String getDestinationName() {
+        return destinationName;
     }
 
     @Override
@@ -427,8 +422,8 @@ public class Message implements IMessage {
 
        sb.append(String.format(
                    "%s %s\n",
-                   padRight("Queue:", 12),
-                   queueOrTopicName == null ? "-" : queueOrTopicName));
+                   padRight("Destination:", 12),
+                   destinationName == null ? "-" : destinationName));
 
        sb.append(String.format(
                    "%s %s\n",
@@ -485,7 +480,7 @@ public class Message implements IMessage {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
         result = prime * result + (oneway ? 1231 : 1237);
-        result = prime * result + ((queueOrTopicName == null) ? 0 : queueOrTopicName.hashCode());
+        result = prime * result + ((destinationName == null) ? 0 : destinationName.hashCode());
         result = prime * result + ((replyToQueueName == null) ? 0 : replyToQueueName.hashCode());
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
@@ -529,10 +524,10 @@ public class Message implements IMessage {
             return false;
         if (oneway != other.oneway)
             return false;
-        if (queueOrTopicName == null) {
-            if (other.queueOrTopicName != null)
+        if (destinationName == null) {
+            if (other.destinationName != null)
                 return false;
-        } else if (!queueOrTopicName.equals(other.queueOrTopicName))
+        } else if (!destinationName.equals(other.destinationName))
             return false;
         if (replyToQueueName == null) {
             if (other.replyToQueueName != null)
@@ -642,7 +637,7 @@ public class Message implements IMessage {
     private final ResponseStatus responseStatus;
     private final boolean oneway;
     private final boolean subscriptionReply;
-    private final String queueOrTopicName;  // used for offer/poll and publish/subscribe messages
+    private final String destinationName;  // used for offer/poll and publish/subscribe messages
     private final String replyToQueueName;  // used for offer/poll messages
     private final long timestamp;
     private final long expiresAt;

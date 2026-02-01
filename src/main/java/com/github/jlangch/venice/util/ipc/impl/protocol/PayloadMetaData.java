@@ -47,7 +47,7 @@ public class PayloadMetaData {
             msg.getTimeout(),
             msg.getResponseStatus(),
             msg.getRequestId(),
-            msg.getQueueName(),
+            msg.getDestinationName(),
             msg.getReplyToQueueName(),
             msg.getSubject(),
             msg.getMimetype(),
@@ -65,7 +65,7 @@ public class PayloadMetaData {
             final long timeout,
             final ResponseStatus responseStatus,
             final String requestId,
-            final String queueOrTopicName,
+            final String destinationName,
             final String replyToQueueName,
             final String subject,
             final String mimetype,
@@ -87,7 +87,7 @@ public class PayloadMetaData {
         this.timeout = timeout;
         this.responseStatus = responseStatus;
         this.requestId = requestId;
-        this.queueOrTopicName = queueOrTopicName;
+        this.destinationName = destinationName;
         this.replyToQueueName = replyToQueueName;
         this.subject = subject;
         this.mimetype = mimetype;
@@ -104,7 +104,7 @@ public class PayloadMetaData {
                 oneway,
                 durable,
                 subscriptionReply,
-                queueOrTopicName,
+                destinationName,
                 replyToQueueName,
                 timestamp,
                 expiresAt,
@@ -151,8 +151,8 @@ public class PayloadMetaData {
         return responseStatus;
     }
 
-    public String getQueueOrTopicName() {
-        return queueOrTopicName;
+    public String getDestinationName() {
+        return destinationName;
     }
 
     public String getReplyToQueueName() {
@@ -188,7 +188,7 @@ public class PayloadMetaData {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((mimetype == null) ? 0 : mimetype.hashCode());
         result = prime * result + (oneway ? 1231 : 1237);
-        result = prime * result + ((queueOrTopicName == null) ? 0 : queueOrTopicName.hashCode());
+        result = prime * result + ((destinationName == null) ? 0 : destinationName.hashCode());
         result = prime * result + ((replyToQueueName == null) ? 0 : replyToQueueName.hashCode());
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
@@ -230,10 +230,10 @@ public class PayloadMetaData {
             return false;
         if (oneway != other.oneway)
             return false;
-        if (queueOrTopicName == null) {
-            if (other.queueOrTopicName != null)
+        if (destinationName == null) {
+            if (other.destinationName != null)
                 return false;
-        } else if (!queueOrTopicName.equals(other.queueOrTopicName))
+        } else if (!destinationName.equals(other.destinationName))
             return false;
         if (replyToQueueName == null) {
             if (other.replyToQueueName != null)
@@ -272,7 +272,7 @@ public class PayloadMetaData {
         final short  _type                   = encodeMessageType(data.type);
         final short  _responseStatus         = encodeResponseStatus(data.responseStatus);
         final byte[] _requestId              = encodeString(data.requestId);
-        final byte[] _queueOrTopicName       = encodeString(data.queueOrTopicName);
+        final byte[] _destinationName        = encodeString(data.destinationName);
         final byte[] _replyToQueueName       = encodeString(data.replyToQueueName);
         final byte[] _subject                = encodeString(data.subject);
         final byte[] _mimetype               = encodeString(data.mimetype);
@@ -285,7 +285,7 @@ public class PayloadMetaData {
                           8 + 8 + 8 +
                           2 +
                           2 + _requestId.length +
-                          2 + _queueOrTopicName.length +
+                          2 + _destinationName.length +
                           2 + _replyToQueueName.length +
                           2 + _subject.length +
                           2 + _mimetype.length +
@@ -303,7 +303,7 @@ public class PayloadMetaData {
         buf.putLong(data.timeout);
         buf.putShort(_responseStatus);
         putString(buf, _requestId);
-        putString(buf, _queueOrTopicName);
+        putString(buf, _destinationName);
         putString(buf, _replyToQueueName);
         putString(buf, _subject);
         putString(buf, _mimetype);
@@ -437,7 +437,7 @@ public class PayloadMetaData {
     private final long timeout;
     private final ResponseStatus responseStatus;
     private final String requestId;
-    private final String queueOrTopicName;
+    private final String destinationName;
     private final String replyToQueueName;
     private final String subject;
     private final String mimetype;

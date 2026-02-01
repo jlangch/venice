@@ -220,7 +220,7 @@ public class ChannelMessageListener implements Runnable {
 
 
     private Consumer<IMessage> getSubscriptionHandler(final Message msg) {
-        final String topicName = msg.getTopicName();
+        final String topicName = msg.getDestinationName();
 
         return subscriptionHandlers.get(topicName);
     }

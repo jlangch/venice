@@ -70,7 +70,7 @@ public class Subscriptions {
         // mark the message as a subscription reply
         final Message m = msg.withSubscriptionReply(true);
 
-        final String topic = m.getTopicName();
+        final String topic = m.getDestinationName();
 
         final List<IPublisher> publishers = new ArrayList<>(subscriptions.keySet());
 

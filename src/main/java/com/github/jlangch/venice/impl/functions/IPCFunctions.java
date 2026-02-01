@@ -2754,7 +2754,7 @@ public class IPCFunctions {
                     case "durable?":            return VncBoolean.of(message.isDurable());
                     case "response-status":     return new VncKeyword(message.getResponseStatus().name());
                     case "subject":             return new VncString(message.getSubject());
-                    case "queue-topic-name":    return new VncString(message.getQueueName());
+                    case "destination-name":    return new VncString(message.getDestinationName());
                     case "reply-to-queue-name": return new VncString(message.getReplyToQueueName());
                     case "request-id":          return message.getRequestId() == null
                                                         ? Nil

@@ -132,14 +132,9 @@ public interface IMessage {
     LocalDateTime getExpiresAtAsLocalDateTime();
 
     /**
-     * @return the message queue name
+     * @return the message destionation name (queue/topic/function)
      */
-    String getQueueName();
-
-    /**
-     * @return the message topic name
-     */
-    String getTopicName();
+    String getDestinationName();
 
     /**
      * @return the message replyTo queue name

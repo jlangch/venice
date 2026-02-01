@@ -429,7 +429,7 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleSubscribeToTopic(final Message request) {
-        final String topicName = request.getTopicName();
+        final String topicName = request.getDestinationName();
 
         final IpcTopic topic = topicManager.getTopic(topicName);
         if (topic == null) {
@@ -445,14 +445,14 @@ public class ServerConnection implements IPublisher, Runnable {
         // register subscription
         subscriptions.addSubscription(topicName, this);
 
-        logInfo(String.format("Subscribed to topic: %s.", request.getTopicName()));
+        logInfo(String.format("Subscribed to topic: %s.", request.getDestinationName()));
 
         // acknowledge the subscription
         return createOkTextResponse(request, "Subscribed to the topic.");
     }
 
     private Message handleUnsubscribeFromTopic(final Message request) {
-        final String topicName = request.getTopicName();
+        final String topicName = request.getDestinationName();
 
         final IpcTopic topic = topicManager.getTopic(topicName);
         if (topic == null) {
@@ -462,14 +462,14 @@ public class ServerConnection implements IPublisher, Runnable {
         // unregister subscription
         subscriptions.removeSubscription(topicName, this);
 
-        logInfo(String.format("Unsubscribed from topic: %s.", request.getTopicName()));
+        logInfo(String.format("Unsubscribed from topic: %s.", request.getDestinationName()));
 
         // acknowledge the unsubscription
         return createOkTextResponse(request, "Unsubscribed from the topic.");
     }
 
     private Message handlePublishToTopic(final Message request) {
-        final String topicName = request.getTopicName();
+        final String topicName = request.getDestinationName();
 
         final IpcTopic topic = topicManager.getTopic(topicName);
         if (topic == null) {
@@ -490,7 +490,7 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleOfferToQueue(final Message request) {
-        final String queueName = request.getQueueName();
+        final String queueName = request.getDestinationName();
 
         try {
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
@@ -537,7 +537,7 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handlePollFromQueue(final Message request) {
-        final String queueName = request.getQueueName();
+        final String queueName = request.getDestinationName();
         try {
             final long timeout = request.getTimeout();
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
@@ -1051,14 +1051,14 @@ public class ServerConnection implements IPublisher, Runnable {
         return createTextResponse(
                 request,
                 TOPIC_NOT_FOUND,
-                "The topic " + request.getTopicName() + " does not exist!");
+                "The topic " + request.getDestinationName() + " does not exist!");
     }
 
     private Message createQueueNotFoundResponse(final Message request) {
         return createTextResponse(
                 request,
                 QUEUE_NOT_FOUND,
-                "The queue " + request.getQueueName() + " does not exist!");
+                "The queue " + request.getDestinationName() + " does not exist!");
     }
 
     private Message createBadRequestResponse(
