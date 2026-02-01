@@ -454,7 +454,7 @@ authorized users/applications can access the messaging infrastructure.
                                   :user-name "tom"
                                   :password "3,kio")]   ;; client connection with the credentials
 
-    (ipc/create-function server :echo echo-handler)
+      (ipc/create-function server :echo echo-handler)
 
       (->> (ipc/plain-text-message "1" :test "hello")
            (ipc/send client :echo)
@@ -469,7 +469,7 @@ Create an authenticator and store it to a file for later use:
 ```clojure
 (let [auth (ipc/authenticator)]
   (ipc/add-credentials auth "tom" "3-kio")
-  (ipc/add-credentials auth "max" "zu*67")
+  (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' has 'admin' authorization
   (ipc/store-authenticator auth (io/file "./ipc.cred")))
 ```
 
@@ -485,7 +485,7 @@ Load the authenticator from a file:
                                   :user-name "tom"
                                   :password "3-kio")]
 
-    (ipc/create-function server :echo (fn [m] m))
+      (ipc/create-function server :echo (fn [m] m))
 
       (->> (ipc/plain-text-message "1" :test "hello")
            (ipc/send client :echo)
