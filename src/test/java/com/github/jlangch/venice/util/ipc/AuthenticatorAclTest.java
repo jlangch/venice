@@ -101,6 +101,37 @@ public class AuthenticatorAclTest {
     }
 
     @Test
+    public void test_function_acl() {
+        final Authenticator a = new Authenticator(false);
+
+        assertEquals(0, a.getFunctionAclsMappedByPrincipal("t1").size());
+
+        a.setFunctionAcl("t1", READ, "tom");
+        a.setFunctionAcl("t1", WRITE, "max");
+        a.setFunctionAcl("t1", READ_WRITE, "jak");
+
+        assertEquals(3, a.getFunctionAclsMappedByPrincipal("t1").size());
+
+        assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("tom").getSubject());
+        assertEquals("tom", a.getFunctionAclsMappedByPrincipal("t1").get("tom").getPrincipal());
+        assertEquals(READ, a.getFunctionAclsMappedByPrincipal("t1").get("tom").getMode());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canRead());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canWrite());
+
+        assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("max").getSubject());
+        assertEquals("max", a.getFunctionAclsMappedByPrincipal("t1").get("max").getPrincipal());
+        assertEquals(WRITE, a.getFunctionAclsMappedByPrincipal("t1").get("max").getMode());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("max").canRead());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("max").canWrite());
+
+        assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("jak").getSubject());
+        assertEquals("jak", a.getFunctionAclsMappedByPrincipal("t1").get("jak").getPrincipal());
+        assertEquals(READ_WRITE, a.getFunctionAclsMappedByPrincipal("t1").get("jak").getMode());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canRead());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canWrite());
+    }
+
+    @Test
     public void test_queue_acl_load_save() throws Exception {
         final File file = Files.createTempFile("test", ".cred").normalize().toFile();
         file.deleteOnExit();
@@ -135,7 +166,7 @@ public class AuthenticatorAclTest {
         assertEquals(READ_WRITE, a.getQueueAclsMappedByPrincipal("q1").get("jak").getMode());
         assertTrue(a.getQueueAclsMappedByPrincipal("q1").get("jak").canRead());
         assertTrue(a.getQueueAclsMappedByPrincipal("q1").get("jak").canWrite());
-   }
+    }
 
     @Test
     public void test_topic_acl_load_save() throws Exception {
@@ -172,6 +203,43 @@ public class AuthenticatorAclTest {
         assertEquals(READ_WRITE, a.getTopicAclsMappedByPrincipal("t1").get("jak").getMode());
         assertTrue(a.getTopicAclsMappedByPrincipal("t1").get("jak").canRead());
         assertTrue(a.getTopicAclsMappedByPrincipal("t1").get("jak").canWrite());
+    }
+
+    @Test
+    public void test_function_acl_load_save() throws Exception {
+        final File file = Files.createTempFile("test", ".cred").normalize().toFile();
+        file.deleteOnExit();
+
+        final Authenticator a = new Authenticator(false);
+
+        a.setFunctionAcl("t1", READ, "tom");
+        a.setFunctionAcl("t1", WRITE, "max");
+        a.setFunctionAcl("t1", READ_WRITE, "jak");
+
+        a.save(new FileOutputStream(file));
+
+        final Authenticator b = new Authenticator(false);
+        b.load(new FileInputStream(file));
+
+        assertEquals(3, a.getFunctionAclsMappedByPrincipal("t1").size());
+
+        assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("tom").getSubject());
+        assertEquals("tom", a.getFunctionAclsMappedByPrincipal("t1").get("tom").getPrincipal());
+        assertEquals(READ, a.getFunctionAclsMappedByPrincipal("t1").get("tom").getMode());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canRead());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canWrite());
+
+        assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("max").getSubject());
+        assertEquals("max", a.getFunctionAclsMappedByPrincipal("t1").get("max").getPrincipal());
+        assertEquals(WRITE, a.getFunctionAclsMappedByPrincipal("t1").get("max").getMode());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("max").canRead());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("max").canWrite());
+
+        assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("jak").getSubject());
+        assertEquals("jak", a.getFunctionAclsMappedByPrincipal("t1").get("jak").getPrincipal());
+        assertEquals(READ_WRITE, a.getFunctionAclsMappedByPrincipal("t1").get("jak").getMode());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canRead());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canWrite());
    }
 
 }

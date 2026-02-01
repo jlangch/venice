@@ -36,7 +36,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 public class TcpAuthorizationAclTopicTest {
 
     @Test
-    public void test_queue_non_authenticated() throws Exception {
+    public void test_topic_non_authenticated() throws Exception {
         try (final Server server = Server.of(33333);
              final Client client = Client.of(33333);
         ) {
@@ -84,7 +84,7 @@ public class TcpAuthorizationAclTopicTest {
     }
 
     @Test
-    public void test_queue_authenticated_no_acl() throws Exception {
+    public void test_topic_authenticated_no_acl() throws Exception {
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("tom", "123");
         authenticator.addCredentials("admin", "123", true);
@@ -178,7 +178,7 @@ public class TcpAuthorizationAclTopicTest {
     }
 
     @Test
-    public void test_queue_authenticated_with_acl() throws Exception {
+    public void test_topic_authenticated_with_acl() throws Exception {
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("tom", "123");
         authenticator.addCredentials("jak", "123");
