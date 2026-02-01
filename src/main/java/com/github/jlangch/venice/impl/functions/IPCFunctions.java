@@ -2124,26 +2124,18 @@ public class IPCFunctions {
                     case "write":      mode = AccessMode.WRITE;       break;
                     case "read-write": mode = AccessMode.READ_WRITE;  break;
                     case "execute":    mode = AccessMode.EXECUTE;     break;
-                    default:
-                        throw new IpcException(
-                                "Invalid access '" + access + "'! "
-                                + "Use one of {:read, :write, :read-write, :execute, :none}");
+                    default:           throw new IpcException(
+                                          "Invalid access '" + access + "'! "
+                                          + "Use one of {:read, :write, :read-write, :execute}");
                 }
 
                 switch(destType) {
-                    case "queue":
-                        authenticator.setQueueAcl(destName, mode, principal);
-                        break;
-                    case "topic":
-                        authenticator.setTopicAcl(destName, mode, principal);
-                        break;
-                    case "function":
-                        authenticator.setFunctionAcl(destName, mode, principal);
-                        break;
-                    default:
-                        throw new IpcException(
-                                "Invalid destination type '" + destType + "'! "
-                                + "Use one of {:queue, :topic, :function}");
+                    case "queue":    authenticator.setQueueAcl(destName, mode, principal);    break;
+                    case "topic":    authenticator.setTopicAcl(destName, mode, principal);    break;
+                    case "function": authenticator.setFunctionAcl(destName, mode, principal); break;
+                    default:         throw new IpcException(
+                                         "Invalid destination type '" + destType + "'! "
+                                         + "Use one of {:queue, :topic, :function}");
                 }
 
                 return new VncJavaObject(authenticator);
@@ -2157,7 +2149,7 @@ public class IPCFunctions {
                 "ipc/remove-acl",
                 VncFunction
                     .meta()
-                    .arglists("(ipc/acl authenticator dest-type dest-name principal)")
+                    .arglists("(ipc/remove-acl authenticator dest-type dest-name principal)")
                     .doc(
                         "Remove an ACL item for a destination and principal.\n\n" +
                         "*Arguments:* \n\n" +
@@ -2189,19 +2181,12 @@ public class IPCFunctions {
                 final String principal = Coerce.toVncString(args.nth(3)).toString();
 
                 switch(destType) {
-                    case "queue":
-                        authenticator.removeQueueAcl(destName, principal);
-                        break;
-                    case "topic":
-                        authenticator.removeTopicAcl(destName, principal);
-                        break;
-                    case "function":
-                        authenticator.removeFunctionAcl(destName, principal);
-                        break;
-                    default:
-                        throw new IpcException(
-                                "Invalid destination type '" + destType + "'! "
-                                + "Use one of {:queue, :topic, :function}");
+                    case "queue":    authenticator.removeQueueAcl(destName, principal);    break;
+                    case "topic":    authenticator.removeTopicAcl(destName, principal);    break;
+                    case "function": authenticator.removeFunctionAcl(destName, principal); break;
+                    default:         throw new IpcException(
+                                        "Invalid destination type '" + destType + "'! "
+                                         + "Use one of {:queue, :topic, :function}");
                 }
 
                 return new VncJavaObject(authenticator);
