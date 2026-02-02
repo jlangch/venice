@@ -45,7 +45,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
 
 <pre>
 
-   Benchmark: MacBook Air M2, 24GB, MacOS 26, Venice 1.12.74
+   Benchmark: MacBook Air M2, 24GB, MacOS 26, Venice 1.12.75
    --------------------------------------------------------------------------------------------------
 
    AF_INET tcp/ip sockets
@@ -119,7 +119,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.URIHelper;
 
 
    Benchmark: VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread per core,
-              12GB, AlmaLinux 9, Venice 1.12.74
+              12GB, AlmaLinux 9, Venice 1.12.75
    --------------------------------------------------------------------------------------------------
 
    AF_INET tcp/ip sockets
