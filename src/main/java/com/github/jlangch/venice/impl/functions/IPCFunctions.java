@@ -2217,7 +2217,7 @@ public class IPCFunctions {
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
                         "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |\n\n" +
-                        "*System default ACs:* \n\n" +
+                        "*System default ACLs:* \n\n" +
                         "| queues    | `:read-write` |\n" +
                         "| topics    | `:read-write` |\n" +
                         "| functions | `:execute`    |\n\n")
