@@ -2205,7 +2205,6 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
     public static VncFunction ipc_default_acl =
         new VncFunction(
                 "ipc/default-acl",
@@ -2217,14 +2216,20 @@ public class IPCFunctions {
                         "*Arguments:* \n\n" +
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
-                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |")
+                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |\n\n" +
+                        "*System default ACs:* \n\n" +
+                        "| queues    | `:read-write` |\n" +
+                        "| topics    | `:read-write` |\n" +
+                        "| functions | `:execute`    |\n\n")
                     .examples(
-                        "(let [auth (ipc/authenticator)]                          \n" +
-                        "  (ipc/add-credentials auth \"tom\" \"123\")             \n" +
-                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)      \n" +
-                        "  (ipc/add-default-acl auth :queue :read) \n" +
-                        "  (ipc/add-default-acl auth :topic :deny) \n" +
-                        "  (ipc/add-default-acl auth :function :deny))   ")
+                        "(let [auth (ipc/authenticator)]                           \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")              \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)       \n" +
+                        "  (ipc/add-credentials auth \"jak\" \"123\")              \n" +
+                        "  (ipc/add-default-acl auth :queue :read)                 \n" +
+                        "  (ipc/add-default-acl auth :topic :deny)                 \n" +
+                        "  (ipc/add-default-acl auth :function :deny)              \n"+
+                        "  (ipc/add-acl auth :queue :queue/1 :read-write \"tom\")  ")
                     .seeAlso(
                         "ipc/authenticator",
                         "ipc/add-acl",
