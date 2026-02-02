@@ -72,8 +72,9 @@ public class Authenticator {
 
     public void clear() {
         clearCredentials();
-        clearQueueAcls();
-        clearTopicAcls();
+        removeAllQueueAcls();
+        removeAllTopicAcls();
+        removeAllFunctionAcls();
     }
 
 
@@ -220,15 +221,15 @@ public class Authenticator {
         queueAcls.remove(queueName);
     }
 
+    public void removeAllQueueAcls() {
+        queueAcls.clear();
+    }
+
     public Map<String,Acl> getQueueAclsMappedByPrincipal(final String queueName) {
         Objects.requireNonNull(queueName);
 
         final Map<String,Acl> acls = queueAcls.get(queueName);
         return acls == null ? new HashMap<>() : acls;
-    }
-
-    public void clearQueueAcls() {
-        queueAcls.clear();
     }
 
 
@@ -279,7 +280,7 @@ public class Authenticator {
         return acls == null ? new HashMap<>() : acls;
     }
 
-    public void clearTopicAcls() {
+    public void removeAllTopicAcls() {
         topicAcls.clear();
     }
 
@@ -331,7 +332,7 @@ public class Authenticator {
         return acls == null ? new HashMap<>() : acls;
     }
 
-    public void clearFunctionAcls() {
+    public void removeAllFunctionAcls() {
         functionAcls.clear();
     }
 

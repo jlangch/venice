@@ -2096,11 +2096,11 @@ public class IPCFunctions {
                         "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |" +
                         "| principal     | A principal |\n\n" +
                         "*ACL configurations:* \n\n" +
-                        "| queue offer      | `:queue` -> one of { `:write`, `:read-write` } |\n" +
-                        "| queue poll       | `:queue` -> one of { `:read`, `:read-write` } |\n" +
-                        "| topic subscribe  | `:topic` -> one of { `:write`, `:read-write` } |\n" +
-                        "| topic publish    | `:topic` -> one of { `:read`, `:read-write` } |" +
-                        "| function execute | `:function` -> one of { `:execute` }|\n\n")
+                        "| queue offer      | `:queue` -> one of { `:write`, `:read-write`, `:deny` } |\n" +
+                        "| queue poll       | `:queue` -> one of { `:read`, `:read-write`, `:deny` } |\n" +
+                        "| topic subscribe  | `:topic` -> one of { `:write`, `:read-write`, `:deny` } |\n" +
+                        "| topic publish    | `:topic` -> one of { `:read`, `:read-write`, `:deny` } |" +
+                        "| function execute | `:function` -> one of { `:execute`, `:deny` }|\n\n")
                     .examples(
                         "(let [auth (ipc/authenticator)]                          \n" +
                         "  (ipc/add-credentials auth \"tom\" \"123\")             \n" +
@@ -2158,7 +2158,10 @@ public class IPCFunctions {
                 "ipc/remove-acl",
                 VncFunction
                     .meta()
-                    .arglists("(ipc/remove-acl authenticator dest-type dest-name principal)")
+                    .arglists(
+                        "(ipc/remove-acl authenticator dest-type dest-name principal)",
+                        "(ipc/remove-acl authenticator dest-type dest-name)",
+                        "(ipc/remove-acl authenticator dest-type)")
                     .doc(
                         "Remove an ACL item for a destination and principal.\n\n" +
                         "*Arguments:* \n\n" +
@@ -2174,7 +2177,13 @@ public class IPCFunctions {
                         "  (ipc/remove-acl auth :queue :queue/2 \"tom\")      \n" +
                         "  (ipc/remove-acl auth :topic :topic/1 \"tom\")      \n" +
                         "  (ipc/remove-acl auth :queue :topic/2 \"tom\")      \n" +
-                        "  (ipc/remove-acl auth :function :echo \"tom\"))     ")
+                        "  (ipc/remove-acl auth :function :echo \"tom\")      \n" +
+                        "  (ipc/remove-acl auth :queue :queue/1)  ;; remove all ACLs for queue :queue/1   \n" +
+                        "  (ipc/remove-acl auth :topic :topic/1)  ;; remove all ACLs for topic :topic/1   \n" +
+                        "  (ipc/remove-acl auth :function :echo))  ;; remove all ACLs for function :echo  \n" +
+                        "  (ipc/remove-acl auth :queue)  ;; remove all queue ACLs                         \n" +
+                        "  (ipc/remove-acl auth :topic)  ;; remove all topic ACLs                         \n" +
+                        "  (ipc/remove-acl auth :function)  ;; remove all function ACLs                   ")
                     .seeAlso(
                         "ipc/authenticator",
                         "ipc/add-acl",
@@ -2183,20 +2192,45 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 4);
+                ArityExceptions.assertArity(this, args, 2, 3, 4);
 
                 final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
                 final String destType = Coerce.toVncString(args.nth(1)).toString();
-                final String destName = Coerce.toVncString(args.nth(2)).toString();
-                final String principal = Coerce.toVncString(args.nth(3)).toString();
 
-                switch(destType) {
-                    case "queue":    authenticator.removeQueueAcl(destName, principal);    break;
-                    case "topic":    authenticator.removeTopicAcl(destName, principal);    break;
-                    case "function": authenticator.removeFunctionAcl(destName, principal); break;
-                    default:         throw new IpcException(
-                                        "Invalid destination type '" + destType + "'! "
-                                         + "Use one of {:queue, :topic, :function}");
+                if (args.size() == 2) {
+                     switch(destType) {
+                        case "queue":    authenticator.removeAllQueueAcls();    break;
+                        case "topic":    authenticator.removeAllTopicAcls();    break;
+                        case "function": authenticator.removeAllFunctionAcls(); break;
+                        default:         throw new IpcException(
+                                            "Invalid destination type '" + destType + "'! "
+                                             + "Use one of {:queue, :topic, :function}");
+                    }
+                }
+                else  if (args.size() == 3) {
+                    final String destName = Coerce.toVncString(args.nth(2)).toString();
+
+                    switch(destType) {
+                        case "queue":    authenticator.removeQueueAcl(destName);    break;
+                        case "topic":    authenticator.removeTopicAcl(destName);    break;
+                        case "function": authenticator.removeFunctionAcl(destName); break;
+                        default:         throw new IpcException(
+                                            "Invalid destination type '" + destType + "'! "
+                                             + "Use one of {:queue, :topic, :function}");
+                    }
+                }
+                else {
+                    final String destName = Coerce.toVncString(args.nth(2)).toString();
+                    final String principal = Coerce.toVncString(args.nth(3)).toString();
+
+                    switch(destType) {
+                        case "queue":    authenticator.removeQueueAcl(destName, principal);    break;
+                        case "topic":    authenticator.removeTopicAcl(destName, principal);    break;
+                        case "function": authenticator.removeFunctionAcl(destName, principal); break;
+                        default:         throw new IpcException(
+                                            "Invalid destination type '" + destType + "'! "
+                                             + "Use one of {:queue, :topic, :function}");
+                    }
                 }
 
                 return new VncJavaObject(authenticator);
