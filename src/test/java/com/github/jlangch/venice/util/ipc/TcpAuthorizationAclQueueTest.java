@@ -148,6 +148,7 @@ public class TcpAuthorizationAclQueueTest {
         authenticator.addCredentials("jak", "123");
         authenticator.addCredentials("admin", "123", true);
 
+        authenticator.setQueueDefaultAcl(AccessMode.DENY);
         authenticator.setQueueAcl("queue/1", AccessMode.READ_WRITE, "tom");
 
         try (final Server server = Server.of(ServerConfig

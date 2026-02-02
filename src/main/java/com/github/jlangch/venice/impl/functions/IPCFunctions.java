@@ -2093,7 +2093,7 @@ public class IPCFunctions {
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
                         "| dest-name     | A destination name |\n" +
-                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute` } |" +
+                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |" +
                         "| principal     | A principal |\n\n" +
                         "*ACL configurations:* \n\n" +
                         "| queue offer      | `:queue` -> one of { `:write`, `:read-write` } |\n" +
@@ -2112,7 +2112,8 @@ public class IPCFunctions {
                         "  (ipc/add-acl auth :function :echo :execute \"tom\"))   ")
                     .seeAlso(
                         "ipc/authenticator",
-                        "ipc/remove-acl")
+                        "ipc/remove-acl",
+                        "ipc/default-acl")
                     .build()
         ) {
             @Override
@@ -2131,9 +2132,10 @@ public class IPCFunctions {
                     case "write":      mode = AccessMode.WRITE;       break;
                     case "read-write": mode = AccessMode.READ_WRITE;  break;
                     case "execute":    mode = AccessMode.EXECUTE;     break;
+                    case "deny":       mode = AccessMode.DENY;        break;
                     default:           throw new IpcException(
                                           "Invalid access '" + access + "'! "
-                                          + "Use one of {:read, :write, :read-write, :execute}");
+                                          + "Use one of {:read, :write, :read-write, :execute, :deny}");
                 }
 
                 switch(destType) {
@@ -2175,7 +2177,8 @@ public class IPCFunctions {
                         "  (ipc/remove-acl auth :function :echo \"tom\"))     ")
                     .seeAlso(
                         "ipc/authenticator",
-                        "ipc/add-acl")
+                        "ipc/add-acl",
+                        "ipc/default-acl")
                     .build()
         ) {
             @Override
@@ -2202,6 +2205,66 @@ public class IPCFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+    public static VncFunction ipc_default_acl =
+        new VncFunction(
+                "ipc/default-acl",
+                VncFunction
+                    .meta()
+                    .arglists("(ipc/default-acl authenticator dest-type access)")
+                    .doc(
+                        "Add default ACL item for a destination type\n\n" +
+                        "*Arguments:* \n\n" +
+                        "| authenticator | An authenticator |\n" +
+                        "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
+                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |")
+                    .examples(
+                        "(let [auth (ipc/authenticator)]                          \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")             \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)      \n" +
+                        "  (ipc/add-default-acl auth :queue :read) \n" +
+                        "  (ipc/add-default-acl auth :topic :deny) \n" +
+                        "  (ipc/add-default-acl auth :function :deny))   ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/add-acl",
+                        "ipc/remove-acl")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
+                final String destType = Coerce.toVncString(args.nth(1)).toString();
+                final String access = Coerce.toVncString(args.nth(2)).toString();
+
+                AccessMode mode = null;
+                switch(access) {
+                    case "read":       mode = AccessMode.READ;        break;
+                    case "write":      mode = AccessMode.WRITE;       break;
+                    case "read-write": mode = AccessMode.READ_WRITE;  break;
+                    case "execute":    mode = AccessMode.EXECUTE;     break;
+                    case "deny":       mode = AccessMode.DENY;        break;
+                    default:           throw new IpcException(
+                                          "Invalid access '" + access + "'! "
+                                          + "Use one of {:read, :write, :read-write, :execute, :deny}");
+                }
+
+                switch(destType) {
+                    case "queue":    authenticator.setQueueDefaultAcl(mode);    break;
+                    case "topic":    authenticator.setTopicDefaultAcl(mode);    break;
+                    case "function": authenticator.setFunctionDefaultAcl(mode); break;
+                    default:         throw new IpcException(
+                                         "Invalid destination type '" + destType + "'! "
+                                         + "Use one of {:queue, :topic, :function}");
+                }
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     // ------------------------------------------------------------------------
@@ -4147,6 +4210,7 @@ public class IPCFunctions {
                     .add(ipc_clear_credentials)
                     .add(ipc_add_acl)
                     .add(ipc_remove_acl)
+                    .add(ipc_default_acl)
 
                     .add(ipc_text_message)
                     .add(ipc_plain_text_message)

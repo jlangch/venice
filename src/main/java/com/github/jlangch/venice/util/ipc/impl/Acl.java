@@ -44,6 +44,9 @@ public class Acl {
         this.subject = subject;
         this.principal = principal == null ? "*" : principal;
         this.mode = mode;
+        this.read = mode == READ || mode == READ_WRITE;
+        this.write = mode == WRITE || mode == READ_WRITE;
+        this.exec = mode == EXECUTE;
     }
 
 
@@ -61,16 +64,17 @@ public class Acl {
 
 
     public boolean canRead() {
-        return mode == READ || mode == READ_WRITE;
+        return read;
     }
 
     public boolean canWrite() {
-        return mode == WRITE || mode == READ_WRITE;
+        return write;
     }
 
     public boolean canExecute() {
-        return mode == EXECUTE;
+        return exec;
     }
+
 
     @Override
     public String toString() {
@@ -82,4 +86,7 @@ public class Acl {
     private final String subject;
     private final String principal;
     private final AccessMode mode;
+    private final boolean read;
+    private final boolean write;
+    private final boolean exec;
 }

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -150,6 +151,34 @@ public class Authenticator {
     // ------------------------------------------------------------------------
     // ACL
     // ------------------------------------------------------------------------
+
+    public void setQueueDefaultAcl(final AccessMode mode) {
+        Objects.requireNonNull(mode);
+        queueDefault.set(new Acl("*", "*", mode));
+    }
+
+    public Acl getQueueDefaultAcl() {
+        return queueDefault.get();
+    }
+
+    public void setTopicDefaultAcl(final AccessMode mode) {
+        Objects.requireNonNull(mode);
+        topicDefault.set(new Acl("*", "*", mode));
+    }
+
+    public Acl getTopicDefaultAcl() {
+        return topicDefault.get();
+    }
+
+    public void setFunctionDefaultAcl(final AccessMode mode) {
+        Objects.requireNonNull(mode);
+        functionDefault.set(new Acl("*", "*", mode));
+    }
+
+    public Acl getFunctionDefaultAcl() {
+        return functionDefault.get();
+    }
+
 
     public void setQueueAcl(
             final String queueName,
@@ -328,6 +357,14 @@ public class Authenticator {
             final VncList tacls = (VncList)map.get(new VncString("topic-acls"));
             final VncList facls = (VncList)map.get(new VncString("function-acls"));
 
+            final VncMap qdacl = (VncMap)map.get(new VncString("queue-default-acl"));
+            final VncMap tdacl = (VncMap)map.get(new VncString("topic-default-acl"));
+            final VncMap fdacl = (VncMap)map.get(new VncString("function-default-acl"));
+
+            queueDefault.set(toAcl(qdacl));
+            topicDefault.set(toAcl(tdacl));
+            functionDefault.set(toAcl(fdacl));
+
             auths.forEach(a -> { Auth auth = toAuth((VncMap)a);
                                  authorizations.put(auth.principal, auth); });
 
@@ -375,6 +412,14 @@ public class Authenticator {
         final VncHashMap data = VncHashMap.of(
                                     new VncString("authorizations"),
                                     VncList.ofColl(auths),
+
+                                    new VncString("queue-default-acl"),
+                                    toVncMap(queueDefault.get()),
+                                    new VncString("topic-default-acl"),
+                                    toVncMap(topicDefault.get()),
+                                    new VncString("function-default-acl"),
+                                    toVncMap(functionDefault.get()),
+
                                     new VncString("queue-acls"),
                                     VncList.ofColl(qacls),
                                     new VncString("topic-acls"),
@@ -492,6 +537,11 @@ public class Authenticator {
 
 
     private final PBKDF2PasswordEncoder pwEncoder = new PBKDF2PasswordEncoder();
+
+    // ACL defaults
+    private final AtomicReference<Acl> queueDefault    = new AtomicReference<>(new Acl("*", "*", AccessMode.READ_WRITE));
+    private final AtomicReference<Acl> topicDefault    = new AtomicReference<>(new Acl("*", "*", AccessMode.READ_WRITE));
+    private final AtomicReference<Acl> functionDefault = new AtomicReference<>(new Acl("*", "*", AccessMode.EXECUTE));
 
     // Mapped by principal -> Auth
     private final ConcurrentHashMap<String, Auth> authorizations = new ConcurrentHashMap<>();

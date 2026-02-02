@@ -116,7 +116,9 @@ public class ServerQueueManager {
                 //          server before starting the server
                 final List<IpcQueue<Message>> walQueues = wal.preloadQueues();
                 walQueues.forEach(q -> {
-                    q.updateAcls(authenticator.getQueueAclsMappedByPrincipal(q.name()));
+                    q.updateAcls(
+                            authenticator.getQueueAclsMappedByPrincipal(q.name()),
+                            authenticator.getQueueDefaultAcl());
                     queues.put(q.name(), q);
                 });
             }
@@ -221,7 +223,9 @@ public class ServerQueueManager {
                                                     bounded,
                                                     durable);
 
-                   q.updateAcls(authenticator.getQueueAclsMappedByPrincipal(queueName));
+                   q.updateAcls(
+                           authenticator.getQueueAclsMappedByPrincipal(queueName),
+                           authenticator.getQueueDefaultAcl());
 
                    logger.info(
                       "server", "queue",

@@ -66,7 +66,9 @@ public class ServerTopicManager {
                 n -> {
                     final Topic t = new Topic(topicName);
 
-                    t.updateAcls(authenticator.getTopicAclsMappedByPrincipal(topicName));
+                    t.updateAcls(
+                            authenticator.getTopicAclsMappedByPrincipal(topicName),
+                            authenticator.getTopicDefaultAcl());
 
                     logger.info(
                         "server", "topic",

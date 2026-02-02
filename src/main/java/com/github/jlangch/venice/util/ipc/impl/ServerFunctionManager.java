@@ -73,7 +73,9 @@ public class ServerFunctionManager {
                 n -> {
                     final IpcFunction t = new Func(functionName, func);
 
-                    t.updateAcls(authenticator.getFunctionAclsMappedByPrincipal(functionName));
+                    t.updateAcls(
+                            authenticator.getFunctionAclsMappedByPrincipal(functionName),
+                            authenticator.getFunctionDefaultAcl());
 
                     logger.info(
                         "server", "function",

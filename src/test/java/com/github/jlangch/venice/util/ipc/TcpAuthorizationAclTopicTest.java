@@ -184,6 +184,7 @@ public class TcpAuthorizationAclTopicTest {
         authenticator.addCredentials("jak", "123");
         authenticator.addCredentials("admin", "123", true);
 
+        authenticator.setTopicDefaultAcl(AccessMode.DENY);
         authenticator.setTopicAcl("topic/1", AccessMode.READ_WRITE, "tom");
 
         try (final Server server = Server.of(ServerConfig

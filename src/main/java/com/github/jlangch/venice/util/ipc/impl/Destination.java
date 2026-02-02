@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.util.ipc.AccessMode;
+
 
 public abstract class Destination implements IDestination {
 
@@ -39,44 +41,32 @@ public abstract class Destination implements IDestination {
 
     @Override
     public boolean canRead(final String principal) {
-        if (principal == null) {
-            return true;
-        }
-        else {
-            final Acl acl = acls.get(principal);
-            return acl != null ? acl.canRead() : noAcls;
-        }
+        return principal == null
+                ? defaultAcl.canRead()
+                : acls.getOrDefault(principal, defaultAcl).canRead();
     }
 
     @Override
     public boolean canWrite(final String principal) {
-        if (principal == null) {
-            return true;
-        }
-        else {
-            final Acl acl = acls.get(principal);
-            return acl != null ? acl.canWrite() : noAcls;
-        }
+        return principal == null
+                ? defaultAcl.canWrite()
+                : acls.getOrDefault(principal, defaultAcl).canWrite();
     }
 
     @Override
     public boolean canExecute(final String principal) {
-        if (principal == null) {
-            return true;
-        }
-        else {
-            final Acl acl = acls.get(principal);
-            return acl != null ? acl.canExecute() : noAcls;
-        }
+        return principal == null
+                ? defaultAcl.canExecute()
+                : acls.getOrDefault(principal, defaultAcl).canExecute();
     }
 
     @Override
-    public void updateAcls(final Map<String,Acl>  acls) {
+    public void updateAcls(final Map<String,Acl>  acls, final Acl defaultAcl) {
         this.acls.clear();
         if (acls != null) {
             this.acls.putAll(acls);
         }
-        noAcls = this.acls.isEmpty();
+        this.defaultAcl = defaultAcl;
     }
 
     @Override
@@ -88,6 +78,6 @@ public abstract class Destination implements IDestination {
     private final String name;
 
     // ACL mapped by principal -> ACL
-    private volatile boolean noAcls = true;
+    private volatile Acl defaultAcl = new Acl("*", "*", AccessMode.DENY);
     private final ConcurrentHashMap<String, Acl> acls = new ConcurrentHashMap<>();
 }

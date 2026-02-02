@@ -30,6 +30,8 @@ public enum AccessMode {
 
     READ_WRITE,
 
-    EXECUTE;
+    EXECUTE,
+
+    DENY;
 
 }
