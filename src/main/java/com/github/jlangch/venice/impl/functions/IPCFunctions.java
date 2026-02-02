@@ -2212,7 +2212,7 @@ public class IPCFunctions {
                     .meta()
                     .arglists("(ipc/default-acl authenticator dest-type access)")
                     .doc(
-                        "Add default ACL item for a destination type\n\n" +
+                        "Add default ACL item to override system defaults for a destination type\n\n" +
                         "*Arguments:* \n\n" +
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
