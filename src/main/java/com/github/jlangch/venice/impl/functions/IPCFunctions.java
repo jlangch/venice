@@ -106,6 +106,8 @@ public class IPCFunctions {
                                                         " Defaults to 20.|\n" +
                         "| :max-topics n                | The number of the max topics the server can handle.¶" +
                                                         " Defaults to 20.|\n" +
+                        "| :max-functions n             | The number of the max functions the server can handle.¶" +
+                                                        " Defaults to 20.|\n" +
                         "| :compress-cutoff-size n      | The compression cutoff size for payload messages.¶" +
                                                         " With a negative cutoff size payload messages will not be" +
                                                         " compressed. If the payload message size is greater than the cutoff" +
@@ -220,6 +222,7 @@ public class IPCFunctions {
                 final VncVal maxMsgSizeVal = options.get(new VncKeyword("max-message-size"));
                 final VncVal maxMaxQueuesVal = options.get(new VncKeyword("max-queues"), new VncLong(-1));
                 final VncVal maxMaxTopicsVal = options.get(new VncKeyword("max-topics"), new VncLong(-1));
+                final VncVal maxMaxFunctionsVal = options.get(new VncKeyword("max-functions"), new VncLong(-1));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
                 final VncVal serverLogDirVal = options.get(new VncKeyword("server-log-dir"));
@@ -238,6 +241,7 @@ public class IPCFunctions {
                 final long maxMsgSize = convertUnitValueToLong(maxMsgSizeVal);
                 final long maxQueues = Coerce.toVncLong(maxMaxQueuesVal).getValue();
                 final long maxTopics = Coerce.toVncLong(maxMaxTopicsVal).getValue();
+                final long maxFunctions = Coerce.toVncLong(maxMaxFunctionsVal).getValue();
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                 final long heartbeatInterval = Coerce.toVncLong(heartbeatIntervalVal).getValue();
@@ -289,6 +293,9 @@ public class IPCFunctions {
                 }
                 if (maxTopics > 0) {
                     builder.maxTopics((int)maxTopics);
+                }
+                if (maxFunctions > 0) {
+                    builder.maxFunctions((int)maxFunctions);
                 }
                 if (compressCutoffSize >= 0) {
                     builder.compressCutoffSize((int)compressCutoffSize);
