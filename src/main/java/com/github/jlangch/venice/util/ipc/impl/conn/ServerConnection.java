@@ -146,6 +146,8 @@ public class ServerConnection implements IPublisher, Runnable {
         this.statistics = context.statistics;
         this.serverThreadPoolStatistics = context.serverThreadPoolStatistics;
 
+        this.publisherThread = new Thread(() -> publisherWorker(), "venice-ipc-server-publisher");
+
         setupHandlers();
     }
 
@@ -170,7 +172,6 @@ public class ServerConnection implements IPublisher, Runnable {
             statistics.incrementConnectionCount();
 
             // start publisher thread
-            publisherThread = new Thread(() -> publisherWorker(), "venice-ipc-server-publisher");
             publisherThread.setDaemon(true);
             publisherThread.start();
 
@@ -181,6 +182,9 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         catch(Exception ex) {
             // fail fast -> close channel
+
+            // stop publisher thread through interrupt
+            try { publisherThread.interrupt(); } catch(Exception ignore) {}
 
             // when the client closed the connection
             //   - server gets a java.io.IOException: Broken pipe
@@ -200,7 +204,7 @@ public class ServerConnection implements IPublisher, Runnable {
         try {
             // Enqueue the message to publish it as soon as possible
             // to this channels's client.
-            // The publish queue is blocking to not get overrun. to prevent
+            // The publish queue is blocking to not get overrun. To prevent
             // a backlash if the queue is full, the message will be discarded!
             final long timeout = msg.getTimeout();
             final boolean ok = timeout < 0L
@@ -1253,9 +1257,9 @@ public class ServerConnection implements IPublisher, Runnable {
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
 
-    private Thread publisherThread;
     private AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
     private long lastHeartbeat = 0L;
+    private String clientPublicKey = null;
 
     // authentication
     private String principal = "anon";
@@ -1274,11 +1278,15 @@ public class ServerConnection implements IPublisher, Runnable {
     private final Supplier<VncMap> serverThreadPoolStatistics;
     private final Authenticator authenticator;
 
+    // lifecycle
     private final AtomicBoolean stop = new AtomicBoolean(false);
 
     private final Semaphore sendSemaphore = new Semaphore(1);
 
     private final Protocol protocol = new Protocol();
+
+    // topic publisher
+    private final Thread publisherThread;
 
     // configuration
     private final long maxMessageSize;
@@ -1297,7 +1305,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final boolean enforceEncryption;
     private final DiffieHellmanKeys dhKeys;
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
-    private String clientPublicKey = null;
 
     // queues
     private final IpcQueue<Error> errorBuffer;
