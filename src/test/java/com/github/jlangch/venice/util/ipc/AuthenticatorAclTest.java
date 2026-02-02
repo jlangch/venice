@@ -69,6 +69,14 @@ public class AuthenticatorAclTest {
         assertEquals(READ_WRITE, a.getQueueAclsMappedByPrincipal("q1").get("jak").getMode());
         assertTrue(a.getQueueAclsMappedByPrincipal("q1").get("jak").canRead());
         assertTrue(a.getQueueAclsMappedByPrincipal("q1").get("jak").canWrite());
+
+        a.removeQueueAcl("q1", "tom");
+
+        assertEquals(2, a.getQueueAclsMappedByPrincipal("q1").size());
+
+        a.removeQueueAcl("q1");
+
+        assertEquals(0, a.getQueueAclsMappedByPrincipal("q1").size());
     }
 
     @Test
@@ -100,6 +108,14 @@ public class AuthenticatorAclTest {
         assertEquals(READ_WRITE, a.getTopicAclsMappedByPrincipal("t1").get("jak").getMode());
         assertTrue(a.getTopicAclsMappedByPrincipal("t1").get("jak").canRead());
         assertTrue(a.getTopicAclsMappedByPrincipal("t1").get("jak").canWrite());
+
+        a.removeTopicAcl("t1", "tom");
+
+        assertEquals(2, a.getTopicAclsMappedByPrincipal("t1").size());
+
+        a.removeTopicAcl("t1");
+
+        assertEquals(0, a.getTopicAclsMappedByPrincipal("t1").size());
     }
 
     @Test
@@ -108,29 +124,40 @@ public class AuthenticatorAclTest {
 
         assertEquals(0, a.getFunctionAclsMappedByPrincipal("t1").size());
 
-        a.setFunctionAcl("t1", READ, "tom");
-        a.setFunctionAcl("t1", WRITE, "max");
-        a.setFunctionAcl("t1", READ_WRITE, "jak");
+        a.setFunctionAcl("t1", EXECUTE, "tom");
+        a.setFunctionAcl("t1", EXECUTE, "max");
+        a.setFunctionAcl("t1", DENY, "jak");
 
         assertEquals(3, a.getFunctionAclsMappedByPrincipal("t1").size());
 
         assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("tom").getSubject());
         assertEquals("tom", a.getFunctionAclsMappedByPrincipal("t1").get("tom").getPrincipal());
-        assertEquals(READ, a.getFunctionAclsMappedByPrincipal("t1").get("tom").getMode());
-        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canRead());
+        assertEquals(EXECUTE, a.getFunctionAclsMappedByPrincipal("t1").get("tom").getMode());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canRead());
         assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canWrite());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("tom").canExecute());
 
         assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("max").getSubject());
         assertEquals("max", a.getFunctionAclsMappedByPrincipal("t1").get("max").getPrincipal());
-        assertEquals(WRITE, a.getFunctionAclsMappedByPrincipal("t1").get("max").getMode());
+        assertEquals(EXECUTE, a.getFunctionAclsMappedByPrincipal("t1").get("max").getMode());
         assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("max").canRead());
-        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("max").canWrite());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("max").canWrite());
+        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("max").canExecute());
 
         assertEquals("t1", a.getFunctionAclsMappedByPrincipal("t1").get("jak").getSubject());
         assertEquals("jak", a.getFunctionAclsMappedByPrincipal("t1").get("jak").getPrincipal());
-        assertEquals(READ_WRITE, a.getFunctionAclsMappedByPrincipal("t1").get("jak").getMode());
-        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canRead());
-        assertTrue(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canWrite());
+        assertEquals(DENY, a.getFunctionAclsMappedByPrincipal("t1").get("jak").getMode());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canRead());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canWrite());
+        assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canExecute());
+
+        a.removeFunctionAcl("t1", "tom");
+
+        assertEquals(2, a.getFunctionAclsMappedByPrincipal("t1").size());
+
+        a.removeFunctionAcl("t1");
+
+        assertEquals(0, a.getFunctionAclsMappedByPrincipal("t1").size());
     }
 
     @Test
