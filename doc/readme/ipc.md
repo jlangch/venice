@@ -7,15 +7,17 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
  
 
 * [IPC Communication Modes](#ipc-communication-modes)
-    * [Send and Receive](#send-and-receive)
-    * [Offer and Poll](#offer-and-poll)
-    * [Offer and Poll with durable Queues](#offer-and-poll-with-durable-queues)
-    * [Publish and Subscribe](#publish-and-subscribe)
+    * [Functions Send/Receive](#functions-send-receive)
+    * [Queues Offer/Poll](#queues-offer-poll)
+    * [Topics Publish/Subscribe](#topics-publish-subscribe)
 * [Authentication](#authentication)
 * [Messages](#messages)
 * [Compressing Messages](#compressing-messages)
 * [Encrypting Messages](#encrypting-messages)
 * [Managing Destinations](#managing-destinations)
+    * [Queues](#functions)
+    * [Topics](#queues)
+    * [Functions](#topics)
 * [Message Utils](#message-utils)
 * [Benchmark](#benchmark)
 * [Timeouts, Retries, and Idempotency in Distributed Systems](#timeouts-retries-and-idempotency-in-distributed-systems)
@@ -36,7 +38,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
 
 ## IPC Communication Modes
 
-### Send and Receive
+### Functions Send/Receive
 
 Send a message from a client to a server and receive a response. The server's 
 pluggable handler function computes the response from the request.
@@ -139,11 +141,16 @@ pluggable handler function computes the response from the request.
 
 
 
-### Offer and Poll
+### Queues Offer/Poll
 
 Offer messages to a queue and poll messages from a queue. More than one client can offer/poll
 messages to/from queues but a message is delivered to one client only.
 
+
+#### Offer and Poll with transient Queues
+
+Transient queues and its messages live only as long as the servers lives.
+ 
 
 **Synchronous offer / poll**
 
@@ -276,11 +283,11 @@ Coffee order example:
 
 
 
-### Offer and Poll with durable Queues
+#### Offer and Poll with durable Queues
 
 Venice supports durable queues if the Write-Ahead-Log option is activated on 
 the server. 
-
+ 
 
 ```clojure
 (let [wal-dir (io/file (io/temp-dir "wal-"))]
@@ -352,7 +359,7 @@ the server.
 
 
 
-### Publish and Subscribe
+### Topics Publish/Subscribe
 
 Publish a message to a topic. All clients that have subscribed to a topic will receive
 the messages on the topic. After subscribing to a topic the client turns into subscription
