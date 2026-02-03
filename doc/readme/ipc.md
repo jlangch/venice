@@ -15,7 +15,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
 * [Messages](#messages)
 * [Compressing Messages](#compressing-messages)
 * [Encrypting Messages](#encrypting-messages)
-* [Managing Queues](#managing-queues)
+* [Managing Destinations](#managing-destinations)
 * [Message Utils](#message-utils)
 * [Benchmark](#benchmark)
 * [Timeouts, Retries, and Idempotency in Distributed Systems](#timeouts-retries-and-idempotency-in-distributed-systems)
@@ -743,12 +743,13 @@ exchanged using the Diffie-Hellman key exchange algorithm.
  
  
 
-## Managing Queues
+## Managing Destinations
 
 > [!NOTE]
-> All queue management functions require an 'admin' user when called
+> All destination management functions require an 'admin' user when called
 > from a client node! 
 
+### Queues
 
 #### Create Bounded and Circular Queues
 
@@ -759,13 +760,13 @@ Create through 'server'
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
 
-    (ipc/create-queue server "queue/1" 100 :bounded)
-    (ipc/create-queue server "queue/2" 100 :circular)
+    (ipc/create-queue server :queue/1 100 :bounded)
+    (ipc/create-queue server :queue/2 100 :circular)
 
-    (ipc/offer client "queue/1" 300 
+    (ipc/offer client :queue/1 300 
                (ipc/plain-text-message "1" :test "hello"))
 
-    (ipc/offer client "queue/2" 300 
+    (ipc/offer client :queue/2 300 
                (ipc/plain-text-message "2" :test "hello"))))
 ```
 
@@ -781,13 +782,13 @@ Create through 'client' (requires 'admin' user)
     (try-with [server (ipc/server 33333 :encrypt true :authenticator auth)
                client (ipc/client 33333 :user-name "tom" :password "123")]
 
-      (ipc/create-queue client "queue/1" 100 :bounded)
-      (ipc/create-queue client "queue/2" 100 :circular)
+      (ipc/create-queue client :queue/1 100 :bounded)
+      (ipc/create-queue client :queue/2 100 :circular)
 
-      (ipc/offer client "queue/1" 300 
+      (ipc/offer client :queue/1 300 
                  (ipc/plain-text-message "1" :test "hello"))
 
-      (ipc/offer client "queue/2" 300 
+      (ipc/offer client :queue/2 300 
                  (ipc/plain-text-message "2" :test "hello")))))
 ```
 
@@ -841,6 +842,7 @@ as long as the client lives!
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
+    
     (ipc/create-queue server :queue/1 100)
     ;; ...
     (ipc/remove-queue server :queue/1)))
@@ -853,6 +855,7 @@ as long as the client lives!
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
+    
     (ipc/create-queue server :queue/1 100)
     ;; ...
     (ipc/exists-queue? server :queue/1)))
@@ -867,16 +870,106 @@ for bounded or circular queues
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
+    
     (ipc/create-queue server :queue/1 100)
      
-    (ipc/offer client "queue/1" 300 
+    (ipc/offer client :queue/1 300 
                (ipc/plain-text-message "1" :test "hello"))
     ;; ...
     (ipc/queue-status server :queue/1)))
 ```
 
  
+
+### Topics
+
+#### Create Topics
+
+Create through 'server'
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+
+    (ipc/create-topic server :topic/1)
+    (ipc/create-topic server :topic/2)
+
+    (ipc/publish client :topic/1 (ipc/plain-text-message "1" :test "hello"))))
+```
+
+
+Create through 'client' (requires 'admin' user)
+
+```clojure
+(do
+  (let [auth (ipc/authenticator)]
+    (ipc/add-credentials auth "max" "756")         ;; normal user
+    (ipc/add-credentials auth "tom" "123" :admin)  ;; admin user
+
+    (try-with [server (ipc/server 33333 :encrypt true :authenticator auth)
+               client (ipc/client 33333 :user-name "tom" :password "123")]
+
+      (ipc/create-topic client :topic/1)
+      (ipc/create-topic client :topic/2)
+
+      (ipc/publish client :topic/1 (ipc/plain-text-message "1" :test "hello")))))
+```
+
+#### Remove Topics
+
+```clojure
+(do
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+    
+    (ipc/create-topic server :topic/1)
+    ;; ...
+    (ipc/remove-topic server :topic/1)))
+```
+
+
+### Functions
+
+> [!NOTE]
+> Functions can be created from a server only!
+
+
+#### Create Functions
+
+```clojure
+(do
+  (defn echo-handler [m] m)
+  
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+
+    (ipc/create-function server :echo echo-handler)
+
+    ;; send a plain text message: requestId="1", subject=:test, payload="hello"
+    (->> (ipc/plain-text-message "1" :test "hello")
+         (ipc/send client :echo)  ;; send to echo-handler
+         (ipc/message->json true)
+         (println "RESPONSE:"))))
+```
+
+
+#### Remove Functions
+
+```clojure
+(do
+  (defn echo-handler [m] m)
+  
+  (try-with [server (ipc/server 33333)
+             client (ipc/client 33333)]
+
+    (ipc/create-function server :echo echo-handler)
+    ;; ...
+    (ipc/remove-function server :echo)))
+```
+
  
+
 
 ## Message Utils
 
