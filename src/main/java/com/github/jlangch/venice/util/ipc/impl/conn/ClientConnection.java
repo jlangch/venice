@@ -103,11 +103,11 @@ public class ClientConnection implements AutoCloseable {
                 final long srv_cutoffSize     = getLong(cfg, "compress-cutoff-size", -1);
                 final long srv_maxMessageSize = getLong(cfg, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
                 final boolean srv_encryption  = getBoolean(cfg, "encrypt", false);
-                final long srv_heartbeatInterval = getLong(cfg, "heartbeat-interval", 0);
+                final long srv_heartbeatInterval = getLong(cfg, "heartbeat-interval-seconds", 0);
                 final boolean srv_authentication = getBoolean(cfg, "authentication", false);
 
                 maxMessageSize = srv_maxMessageSize;
-                heartbeatInterval = srv_heartbeatInterval;
+                heartbeatIntervalSeconds = srv_heartbeatInterval;
                 compressor = new Compressor(srv_cutoffSize);
                 encrypt = config.isEncrypting() || srv_encryption;
                 authentication = srv_authentication;
@@ -162,12 +162,12 @@ public class ClientConnection implements AutoCloseable {
             opened.set(true);
 
             // [8] Start heartbeat timer
-            if (heartbeatInterval > 0) {
+            if (heartbeatIntervalSeconds > 0) {
                 heartbeatTimer.set(new Timer("venice-ipc-heartbeat"));
                 heartbeatTimer.get().scheduleAtFixedRate(
                     wrapTask(() -> sendHeartbeat()),
                     HEARTBEAT_START_DELAY,
-                    heartbeatInterval * 1000L);
+                    heartbeatIntervalSeconds * 1000L);
             }
         }
         catch(Exception ex) {
@@ -593,7 +593,7 @@ public class ClientConnection implements AutoCloseable {
     private final Protocol protocol = new Protocol();
 
     private final long maxMessageSize;
-    private final long heartbeatInterval;
+    private final long heartbeatIntervalSeconds;
     private final boolean authentication;
 
     // compression

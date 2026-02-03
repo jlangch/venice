@@ -131,7 +131,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.maxMessageSize = config.getMaxMessageSize();
         this.maxQueues = config.getMaxQueues();
         this.maxTempQueuesPerConnection = config.getMaxTempQueuesPerConnection();
-        this.heartbeatInterval = config.getHeartbeatIntervalSeconds();
+        this.heartbeatIntervalSeconds = config.getHeartbeatIntervalSeconds();
         this.enforceEncryption = config.isEncrypting();
 
         this.publishQueue = new BoundedQueue<Message>("publish", context.publishQueueCapacity, false);
@@ -146,21 +146,16 @@ public class ServerConnection implements IPublisher, Runnable {
         this.statistics = context.statistics;
         this.serverThreadPoolStatistics = context.serverThreadPoolStatistics;
 
-        this.publisherThread = new Thread(() -> publisherWorker(), "venice-ipc-server-publisher");
+        this.publisherThread = new Thread(
+                                    () -> worker(),
+                                    "venice-ipc-server-worker-" + connectionId);
 
         setupHandlers();
     }
 
 
     public void close() {
-        stop.set(true);
-        publisherThread.interrupt();
-
-        IO.safeClose(ch);  // will trigger closeChannel()
-    }
-
-    public long millisSinceLastHeartbeat() {
-        return lastHeartbeat == 0L ? 0L : System.currentTimeMillis() - lastHeartbeat;
+        closeChannel();
     }
 
 
@@ -175,6 +170,13 @@ public class ServerConnection implements IPublisher, Runnable {
             publisherThread.setDaemon(true);
             publisherThread.start();
 
+            if (heartbeatIntervalSeconds <= 0L) {
+                logInfo("Heartbeat is not active");
+            }
+            else {
+                logInfo("Heartbeat (" + heartbeatIntervalSeconds + "s) is active");
+            }
+
             // enter message request processing loop
             while(!isStop()) {
                 processRequestResponse();
@@ -183,14 +185,10 @@ public class ServerConnection implements IPublisher, Runnable {
         catch(Exception ex) {
             // fail fast -> close channel
 
-            // stop publisher thread through interrupt
-            try { publisherThread.interrupt(); } catch(Exception ignore) {}
-
             // when the client closed the connection
             //   - server gets a java.io.IOException: Broken pipe
             //   - quit this connection and close the channel
-            logError("Error on connection from "
-                        +  IO.getRemoteAddress(ch) + "!",
+            logError("Error on connection from " +  IO.getRemoteAddress(ch) + "!",
                     ex);
         }
         finally {
@@ -260,6 +258,17 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
+    private void checkHeartbeatTimeout() {
+        if (heartbeatIntervalSeconds > 0L) {
+            // timeout: 3x heartbeat interval
+            final long timeout = heartbeatIntervalSeconds * 1000L * 3L;
+            if (System.currentTimeMillis() - lastHeartbeat > timeout) {
+                // Heartbeat timeout
+                logError("Heartbeat timeout");
+                closeChannel();
+            }
+        }
+    }
 
     // ------------------------------------------------------------------------
     // Sending replies back
@@ -288,8 +297,8 @@ public class ServerConnection implements IPublisher, Runnable {
         }
     }
 
-    private void publisherWorker() {
-        logInfo("Asychronous publisher started");
+    private void worker() {
+        logInfo("Asychronous worker started");
 
         while(!isStop()) {
             try {
@@ -303,13 +312,17 @@ public class ServerConnection implements IPublisher, Runnable {
 
                     sendResponse(pubMsg);
                 }
+
+                // check heartbeat timeout and close the channel if heartbeats did
+                // not arrive within the timeout period
+                checkHeartbeatTimeout();
             }
             catch(InterruptedException ex) {
                break;
             }
         }
 
-        logInfo("Asychronous publisher stopped");
+        logInfo("Asychronous worker stopped");
     }
 
 
@@ -852,7 +865,7 @@ public class ServerConnection implements IPublisher, Runnable {
                             .add("max-msg-size", maxMessageSize)
                             .add("compress-cutoff-size", compressor.cutoffSize())
                             .add("encrypt", enforceEncryption)
-                            .add("heartbeat-interval", heartbeatInterval)
+                            .add("heartbeat-interval-seconds", heartbeatIntervalSeconds)
                             .add("authentication", authenticator.isActive())
                             .toJson(false));
     }
@@ -984,7 +997,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("write-ahead-log-count", wal.isEnabled()
                                                             ? wal.countLogFiles()
                                                             : 0 )
-                           .add("hearbeat-interval", heartbeatInterval)
+                           .add("hearbeat-interval-seconds", heartbeatIntervalSeconds)
                            .add("logger-enabled", logger.isEnabled())
                            .add("logger-file", logger.getLogFile() != null
                                                 ? logger.getLogFile().getAbsolutePath()
@@ -1220,6 +1233,9 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private void closeChannel() {
+        stop.set(true);
+        publisherThread.interrupt();
+
         try { removeAllChannelTemporaryQueues(); } catch(Exception ignore) {}
 
         statistics.decrementConnectionCount();
@@ -1257,8 +1273,9 @@ public class ServerConnection implements IPublisher, Runnable {
     public static final int ERROR_QUEUE_CAPACITY = 50;
 
 
+    private volatile long lastHeartbeat = System.currentTimeMillis();  // Millis since epoch
+
     private AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
-    private long lastHeartbeat = 0L;
     private String clientPublicKey = null;
 
     // authentication
@@ -1292,7 +1309,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final long maxMessageSize;
     private final long maxQueues;
     private final long maxTempQueuesPerConnection;
-    private final long heartbeatInterval;
+    private final long heartbeatIntervalSeconds;
 
     private final ServerQueueManager queueManager;
     private final ServerTopicManager topicManager;
