@@ -260,8 +260,12 @@ public class ServerConnection implements IPublisher, Runnable {
 
     private void checkHeartbeatTimeout() {
         if (heartbeatIntervalSeconds > 0L) {
-            // timeout: 3x heartbeat interval
-            final long timeout = heartbeatIntervalSeconds * 1000L * 3L;
+            // timeout: after 2 missed heartbeats
+            //
+            // --+-----+-----o-----o-----o-----
+            //          \_____________^
+            //
+            final long timeout = (long)(2.5F * (heartbeatIntervalSeconds * 1000L));
             if (System.currentTimeMillis() - lastHeartbeat > timeout) {
                 // Heartbeat timeout
                 logError("Heartbeat timeout");
