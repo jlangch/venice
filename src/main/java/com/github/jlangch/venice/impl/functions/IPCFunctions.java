@@ -128,8 +128,8 @@ public class IPCFunctions {
                         "| :write-ahead-log-compress b  | If `true` compresses the write-ahead-log records.¶" +
                                                         " Defaults to `false`.|\n" +
                         "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
-                        "                                 Defaults to `false`.|\n" +
-                        "| :authenticator a             | An authenticator. If an authenticator is used encryption must \n" +
+                                                        " Defaults to `false`.|\n" +
+                        "| :authenticator a             | An authenticator. If an authenticator is used encryption must " +
                                                         " be enabled to safely transmit users credentials!¶" +
                                                         " Defaults to `nil`.|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
@@ -140,9 +140,13 @@ public class IPCFunctions {
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
                                                         " or a number with a unit like `:64KB` or `:1MB`.|\n" +
-                        "| :heartbeat-interval n        | Connection heartbeat interval in seconds. Must be greater" +
-                                                        " than 0.¶" +
-                                                        " Defaults to `nil`.|\n\n" +
+                        "| :heartbeat-interval n        | Connection heartbeat interval (in seconds).¶" +
+                                                        " When the heartbeat mechanism is enabled (interval > 0)," +
+                                                        " connected clients send a heartbeat message to the server at" +
+                                                        " the configured interval. If the server fails to receive three" +
+                                                        " consecutive heartbeat messages from a client, it considers" +
+                                                        " the client dead and closes the connection.¶" +
+                                                        " Defaults to 0 (heartbeat turned off).|\n\n" +
                         "**The server must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")
                     .examples(
