@@ -870,6 +870,9 @@ dependencies {
     testImplementation "org.bouncycastle:bcpkix-jdk18on:${bouncyCastle_Version}"
     testImplementation "org.bouncycastle:bctls-jdk18on:${bouncyCastle_Version}" 
 
+    testImplementation "com.kohlschutter.junixsocket:junixsocket-common:${junixsocket_Version}"
+    testImplementation "com.kohlschutter.junixsocket:junixsocket-native-common:${junixsocket_Version}"
+
 
     // Cheatsheet generation
     compileOnly "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
