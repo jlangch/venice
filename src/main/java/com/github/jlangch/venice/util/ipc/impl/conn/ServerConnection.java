@@ -195,23 +195,24 @@ public class ServerConnection implements IPublisher, Runnable {
     public void publish(final Message msg) {
         // Note: publish can be called from another ServerConnection thread!!
         try {
+            // mark the message as a subscription reply
+            final Message pubMsg = msg.withSubscriptionReply(true);
+
             // Enqueue the message to publish it as soon as possible
             // to this channels's client.
             // The publish queue is blocking to not get overrun. To prevent
             // a backlash if the queue is full, the message will be discarded!
-            final long timeout = msg.getTimeout();
+            final long timeout = pubMsg.getTimeout();
             final boolean ok = timeout < 0L
-                                ? publishQueue.offer(msg)
-                                : publishQueue.offer(msg, timeout, TimeUnit.SECONDS);
+                                ? publishQueue.offer(pubMsg)
+                                : publishQueue.offer(pubMsg, timeout, TimeUnit.SECONDS);
             if (!ok) {
-                queueManager.getDeadLetterQueue().offer(msg);
+                throw new RuntimeException("Publish failure!");
             }
         }
         catch(Exception ex) {
-            try {
-                queueManager.getDeadLetterQueue().offer(msg);
-            }
-            catch (Exception ignore) {}
+            try { addMessageToDeadLetterQueue(msg); } catch(Exception ignore) {}
+            statistics.incrementDiscardedPublishCount();
         }
     }
 
@@ -296,9 +297,12 @@ public class ServerConnection implements IPublisher, Runnable {
                        statistics.incrementPublishCount();
                     }
                     catch(InterruptedException ex ) {
+                        addMessageToDeadLetterQueue(msg);
+                        statistics.incrementDiscardedPublishCount();
                         throw ex;
                     }
                     catch(Exception ex ) {
+                        addMessageToDeadLetterQueue(msg);
                         statistics.incrementDiscardedPublishCount();
                     }
                 }
@@ -542,6 +546,10 @@ public class ServerConnection implements IPublisher, Runnable {
                         "Offered the message to the queue " + queueName);
             }
             else {
+                if (request.isOneway()) {
+                    addMessageToDeadLetterQueue(request);
+                }
+
                 return createTextResponse(
                         request,
                         QUEUE_FULL,
@@ -558,6 +566,11 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handlePollFromQueue(final Message request) {
+        if (request.isOneway()) {
+            logError("Queue poll requests must nor be oneway!");
+            return null;
+        }
+
         final String queueName = request.getDestinationName();
         try {
             final long timeout = request.getTimeout();
@@ -1126,6 +1139,17 @@ public class ServerConnection implements IPublisher, Runnable {
     // ------------------------------------------------------------------------
     // Utils
     // ------------------------------------------------------------------------
+
+    private void addMessageToDeadLetterQueue(final Message m)
+    throws InterruptedException {
+        try {
+            if (m != null) {
+                queueManager.getDeadLetterQueue().offer(m);
+            }
+        }
+        catch (InterruptedException ex) { throw ex; }
+        catch (Exception ignore) { }
+	}
 
     private void checkHeartbeatTimeout() {
         if (heartbeatIntervalSeconds > 0L) {
