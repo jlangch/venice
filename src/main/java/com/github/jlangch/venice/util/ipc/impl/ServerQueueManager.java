@@ -28,9 +28,11 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import com.github.jlangch.venice.util.ipc.AccessMode;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
@@ -47,6 +49,7 @@ public class ServerQueueManager {
         this.wal = wal;
         this.logger = logger;
         this.maxQueues = config.getMaxQueues();
+        this.deadLetterQueue = creatDeadLetterQueue();
     }
 
     /**
@@ -137,7 +140,17 @@ public class ServerQueueManager {
     public IpcQueue<Message> getQueue(final String queueName) {
         Objects.requireNonNull(queueName);
 
-        return queues.get(queueName);
+        return DEAD_LETTER_QUEUE_NAME.equals(queueName)
+                ? deadLetterQueue
+                : queues.get(queueName);
+    }
+
+    /**
+     * Get the dead letter queue.
+     * @return the dead letter queue.
+     */
+    public IpcQueue<Message> getDeadLetterQueue() {
+        return deadLetterQueue;
     }
 
     /**
@@ -281,10 +294,22 @@ public class ServerQueueManager {
         }
     }
 
+    private IpcQueue<Message> creatDeadLetterQueue() {
+        final IpcQueue<Message> q = new CircularBuffer<Message>(DEAD_LETTER_QUEUE_NAME, 100, false);
+        q.updateAcls(
+                new HashMap<String,Acl>(),
+                new Acl(DEAD_LETTER_QUEUE_NAME, null, AccessMode.DENY)); // admin only
+        return q;
+    }
+
+
+    public static final String DEAD_LETTER_QUEUE_NAME = "ipc.qld";
+
 
     private final Authenticator authenticator;
     private final WalQueueManager wal;
     private final ServerLogger logger;
     private final int maxQueues;
     private final Map<String, IpcQueue<Message>> queues = new ConcurrentHashMap<>();
+    private final IpcQueue<Message> deadLetterQueue;
 }

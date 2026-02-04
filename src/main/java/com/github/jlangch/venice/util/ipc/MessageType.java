@@ -47,7 +47,6 @@ public enum MessageType {
 
     SERVER_STATUS(50),
     SERVER_THREAD_POOL_STAT(51),
-    SERVER_NEXT_ERROR(52),
 
     DIFFIE_HELLMAN_KEY_REQUEST(60),
 

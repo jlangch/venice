@@ -35,7 +35,6 @@ import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_QUEUE;
 import static com.github.jlangch.venice.util.ipc.MessageType.REMOVE_TOPIC;
 import static com.github.jlangch.venice.util.ipc.MessageType.REQUEST;
 import static com.github.jlangch.venice.util.ipc.MessageType.RESPONSE;
-import static com.github.jlangch.venice.util.ipc.MessageType.SERVER_NEXT_ERROR;
 import static com.github.jlangch.venice.util.ipc.MessageType.SERVER_STATUS;
 import static com.github.jlangch.venice.util.ipc.MessageType.SERVER_THREAD_POOL_STAT;
 import static com.github.jlangch.venice.util.ipc.MessageType.STATUS_QUEUE;
@@ -93,13 +92,11 @@ import com.github.jlangch.venice.util.ipc.impl.ServerTopicManager;
 import com.github.jlangch.venice.util.ipc.impl.TopicValidator;
 import com.github.jlangch.venice.util.ipc.impl.dest.function.IpcFunction;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.BoundedQueue;
-import com.github.jlangch.venice.util.ipc.impl.dest.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
 import com.github.jlangch.venice.util.ipc.impl.dest.topic.IpcTopic;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
 import com.github.jlangch.venice.util.ipc.impl.util.Compressor;
 import com.github.jlangch.venice.util.ipc.impl.util.Encryptor;
-import com.github.jlangch.venice.util.ipc.impl.util.Error;
 import com.github.jlangch.venice.util.ipc.impl.util.ExceptionUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
@@ -135,7 +132,6 @@ public class ServerConnection implements IPublisher, Runnable {
         this.enforceEncryption = config.isEncrypting();
 
         this.publishQueue = new BoundedQueue<Message>("publish", context.publishQueueCapacity, false);
-        this.errorBuffer = new CircularBuffer<>("error", ERROR_QUEUE_CAPACITY, false);
         this.dhKeys = DiffieHellmanKeys.create();
 
         this.authenticator = context.authenticator;
@@ -208,13 +204,14 @@ public class ServerConnection implements IPublisher, Runnable {
                                 ? publishQueue.offer(msg)
                                 : publishQueue.offer(msg, timeout, TimeUnit.SECONDS);
             if (!ok) {
-                auditPublishError(msg, "Failed to enque message for publishing. Publish queue is full!");
+                queueManager.getDeadLetterQueue().offer(msg);
             }
         }
         catch(Exception ex) {
-            // there is no dead letter queue yet, just count the
-            // discarded messages
-            auditPublishError(msg, "Failed to enque message for publishing!", ex);
+            try {
+                queueManager.getDeadLetterQueue().offer(msg);
+            }
+            catch (Exception ignore) {}
         }
     }
 
@@ -235,7 +232,6 @@ public class ServerConnection implements IPublisher, Runnable {
         handlers.put(CLIENT_CONFIG,              this::handleClientConfigRequest);
         handlers.put(SERVER_STATUS,              this::handleServerStatusRequest);
         handlers.put(SERVER_THREAD_POOL_STAT,    this::handleServerThreadPoolStatisticsRequest);
-        handlers.put(SERVER_NEXT_ERROR,          this::handleServerNextErrorRequest);
         handlers.put(DIFFIE_HELLMAN_KEY_REQUEST, this::handleDiffieHellmanKeyExchange);
         handlers.put(AUTHENTICATION,             this::handleAuthentication);
         handlers.put(HEARTBEAT,                  this::handleHeartbeat);
@@ -305,17 +301,26 @@ public class ServerConnection implements IPublisher, Runnable {
 
         while(!isStop()) {
             try {
+                // [1] Message publishing
                 final Message msg = publishQueue.poll(1, TimeUnit.SECONDS);
 
                 if (isStop()) break;
 
                 if (msg != null) {
-                    statistics.incrementPublishCount();
-                    final Message pubMsg = msg.withType(REQUEST, true);
-
-                    sendResponse(pubMsg);
+                    try {
+                       sendResponse(msg.withType(REQUEST, true));
+                       statistics.incrementPublishCount();
+                    }
+                    catch(InterruptedException ex ) {
+                        throw ex;
+                    }
+                    catch(Exception ex ) {
+                        statistics.incrementDiscardedPublishCount();
+                    }
                 }
 
+                // [2] Heartbeat
+                //
                 // check heartbeat timeout and close the channel if heartbeats did
                 // not arrive within the timeout period
                 checkHeartbeatTimeout();
@@ -356,9 +361,6 @@ public class ServerConnection implements IPublisher, Runnable {
         if (request.getData().length > maxMessageSize) {
             if (request.isOneway()) {
                 // oneway request -> cannot send and error message back
-                auditResponseError(
-                    request,
-                    "Request too large! Cannot send error response back for oneway request!");
             }
             else {
                final Message response = createBadRequestResponse(
@@ -420,8 +422,6 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         catch(Exception ex) {
             final String errMsg = "Failed to handle '" + type + "' request!";
-            // send an error response
-            auditResponseError(request, errMsg, ex);
 
             // TODO: how much information from the exception shall we pass back
             //       to the client
@@ -604,13 +604,6 @@ public class ServerConnection implements IPublisher, Runnable {
                 }
                 else if (msg.hasExpired()) {
                     // discard expired message -> try next message from the queue
-                    auditResponseError(
-                        request,
-                        String.format(
-                            "Discarded expired message (request-id: %s)" +
-                            "polling from queue %s!",
-                            msg.getRequestId(),
-                            queueName));
                     continue;
                 }
                 else {
@@ -1035,50 +1028,6 @@ public class ServerConnection implements IPublisher, Runnable {
         return createJsonResponse(request, OK, Json.writeJson(statistics, true));
     }
 
-    private Message handleServerNextErrorRequest(final Message request) {
-        if (!adminAuthorization) {
-            return createNoPermissionResponse(
-                    request,
-                    "The client is not permitted to get the next server error!");
-        }
-
-        try {
-            final Error err = errorBuffer.poll();
-            if (err == null) {
-                return createJsonResponse(
-                        request,
-                        QUEUE_EMPTY,
-                        new JsonBuilder()
-                                .add("status", "no_errors_available")
-                                .toJson(false));
-            }
-            else {
-                final String description = err.getDescription();
-                final Exception ex = err.getException();
-                final String exMsg = ex == null ? null :  ex.getMessage();
-
-                return createJsonResponse(
-                        request,
-                        OK,
-                        new JsonBuilder()
-                                .add("status", "error")
-                                .add("description", description)
-                                .add("exception", exMsg)
-                                .add("errors-left", errorBuffer.size())
-                                .toJson(false));
-            }
-        }
-        catch(Exception ex) {
-            return createJsonResponse(
-                    request,
-                    HANDLER_ERROR,
-                    new JsonBuilder()
-                            .add("status", "temporarily_unavailable")
-                            .toJson(false));
-        }
-    }
-
-
 
     // ------------------------------------------------------------------------
     // Create response messages
@@ -1189,38 +1138,6 @@ public class ServerConnection implements IPublisher, Runnable {
                     : toBytes(text, "UTF-8"));
     }
 
-    private void auditResponseError(final Message request, final String errorMsg) {
-        auditResponseError(request, errorMsg, null);
-    }
-
-    private void auditResponseError(
-            final Message request,
-            final String errorMsg,
-            final Exception ex
-    ) {
-        try {
-            errorBuffer.offer(new Error(errorMsg, request, ex));
-            statistics.incrementDiscardedResponseCount();
-        }
-        catch(InterruptedException ignore) {}
-    }
-
-
-    private void auditPublishError(final Message msg, final String errorMsg) {
-        auditPublishError(msg, errorMsg, null);
-    }
-
-    private void auditPublishError(
-            final Message msg,
-            final String errorMsg,
-            final Exception ex
-    ) {
-        try {
-            errorBuffer.offer(new Error(errorMsg, msg, ex));
-            statistics.incrementDiscardedPublishCount();
-        }
-        catch(InterruptedException ignore) { }
-    }
 
     private void removeAllChannelTemporaryQueues() {
         try {
@@ -1327,7 +1244,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final AtomicReference<Encryptor> encryptor = new AtomicReference<>(Encryptor.off());
 
     // queues
-    private final IpcQueue<Error> errorBuffer;
     private final IpcQueue<Message> publishQueue;
     private final Map<String, Integer> tmpQueues = new ConcurrentHashMap<>();
 

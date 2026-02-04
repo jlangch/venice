@@ -952,24 +952,6 @@ public class Client implements Cloneable, AutoCloseable {
     }
 
     /**
-     * Return the next server error related to this client
-     *
-     * @return a map with the error or <code>null</code> if no error is available
-     */
-    @SuppressWarnings("unchecked")
-    public Map<String,Object> getNextServerError() {
-        if (!opened.get()) {
-            throw new IllegalStateException("The client is not open!");
-        }
-
-        final VncMap data = getNextServerErrorRaw();
-
-        return data == null
-                ? null
-                : (Map<String,Object>)data.convertToJavaObject();
-    }
-
-    /**
      * Calculate the effective message size
      *
      * <p>Returns a map with the break down message size:
@@ -1071,34 +1053,6 @@ public class Client implements Cloneable, AutoCloseable {
                     "Failed get server thread pool statistics! Reason: " + response.getText());
         }
     }
-
-    private VncMap getNextServerErrorRaw() {
-        final Message m = new Message(
-                                null,
-                                MessageType.SERVER_NEXT_ERROR,
-                                ResponseStatus.NULL,
-                                false,
-                                false,
-                                false,
-                                1_000L,
-                                "",
-                                "text/plain",
-                                "UTF-8",
-                                new byte[0]);
-
-        final IMessage response = send(m);
-        if (response.getResponseStatus() == ResponseStatus.OK) {
-           return (VncMap)response.getVeniceData();
-        }
-        else if (response.getResponseStatus() == ResponseStatus.QUEUE_EMPTY) {
-            return null;
-         }
-        else {
-            throw new IpcException(
-                    "Failed get server error! Reason: " + response.getText());
-        }
-    }
-
 
     private IMessage send(final IMessage msg) {
         Objects.requireNonNull(msg);
