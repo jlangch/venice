@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.util.Set;
+
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -36,9 +39,9 @@ public class QueueValidator {
                     "A queue name is limited to " + QUEUE_NAME_MAX_LEN + " characters!");
         }
 
-        if (queueName.matches("wal")) {
+        if (PRESERVED_NAMES.contains(queueName.toLowerCase())) {
             throw new IllegalArgumentException(
-                    "The queue name 'wal' is a preserved name!");
+                    "The queue name '" + queueName + "' is a preserved name!");
         }
 
         if (!queueName.matches("[a-zA-Z0-9_\\-/]+")) {
@@ -54,6 +57,13 @@ public class QueueValidator {
         }
     }
 
+
+
+    private static Set<String> PRESERVED_NAMES = CollectionUtil.toSet(
+                                                        "queue",
+                                                        "wal",
+                                                        "dead-letter",
+                                                        "deadletter");
 
     public static final long QUEUE_NAME_MAX_LEN = 100;
 }

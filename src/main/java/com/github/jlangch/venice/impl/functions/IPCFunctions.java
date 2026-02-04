@@ -2092,7 +2092,7 @@ public class IPCFunctions {
                     .meta()
                     .arglists("(ipc/add-acl authenticator dest-type dest-name access principal)")
                     .doc(
-                        "Add ACL item for a destination and principal\n\n" +
+                        "Add ACL items for a destination and principal\n\n" +
                         "*Arguments:* \n\n" +
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
@@ -2101,9 +2101,9 @@ public class IPCFunctions {
                         "| principal     | A principal |\n\n" +
                         "*ACL configurations:* \n\n" +
                         "| queue offer      | `:queue` -> one of { `:write`, `:read-write`, `:deny` } |\n" +
-                        "| queue poll       | `:queue` -> one of { `:read`, `:read-write`, `:deny` } |\n" +
+                        "| queue poll       | `:queue` -> one of { `:read`,  `:read-write`, `:deny` } |\n" +
                         "| topic subscribe  | `:topic` -> one of { `:write`, `:read-write`, `:deny` } |\n" +
-                        "| topic publish    | `:topic` -> one of { `:read`, `:read-write`, `:deny` } |" +
+                        "| topic publish    | `:topic` -> one of { `:read`,  `:read-write`, `:deny` } |" +
                         "| function execute | `:function` -> one of { `:execute`, `:deny` }|\n\n")
                     .examples(
                         "(let [auth (ipc/authenticator)]                          \n" +
@@ -2250,7 +2250,8 @@ public class IPCFunctions {
                     .meta()
                     .arglists("(ipc/default-acl authenticator dest-type access)")
                     .doc(
-                        "Add default ACL item to override system defaults for a destination type\n\n" +
+                        "Add default ACL items to override the system defaults. ACL default " +
+                        "items are set per destination type.\n\n" +
                         "*Arguments:* \n\n" +
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +

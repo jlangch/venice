@@ -127,7 +127,7 @@ public class TcpOfferPollTest {
         final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
 
-        server.createQueue("queue", 3, true, false);
+        server.createQueue("queue/1", 3, true, false);
 
         server.start();
 
@@ -138,7 +138,7 @@ public class TcpOfferPollTest {
         try {
             final IMessage m = MessageFactory.text("1", "queue-test", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage r = client1.offer(m, "queue-XXX", null, 1_000);
+            final IMessage r = client1.offer(m, "queue/x", null, 1_000);
 
             assertEquals(ResponseStatus.QUEUE_NOT_FOUND, r.getResponseStatus());
 
@@ -158,7 +158,7 @@ public class TcpOfferPollTest {
         final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
 
-        server.createQueue("queue", 3, true, false);
+        server.createQueue("queue/1", 3, true, false);
 
         server.start();
 
@@ -172,11 +172,11 @@ public class TcpOfferPollTest {
             final IMessage m3 = MessageFactory.text("3", "queue-test", "text/plain", "UTF-8", "Hello!");
             final IMessage m4 = MessageFactory.text("4", "queue-test", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage r1 = client1.offer(m1, "queue", null, 1_000);
-            final IMessage r2 = client1.offer(m2, "queue", null, 1_000);
-            final IMessage r3 = client1.offer(m3, "queue", null, 1_000);
+            final IMessage r1 = client1.offer(m1, "queue/1", null, 1_000);
+            final IMessage r2 = client1.offer(m2, "queue/1", null, 1_000);
+            final IMessage r3 = client1.offer(m3, "queue/1", null, 1_000);
 
-            final IMessage r4 = client1.offer(m4, "queue", null, 1_000);
+            final IMessage r4 = client1.offer(m4, "queue/1", null, 1_000);
 
             assertEquals(ResponseStatus.OK, r1.getResponseStatus());
             assertEquals(ResponseStatus.OK, r2.getResponseStatus());
@@ -200,7 +200,7 @@ public class TcpOfferPollTest {
         final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
 
-        server.createQueue("queue", 3, true, false);
+        server.createQueue("queue/1", 3, true, false);
 
         server.start();
 
@@ -212,12 +212,12 @@ public class TcpOfferPollTest {
             final IMessage m1 = MessageFactory.text("1", "queue-test", "text/plain", "UTF-8", "Hello!");
             final IMessage m2 = MessageFactory.text("2", "queue-test", "text/plain", "UTF-8", "Hello!");
 
-            final IMessage r1 = client1.offer(m1, "queue", null, 1_000);
-            final IMessage r2 = client1.offer(m2, "queue", null, 1_000);
+            final IMessage r1 = client1.offer(m1, "queue/1", null, 1_000);
+            final IMessage r2 = client1.offer(m2, "queue/1", null, 1_000);
 
-            final IMessage r3 = client1.poll("queue", 1_000);
-            final IMessage r4 = client1.poll("queue", 1_000);
-            final IMessage r5 = client1.poll("queue", 1_000);
+            final IMessage r3 = client1.poll("queue/1", 1_000);
+            final IMessage r4 = client1.poll("queue/1", 1_000);
+            final IMessage r5 = client1.poll("queue/1", 1_000);
 
             // offer
             assertEquals(ResponseStatus.OK, r1.getResponseStatus());

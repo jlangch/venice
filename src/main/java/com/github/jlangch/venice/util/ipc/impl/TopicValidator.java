@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.util.Set;
+
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -36,9 +39,9 @@ public class TopicValidator {
                     "A topic name is limited to " + TOPIC_MAX_LEN + " characters!");
         }
 
-        if (topicName.matches("wal")) {
+        if (PRESERVED_NAMES.contains(topicName.toLowerCase())) {
             throw new IllegalArgumentException(
-                    "The topic name 'wal' is a preserved name!");
+                    "The topic name '" + topicName + "' is a preserved name!");
         }
 
         if (!topicName.matches("[a-zA-Z0-9_\\-/]+")) {
@@ -48,6 +51,13 @@ public class TopicValidator {
         }
     }
 
+
+
+    private static Set<String> PRESERVED_NAMES = CollectionUtil.toSet(
+                                                        "topic",
+                                                        "wal",
+                                                        "dead-letter",
+                                                        "deadletter");
 
     public static final long TOPIC_MAX_LEN = 100;
 }

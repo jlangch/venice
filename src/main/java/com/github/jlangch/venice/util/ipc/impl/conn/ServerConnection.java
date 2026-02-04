@@ -188,8 +188,7 @@ public class ServerConnection implements IPublisher, Runnable {
             // when the client closed the connection
             //   - server gets a java.io.IOException: Broken pipe
             //   - quit this connection and close the channel
-            logError("Error on connection from " +  IO.getRemoteAddress(ch) + "!",
-                    ex);
+            logError("Error on connection -> closing connection!", ex);
         }
         finally {
             closeChannel();
@@ -268,7 +267,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final long timeout = (long)(2.5F * (heartbeatIntervalSeconds * 1000L));
             if (System.currentTimeMillis() - lastHeartbeat > timeout) {
                 // Heartbeat timeout
-                logError("Heartbeat timeout");
+                logError("Heartbeat timeout -> closing connection");
                 closeChannel();
             }
         }
