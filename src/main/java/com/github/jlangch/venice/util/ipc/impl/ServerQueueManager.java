@@ -262,7 +262,7 @@ public class ServerQueueManager {
     public Map<String,Object> getQueueStatus(final String queueName) {
         Objects.requireNonNull(queueName);
 
-        final IpcQueue<Message> q = queues.get(queueName);
+        final IpcQueue<Message> q = getQueue(queueName);
 
         final Map<String,Object> status = new HashMap<>();
 
