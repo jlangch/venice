@@ -191,7 +191,7 @@ public class ServerQueueManager {
     public boolean existsQueue(final String queueName) {
         Objects.requireNonNull(queueName);
 
-        final IpcQueue<Message> queue = queues.get(queueName);
+        final IpcQueue<Message> queue = getQueue(queueName);
         return queue != null && !queue.isTemporary();
     }
 
