@@ -33,7 +33,7 @@ import com.github.jlangch.venice.util.ipc.impl.util.IO;
 public class TcpDeadLetterQueueTest {
 
     @Test
-    public void test_queue() throws Exception {
+    public void test_dlq() throws Exception {
         final Authenticator authenticator = new Authenticator(true);
         authenticator.addCredentials("tom", "123");
         authenticator.addCredentials("admin", "123", true);
@@ -46,7 +46,7 @@ public class TcpDeadLetterQueueTest {
                                                 .build());
              final Client client = Client.of(33333)
         ) {
-             server.start();
+            server.start();
 
             IO.sleep(300);
 
