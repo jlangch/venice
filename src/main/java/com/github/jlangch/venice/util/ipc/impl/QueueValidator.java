@@ -44,10 +44,10 @@ public class QueueValidator {
                     "The queue name '" + queueName + "' is a preserved name!");
         }
 
-        if (!queueName.matches("[a-zA-Z0-9_\\-/]+")) {
+        if (!queueName.matches("[a-zA-Z0-9[.]_\\-/]+")) {
             throw new IllegalArgumentException(
-                    "The queue name \"" + queueName + "\" must only contain the characters: "
-                    + "'a-z', 'A-Z', '0-9', '_', '-', or '/'!");
+                    "The topic name \"" + queueName + "\" must only contain the characters: "
+                    + "'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'!");
         }
     }
 
@@ -61,7 +61,10 @@ public class QueueValidator {
 
     private static Set<String> PRESERVED_NAMES = CollectionUtil.toSet(
                                                         "queue",
+                                                        "topic",
+                                                        "function",
                                                         "wal",
+                                                        "ipc.dlq",
                                                         "dead-letter",
                                                         "deadletter");
 

@@ -44,20 +44,23 @@ public class TopicValidator {
                     "The topic name '" + topicName + "' is a preserved name!");
         }
 
-        if (!topicName.matches("[a-zA-Z0-9_\\-/]+")) {
+        if (!topicName.matches("[a-zA-Z0-9[.]_\\-/]+")) {
             throw new IllegalArgumentException(
                     "The topic name \"" + topicName + "\" must only contain the characters: "
-                    + "'a-z', 'A-Z', '0-9', '_', '-', or '/'!");
+                    + "'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'!");
         }
     }
 
 
 
     private static Set<String> PRESERVED_NAMES = CollectionUtil.toSet(
-                                                        "topic",
-                                                        "wal",
-                                                        "dead-letter",
-                                                        "deadletter");
+                                                    "queue",
+                                                    "topic",
+                                                    "function",
+                                                    "wal",
+                                                    "ipc.dlq",
+                                                    "dead-letter",
+                                                    "deadletter");
 
     public static final long TOPIC_MAX_LEN = 100;
 }

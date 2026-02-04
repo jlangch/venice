@@ -3385,8 +3385,8 @@ public class IPCFunctions {
                         "Circular queues never block but just keep the last 'capacity' messages. The " +
                         "oldest messages get discarded if the buffer is full and new messages are " +
                         "offered to the queue.\n\n" +
-                        "A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'. " +
-                        "Up to 80 characters are allowed.\n\n" +
+                        "A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'. " +
+                        "Up to 100 characters are allowed.\n\n" +
                         "Use `ipc/offer` to offer a new message to a queue.¶" +
                         "Use `ipc/poll` to poll a message from a queue.\n\n" +
                         "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
@@ -3812,12 +3812,12 @@ public class IPCFunctions {
                         "(ipc/create-topic node name)")
                     .doc(
                         "Creates a named topic on the server. \n\n" +
-                        "A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'. " +
-                        "Up to 80 characters are allowed.\n\n" +
+                        "A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'. " +
+                        "Up to 100 characters are allowed.\n\n" +
                         "Returns always `nil` or throws an exception if the named topic already exists.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| node s     | A server or a client|\n" +
-                        "| name s     | A topic name (string or keyword)|")
+                        "| node s | A server or a client|\n" +
+                        "| name s | A topic name (string or keyword)|")
                     .examples(
                         "(try-with [server  (ipc/server 33333)            \n" +
                         "           client1 (ipc/client 33333)]           \n" +
@@ -3969,8 +3969,8 @@ public class IPCFunctions {
                         "(ipc/create-function server name func)")
                     .doc(
                         "Creates a named function on the server. \n\n" +
-                        "A function name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'. " +
-                        "Up to 80 characters are allowed.\n\n" +
+                        "A function name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'. " +
+                        "Up to 100 characters are allowed.\n\n" +
                         "Returns always `nil`.")
                     .examples(
                         "(try-with [server  (ipc/server 33333)            \n" +

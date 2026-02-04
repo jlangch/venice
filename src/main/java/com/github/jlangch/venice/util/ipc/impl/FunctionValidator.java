@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import java.util.Set;
+
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -36,18 +39,29 @@ public class FunctionValidator {
                     "A function name is limited to " + FUNCTION_MAX_LEN + " characters!");
         }
 
-        if (functionName.matches("wal")) {
+        if (PRESERVED_NAMES.contains(functionName.toLowerCase())) {
             throw new IllegalArgumentException(
-                    "The function name 'wal' is a preserved name!");
+                    "The function name '" + functionName + "' is a preserved name!");
         }
 
-        if (!functionName.matches("[a-zA-Z0-9_\\-/]+")) {
+        if (!functionName.matches("[a-zA-Z0-9[.]_\\-/]+")) {
             throw new IllegalArgumentException(
                     "The function name \"" + functionName + "\" must only contain the characters: "
-                    + "'a-z', 'A-Z', '0-9', '_', '-', or '/'!");
+                    + "'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'!");
         }
     }
 
+
+
+
+    private static Set<String> PRESERVED_NAMES = CollectionUtil.toSet(
+                                                    "queue",
+                                                    "topic",
+                                                    "function",
+                                                    "wal",
+                                                    "ipc.dlq",
+                                                    "dead-letter",
+                                                    "deadletter");
 
     public static final long FUNCTION_MAX_LEN = 100;
 }
