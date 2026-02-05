@@ -1173,28 +1173,28 @@ ACLs define list of access permissions for principals on a destination. Five acc
 used to to define permissions:
 
 
-| Destination     | Supported Access Modes | Description                       |
-| :--             | :--                    | :--                               |
-| `:queue`         | `:read`                | poll messages from queues         |
-|                 | `:write`                | offer messages to queues          |
-|                 | `:read-write`           | offer/poll to/from from queues    |
-|                 | `deny`                 | deny accessing queues              |
-| `:topic`         | `:read`                | subscribe to topics               |
-|                 | `:write`               | publish to topics                  |
-|                 | `:read-write`           | publish/subscribe to topics        |
-|                 | `deny`                 | deny accessing topics              |
-| `:function`      | `:exec`                | Execute functions                  |
-|                 | `:deny`                | deny executing functions           |
+| Destination     | Supported Access Modes | Description                                |
+| :--             | :--                    | :--                                        |
+| `:queue`         | `:read`                | allow to poll messages from queues         |
+|                 | `:write`                | allow to offer messages to queues          |
+|                 | `:read-write`           | allow to offer/poll messages to/from from queues |
+|                 | `deny`                 | prevent from accessing queues              |
+| `:topic`         | `:read`                | allow to subscribe to topics               |
+|                 | `:write`               | allow to publish to topics                  |
+|                 | `:read-write`           | allow to publish/subscribe to topics        |
+|                 | `deny`                 | prevent from accessing topics               |
+| `:function`      | `:exec`                | allow to execute functions                  |
+|                 | `:deny`                | prevent from executing functions            |
 
 
 ### Default ACLs
 
-An IPC authenticator defines system default ACLs for all three destinations (queues, topics, 
+An IPC authenticator defines system default ACLs for all three destination types (queues, topics, 
 and functions). 
 
 | Destination     | Default Access Mode   | Description                                     |
 | :--             | :--                   | :--                                             |
-| *queue*         | `:read-write`          | All users can offer/poll to/from any *queue*    |
+| *queue*         | `:read-write`          | All users can offer/poll messages to/from any *queue* |
 | *topic*         | `:read-write`          | All users can subscribe/publish to any *topic*  |
 | *function*      | `:exec`                | All users can execute any *function*            |
 
@@ -1204,28 +1204,32 @@ access control rules for a user on a destination.
 
 ### Custom default ACLs
 
-The default destination ACL can be customized to require explicit user access control for each 
-destination:
+The default destination ACLs can be customized to e.g. require explicit user access control
+for each destination:
 
-| Destination     | Default Access Mode   | Description                         |
-| :--             | :--                   | :--                                |
-| *queue*         | `:deny`                | Deny all users to access queues    |
-| *topic*         | `:deny`                | Deny all users to access topics    |
-| *function*      | `:deny`                | Deny all users to access functions |
+| Destination     | Default Access Mode   | Description                                |
+| :--             | :--                   | :--                                        |
+| *queue*         | `:deny`                | Prevent all users from accessing queues    |
+| *topic*         | `:deny`                | Prevent all users from accessing topics    |
+| *function*      | `:deny`                | Prevent all users from accessing functions |
 
 This can be achieved with:
 
 ```clojure
 (let [auth (ipc/authenticator)]
-  ;; ...
-  (ipc/add-default-acl auth :queue    :deny)
-  (ipc/add-default-acl auth :topic    :deny)
-  (ipc/add-default-acl auth :function :deny))
+  (ipc/add-credentials auth "max" "zu*67")
+  (ipc/add-credentials auth "tom" "3-kio")
   
-  ;; ...
-  )
+  ;; custom default ACLs (prevent users from accessing any destinations)
+  (ipc/add-default-acl auth :queue    :deny)        ;; prevent all users from accessing queues
+  (ipc/add-default-acl auth :topic    :deny)        ;; Prevent all users from accessing topics
+  (ipc/add-default-acl auth :function :deny))       ;; Prevent all users from accessing functions
+  
+  ;; Overrides for specific users
+  (ipc/add-acl auth :queue :queue/1 :read  "tom")   ;; allow user 'tom' to poll messages from :queue/1
+  (ipc/add-acl auth :queue :queue/1 :write "jak")   ;; allow user 'jak' to offer messages to :queue/1
+)
 ```
-
 
 
  
