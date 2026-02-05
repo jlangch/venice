@@ -1161,6 +1161,10 @@ defining who is allowed to produce or consume messages. These mechanisms are bas
 
 ACLs are enabled implicitly if authentication is activated on the server.
 
+Users with `:admin` role can access all operations on queues, topics, and functions. No ACL is
+requiered!
+
+ 
 
 ### ACLs for Queues
 
@@ -1175,7 +1179,7 @@ ACLs grant individual principals (users) to:
 | offer to a queue       | `:write`      | `(ipc/add-acl auth :queue :queue/1 :write "user2")` |
 | deny accessing a queue | `:deny`       | `(ipc/add-acl auth :queue :queue/1 :deny "user3")`  |
 
-*Any number of ACLs can be assigned to a principal (user)*
+*Any number of access control items can be assigned to a principal (user)*
 
 ```
 (do
@@ -1187,6 +1191,7 @@ ACLs grant individual principals (users) to:
     (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
     (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
     (ipc/add-acl auth :queue :queue/1 :read "jak")        ;; :queue/1 allow poll only
+    (ipc/add-acl auth :queue :queue/1 :read "jak")        ;; :queue/2 allow poll only
     (ipc/add-acl auth :queue :queue/1 :write "pax")       ;; :queue/1 allow offer only
     (ipc/add-acl auth :queue :queue/1 :deny "jon")        ;; :queue/1 deny offer/poll
 
@@ -1219,7 +1224,7 @@ ACLs grant individual principals (users) to:
 | publish to a topic     | `:write`      | `(ipc/add-acl auth :topic :topic/1 :write "user2")`  |
 | deny accessing a topic | `:deny`       | `(ipc/add-acl auth :topic :topic/1 :deny "user3")`   |
 
-*Any number of ACLs can be assigned to a principal (user)*
+*Any number of access control items can be assigned to a principal (user)*
 
 ```
 (do
@@ -1237,6 +1242,7 @@ ACLs grant individual principals (users) to:
     (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
     (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
     (ipc/add-acl auth :topic :topic/1 :read "jak")        ;; :topic/1 allow subscribe only
+    (ipc/add-acl auth :topic :topic/2 :read "jak")        ;; :topic/2 allow subscribe only
     (ipc/add-acl auth :topic :topic/1 :write "pax")       ;; :topic/1 allow publish only
     (ipc/add-acl auth :topic :topic/1 :read-write "tom")  ;; :topic/1 allow publish/subscribe
     (ipc/add-acl auth :topic :topic/1 :deny "jon")        ;; :topic/1 deny publish/subscribe
@@ -1268,7 +1274,7 @@ ACLs grant individual principals (users) to:
 | execute a function        | `:execute`    | `(ipc/add-acl auth :function :echo :read "user1")`   |
 | deny accessing a function | `:deny`       | `(ipc/add-acl auth :function :echo :deny "user2")`   |
 
-*Any number of ACLs can be assigned to a principal (user)*
+*Any number of access control items can be assigned to a principal (user)*
 
 ```
 (do
@@ -1278,6 +1284,7 @@ ACLs grant individual principals (users) to:
     (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
     (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
     (ipc/add-acl auth :function :echo :execute "jak")   ;; function :echo allow execute
+    (ipc/add-acl auth :function :order :execute "jak")  ;; function :order allow execute
     (ipc/add-acl auth :function :echo :deny "jon")      ;; function :echo deny execute
 
     (try-with [server    (ipc/server 33333 :encrypt true :authenticator auth)
