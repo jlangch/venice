@@ -1177,14 +1177,14 @@ used to to define permissions:
 | :--             | :--                    | :--                                        |
 | `:queue`         | `:read`                | allow to poll messages from queues         |
 |                 | `:write`                | allow to offer messages to queues          |
-|                 | `:read-write`           | allow to offer/poll messages to/from from queues |
-|                 | `deny`                 | prevent from accessing queues              |
+|                 | `:read-write`           | allow to offer/poll messages on queues |
+|                 | `deny`                 | prevent accessing queues                   |
 | `:topic`         | `:read`                | allow to subscribe to topics               |
 |                 | `:write`               | allow to publish to topics                  |
 |                 | `:read-write`           | allow to publish/subscribe to topics        |
-|                 | `deny`                 | prevent from accessing topics               |
+|                 | `deny`                 | prevent accessing topics                    |
 | `:function`      | `:exec`                | allow to execute functions                  |
-|                 | `:deny`                | prevent from executing functions            |
+|                 | `:deny`                | prevent executing functions                 |
 
 
 ### Default ACLs
@@ -1194,9 +1194,9 @@ and functions).
 
 | Destination     | Default Access Mode   | Description                                     |
 | :--             | :--                   | :--                                             |
-| *queue*         | `:read-write`          | All users can offer/poll messages to/from any *queue* |
-| *topic*         | `:read-write`          | All users can subscribe/publish to any *topic*  |
-| *function*      | `:exec`                | All users can execute any *function*            |
+| *queue*         | `:read-write`          | all users can offer/poll messages on any *queue* |
+| *topic*         | `:read-write`          | all users can subscribe/publish to any *topic*  |
+| *function*      | `:exec`                | all users can execute any *function*            |
 
 This allows users to access all queues, topics, and functions as long as there are no explicit
 access control rules for a user on a destination. 
@@ -1213,21 +1213,21 @@ for each destination:
 | *topic*         | `:deny`                | Prevent all users from accessing topics    |
 | *function*      | `:deny`                | Prevent all users from accessing functions |
 
-This can be achieved with:
+This custom default ACL setup can be achieved with:
 
 ```clojure
 (let [auth (ipc/authenticator)]
-  (ipc/add-credentials auth "max" "zu*67")
-  (ipc/add-credentials auth "tom" "3-kio")
+  (ipc/add-credentials auth "max" "zu*67")          ;; user 'max'
+  (ipc/add-credentials auth "tom" "3-kio")          ;; user 'tom'
   
-  ;; custom default ACLs (prevent users from accessing any destinations)
+  ;; custom default ACLs
   (ipc/add-default-acl auth :queue    :deny)        ;; prevent all users from accessing queues
   (ipc/add-default-acl auth :topic    :deny)        ;; Prevent all users from accessing topics
   (ipc/add-default-acl auth :function :deny))       ;; Prevent all users from accessing functions
   
   ;; Overrides for specific users
   (ipc/add-acl auth :queue :queue/1 :read  "tom")   ;; allow user 'tom' to poll messages from :queue/1
-  (ipc/add-acl auth :queue :queue/1 :write "jak")   ;; allow user 'jak' to offer messages to :queue/1
+  (ipc/add-acl auth :queue :queue/1 :write "max")   ;; allow user 'max' to offer messages to :queue/1
 )
 ```
 
