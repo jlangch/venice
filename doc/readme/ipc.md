@@ -1169,7 +1169,7 @@ required!
 
  
 
-ACLs define list of access permissions for principals on a destination. Five access modes can be 
+ACLs define a list of access permissions for principals on a destination. Five access modes can be 
 used to to define permissions:
 
 
@@ -1199,7 +1199,7 @@ and functions).
 | `:function`       | `:exec`                | all users can execute any *function*            |
 
 This allows users to access all queues, topics, and functions as long as there are no explicit
-access control rules for a user on a destination. 
+access control rules for a user on a destination to override the defaults. 
 
 
 ### Custom default ACLs
