@@ -1155,9 +1155,9 @@ authorized users/applications can access the messaging infrastructure.
 ## ACL (Access Control Lists)
 
 ACLs (Access Control Lists) regulate access to destinations such as queues, topics, or functions 
-in order to secure message flows. They validate user permissions when security mode is enabled by 
-defining who is allowed to produce or consume messages. These mechanisms are based on the principal 
-(authenticated user) and access control items.
+in order to secure message flows. They validate user permissions when authentication mode is enabled 
+by defining who is allowed to produce or consume messages. These mechanisms are based on the 
+principal (authenticated user) and access control items.
 
 > [!NOTE]
 > ACLs are enabled implicitly if authentication is activated on the server.
@@ -1177,14 +1177,14 @@ used to to define permissions:
 | :--             | :--                    | :--                                        |
 | `:queue`         | `:read`                | allow to poll messages from queues         |
 |                 | `:write`                | allow to offer messages to queues          |
-|                 | `:read-write`           | allow to offer/poll messages on queues |
-|                 | `deny`                 | prevent accessing queues                   |
+|                 | `:read-write`           | allow to offer/poll messages on queues     |
+|                 | `:deny`                 | prevent accessing queues                   |
 | `:topic`         | `:read`                | allow to subscribe to topics               |
-|                 | `:write`               | allow to publish to topics                  |
-|                 | `:read-write`           | allow to publish/subscribe to topics        |
-|                 | `deny`                 | prevent accessing topics                    |
-| `:function`      | `:exec`                | allow to execute functions                  |
-|                 | `:deny`                | prevent executing functions                 |
+|                 | `:write`                | allow to publish to topics                 |
+|                 | `:read-write`           | allow to publish/subscribe to topics       |
+|                 | `:deny`                 | prevent accessing topics                   |
+| `:function`      | `:exec`                 | allow to execute functions                 |
+|                 | `:deny`                 | prevent executing functions                |
 
 
 ### Default ACLs
