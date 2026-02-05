@@ -1159,10 +1159,13 @@ in order to secure message flows. They validate user permissions when security m
 defining who is allowed to produce or consume messages. These mechanisms are based on the principal 
 (authenticated user) and access control items.
 
-ACLs are enabled implicitly if authentication is activated on the server.
-
-Users with `:admin` role can access all operations on queues, topics, and functions. No ACL is
+> [!NOTE]
+> ACLs are enabled implicitly if authentication is activated on the server.
+>
+> Users with `:admin` role can access all operations on queues, topics, and functions. No ACL is
 requiered!
+>
+
 
  
 
