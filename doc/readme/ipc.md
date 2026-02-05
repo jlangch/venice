@@ -41,7 +41,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
 
 ## IPC Communication Modes
 
-### Functions Send/Receive
+### Functions Send-Receive
 
 Send a message from a client to a server and receive a response. The server's 
 pluggable handler function computes the response from the request.
@@ -144,7 +144,7 @@ pluggable handler function computes the response from the request.
 
 
 
-### Queues Offer/Poll
+### Queues Offer-Poll
 
 Offer messages to a queue and poll messages from a queue. More than one client can offer/poll
 messages to/from queues but a message is delivered to one client only.
@@ -362,7 +362,7 @@ the server.
 
 
 
-### Topics Publish/Subscribe
+### Topics Publish-Subscribe
 
 Publish a message to a topic. All clients that have subscribed to a topic will receive
 the messages on the topic. After subscribing to a topic the client turns into subscription
