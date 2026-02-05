@@ -360,7 +360,7 @@ public class ServerConfig {
          *
          * <p>Defaults to 100
          *
-         * @param maxFunctions the max number of functions.
+         * @param size the dead letter queue's size.
          * @return this builder
          */
         public Builder deadLetterQueueSize(final int size) {
