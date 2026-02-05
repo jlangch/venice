@@ -2131,18 +2131,29 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 5);
 
                 final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
-                final String destType = Coerce.toVncString(args.nth(1)).toString();
-                final String destName = Coerce.toVncString(args.nth(2)).toString();
-                final String access = Coerce.toVncString(args.nth(3)).toString();
-                final String principal = Coerce.toVncString(args.nth(4)).toString();
+                final String destType = Coerce.toVncString(args.nth(1)).getValue();
+                final String destName = Coerce.toVncString(args.nth(2)).getValue();
+                final String access = Coerce.toVncString(args.nth(3)).getValue();
+                final String principal = Coerce.toVncString(args.nth(4)).getValue();
 
                 AccessMode mode = null;
                 switch(access) {
                     case "read":       mode = AccessMode.READ;        break;
+                    case "poll":       mode = AccessMode.READ;        break;
+                    case "subscribe":  mode = AccessMode.READ;        break;
+
                     case "write":      mode = AccessMode.WRITE;       break;
+                    case "offer":      mode = AccessMode.READ;        break;
+                    case "publish":    mode = AccessMode.READ;        break;
+
                     case "read-write": mode = AccessMode.READ_WRITE;  break;
+                    case "offer-poll": mode = AccessMode.READ_WRITE;  break;
+                    case "publish-subscribe": mode = AccessMode.READ_WRITE;  break;
+
                     case "execute":    mode = AccessMode.EXECUTE;     break;
+
                     case "deny":       mode = AccessMode.DENY;        break;
+
                     default:           throw new IpcException(
                                           "Invalid access '" + access + "'! "
                                           + "Use one of {:read, :write, :read-write, :execute, :deny}");
@@ -2205,7 +2216,7 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 2, 3, 4);
 
                 final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
-                final String destType = Coerce.toVncString(args.nth(1)).toString();
+                final String destType = Coerce.toVncString(args.nth(1)).getValue();
 
                 if (args.size() == 2) {
                      switch(destType) {
@@ -2218,7 +2229,7 @@ public class IPCFunctions {
                     }
                 }
                 else  if (args.size() == 3) {
-                    final String destName = Coerce.toVncString(args.nth(2)).toString();
+                    final String destName = Coerce.toVncString(args.nth(2)).getValue();
 
                     switch(destType) {
                         case "queue":    authenticator.removeQueueAcl(destName);    break;
@@ -2230,8 +2241,8 @@ public class IPCFunctions {
                     }
                 }
                 else {
-                    final String destName = Coerce.toVncString(args.nth(2)).toString();
-                    final String principal = Coerce.toVncString(args.nth(3)).toString();
+                    final String destName = Coerce.toVncString(args.nth(2)).getValue();
+                    final String principal = Coerce.toVncString(args.nth(3)).getValue();
 
                     switch(destType) {
                         case "queue":    authenticator.removeQueueAcl(destName, principal);    break;
@@ -2286,16 +2297,27 @@ public class IPCFunctions {
                 ArityExceptions.assertArity(this, args, 3);
 
                 final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
-                final String destType = Coerce.toVncString(args.nth(1)).toString();
-                final String access = Coerce.toVncString(args.nth(2)).toString();
+                final String destType = Coerce.toVncString(args.nth(1)).getValue();
+                final String access = Coerce.toVncString(args.nth(2)).getValue();
 
                 AccessMode mode = null;
                 switch(access) {
                     case "read":       mode = AccessMode.READ;        break;
+                    case "poll":       mode = AccessMode.READ;        break;
+                    case "subscribe":  mode = AccessMode.READ;        break;
+
                     case "write":      mode = AccessMode.WRITE;       break;
+                    case "offer":      mode = AccessMode.READ;        break;
+                    case "publish":    mode = AccessMode.READ;        break;
+
                     case "read-write": mode = AccessMode.READ_WRITE;  break;
+                    case "offer-poll": mode = AccessMode.READ_WRITE;  break;
+                    case "publish-subscribe": mode = AccessMode.READ_WRITE;  break;
+
                     case "execute":    mode = AccessMode.EXECUTE;     break;
+
                     case "deny":       mode = AccessMode.DENY;        break;
+
                     default:           throw new IpcException(
                                           "Invalid access '" + access + "'! "
                                           + "Use one of {:read, :write, :read-write, :execute, :deny}");

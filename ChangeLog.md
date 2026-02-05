@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.77] - 2026-02-xx
+## [1.12.78] - 2026-02-xx
 
 ### Enhancements
 
@@ -14,6 +14,14 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant message api (in work)
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
+
+
+
+## [1.12.77] - 2026-02-05
+
+### Enhancements
+
+- Enhanced IPC ACL management functions to allow both strings and keywords as function arguments
 
 
 
