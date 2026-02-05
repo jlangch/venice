@@ -1209,9 +1209,9 @@ for each destination:
 
 | Destination     | Default Access Mode   | Description                                |
 | :--             | :--                   | :--                                        |
-| *queue*         | `:deny`                | Prevent all users from accessing queues    |
-| *topic*         | `:deny`                | Prevent all users from accessing topics    |
-| *function*      | `:deny`                | Prevent all users from accessing functions |
+| *queue*         | `:deny`                | prevent all users from accessing queues    |
+| *topic*         | `:deny`                | prevent all users from accessing topics    |
+| *function*      | `:deny`                | prevent all users from accessing functions |
 
 This custom default ACL setup can be achieved with:
 
