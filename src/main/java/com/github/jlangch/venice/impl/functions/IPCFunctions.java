@@ -132,6 +132,7 @@ public class IPCFunctions {
                         "| :authenticator a             | An authenticator. If an authenticator is used encryption must " +
                                                         " be enabled to safely transmit users credentials!¶" +
                                                         " Defaults to `nil`.|\n" +
+                        "| :dead-letter-queue-size n    | The dead letter queue size.¶Defaults to 100|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
@@ -235,6 +236,7 @@ public class IPCFunctions {
                 final VncVal walCompactAtStartVal = options.get(new VncKeyword("write-ahead-log-compact"));
                 final VncVal authenticatorVal = options.get(new VncKeyword("authenticator"));
                 final VncVal heartbeatIntervalVal = options.get(new VncKeyword("heartbeat-interval"), new VncLong(0));
+                final VncVal deadLetterQueueSizeVal = options.get(new VncKeyword("dead-letter-queue-size"), new VncLong(-1));
                 final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
                 final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
 
@@ -249,6 +251,7 @@ public class IPCFunctions {
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                 final long heartbeatInterval = Coerce.toVncLong(heartbeatIntervalVal).getValue();
+                final long deadLetterQueueSize = Coerce.toVncLong(deadLetterQueueSizeVal).getValue();
                 final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
                 final int rcvBufSize = (int)convertUnitValueToLong(rcvBufSizeVal);
 
@@ -303,6 +306,9 @@ public class IPCFunctions {
                 }
                 if (compressCutoffSize >= 0) {
                     builder.compressCutoffSize((int)compressCutoffSize);
+                }
+                if (deadLetterQueueSize > 0) {
+                    builder.deadLetterQueueSize((int)deadLetterQueueSize);
                 }
                 builder.encrypt(encrypt);
                 if (serverLogDir != null) {

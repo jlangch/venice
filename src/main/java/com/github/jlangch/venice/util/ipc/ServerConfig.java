@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 
 import com.github.jlangch.venice.util.ipc.impl.Messages;
+import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
 
 
 public class ServerConfig {
@@ -40,6 +41,7 @@ public class ServerConfig {
             final int maxTempQueuesPerConnection,
             final int maxTopics,
             final int maxFunctions,
+            final int deadLetterQueueSize,
             final int sndBufSize,
             final int rcvBufSize,
             final int maxConnections,
@@ -58,6 +60,7 @@ public class ServerConfig {
         this.maxTopics = maxTopics;
         this.maxFunctions = maxFunctions;
         this.maxTempQueuesPerConnection = maxTempQueuesPerConnection;
+        this.deadLetterQueueSize = deadLetterQueueSize;
         this.sndBufSize = sndBufSize;
         this.rcvBufSize = rcvBufSize;
         this.maxConnections = maxConnections;
@@ -113,6 +116,10 @@ public class ServerConfig {
 
     public int getMaxFunctions() {
         return maxFunctions;
+    }
+
+    public int getDeadLetterQueueSize() {
+        return deadLetterQueueSize;
     }
 
     public Authenticator getAuthenticator() {
@@ -349,6 +356,19 @@ public class ServerConfig {
         }
 
         /**
+         * Set the size of the dead letter queue.
+         *
+         * <p>Defaults to 100
+         *
+         * @param maxFunctions the max number of functions.
+         * @return this builder
+         */
+        public Builder deadLetterQueueSize(final int size) {
+            this.deadLetterQueueSize = Math.min(10_000, Math.max(10, size));
+            return this;
+        }
+
+        /**
          * Set the socket's send buffer size. -1 keeps the default.
          *
          * @param bufSize a send buffer size
@@ -473,6 +493,7 @@ public class ServerConfig {
                     maxTempQueuesPerConnection,
                     maxTopics,
                     maxFunctions,
+                    deadLetterQueueSize,
                     sndBufSize,
                     rcvBufSize,
                     maxConnections,
@@ -493,6 +514,7 @@ public class ServerConfig {
         private int maxTempQueuesPerConnection = Server.QUEUES_MAX;
         private int maxTopics = Server.TOPICS_MAX_DEFAULT;
         private int maxFunctions = Server.FUNCTIONS_MAX_DEFAULT;
+        private int deadLetterQueueSize = ServerQueueManager.DEAD_LETTER_QUEUE_SIZE;
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
         private int maxConnections = Server.MAX_CONNECTIONS_DEFAULT;
@@ -513,6 +535,7 @@ public class ServerConfig {
     private final int maxTempQueuesPerConnection;
     private final int maxTopics;
     private final int maxFunctions;
+    private final int deadLetterQueueSize;
     private final int sndBufSize;
     private final int rcvBufSize;
     private final int maxConnections;

@@ -60,7 +60,6 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -1170,8 +1169,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private void removeAllChannelTemporaryQueues() {
         try {
             queueManager.withQueues(queues -> {
-                final Set<String> names = tmpQueues.keySet();
-                names.forEach(n -> queues.remove(n));
+                tmpQueues.keySet().forEach(n -> queues.remove(n));
                 tmpQueues.clear();
             });
 

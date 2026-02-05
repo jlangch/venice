@@ -49,7 +49,7 @@ public class ServerQueueManager {
         this.wal = wal;
         this.logger = logger;
         this.maxQueues = config.getMaxQueues();
-        this.deadLetterQueue = creatDeadLetterQueue();
+        this.deadLetterQueue = creatDeadLetterQueue(config.getDeadLetterQueueSize());
     }
 
     /**
@@ -294,8 +294,11 @@ public class ServerQueueManager {
         }
     }
 
-    private IpcQueue<Message> creatDeadLetterQueue() {
-        final IpcQueue<Message> q = new CircularBuffer<Message>(DEAD_LETTER_QUEUE_NAME, 100, false);
+    private IpcQueue<Message> creatDeadLetterQueue(final int size) {
+        final IpcQueue<Message> q = new CircularBuffer<Message>(
+                                            DEAD_LETTER_QUEUE_NAME,
+                                            size,
+                                            false);
         q.updateAcls(
                 new HashMap<String,Acl>(),
                 new Acl(DEAD_LETTER_QUEUE_NAME, null, AccessMode.DENY)); // admin only
@@ -303,6 +306,7 @@ public class ServerQueueManager {
     }
 
 
+    public static final int DEAD_LETTER_QUEUE_SIZE = 100;
     public static final String DEAD_LETTER_QUEUE_NAME = "ipc.qld";
 
 
