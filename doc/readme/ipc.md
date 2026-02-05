@@ -1173,18 +1173,18 @@ ACLs define list of access permissions for principals on a destination. Five acc
 used to to define permissions:
 
 
-| Destination     | Supported Access Modes | Description                                |
-| :--             | :--                    | :--                                        |
-| `:queue`         | `:read`                | allow to poll messages from queues         |
-|                 | `:write`                | allow to offer messages to queues          |
-|                 | `:read-write`           | allow to offer/poll messages on queues     |
-|                 | `:deny`                 | prevent accessing queues                   |
-| `:topic`         | `:read`                | allow to subscribe to topics               |
-|                 | `:write`                | allow to publish to topics                 |
-|                 | `:read-write`           | allow to publish/subscribe to topics       |
-|                 | `:deny`                 | prevent accessing topics                   |
-| `:function`      | `:exec`                 | allow to execute functions                 |
-|                 | `:deny`                 | prevent executing functions                |
+| Destination Type | Supported Access Modes | Description                                |
+| :--              | :--                    | :--                                        |
+| `:queue`          | `:read`                | allow to poll messages from queues         |
+|                  | `:write`                | allow to offer messages to queues          |
+|                  | `:read-write`           | allow to offer/poll messages on queues     |
+|                  | `:deny`                 | prevent accessing queues                   |
+| `:topic`          | `:read`                | allow to subscribe to topics               |
+|                  | `:write`                | allow to publish to topics                 |
+|                  | `:read-write`           | allow to publish/subscribe to topics       |
+|                  | `:deny`                 | prevent accessing topics                   |
+| `:function`       | `:exec`                 | allow to execute functions                 |
+|                  | `:deny`                 | prevent executing functions                |
 
 
 ### Default ACLs
@@ -1192,11 +1192,11 @@ used to to define permissions:
 An IPC authenticator defines system default ACLs for all three destination types (queues, topics, 
 and functions). 
 
-| Destination     | Default Access Mode   | Description                                     |
-| :--             | :--                   | :--                                             |
-| *queue*         | `:read-write`          | all users can offer/poll messages on any *queue* |
-| *topic*         | `:read-write`          | all users can subscribe/publish to any *topic*  |
-| *function*      | `:exec`                | all users can execute any *function*            |
+| Destination Type | Default Access Mode   | Description                                     |
+| :--              | :--                   | :--                                             |
+| `:queue`          | `:read-write`          | all users can offer/poll messages on any *queue* |
+| `:topic`          | `:read-write`          | all users can subscribe/publish to any *topic*  |
+| `:function`       | `:exec`                | all users can execute any *function*            |
 
 This allows users to access all queues, topics, and functions as long as there are no explicit
 access control rules for a user on a destination. 
@@ -1207,11 +1207,11 @@ access control rules for a user on a destination.
 The default destination ACLs can be customized to e.g. require explicit user access control
 for each destination:
 
-| Destination     | Default Access Mode   | Description                                |
-| :--             | :--                   | :--                                        |
-| *queue*         | `:deny`                | prevent all users from accessing queues    |
-| *topic*         | `:deny`                | prevent all users from accessing topics    |
-| *function*      | `:deny`                | prevent all users from accessing functions |
+| Destination Type | Default Access Mode   | Description                                |
+| :--              | :--                   | :--                                        |
+| `:queue`          | `:deny`                | prevent all users from accessing queues    |
+| `:topic`          | `:deny`                | prevent all users from accessing topics    |
+| `:function`       | `:deny`                | prevent all users from accessing functions |
 
 This custom default ACL setup can be achieved with:
 
