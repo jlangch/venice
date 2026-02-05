@@ -348,7 +348,7 @@ public class Message implements IMessage {
     public String getText() {
         return isTextMessage()
                 ? new String(data, Charset.forName(charset))
-                : new String("Binary data, " + data.length + " bytes");
+                : null;
     }
 
     @Override

@@ -35,6 +35,7 @@ All notable changes to this project will be documented in this file.
 - Added IPC authorization for getting server statistics and info
 - Added IPC destination functions (send/receive)
 
+- Made IPC dead-letter queue size configurable 
 
 
 ## [1.12.74] - 2026-01-28

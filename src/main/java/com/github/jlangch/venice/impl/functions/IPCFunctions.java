@@ -2980,8 +2980,12 @@ public class IPCFunctions {
                     case "durable?":            return VncBoolean.of(message.isDurable());
                     case "response-status":     return new VncKeyword(message.getResponseStatus().name());
                     case "subject":             return new VncString(message.getSubject());
-                    case "destination-name":    return new VncString(message.getDestinationName());
-                    case "reply-to-queue-name": return new VncString(message.getReplyToQueueName());
+                    case "destination-name":    return message.getDestinationName() == null
+                                                        ? Nil
+                                                        : new VncString(message.getDestinationName());
+                    case "reply-to-queue-name": return message.getReplyToQueueName() == null
+                                                        ? Nil
+                                                        : new VncString(message.getReplyToQueueName());
                     case "request-id":          return message.getRequestId() == null
                                                         ? Nil
                                                         : new VncString(message.getRequestId());
@@ -2989,7 +2993,9 @@ public class IPCFunctions {
                     case "payload-charset":     return message.getCharset() == null
                                                         ? Nil
                                                         : new VncKeyword(message.getCharset());
-                    case "payload-text":        return new VncString(message.getText());
+                    case "payload-text":        return message.getText() == null
+                                                        ? Nil
+                                                        : new VncString(message.getText());
                     case "payload-binary":      return new VncByteBuffer(message.getData());
                     case "payload-venice":      return message.getVeniceData();
                     default:

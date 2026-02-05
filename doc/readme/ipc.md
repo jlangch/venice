@@ -627,9 +627,11 @@ The message size limit can be configured on the server in the range of 2KB ... 2
   * `:expires-at`       - the message's expiration time in milliseconds since epoch
   * `:request-id`       - the request ID (may be `nil`)
   * `:subject`          - the subject
+  * `:destination-name`  - the destination name (may be `nil`)
+  * `:reply-to-queue-name`   - the reply-to queue name 
   * `:payload-mimetype` - the payload data mimetype
-  * `:payload-charset`  - the payload data charset (if payload is a text form)
-  * `:payload-text`     - the payload converted to text data if payload is textual data else error
+  * `:payload-charset`  - the payload data charset if payload is a text form else `nil`
+  * `:payload-text`     - the payload converted to text data if payload is textual data else `nil`
   * `:payload-binary`   - the payload binary data (the raw message binary data)
   * `:payload-venice`   - the payload converted venice data if mimetype is 'application/json' else error
 
