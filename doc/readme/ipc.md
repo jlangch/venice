@@ -1169,14 +1169,75 @@ required!
 
  
 
-### ACLs for Queues
+ACLs define list of access permissions for principals on a destination. Five access modes can be 
+used to to define permissions:
 
-ACLs grant individual principals (users) to:
+
+| Destination     | Supported Access Modes | Description                       |
+| :--             | :--                    | :--                               |
+| `:queue`         | `:read`                | poll messages from queues         |
+|                 | `:write`                | offer messages to queues          |
+|                 | `:read-write`           | offer/poll to/from from queues    |
+|                 | `deny`                 | deny accessing queues              |
+| `:topic`         | `:read`                | subscribe to topics               |
+|                 | `:write`               | publish to topics                  |
+|                 | `:read-write`           | publish/subscribe to topics        |
+|                 | `deny`                 | deny accessing topics              |
+| `:function`      | `:exec`                | Execute functions                  |
+|                 | `:deny`                | deny executing functions           |
+
+
+### Default ACLs
+
+An IPC authenticator defines system default ACLs for all three destinations (queues, topics, 
+and functions). 
+
+| Destination     | Default Access Mode   | Description                                     |
+| :--             | :--                   | :--                                             |
+| *queue*         | `:read-write`          | All users can offer/poll to/from any *queue*    |
+| *topic*         | `:read-write`          | All users can subscribe/publish to any *topic*  |
+| *function*      | `:exec`                | All users can execute any *function*            |
+
+This allows users to access all queues, topics, and functions as long as there are no explicit
+access control rules for a user on a destination. 
+
+
+### Custom default ACLs
+
+The default destination ACL can be customized to require explicit user access control for each 
+destination:
+
+| Destination     | Default Access Mode   | Description                         |
+| :--             | :--                   | :--                                |
+| *queue*         | `:deny`                | Deny all users to access queues    |
+| *topic*         | `:deny`                | Deny all users to access topics    |
+| *function*      | `:deny`                | Deny all users to access functions |
+
+This can be achieved with:
+
+```clojure
+(let [auth (ipc/authenticator)]
+  ;; ...
+  (ipc/add-default-acl auth :queue    :deny)
+  (ipc/add-default-acl auth :topic    :deny)
+  (ipc/add-default-acl auth :function :deny))
+  
+  ;; ...
+  )
+```
+
+
+
+ 
+
+### Principal based access control for Queues
+
+Grant specific principals (users) to:
   - poll messages from a queue
   - offer messages to a queue
   - deny accessing a queue
 
-| Authorization          | Access Code  | Example                                         |
+| Authorization          | Access Mode  | Example                                         |
 | :--                    | :--          | :--                                             |
 | poll from a queue      | `:read`       | `(ipc/add-acl auth :queue :queue/1 :read "user1")`  |
 | offer to a queue       | `:write`      | `(ipc/add-acl auth :queue :queue/1 :write "user2")` |
@@ -1214,14 +1275,14 @@ ACLs grant individual principals (users) to:
 ```
 
 
-### ACLs for Topics
+### Principal based access control for Topics
 
-ACLs grant individual principals (users) to:
+Grant specific principals (users) to:
   - subscribe to a topic
   - publish messages to a topic
   - deny accessing a topic
 
-| Authorization          | Access Code  | Example                                          |
+| Authorization          | Access Mode  | Example                                          |
 | :--                    | :--          | :--                                              |
 | subscribe to a topic   | `:read`       | `(ipc/add-acl auth :topic :topic/1 :read "user1")`   |
 | publish to a topic     | `:write`      | `(ipc/add-acl auth :topic :topic/1 :write "user2")`  |
@@ -1266,13 +1327,13 @@ ACLs grant individual principals (users) to:
 ```
 
 
-### ACLs for Functions
+### Principal based access control for Functions
 
-ACLs grant individual principals (users) to:
+Grant specific principals (users) to:
   - execute a function
   - deny accessing a function
 
-| Authorization             | Access Code  | Example                                          |
+| Authorization             | Access Mode  | Example                                          |
 | :--                       | :--          | :--                                              |
 | execute a function        | `:execute`    | `(ipc/add-acl auth :function :echo :read "user1")`   |
 | deny accessing a function | `:deny`       | `(ipc/add-acl auth :function :echo :deny "user2")`   |
