@@ -20,6 +20,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
     * [Topics](#queues)
     * [Functions](#topics)
 * [Authentication](#authentication)
+* [ACL (Access Control Lists)](#acl-access-control-lists)
 * [Compression](#compression)
 * [Encryption](#encryption)
 * [Benchmark](#benchmark)
@@ -1121,20 +1122,18 @@ authorized users/applications can access the messaging infrastructure.
 
 **Server authenticators can be stored/loaded from a file**
 
-Create an authenticator and store it to a file for later use:
-
-```clojure
-(let [auth (ipc/authenticator)]
-  (ipc/add-credentials auth "tom" "3-kio")
-  (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' has 'admin' authorization
-  (ipc/store-authenticator auth (io/file "./ipc.cred")))
-```
-
-Load the authenticator from a file:
-
 ```clojure
 (do
-  (let [auth (ipc/load-authenticator (io/file "./ipc.cred"))]
+  (def auth-file (io/file "./ipc.cred"));
+  
+  ;; Create an authenticator and store it to "./ipc.cred"
+  (let [auth (ipc/authenticator)]
+    (ipc/add-credentials auth "tom" "3-kio")
+    (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' has 'admin' authorization
+    (ipc/store-authenticator auth auth-file))
+
+  ;; Load authenticator from "./ipc.cred"
+  (let [auth (ipc/load-authenticator auth-file)]
     (try-with [server (ipc/server 33333
                                   :encrypt true
                                   :authenticator auth)
@@ -1148,6 +1147,149 @@ Load the authenticator from a file:
            (ipc/send client :echo)
            (ipc/message->map)
            (println "RESPONSE: ")))))
+```
+
+ 
+ 
+
+## ACL (Access Control Lists)
+
+ACLs (Access Control Lists) regulate access to destinations such as queues, topics, or functions 
+in order to secure message flows. They validate user permissions when security mode is enabled by 
+defining who is allowed to produce or consume messages. These mechanisms are based on the principal 
+(authenticated user) and access control items.
+
+ACLs are enabled implicitly if authentication is activated on the server.
+
+
+### ACLs for Queues
+
+ACLs grant individual principals (users) to:
+  - poll messages from a queue
+  - offer messages to a queue
+  - deny accessing a queue
+
+| Authorization          | Access Code  | Example                                         |
+| :--                    | :--          | :--                                             |
+| poll from a queue      | `:read`       | `(ipc/add-acl auth :queue :queue/1 :read "user1")`  |
+| offer to a queue       | `:write`      | `(ipc/add-acl auth :queue :queue/1 :write "user2")` |
+| deny accessing a queue | `:deny`       | `(ipc/add-acl auth :queue :queue/1 :deny "user3")`  |
+
+*Any number of ACLs can be assigned to a principal (user)*
+
+```
+(do
+  ;; Create an authenticator with ACLs
+  (let [auth (ipc/authenticator)]
+    (ipc/add-credentials auth "jak" "io-96")         ;; user 'jak'
+    (ipc/add-credentials auth "pax" "ph$54")         ;; user 'pax'
+    (ipc/add-credentials auth "tom" "3-kio")         ;; user 'tom'
+    (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
+    (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
+    (ipc/add-acl auth :queue :queue/1 :read "jak")        ;; :queue/1 allow poll only
+    (ipc/add-acl auth :queue :queue/1 :write "pax")       ;; :queue/1 allow offer only
+    (ipc/add-acl auth :queue :queue/1 :deny "jon")        ;; :queue/1 deny offer/poll
+
+    (try-with [server    (ipc/server 33333 :encrypt true :authenticator auth)
+               clientPax (ipc/client "localhost" 33333 :user-name "pax" :password "ph$54")
+               clientJak (ipc/client "localhost" 33333 :user-name "jak" :password "io-96")]
+
+      (ipc/create-queue server :queue/1 100)
+
+      ;; 'pax' offers a message ('pax' has :write access to :queue/1)
+      (ipc/offer clientPax :queue/1 300 (ipc/plain-text-message "1" :test "hello"))
+
+      ;; 'jak' polls a message ('jak' has :read access to :queue/1)
+      (->> (ipc/poll clientJak :queue/1 300)
+           (ipc/message->map)
+           (println "POLLED: ")))))
+```
+
+
+### ACLs for Topics
+
+ACLs grant individual principals (users) to:
+  - subscribe to a topic
+  - publish messages to a topic
+  - deny accessing a topic
+
+| Authorization          | Access Code  | Example                                          |
+| :--                    | :--          | :--                                              |
+| subscribe to a topic   | `:read`       | `(ipc/add-acl auth :topic :topic/1 :read "user1")`   |
+| publish to a topic     | `:write`      | `(ipc/add-acl auth :topic :topic/1 :write "user2")`  |
+| deny accessing a topic | `:deny`       | `(ipc/add-acl auth :topic :topic/1 :deny "user3")`   |
+
+*Any number of ACLs can be assigned to a principal (user)*
+
+```
+(do
+  ;; thread-safe printing
+  (defn println [& msg] (locking println (apply core/println msg)))
+
+  (defn jaks-subscription-handler [m]
+    (println "MESSAGE (jak):" (ipc/message->json true m)))
+
+  ;; Create an authenticator with ACLs
+  (let [auth (ipc/authenticator)]
+    (ipc/add-credentials auth "jak" "io-96")         ;; user 'jak'
+    (ipc/add-credentials auth "pax" "ph$54")         ;; user 'pax'
+    (ipc/add-credentials auth "tom" "3-kio")         ;; user 'tom'
+    (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
+    (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
+    (ipc/add-acl auth :topic :topic/1 :read "jak")        ;; :topic/1 allow subscribe only
+    (ipc/add-acl auth :topic :topic/1 :write "pax")       ;; :topic/1 allow publish only
+    (ipc/add-acl auth :topic :topic/1 :read-write "tom")  ;; :topic/1 allow publish/subscribe
+    (ipc/add-acl auth :topic :topic/1 :deny "jon")        ;; :topic/1 deny publish/subscribe
+
+    (try-with [server    (ipc/server 33333 :encrypt true :authenticator auth)
+               clientPax (ipc/client "localhost" 33333 :user-name "pax" :password "ph$54")
+               clientJak (ipc/client "localhost" 33333 :user-name "jak" :password "io-96")]
+
+      (ipc/create-topic server :topic/1)
+
+      ;; 'jak' subscribes for :topic/1 message ('jak' has :read access to :topic/1)
+      (ipc/subscribe clientJak :topic/1 jaks-subscription-handler)
+
+      ;; 'pax' publishes a message ('pax' has :write access to :topic/1)
+      (ipc/publish clientPax :topic/1 (ipc/plain-text-message "1" :test "hello"))
+
+      (sleep 500))))
+```
+
+
+### ACLs for Functions
+
+ACLs grant individual principals (users) to:
+  - execute a function
+  - deny accessing a function
+
+| Authorization             | Access Code  | Example                                          |
+| :--                       | :--          | :--                                              |
+| execute a function        | `:execute`    | `(ipc/add-acl auth :function :echo :read "user1")`   |
+| deny accessing a function | `:deny`       | `(ipc/add-acl auth :function :echo :deny "user2")`   |
+
+*Any number of ACLs can be assigned to a principal (user)*
+
+```
+(do
+  ;; Create an authenticator with ACLs
+  (let [auth (ipc/authenticator)]
+    (ipc/add-credentials auth "jak" "io-96")         ;; user 'jak'
+    (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
+    (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
+    (ipc/add-acl auth :function :echo :execute "jak")   ;; function :echo allow execute
+    (ipc/add-acl auth :function :echo :deny "jon")      ;; function :echo deny execute
+
+    (try-with [server    (ipc/server 33333 :encrypt true :authenticator auth)
+               clientJak (ipc/client "localhost" 33333 :user-name "jak" :password "io-96")]
+
+      (ipc/create-function server :echo (fn [m] m))
+
+      ;; 'jak' sends a message ('jak' has :execute access to function :echo)
+      (->> (ipc/plain-text-message "1" :test "hello")
+           (ipc/send clientJak :echo)
+           (ipc/message->map)
+           (println "RECEIVED: ")))))
 ```
 
  
