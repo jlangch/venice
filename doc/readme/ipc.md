@@ -1162,7 +1162,7 @@ defining who is allowed to produce or consume messages. These mechanisms are bas
 > [!NOTE]
 > ACLs are enabled implicitly if authentication is activated on the server.
 >
-> Users with `:admin` role can access all operations on queues, topics, and functions. No ACL is
+> Users with `:admin` role can access all operations on all queues, topics, and functions. No ACL is
 requiered!
 >
 
