@@ -1,4 +1,4 @@
-Venice Release 1.12.76
+Venice Release 1.12.77
 
 Copyright (c) 2017-2025 Venice
 
