@@ -1223,7 +1223,7 @@ This custom default ACL setup can be achieved with:
   ;; custom default ACLs
   (ipc/default-acl auth :queue    :deny)        ;; prevent all users from accessing queues
   (ipc/default-acl auth :topic    :deny)        ;; Prevent all users from accessing topics
-  (ipc/default-acl auth :function :deny))       ;; Prevent all users from accessing functions
+  (ipc/default-acl auth :function :deny)        ;; Prevent all users from accessing functions
   
   ;; Overrides for specific users
   (ipc/add-acl auth :queue :queue/1 :read  "tom")   ;; allow user 'tom' to poll messages from :queue/1
