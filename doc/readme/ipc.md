@@ -1221,9 +1221,9 @@ This custom default ACL setup can be achieved with:
   (ipc/add-credentials auth "tom" "3-kio")          ;; user 'tom'
   
   ;; custom default ACLs
-  (ipc/default-acl auth :queue    :deny)        ;; prevent all users from accessing queues
-  (ipc/default-acl auth :topic    :deny)        ;; Prevent all users from accessing topics
-  (ipc/default-acl auth :function :deny)        ;; Prevent all users from accessing functions
+  (ipc/default-acl auth :queue    :deny)            ;; prevent all users from accessing queues
+  (ipc/default-acl auth :topic    :deny)            ;; prevent all users from accessing topics
+  (ipc/default-acl auth :function :deny)            ;; prevent all users from accessing functions
   
   ;; Overrides for specific users
   (ipc/add-acl auth :queue :queue/1 :read  "tom")   ;; allow user 'tom' to poll messages from :queue/1
@@ -1253,11 +1253,12 @@ Grant specific principals (users) to:
 (do
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
-    (ipc/add-credentials auth "jak" "io-96")         ;; user 'jak'
-    (ipc/add-credentials auth "pax" "ph$54")         ;; user 'pax'
-    (ipc/add-credentials auth "tom" "3-kio")         ;; user 'tom'
-    (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
-    (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
+    (ipc/add-credentials auth "jak" "io-96")              ;; user 'jak'
+    (ipc/add-credentials auth "pax" "ph$54")              ;; user 'pax'
+    (ipc/add-credentials auth "tom" "3-kio")              ;; user 'tom'
+    (ipc/add-credentials auth "jon" "ph$54")              ;; user 'jon'
+    (ipc/add-credentials auth "max" "zu*67" :admin)       ;; user 'max' (admin)
+ 
     (ipc/add-acl auth :queue :queue/1 :read "jak")        ;; :queue/1 allow poll only
     (ipc/add-acl auth :queue :queue/1 :read "jak")        ;; :queue/2 allow poll only
     (ipc/add-acl auth :queue :queue/1 :write "pax")       ;; :queue/1 allow offer only
@@ -1304,11 +1305,12 @@ Grant specific principals (users) to:
 
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
-    (ipc/add-credentials auth "jak" "io-96")         ;; user 'jak'
-    (ipc/add-credentials auth "pax" "ph$54")         ;; user 'pax'
-    (ipc/add-credentials auth "tom" "3-kio")         ;; user 'tom'
-    (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
-    (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
+    (ipc/add-credentials auth "jak" "io-96")              ;; user 'jak'
+    (ipc/add-credentials auth "pax" "ph$54")              ;; user 'pax'
+    (ipc/add-credentials auth "tom" "3-kio")              ;; user 'tom'
+    (ipc/add-credentials auth "jon" "ph$54")              ;; user 'jon'
+    (ipc/add-credentials auth "max" "zu*67" :admin)       ;; user 'max' (admin)
+
     (ipc/add-acl auth :topic :topic/1 :read "jak")        ;; :topic/1 allow subscribe only
     (ipc/add-acl auth :topic :topic/2 :read "jak")        ;; :topic/2 allow subscribe only
     (ipc/add-acl auth :topic :topic/1 :write "pax")       ;; :topic/1 allow publish only
@@ -1348,9 +1350,10 @@ Grant specific principals (users) to:
 (do
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
-    (ipc/add-credentials auth "jak" "io-96")         ;; user 'jak'
-    (ipc/add-credentials auth "jon" "ph$54")         ;; user 'jon'
-    (ipc/add-credentials auth "max" "zu*67" :admin)  ;; user 'max' (admin)
+    (ipc/add-credentials auth "jak" "io-96")            ;; user 'jak'
+    (ipc/add-credentials auth "jon" "ph$54")            ;; user 'jon'
+    (ipc/add-credentials auth "max" "zu*67" :admin)     ;; user 'max' (admin)
+
     (ipc/add-acl auth :function :echo :execute "jak")   ;; function :echo allow execute
     (ipc/add-acl auth :function :order :execute "jak")  ;; function :order allow execute
     (ipc/add-acl auth :function :echo :deny "jon")      ;; function :echo deny execute
