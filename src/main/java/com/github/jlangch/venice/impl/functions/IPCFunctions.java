@@ -2136,28 +2136,7 @@ public class IPCFunctions {
                 final String access = Coerce.toVncString(args.nth(3)).getValue();
                 final String principal = Coerce.toVncString(args.nth(4)).getValue();
 
-                AccessMode mode = null;
-                switch(access) {
-                    case "read":       mode = AccessMode.READ;        break;
-                    case "poll":       mode = AccessMode.READ;        break;
-                    case "subscribe":  mode = AccessMode.READ;        break;
-
-                    case "write":      mode = AccessMode.WRITE;       break;
-                    case "offer":      mode = AccessMode.READ;        break;
-                    case "publish":    mode = AccessMode.READ;        break;
-
-                    case "read-write": mode = AccessMode.READ_WRITE;  break;
-                    case "offer-poll": mode = AccessMode.READ_WRITE;  break;
-                    case "publish-subscribe": mode = AccessMode.READ_WRITE;  break;
-
-                    case "execute":    mode = AccessMode.EXECUTE;     break;
-
-                    case "deny":       mode = AccessMode.DENY;        break;
-
-                    default:           throw new IpcException(
-                                          "Invalid access '" + access + "'! "
-                                          + "Use one of {:read, :write, :read-write, :execute, :deny}");
-                }
+                final AccessMode mode = toAccessMode(access);
 
                 switch(destType) {
                     case "queue":    authenticator.setQueueAcl(destName, mode, principal);    break;
@@ -2300,28 +2279,7 @@ public class IPCFunctions {
                 final String destType = Coerce.toVncString(args.nth(1)).getValue();
                 final String access = Coerce.toVncString(args.nth(2)).getValue();
 
-                AccessMode mode = null;
-                switch(access) {
-                    case "read":       mode = AccessMode.READ;        break;
-                    case "poll":       mode = AccessMode.READ;        break;
-                    case "subscribe":  mode = AccessMode.READ;        break;
-
-                    case "write":      mode = AccessMode.WRITE;       break;
-                    case "offer":      mode = AccessMode.READ;        break;
-                    case "publish":    mode = AccessMode.READ;        break;
-
-                    case "read-write": mode = AccessMode.READ_WRITE;  break;
-                    case "offer-poll": mode = AccessMode.READ_WRITE;  break;
-                    case "publish-subscribe": mode = AccessMode.READ_WRITE;  break;
-
-                    case "execute":    mode = AccessMode.EXECUTE;     break;
-
-                    case "deny":       mode = AccessMode.DENY;        break;
-
-                    default:           throw new IpcException(
-                                          "Invalid access '" + access + "'! "
-                                          + "Use one of {:read, :write, :read-write, :execute, :deny}");
-                }
+                final AccessMode mode = toAccessMode(access);
 
                 switch(destType) {
                     case "queue":    authenticator.setQueueDefaultAcl(mode);    break;
@@ -4189,6 +4147,31 @@ public class IPCFunctions {
         }
     }
 
+    private static AccessMode toAccessMode(final String accessMode) {
+        switch(StringUtil.trimToEmpty(accessMode)) {
+            case "read":              return AccessMode.READ;
+            case "poll":              return AccessMode.READ;
+            case "subscribe":         return AccessMode.READ;
+
+            case "write":             return AccessMode.WRITE;
+            case "offer":             return AccessMode.WRITE;
+            case "publish":           return AccessMode.WRITE;
+
+            case "read-write":        return AccessMode.READ_WRITE;
+            case "offer-poll":        return AccessMode.READ_WRITE;
+            case "publish-subscribe": return AccessMode.READ_WRITE;
+
+            case "send":              return AccessMode.EXECUTE;
+            case "execute":           return AccessMode.EXECUTE;
+
+            case "deny":              return AccessMode.DENY;
+
+            default:                  throw new IpcException(
+                                         "Invalid access mode '" + accessMode + "'! "
+                                         + "Use one of {:read, :write, :read-write, :execute, :deny}");
+        }
+    }
+
     private static Function<IMessage,IMessage> wrapFunction(
             final VncFunction callingFunction,
             final VncList callingFunctionArgs,
@@ -4213,8 +4196,8 @@ public class IPCFunctions {
                                   : Coerce.toVncJavaObject(response, IMessage.class);
                      });
         }
-
     }
+
     private static class FutureWrapper implements Future<VncVal> {
 
         public FutureWrapper(final Future<IMessage> d) {
