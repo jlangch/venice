@@ -190,6 +190,20 @@ public class Authenticator {
         Objects.requireNonNull(accessMode);
         Objects.requireNonNull(principal);
 
+        // validate access mode
+        switch(accessMode) {
+            case READ:
+            case WRITE:
+            case READ_WRITE:
+            case DENY:
+                break;    //ok
+
+            case EXECUTE:
+            default:
+                throw new IpcException(
+                    "Invalid access mode '" + accessMode + "' for 'queue' ACL! ");
+        }
+
         Map<String,Acl> acls = queueAcls.get(queueName);
         if (acls == null) {
             acls = new HashMap<>();
@@ -242,6 +256,20 @@ public class Authenticator {
         Objects.requireNonNull(accessMode);
         Objects.requireNonNull(principal);
 
+        // validate access mode
+        switch(accessMode) {
+            case READ:
+            case WRITE:
+            case READ_WRITE:
+            case DENY:
+                break;    //ok
+
+            case EXECUTE:
+            default:
+                throw new IpcException(
+                    "Invalid access mode '" + accessMode + "' for 'topic' ACL! ");
+        }
+
         Map<String,Acl> acls = topicAcls.get(topicName);
         if (acls == null) {
             acls = new HashMap<>();
@@ -293,6 +321,20 @@ public class Authenticator {
         Objects.requireNonNull(functionName);
         Objects.requireNonNull(accessMode);
         Objects.requireNonNull(principal);
+
+        // validate access mode
+        switch(accessMode) {
+            case EXECUTE:
+            case DENY:
+                break;    //ok
+
+            case READ:
+            case WRITE:
+            case READ_WRITE:
+            default:
+                throw new IpcException(
+                    "Invalid access mode '" + accessMode + "' for 'function' ACL! ");
+        }
 
         Map<String,Acl> acls = functionAcls.get(functionName);
         if (acls == null) {
