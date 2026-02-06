@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +55,7 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
@@ -2136,15 +2138,15 @@ public class IPCFunctions {
                 final String access = Coerce.toVncString(args.nth(3)).getValue();
                 final String principal = Coerce.toVncString(args.nth(4)).getValue();
 
-                final AccessMode mode = toAccessMode(access);
+                validateDestinationType(destType);
+
+                final AccessMode mode = toAccessMode(access, destType);
 
                 switch(destType) {
                     case "queue":    authenticator.setQueueAcl(destName, mode, principal);    break;
                     case "topic":    authenticator.setTopicAcl(destName, mode, principal);    break;
                     case "function": authenticator.setFunctionAcl(destName, mode, principal); break;
-                    default:         throw new IpcException(
-                                         "Invalid destination type '" + destType + "'! "
-                                         + "Use one of {:queue, :topic, :function}");
+                    default:         break; // already handled
                 }
 
                 return new VncJavaObject(authenticator);
@@ -2197,14 +2199,14 @@ public class IPCFunctions {
                 final Authenticator authenticator = Coerce.toVncJavaObject(args.nth(0), Authenticator.class);
                 final String destType = Coerce.toVncString(args.nth(1)).getValue();
 
+                validateDestinationType(destType);
+
                 if (args.size() == 2) {
                      switch(destType) {
                         case "queue":    authenticator.removeAllQueueAcls();    break;
                         case "topic":    authenticator.removeAllTopicAcls();    break;
                         case "function": authenticator.removeAllFunctionAcls(); break;
-                        default:         throw new IpcException(
-                                            "Invalid destination type '" + destType + "'! "
-                                             + "Use one of {:queue, :topic, :function}");
+                        default:         break; // already handled
                     }
                 }
                 else  if (args.size() == 3) {
@@ -2214,9 +2216,7 @@ public class IPCFunctions {
                         case "queue":    authenticator.removeQueueAcl(destName);    break;
                         case "topic":    authenticator.removeTopicAcl(destName);    break;
                         case "function": authenticator.removeFunctionAcl(destName); break;
-                        default:         throw new IpcException(
-                                            "Invalid destination type '" + destType + "'! "
-                                             + "Use one of {:queue, :topic, :function}");
+                        default:         break; // already handled
                     }
                 }
                 else {
@@ -2227,9 +2227,7 @@ public class IPCFunctions {
                         case "queue":    authenticator.removeQueueAcl(destName, principal);    break;
                         case "topic":    authenticator.removeTopicAcl(destName, principal);    break;
                         case "function": authenticator.removeFunctionAcl(destName, principal); break;
-                        default:         throw new IpcException(
-                                            "Invalid destination type '" + destType + "'! "
-                                             + "Use one of {:queue, :topic, :function}");
+                        default:         break; // already handled
                     }
                 }
 
@@ -2279,15 +2277,15 @@ public class IPCFunctions {
                 final String destType = Coerce.toVncString(args.nth(1)).getValue();
                 final String access = Coerce.toVncString(args.nth(2)).getValue();
 
-                final AccessMode mode = toAccessMode(access);
+                validateDestinationType(destType);
+
+                final AccessMode mode = toAccessMode(access, destType);
 
                 switch(destType) {
                     case "queue":    authenticator.setQueueDefaultAcl(mode);    break;
                     case "topic":    authenticator.setTopicDefaultAcl(mode);    break;
                     case "function": authenticator.setFunctionDefaultAcl(mode); break;
-                    default:         throw new IpcException(
-                                         "Invalid destination type '" + destType + "'! "
-                                         + "Use one of {:queue, :topic, :function}");
+                    default:         break; // already handled
                 }
 
                 return new VncJavaObject(authenticator);
@@ -4147,7 +4145,7 @@ public class IPCFunctions {
         }
     }
 
-    private static AccessMode toAccessMode(final String accessMode) {
+    private static AccessMode toAccessMode(final String accessMode, final String destType) {
         switch(StringUtil.trimToEmpty(accessMode)) {
             case "read":              return AccessMode.READ;
             case "poll":              return AccessMode.READ;
@@ -4166,11 +4164,37 @@ public class IPCFunctions {
 
             case "deny":              return AccessMode.DENY;
 
-            default:                  throw new IpcException(
-                                         "Invalid access mode '" + accessMode + "'! "
-                                         + "Use one of {:read, :write, :read-write, :execute, :deny}");
+            default: {
+                final String allowedAccessModes;
+                switch(destType) {
+                    case "queue":
+                        allowedAccessModes = ":read, :write, :read-write, :deny";
+                        break;
+                    case "topic":
+                        allowedAccessModes = ":read, :write, :read-write, :deny";
+                        break;
+                    case "function":
+                        allowedAccessModes = ":execute, :deny";
+                        break;
+                    default:
+                        allowedAccessModes = ":read, :write, :read-write, :execute, :deny";
+                        break;
+                }
+                throw new IpcException(
+                        "Invalid access mode '" + accessMode + "'! "
+                        + "Use one of {" + allowedAccessModes + "}");
+            }
         }
     }
+
+    private static void validateDestinationType(final String destType) {
+        if (!destinationTypes.contains(destType)) {
+            throw new IpcException(
+                    "Invalid destination type '" + destType + "'! "
+                    + "Use one of {:queue, :topic, :function}");
+        }
+    }
+
 
     private static Function<IMessage,IMessage> wrapFunction(
             final VncFunction callingFunction,
@@ -4233,6 +4257,9 @@ public class IPCFunctions {
 
         private final Future<IMessage> delegate;
     }
+
+
+    private static Set<String> destinationTypes = CollectionUtil.toSet("queue", "topic", "function");
 
 
     ///////////////////////////////////////////////////////////////////////////
