@@ -650,7 +650,7 @@ The message size limit can be configured on the server in the range of 2KB ... 2
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
       (println (ipc/message-field m :oneway?))
-      (println (ipc/message-field m :timestamp))
+      (println (time/local-date-time (ipc/message-field m :timestamp)))
       (println (ipc/message-field m :expires-at))
       (println (ipc/message-field m :response-status))
       (println (ipc/message-field m :request-id))
@@ -664,10 +664,10 @@ The message size limit can be configured on the server in the range of 2KB ... 2
 Output:
 
 ```
-baac8cf8-48fd-4e16-a1cc-b3867bd4e505
+864ffec8-b61e-44e6-b5b1-7560dc3c12b8
 :RESPONSE
 true
-1763313279378
+2026-02-08T17:18:15.986
 nil
 :OK
 1
@@ -694,7 +694,7 @@ Hello!
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
       (println (ipc/message-field m :oneway?))
-      (println (ipc/message-field m :timestamp))
+      (println (time/local-date-time (ipc/message-field m :timestamp)))
       (println (ipc/message-field m :response-status))
       (println (ipc/message-field m :request-id))
       (println (ipc/message-field m :subject))
@@ -706,10 +706,10 @@ Hello!
 Output:
 
 ```
-abfaab17-dea7-4a38-85ee-501b6ead0aed
+d68a95e6-aaef-4019-9327-d2e61ad483ed
 :RESPONSE
 true
-1763313327205
+2026-02-08T17:18:48.134
 :OK
 1
 test
@@ -732,7 +732,7 @@ nil
       (println (ipc/message-field m :id))
       (println (ipc/message-field m :type))
       (println (ipc/message-field m :oneway?))
-      (println (ipc/message-field m :timestamp))
+      (println (time/local-date-time (ipc/message-field m :timestamp)))
       (println (ipc/message-field m :response-status))
       (println (ipc/message-field m :request-id))
       (println (ipc/message-field m :subject))
@@ -745,10 +745,10 @@ nil
 Output:
 
 ```
-2815b1c6-55cf-417c-9c19-88efe5c30ba0
+cc6ccb69-411d-4dae-9e04-2f6c4594be4e
 :RESPONSE
 true
-1763313337189
+2026-02-08T17:19:12.316
 :OK
 1
 test
