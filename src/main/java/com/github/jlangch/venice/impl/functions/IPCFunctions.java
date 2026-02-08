@@ -2115,7 +2115,7 @@ public class IPCFunctions {
                         "| queue offer      | `:queue` -> one of { `:offer`, `:offer-poll`, `:deny` } |\n" +
                         "| queue poll       | `:queue` -> one of { `:poll`, `:offer-poll`, `:deny` } |\n" +
                         "| topic subscribe  | `:topic` -> one of { `:subscribe`, `:publish-subscribe`, `:deny` } |\n" +
-                        "| topic publish    | `:topic` -> one of { `:publish`, `:publish-subscribe`, `:deny` } |" +
+                        "| topic publish    | `:topic` -> one of { `:publish`, `:publish-subscribe`, `:deny` } |\n" +
                         "| function execute | `:function` -> one of { `:execute`, `:deny` }|\n\n")
                     .examples(
                         "(let [auth (ipc/authenticator)]                           \n" +
@@ -4165,10 +4165,10 @@ public class IPCFunctions {
                 final String allowedAccessModes;
                 switch(destType) {
                     case "queue":
-                        allowedAccessModes = ":read, :write, :read-write, :deny";
+                        allowedAccessModes = ":offer, :poll, :offer-poll, :deny";
                         break;
                     case "topic":
-                        allowedAccessModes = ":read, :write, :read-write, :deny";
+                        allowedAccessModes = ":publish, :subscribe, :publish-subscribe, :deny";
                         break;
                     case "function":
                         allowedAccessModes = ":execute, :deny";
