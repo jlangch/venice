@@ -1181,7 +1181,7 @@ used to to define permissions:
 |                  | `:deny`                 | prevent accessing queues                   |
 | `:topic`          | `:subscribe`            | allow to subscribe to topics               |
 |                  | `:publish`              | allow to publish to topics                 |
-|                  | `:publish-subscribe`      allow to publish/subscribe to topics       |
+|                  | `:publish-subscribe`     | allow to publish/subscribe to topics       |
 |                  | `:deny`                 | prevent accessing topics                   |
 | `:function`       | `:exec`                 | allow to execute functions                 |
 |                  | `:deny`                 | prevent executing functions                |
