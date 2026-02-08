@@ -61,10 +61,6 @@ public class ConfigWalEntry {
         return walCompressed;
     }
 
-    public boolean isBoundedQueue() {
-        return queueType == QueueType.BOUNDED;
-    }
-
     public WalEntry toWalEntry() {
         final ByteBuffer payload = ByteBuffer.allocate(12);
         payload.putInt(queueCapacity);

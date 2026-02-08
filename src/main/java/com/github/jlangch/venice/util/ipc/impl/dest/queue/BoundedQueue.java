@@ -32,6 +32,8 @@ import com.github.jlangch.venice.util.ipc.impl.Destination;
 
 /**
  * A bounded, thread-safe queue based on LinkedBlockingQueue
+ *
+ * @param <T> The element type
  */
 public class BoundedQueue<T> extends Destination implements IpcQueue<T> {
 

@@ -32,6 +32,8 @@ import com.github.jlangch.venice.util.ipc.impl.Destination;
 
 /**
  * Circular buffer.
+ *
+ * @param <T> The element type
  */
 public class CircularBuffer<T> extends Destination implements IpcQueue<T> {
 
