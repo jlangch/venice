@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal.entry;
 
-import static com.github.jlangch.venice.util.ipc.impl.dest.queue.QueueType.BOUNDED;
+import static com.github.jlangch.venice.util.ipc.QueueType.BOUNDED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;

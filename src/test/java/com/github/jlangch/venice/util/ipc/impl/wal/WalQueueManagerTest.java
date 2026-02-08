@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.wal;
 
+import static com.github.jlangch.venice.util.ipc.QueuePersistence.DURABLE;
+import static com.github.jlangch.venice.util.ipc.QueueType.BOUNDED;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,9 +57,7 @@ public class WalQueueManagerTest {
             final IpcQueue<Message> queue = QueueFactory.createQueue(
                                                 wqm,
                                                 "queue/test",
-                                                100,
-                                                true,
-                                                true);
+                                                100, BOUNDED, DURABLE);
 
             assertTrue(queue instanceof DurableBoundedQueue);
 
@@ -97,7 +97,7 @@ public class WalQueueManagerTest {
         ) {
             server.start();
 
-            server.createQueue("queue/test", 100, true, true);
+            server.createQueue("queue/test", 100, BOUNDED, DURABLE);
 
             // uses WalQueueManager to manage the queue
             final IpcQueue<Message> queue = server.getQueue("queue/test");
@@ -134,7 +134,7 @@ public class WalQueueManagerTest {
         ) {
             server.start();
 
-            server.createQueue("queue/test", 100, true, true);
+            server.createQueue("queue/test", 100, BOUNDED, DURABLE);
 
             // uses WalQueueManager to manage the queue
             final IpcQueue<Message> queue = server.getQueue("queue/test");
@@ -173,7 +173,7 @@ public class WalQueueManagerTest {
         ) {
             server.start();
 
-            server.createQueue("queue/test", 100, true, true);
+            server.createQueue("queue/test", 100, BOUNDED, DURABLE);
 
             // uses WalQueueManager to manage the queue
             final IpcQueue<Message> queue = server.getQueue("queue/test");
@@ -195,7 +195,7 @@ public class WalQueueManagerTest {
         ) {
             server.start();
 
-            server.createQueue("queue/test", 100, true, true);
+            server.createQueue("queue/test", 100, BOUNDED, DURABLE);
 
             // uses WalQueueManager to manage the queue
             final IpcQueue<Message> queue = server.getQueue("queue/test");
@@ -232,7 +232,7 @@ public class WalQueueManagerTest {
         ) {
             server.start();
 
-            server.createQueue("queue/test", 100, true, true);
+            server.createQueue("queue/test", 100, BOUNDED, DURABLE);
 
             // uses WalQueueManager to manage the queue
             final IpcQueue<Message> queue = server.getQueue("queue/test");
@@ -254,7 +254,7 @@ public class WalQueueManagerTest {
         ) {
             server.start();
 
-            server.createQueue("queue/test", 100, true, true);
+            server.createQueue("queue/test", 100, BOUNDED, DURABLE);
 
             // uses WalQueueManager to manage the queue
             final IpcQueue<Message> queue = server.getQueue("queue/test");

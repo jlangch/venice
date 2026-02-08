@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static com.github.jlangch.venice.util.ipc.QueuePersistence.TRANSIENT;
+import static com.github.jlangch.venice.util.ipc.QueueType.BOUNDED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -39,7 +41,7 @@ public class TcpOfferPollTest {
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 
-        server.createQueue("queue-1", 10, true, false);
+        server.createQueue("queue-1", 10, BOUNDED, TRANSIENT);
 
         server.start();
 
@@ -93,7 +95,7 @@ public class TcpOfferPollTest {
                                             .build());
         final Client client = Client.of(33333);
 
-        server.createQueue("queue-1", 10, true, false);
+        server.createQueue("queue-1", 10, BOUNDED, TRANSIENT);
 
         server.start();
 
@@ -127,7 +129,7 @@ public class TcpOfferPollTest {
         final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
 
-        server.createQueue("queue/1", 3, true, false);
+        server.createQueue("queue/1", 3, BOUNDED, TRANSIENT);
 
         server.start();
 
@@ -158,7 +160,7 @@ public class TcpOfferPollTest {
         final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
 
-        server.createQueue("queue/1", 3, true, false);
+        server.createQueue("queue/1", 3, BOUNDED, TRANSIENT);
 
         server.start();
 
@@ -200,7 +202,7 @@ public class TcpOfferPollTest {
         final Server server = Server.of(33333);
         final Client client1 = Client.of(33333);
 
-        server.createQueue("queue/1", 3, true, false);
+        server.createQueue("queue/1", 3, BOUNDED, TRANSIENT);
 
         server.start();
 

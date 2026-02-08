@@ -45,7 +45,7 @@ public class OfferPollTest {
                 "      (sleep 100)                                                                         \n" +
                 "                                                                                          \n" +
                 "      ;; create the durable queue :testq                                                  \n" +
-                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "      (ipc/create-queue server :testq 100 :bounded :durable)                                  \n" +
                 "                                                                                          \n" +
                 "      ;; offer 3 durable and 1 nondurable message                                         \n" +
                 "      (ipc/offer client :testq 300 (ipc/plain-text-message \"1\" :test \"hello 1\" true)) \n" +
@@ -84,7 +84,7 @@ public class OfferPollTest {
                 "      (sleep 100)                                                                         \n" +
                 "                                                                                          \n" +
                 "      ;; create the durable queue :testq                                                  \n" +
-                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "      (ipc/create-queue server :testq 100 :bounded :durable)                                  \n" +
                 "                                                                                          \n" +
                 "      ;; offer 3 durable and 1 nondurable message                                         \n" +
                 "      (ipc/offer client :testq 300 (ipc/plain-text-message \"1\" :test \"hello 1\" true)) \n" +
@@ -112,7 +112,7 @@ public class OfferPollTest {
                 "      ;; create the durable queue :testq                                                  \n" +
                 "      ;; if the queue already exists due to the WAL recovery process, this                \n" +
                 "      ;; queue create request will just be skipped!                                       \n" +
-                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "      (ipc/create-queue server :testq 100 :bounded :durable)                                  \n" +
                 "                                                                                          \n" +
                 "      ;; poll message #2                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +
@@ -152,7 +152,7 @@ public class OfferPollTest {
                 "      (sleep 100)                                                                         \n" +
                 "                                                                                          \n" +
                 "      ;; create the durable queue :testq                                                  \n" +
-                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "      (ipc/create-queue server :testq 100 :bounded :durable)                                  \n" +
                 "                                                                                          \n" +
                 "      ;; offer 3 durable and 1 nondurable message                                         \n" +
                 "      (ipc/offer client :testq 300 (ipc/plain-text-message \"1\" :test \"hello 1\" true)) \n" +
@@ -180,7 +180,7 @@ public class OfferPollTest {
                 "      ;; create the durable queue :testq                                                  \n" +
                 "      ;; if the queue already exists due to the WAL recovery process, this                \n" +
                 "      ;; queue create request will just be skipped!                                       \n" +
-                "      (ipc/create-queue server :testq 100 :bounded true)                                  \n" +
+                "      (ipc/create-queue server :testq 100 :bounded :durable)                                  \n" +
                 "                                                                                          \n" +
                 "      ;; poll message #2                                                                  \n" +
                 "      (let [m (ipc/poll client :testq 300)]                                               \n" +

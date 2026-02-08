@@ -68,6 +68,8 @@ import com.github.jlangch.venice.util.ipc.ClientConfig.Builder;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
+import com.github.jlangch.venice.util.ipc.QueuePersistence;
+import com.github.jlangch.venice.util.ipc.QueueType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
@@ -2105,23 +2107,26 @@ public class IPCFunctions {
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
                         "| dest-name     | A destination name |\n" +
-                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |" +
+                        "| access        | An access type { `:offer`, `:poll`, `:offer-poll`," +
+                                         " `:publish`,`:subscribe`, `:publish-subscribe`," +
+                                         " `:execute`, `:deny` } |" +
                         "| principal     | A principal |\n\n" +
                         "*ACL configurations:* \n\n" +
-                        "| queue offer      | `:queue` -> one of { `:write`, `:read-write`, `:deny` } |\n" +
-                        "| queue poll       | `:queue` -> one of { `:read`,  `:read-write`, `:deny` } |\n" +
-                        "| topic subscribe  | `:topic` -> one of { `:write`, `:read-write`, `:deny` } |\n" +
-                        "| topic publish    | `:topic` -> one of { `:read`,  `:read-write`, `:deny` } |" +
+                        "| queue offer      | `:queue` -> one of { `:offer`, `:offer-poll`, `:deny` } |\n" +
+                        "| queue poll       | `:queue` -> one of { `:poll`, `:offer-poll`, `:deny` } |\n" +
+                        "| topic subscribe  | `:topic` -> one of { `:subscribe`, `:publish-subscribe`, `:deny` } |\n" +
+                        "| topic publish    | `:topic` -> one of { `:publish`, `:publish-subscribe`, `:deny` } |" +
                         "| function execute | `:function` -> one of { `:execute`, `:deny` }|\n\n")
                     .examples(
-                        "(let [auth (ipc/authenticator)]                          \n" +
-                        "  (ipc/add-credentials auth \"tom\" \"123\")             \n" +
-                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)      \n" +
-                        "  (ipc/add-acl auth :queue :queue/1 :read-write \"tom\") \n" +
-                        "  (ipc/add-acl auth :queue :queue/2 :read \"tom\")       \n" +
-                        "  (ipc/add-acl auth :topic :topic/1 :write \"tom\")      \n" +
-                        "  (ipc/add-acl auth :queue :topic/2 :read-write \"tom\") \n" +
-                        "  (ipc/add-acl auth :function :echo :execute \"tom\"))   ")
+                        "(let [auth (ipc/authenticator)]                           \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")              \n" +
+                        "  (ipc/add-credentials auth \"max\" \"456\" :admin)       \n" +
+                        "                                                          \n" +
+                        "  (ipc/add-acl auth :queue :queue/1 :offer \"tom\")       \n" +
+                        "  (ipc/add-acl auth :queue :queue/2 :poll \"tom\")        \n" +
+                        "  (ipc/add-acl auth :topic :topic/1 :publish \"tom\")     \n" +
+                        "  (ipc/add-acl auth :queue :topic/2 :subscribe \"tom\")   \n" +
+                        "  (ipc/add-acl auth :function :echo :execute \"tom\"))    ")
                     .seeAlso(
                         "ipc/authenticator",
                         "ipc/remove-acl",
@@ -2175,17 +2180,19 @@ public class IPCFunctions {
                         "(let [auth (ipc/authenticator)]                      \n" +
                         "  (ipc/add-credentials auth \"tom\" \"123\")         \n" +
                         "  (ipc/add-credentials auth \"max\" \"456\" :admin)  \n" +
-                        "  (ipc/remove-acl auth :queue :queue/1 \"tom\")      \n" +
-                        "  (ipc/remove-acl auth :queue :queue/2 \"tom\")      \n" +
-                        "  (ipc/remove-acl auth :topic :topic/1 \"tom\")      \n" +
-                        "  (ipc/remove-acl auth :queue :topic/2 \"tom\")      \n" +
-                        "  (ipc/remove-acl auth :function :echo \"tom\")      \n" +
-                        "  (ipc/remove-acl auth :queue :queue/1)  ;; remove all ACLs for queue :queue/1   \n" +
-                        "  (ipc/remove-acl auth :topic :topic/1)  ;; remove all ACLs for topic :topic/1   \n" +
-                        "  (ipc/remove-acl auth :function :echo))  ;; remove all ACLs for function :echo  \n" +
-                        "  (ipc/remove-acl auth :queue)  ;; remove all queue ACLs                         \n" +
-                        "  (ipc/remove-acl auth :topic)  ;; remove all topic ACLs                         \n" +
-                        "  (ipc/remove-acl auth :function)  ;; remove all function ACLs                   ")
+                        "                                                     \n" +
+                        "  (ipc/add-acl auth :queue :queue/1 :offer \"tom\")      \n" +
+                        "  (ipc/add-acl auth :queue :queue/2 :poll \"tom\")       \n" +
+                        "  (ipc/add-acl auth :topic :topic/1 :publish\"tom\")     \n" +
+                        "  (ipc/add-acl auth :queue :topic/2 :subscribe \"tom\")  \n" +
+                        "  (ipc/add-acl auth :function :echo :execute \"tom\")    \n" +
+                        "                                                          \n" +
+                        "  (ipc/remove-acl auth :queue :queue/1 \"tom\")   ;; remove ACLs for queue :queue/1 and user \"tom\"  \n" +
+                        "  (ipc/remove-acl auth :topic :topic/1)           ;; remove all ACLs for topic :topic/1   \n" +
+                        "  (ipc/remove-acl auth :function :echo))          ;; remove all ACLs for function :echo   \n" +
+                        "  (ipc/remove-acl auth :queue)                    ;; remove all queue ACLs                \n" +
+                        "  (ipc/remove-acl auth :topic)                    ;; remove all topic ACLs                \n" +
+                        "  (ipc/remove-acl auth :function))                ;; remove all function ACLs             ")
                     .seeAlso(
                         "ipc/authenticator",
                         "ipc/add-acl",
@@ -2249,20 +2256,24 @@ public class IPCFunctions {
                         "*Arguments:* \n\n" +
                         "| authenticator | An authenticator |\n" +
                         "| dest-type     | A destination type { `:queue`, `:topic`, `:function` } |\n" +
-                        "| access        | An access type { `:read`, `:write`, `:read-write`, `:execute`, `:deny` } |\n\n" +
-                        "*System default ACLs:* \n\n" +
-                        "| queues    | `:read-write` |\n" +
-                        "| topics    | `:read-write` |\n" +
+                        "| access        | An access type { `:offer`, `:poll`, `:offer-poll`," +
+                                         " `:publish`,`:subscribe`, `:publish-subscribe`," +
+                                         " `:execute`, `:deny` } |" +
+                       "*System default ACLs:* \n\n" +
+                        "| queues    | `:offer-poll` |\n" +
+                        "| topics    | `:publish-subscribe` |\n" +
                         "| functions | `:execute`    |\n\n")
                     .examples(
                         "(let [auth (ipc/authenticator)]                           \n" +
-                        "  (ipc/add-credentials auth \"tom\" \"123\")              \n" +
                         "  (ipc/add-credentials auth \"max\" \"456\" :admin)       \n" +
+                        "  (ipc/add-credentials auth \"tom\" \"123\")              \n" +
                         "  (ipc/add-credentials auth \"jak\" \"123\")              \n" +
-                        "  (ipc/add-default-acl auth :queue :read)                 \n" +
+                        "                                                          \n" +
+                        "  (ipc/add-default-acl auth :queue :poll)                 \n" +
                         "  (ipc/add-default-acl auth :topic :deny)                 \n" +
                         "  (ipc/add-default-acl auth :function :deny)              \n"+
-                        "  (ipc/add-acl auth :queue :queue/1 :read-write \"tom\")  ")
+                        "                                                          \n" +
+                        "  (ipc/add-acl auth :queue :queue/1 :offer-poll \"tom\")  ")
                     .seeAlso(
                         "ipc/authenticator",
                         "ipc/add-acl",
@@ -3363,13 +3374,13 @@ public class IPCFunctions {
                     .arglists(
                         "(ipc/create-queue node name capacity)",
                         "(ipc/create-queue node name capacity type)",
-                        "(ipc/create-queue node name capacity type durable)")
+                        "(ipc/create-queue node name capacity type persistence)")
                     .doc(
                         "Creates a named queue on the server. Messages can be exchanged asynchronously " +
                         "between two clients using a queue. Each message is delivered to exactly " +
                         "one client. 1 to N clients can *offer* / *poll* messages *from* / *to* the " +
                         "queue. \n\n" +
-                        "Queues live as long as server lives if they are not durable.\n\n" +
+                        "Queues live as long as the server lives if they are not durable.\n\n" +
                         "A queue can be bounded or circular. Bounded queues block when offering new " +
                         "messages and the queue is full.¶" +
                         "Circular queues never block but just keep the last 'capacity' messages. The " +
@@ -3381,11 +3392,11 @@ public class IPCFunctions {
                         "Use `ipc/poll` to poll a message from a queue.\n\n" +
                         "Returns always `nil` or throws an exception if the named queue already exists.\n\n" +
                         "*Arguments:* \n\n" +
-                        "| node s     | A server or a client|\n" +
-                        "| name s     | A queue name (string or keyword)|\n" +
-                        "| capacity n | The queue's capacity (max number of messages)|\n" +
-                        "| type t     | Optional queue type `:bounded` or `:circular`. Defaults to `:bounded`.|\n" +
-                        "| durable b  | If `true` create a durable queue (if the server supports it), else create a nondurable queue. Defaults to `false`.|")
+                        "| node s        | A server or a client|\n" +
+                        "| name s        | A queue name (string or keyword)|\n" +
+                        "| capacity n    | The queue's capacity (max number of messages)|\n" +
+                        "| type t        | Optional queue type `:bounded` or `:circular`. Defaults to `:bounded`.|\n" +
+                        "| persistence p | Optional queue persistence `:transient` or `:durable`. Defaults to `:transient`.|")
                     .examples(
                         "(try-with [server  (ipc/server 33333)                   \n" +
                         "           client1 (ipc/client 33333)                   \n" +
@@ -3432,68 +3443,54 @@ public class IPCFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 3, 4, 5);
 
+                final String name = Coerce.toVncString(args.second()).getValue();
+                final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
+                final VncVal typeVal = args.size() < 4 || args.nth(3) == Nil ? Nil : Coerce.toVncKeyword(args.nth(3));
+                final VncVal persistenceVal = args.size() < 5 || args.nth(4) == Nil ? Nil : Coerce.toVncKeyword(args.nth(4));
+
+                final QueueType type;
+                if (typeVal == Nil) {
+                    type = QueueType.BOUNDED;
+                }
+                else {
+                    final String sType = ((VncKeyword)typeVal).getSimpleName();
+                    switch(sType) {
+                       case "bounded":  type = QueueType.BOUNDED; break;
+                       case "circular": type = QueueType.CIRCULAR; break;
+                       default:
+                           throw new VncException (
+                               "Invalid queue type:" + sType + "! Use one of {:bounded, :circular}.");
+                    }
+                }
+
+                final QueuePersistence persistence;
+                if (persistenceVal == Nil) {
+                    persistence = QueuePersistence.TRANSIENT;
+                }
+                else {
+                    final String sPersistence = ((VncKeyword)persistenceVal).getSimpleName();
+                    switch(sPersistence) {
+                       case "transient": persistence = QueuePersistence.TRANSIENT; break;
+                       case "durable":   persistence = QueuePersistence.DURABLE; break;
+                       default:
+                           throw new VncException (
+                               "Invalid queue persistence:" + sPersistence + "! Use one of {:transient, :durable}.");
+                    }
+                }
+
+                if (type == QueueType.CIRCULAR && persistence == QueuePersistence.DURABLE) {
+                    throw new IpcException ("Circular queues can not be made durable.");
+                }
+
+
                 if (Types.isVncJavaObject(args.first(), Server.class)) {
                     final Server server = Coerce.toVncJavaObject(args.first(), Server.class);
-                    final String name = Coerce.toVncString(args.second()).getValue();
-                    final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
-
-                    final VncVal typeVal = args.size() < 4 || args.nth(3) == Nil ? Nil : Coerce.toVncKeyword(args.nth(3));
-                    final VncVal durableVal = args.size() < 5 || args.nth(4) == Nil ? Nil : Coerce.toVncBoolean(args.nth(4));
-
-                    final boolean durable = durableVal == Nil ? false : ((VncBoolean)durableVal).getValue();
-
-                    if (typeVal == Nil) {
-                        server.createQueue(name, capacity, true, durable);
-                    }
-                    else {
-                        final String sType = ((VncKeyword)typeVal).getSimpleName();
-                        switch(sType) {
-                            case "bounded":
-                                server.createQueue(name, capacity, true, durable);
-                                break;
-                            case "circular":
-                                if (durable) {
-                                    throw new VncException ("Circular queues can not be made durable.");
-                                }
-                                server.createQueue(name, capacity, false, durable);
-                                break;
-                            default:
-                                throw new VncException (
-                                    "Invalid queue type :" + sType + "! Use one of {:bounded, :circular}.");
-                        }
-                    }
+                    server.createQueue(name, capacity, type, persistence);
                     return Nil;
                 }
                 else if (Types.isVncJavaObject(args.first(), Client.class)) {
                     final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
-                    final String name = Coerce.toVncString(args.second()).getValue();
-                    final int capacity = (int)Coerce.toVncLong(args.third()).toJavaLong();
-
-                    final VncVal typeVal = args.size() < 4 || args.nth(3) == Nil ? Nil : Coerce.toVncKeyword(args.nth(3));
-                    final VncVal durableVal = args.size() < 5 || args.nth(4) == Nil ? Nil : Coerce.toVncBoolean(args.nth(4));
-
-                    final boolean durable = durableVal == Nil ? false : ((VncBoolean)durableVal).getValue();
-
-                    if (typeVal == Nil) {
-                        client.createQueue(name, capacity, true, durable);
-                    }
-                    else {
-                        final String sType = ((VncKeyword)typeVal).getSimpleName();
-                        switch(sType) {
-                            case "bounded":
-                                client.createQueue(name, capacity, true, durable);
-                                break;
-                            case "circular":
-                                if (durable) {
-                                    throw new VncException ("Circular queues can not be made durable.");
-                                }
-                                client.createQueue(name, capacity, false, durable);
-                                break;
-                            default:
-                                throw new VncException (
-                                    "Invalid queue type :" + sType + "! Use one of {:bounded, :circular}.");
-                        }
-                    }
+                    client.createQueue(name, capacity, type, persistence);
                     return Nil;
                 }
                 else {

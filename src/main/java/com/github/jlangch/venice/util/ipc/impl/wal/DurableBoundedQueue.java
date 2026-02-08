@@ -32,11 +32,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.IpcException;
+import com.github.jlangch.venice.util.ipc.QueueType;
 import com.github.jlangch.venice.util.ipc.WriteAheadLogException;
 import com.github.jlangch.venice.util.ipc.impl.Destination;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
-import com.github.jlangch.venice.util.ipc.impl.dest.queue.QueueType;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.AckWalEntry;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.ConfigWalEntry;
 import com.github.jlangch.venice.util.ipc.impl.wal.entry.MessageWalEntry;

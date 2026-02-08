@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static com.github.jlangch.venice.util.ipc.QueuePersistence.TRANSIENT;
+import static com.github.jlangch.venice.util.ipc.QueueType.BOUNDED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -29,7 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
 
-
 public class TcpAuthorizationAclQueueTest {
 
     @Test
@@ -37,7 +38,7 @@ public class TcpAuthorizationAclQueueTest {
         try (final Server server = Server.of(33333);
              final Client client = Client.of(33333);
         ) {
-            server.createQueue("queue/1", 100, false, false);
+            server.createQueue("queue/1", 100, BOUNDED, TRANSIENT);
 
             server.start();
 
@@ -85,7 +86,7 @@ public class TcpAuthorizationAclQueueTest {
              final Client clientTom = Client.of(33333);
              final Client clientAdmin = Client.of(33333)
         ) {
-            server.createQueue("queue/1", 100, false, false);
+            server.createQueue("queue/1", 100, BOUNDED, TRANSIENT);
 
             server.start();
 
@@ -161,7 +162,7 @@ public class TcpAuthorizationAclQueueTest {
              final Client clientJak = Client.of(33333);
              final Client clientAdmin = Client.of(33333)
         ) {
-            server.createQueue("queue/1", 100, false, false);
+            server.createQueue("queue/1", 100, BOUNDED, TRANSIENT);
 
             server.start();
 

@@ -78,6 +78,8 @@ import com.github.jlangch.venice.util.ipc.AcknowledgeMode;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageType;
+import com.github.jlangch.venice.util.ipc.QueuePersistence;
+import com.github.jlangch.venice.util.ipc.QueueType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
@@ -633,7 +635,9 @@ public class ServerConnection implements IPublisher, Runnable {
         final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
         final boolean durable = Coerce.toVncBoolean(payload.get(new VncString("durable"))).getValue();
 
-        queueManager.createQueue(queueName, capacity, bounded, durable);
+        final QueueType type = bounded ? QueueType.BOUNDED : QueueType.CIRCULAR;
+        final QueuePersistence persistence = durable ? QueuePersistence.DURABLE : QueuePersistence.TRANSIENT;
+        queueManager.createQueue(queueName, capacity, type, persistence);
 
         return createOkTextResponse(
                 request,

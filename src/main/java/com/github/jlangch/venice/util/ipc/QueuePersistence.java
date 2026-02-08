@@ -19,36 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.util.ipc.impl.dest.queue;
-
-import java.util.concurrent.TimeUnit;
-
-import com.github.jlangch.venice.util.ipc.QueueType;
-import com.github.jlangch.venice.util.ipc.impl.IDestination;
+package com.github.jlangch.venice.util.ipc;
 
 
-public interface IpcQueue<T> extends IDestination {
+public enum QueuePersistence {
 
-    QueueType type();
+    DURABLE(0),
 
-    boolean isTemporary();
+    TRANSIENT(1);
 
-    boolean isDurable();
 
-    boolean isEmpty();
+    public static QueuePersistence fromCode(int code) {
+        for (QueuePersistence s : QueuePersistence.values()) {
+            if (s.value == code) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException("Unknown queue persitence code: " + code);
+    }
 
-    int size();
+    private final int value;
 
-    int capacity();
+    private QueuePersistence(final int val) {
+        value = val;
+    }
 
-    T poll() throws InterruptedException;
 
-    T poll(long timeout, TimeUnit unit) throws InterruptedException;
-
-    boolean offer(T item) throws InterruptedException;
-
-    boolean offer(T item, long timeout, TimeUnit unit) throws InterruptedException;
-
-    void onRemove();
-
+    public int getValue() { return value; }
 }

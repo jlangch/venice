@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.github.jlangch.venice.util.ipc.QueueType;
 import com.github.jlangch.venice.util.ipc.impl.Destination;
 
 

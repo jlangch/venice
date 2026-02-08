@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static com.github.jlangch.venice.util.ipc.QueuePersistence.TRANSIENT;
+import static com.github.jlangch.venice.util.ipc.QueueType.BOUNDED;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -56,7 +58,7 @@ public class TcpAuthorizationAdminTest {
 
             // user with admin role can create queues
             try {
-                clientAdmin.createQueue("queue/1", 100, false, false);
+                clientAdmin.createQueue("queue/1", 100, BOUNDED, TRANSIENT);
             }
             catch(Exception ex) {
                 fail("Should not reach here");
@@ -83,7 +85,7 @@ public class TcpAuthorizationAdminTest {
 
             // user without admin role cannot create queues
             try {
-                clientTom.createQueue("queue/2", 100, false, false);
+                clientTom.createQueue("queue/2", 100, BOUNDED, TRANSIENT);
                 fail("Should not reach here");
             }
             catch(Exception ex) {

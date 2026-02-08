@@ -584,15 +584,18 @@ public class Client implements Cloneable, AutoCloseable {
      *
      * @param queueName a queue name
      * @param capacity the queue capacity
-     * @param bounded if true create a bounded queue else create a circular queue
-     * @param durable if true create a durable queue else a nondurable queue
+     * @param type the queue type, bounded or circular
+     * @param persistence the persistence, durable or transient
      */
     public void createQueue(
             final String queueName,
             final int capacity,
-            final boolean bounded,
-            final boolean durable
+            final QueueType type,
+            final QueuePersistence persistence
     ) {
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(persistence);
+
         if (StringUtil.isBlank(queueName)) {
             throw new IllegalArgumentException("A queue name must not be blank");
         }
@@ -607,8 +610,8 @@ public class Client implements Cloneable, AutoCloseable {
         final String payload = new JsonBuilder()
                                     .add("name", queueName)
                                     .add("capacity", capacity)
-                                    .add("bounded", bounded)
-                                    .add("durable", durable)
+                                    .add("bounded", type == QueueType.BOUNDED)
+                                    .add("durable", persistence == QueuePersistence.DURABLE)
                                     .toJson(false);
 
         final Message m = new Message(

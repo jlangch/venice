@@ -21,9 +21,13 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import static com.github.jlangch.venice.util.ipc.QueuePersistence.DURABLE;
+
 import java.io.File;
 
 import com.github.jlangch.venice.util.ipc.IpcException;
+import com.github.jlangch.venice.util.ipc.QueuePersistence;
+import com.github.jlangch.venice.util.ipc.QueueType;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.BoundedQueue;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
@@ -39,10 +43,10 @@ public class QueueFactory {
             final WalQueueManager wal,
             final String queueName,
             final int capacity,
-            final boolean bounded,
-            final boolean durable
+            final QueueType type,
+            final QueuePersistence persistence
     ) {
-        if (durable) {
+        if (persistence == DURABLE) {
             if (!wal.isEnabled()) {
                 throw new IpcException(
                         "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
@@ -65,20 +69,22 @@ public class QueueFactory {
             }
         }
         else {
-           return createRawQueue(queueName, capacity, bounded);
+           return createRawQueue(queueName, capacity, type);
         }
     }
 
     private static IpcQueue<Message> createRawQueue(
             final String queueName,
             final int capacity,
-            final boolean bounded
+            final QueueType type
     ) {
-        if (bounded) {
-           return new BoundedQueue<Message>(queueName, capacity, false);
-        }
-        else {
-           return new CircularBuffer<Message>(queueName, capacity, false);
+        switch(type) {
+            case BOUNDED:
+                return new BoundedQueue<Message>(queueName, capacity, false);
+            case CIRCULAR:
+                return new CircularBuffer<Message>(queueName, capacity, false);
+            default:
+                throw new IpcException("Unsupported queue type: " + type.name());
         }
     }
 }

@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc.impl;
 
+import static com.github.jlangch.venice.util.ipc.QueuePersistence.DURABLE;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,8 @@ import java.util.function.Consumer;
 import com.github.jlangch.venice.util.ipc.AccessMode;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IpcException;
+import com.github.jlangch.venice.util.ipc.QueuePersistence;
+import com.github.jlangch.venice.util.ipc.QueueType;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
@@ -203,14 +207,14 @@ public class ServerQueueManager {
      *
      * @param queueName a queue name
      * @param capacity the queue capacity (must be greater than 1)
-     * @param bounded if true create a bounded queue else create a circular queue
-     * @param durable if true create a durable queue else a nondurable queue
+     * @param type the queue type, bounded or circular
+     * @param persistence the persistence, durable or transient
      */
     public void createQueue(
             final String queueName,
             final int capacity,
-            final boolean bounded,
-            final boolean durable
+            final QueueType type,
+            final QueuePersistence persistence
     ) {
         QueueValidator.validateQueueName(queueName);
         QueueValidator.validateQueueCapacity(capacity);
@@ -221,7 +225,7 @@ public class ServerQueueManager {
                     maxQueues));
         }
 
-        if (durable && !wal.isEnabled()) {
+        if (persistence == DURABLE && !wal.isEnabled()) {
             throw new IpcException(
                     "Cannot create a durable queue, if write-ahead-log is not activated on the server!");
         }
@@ -233,8 +237,8 @@ public class ServerQueueManager {
                                                     wal,
                                                     queueName,
                                                     capacity,
-                                                    bounded,
-                                                    durable);
+                                                    type,
+                                                    persistence);
 
                    q.updateAcls(
                            authenticator.getQueueAclsMappedByPrincipal(queueName),
@@ -243,11 +247,11 @@ public class ServerQueueManager {
                    logger.info(
                       "server", "queue",
                       String.format(
-                          "Created queue %s. Capacity=%d, bounded=%b, durable=%b",
+                          "Created queue %s. Capacity=%d, type=%s, persistence=%s",
                           queueName,
                           capacity,
-                          bounded,
-                          durable));
+                          type.name(),
+                          persistence.name()));
 
                    return q;
             });

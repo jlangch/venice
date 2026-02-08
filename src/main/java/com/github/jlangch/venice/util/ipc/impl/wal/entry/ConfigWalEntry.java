@@ -24,7 +24,7 @@ package com.github.jlangch.venice.util.ipc.impl.wal.entry;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-import com.github.jlangch.venice.util.ipc.impl.dest.queue.QueueType;
+import com.github.jlangch.venice.util.ipc.QueueType;
 
 
 /**

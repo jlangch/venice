@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc;
 
+import static com.github.jlangch.venice.util.ipc.QueuePersistence.TRANSIENT;
+import static com.github.jlangch.venice.util.ipc.QueueType.BOUNDED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,8 +52,8 @@ public class TcpTempQueueTest {
         final Client client1 = Client.of(33333);
         final Client client2 = Client.of(33333);
 
-        server.createQueue("queue/1", 10, true, false);
-        server.createQueue("queue/2", 10, true, false);
+        server.createQueue("queue/1", 10, BOUNDED, TRANSIENT);
+        server.createQueue("queue/2", 10, BOUNDED, TRANSIENT);
 
         server.start();
 

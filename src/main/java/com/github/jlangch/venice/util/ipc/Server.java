@@ -251,18 +251,21 @@ public class Server implements AutoCloseable {
      *
      * @param queueName a queue name
      * @param capacity the queue capacity (must be greater than 1)
-     * @param bounded if true create a bounded queue else create a circular queue
-     * @param durable if true create a durable queue else a nondurable queue
+     * @param type the queue type, bounded or circular
+     * @param persistence the persistence, durable or transient
      * @throws IpcException if the queue name does not follow the convention
      *                      for queue names or if the
      */
     public void createQueue(
             final String queueName,
             final int capacity,
-            final boolean bounded,
-            final boolean durable
+            final QueueType type,
+            final QueuePersistence persistence
     ) {
-        queueManager.createQueue(queueName, capacity, bounded, durable);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(persistence);
+
+        queueManager.createQueue(queueName, capacity, type, persistence);
     }
 
     /**
