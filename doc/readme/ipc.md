@@ -1249,7 +1249,7 @@ Grant specific principals (users) to:
 
 *Any number of access control items can be assigned to a principal (user)*
 
-```
+```clojure
 (do
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
@@ -1295,7 +1295,7 @@ Grant specific principals (users) to:
 
 *Any number of access control items can be assigned to a principal (user)*
 
-```
+```clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -1346,7 +1346,7 @@ Grant specific principals (users) to:
 
 *Any number of access control items can be assigned to a principal (user)*
 
-```
+```clojure
 (do
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
