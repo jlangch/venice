@@ -246,7 +246,7 @@ public class Server implements AutoCloseable {
     /**
      * Create a new queue.
      *
-     * <p>A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * <p>A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'.
      * Up to 80 characters are allowed.
      *
      * @param queueName a queue name
@@ -314,7 +314,7 @@ public class Server implements AutoCloseable {
     /**
      * Create a new topic.
      *
-     * <p>A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * <p>A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'.
      * Up to 80 characters are allowed.
      *
      * @param topicName a topic name
@@ -348,7 +348,7 @@ public class Server implements AutoCloseable {
     /**
      * Create a new function.
      *
-     * <p>A function name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * <p>A function name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'.
      * Up to 80 characters are allowed.
      *
      * @param functionName a function name

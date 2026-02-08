@@ -577,7 +577,7 @@ public class Client implements Cloneable, AutoCloseable {
     /**
      * Create a new queue.
      *
-     * <p>A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * <p>A queue name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'.
      * Up to 80 characters are allowed.
      *
      * <p>Queue creation by clients is allowed only when explicitly configured on the server.
@@ -796,7 +796,7 @@ public class Client implements Cloneable, AutoCloseable {
     /**
      * Create a new topic.
      *
-     * <p>A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '_', '-', or '/'.
+     * <p>A topic name must only contain the characters 'a-z', 'A-Z', '0-9', '.', '_', '-', or '/'.
      * Up to 80 characters are allowed.
      *
      * @param topicName a topic name
