@@ -30,7 +30,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
  
 
 > [!NOTE]
-> All examples require Venice 1.12.77+
+> All examples require Venice 1.12.78+
 >
 > For API details please see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/f0ddb5a/cheatsheet.pdf) under *Overview* -> *I/O* -> *Inter Process Communication*
 >
@@ -307,7 +307,7 @@ the server.
       (sleep 100)
 
       ;; create the durable queue :testq
-      (ipc/create-queue server :testq 100 :bounded true)
+      (ipc/create-queue server :testq 100 :bounded :durable)
 
       ;; offer 3 durable and 1 nondurable messages
       (ipc/offer client :testq 300 (ipc/plain-text-message "1" :test "hello 1" true))
@@ -337,7 +337,7 @@ the server.
       ;; create the durable queue :testq
       ;; if the queue already exists due to the WAL recovery process, this
       ;; queue create request will just be skipped!
-      (ipc/create-queue server :testq 100 :bounded true)
+      (ipc/create-queue server :testq 100 :bounded :durable)
 
       ;; poll message #2
       (let [m (ipc/poll client :testq 300)]
@@ -924,7 +924,7 @@ Create through 'client' (requires 'admin' user)
                                 :write-ahead-log-compress true  ;; compress WAL entries
                                 :write-ahead-log-compact true)  ;; compact WAL at startup
              client (ipc/client 33333)]
-    (ipc/create-queue server :queue/1 100 :bounded true)
+    (ipc/create-queue server :queue/1 100 :bounded :durable)
     (ipc/offer client :queue/1 300 
                (ipc/plain-text-message "1" :test "hello"))
     (finally (io/delete-file-tree wal-dir))))
@@ -1175,13 +1175,13 @@ used to to define permissions:
 
 | Destination Type | Supported Access Modes | Description                                |
 | :--              | :--                    | :--                                        |
-| `:queue`          | `:read`                | allow to poll messages from queues         |
-|                  | `:write`                | allow to offer messages to queues          |
-|                  | `:read-write`           | allow to offer/poll messages on queues     |
+| `:queue`          | `:poll`                | allow to poll messages from queues         |
+|                  | `:offer`                | allow to offer messages to queues          |
+|                  | `:offer-poll`           | allow to offer/poll messages on queues     |
 |                  | `:deny`                 | prevent accessing queues                   |
-| `:topic`          | `:read`                | allow to subscribe to topics               |
-|                  | `:write`                | allow to publish to topics                 |
-|                  | `:read-write`           | allow to publish/subscribe to topics       |
+| `:topic`          | `:subscribe`            | allow to subscribe to topics               |
+|                  | `:publish`              | allow to publish to topics                 |
+|                  | `:publish-subscribe`      allow to publish/subscribe to topics       |
 |                  | `:deny`                 | prevent accessing topics                   |
 | `:function`       | `:exec`                 | allow to execute functions                 |
 |                  | `:deny`                 | prevent executing functions                |
@@ -1194,8 +1194,8 @@ and functions).
 
 | Destination Type | Default Access Mode   | Description                                     |
 | :--              | :--                   | :--                                             |
-| `:queue`          | `:read-write`          | all users can offer/poll messages on any *queue* |
-| `:topic`          | `:read-write`          | all users can subscribe/publish to any *topic*  |
+| `:queue`          | `:offer-poll`          | all users can offer/poll messages on any *queue* |
+| `:topic`          | `:publish-subscribe`    | all users can subscribe/publish to any *topic*  |
 | `:function`       | `:exec`                | all users can execute any *function*            |
 
 This allows users to access all queues, topics, and functions as long as there are no explicit
@@ -1226,8 +1226,8 @@ This custom default ACL setup can be achieved with:
   (ipc/default-acl auth :function :deny)            ;; prevent all users from accessing functions
   
   ;; Overrides for specific users
-  (ipc/add-acl auth :queue :queue/1 :read  "tom")   ;; allow user 'tom' to poll messages from :queue/1
-  (ipc/add-acl auth :queue :queue/1 :write "max")   ;; allow user 'max' to offer messages to :queue/1
+  (ipc/add-acl auth :queue :queue/1 :poll  "tom")   ;; allow user 'tom' to poll messages from :queue/1
+  (ipc/add-acl auth :queue :queue/1 :offer "max")   ;; allow user 'max' to offer messages to :queue/1
 )
 ```
 
@@ -1243,8 +1243,8 @@ Grant specific principals (users) to:
 
 | Authorization          | Access Mode  | Example                                         |
 | :--                    | :--          | :--                                             |
-| poll from a queue      | `:read`       | `(ipc/add-acl auth :queue :queue/1 :read "user1")`  |
-| offer to a queue       | `:write`      | `(ipc/add-acl auth :queue :queue/1 :write "user2")` |
+| poll from a queue      | `:poll`       | `(ipc/add-acl auth :queue :queue/1 :poll "user1")`  |
+| offer to a queue       | `:offer`      | `(ipc/add-acl auth :queue :queue/1 :offer "user2")` |
 | deny accessing a queue | `:deny`       | `(ipc/add-acl auth :queue :queue/1 :deny "user3")`  |
 
 *Any number of access control items can be assigned to a principal (user)*
@@ -1259,9 +1259,9 @@ Grant specific principals (users) to:
     (ipc/add-credentials auth "jon" "ph$54")              ;; user 'jon'
     (ipc/add-credentials auth "max" "zu*67" :admin)       ;; user 'max' (admin)
  
-    (ipc/add-acl auth :queue :queue/1 :read "jak")        ;; :queue/1 allow poll only
-    (ipc/add-acl auth :queue :queue/1 :read "jak")        ;; :queue/2 allow poll only
-    (ipc/add-acl auth :queue :queue/1 :write "pax")       ;; :queue/1 allow offer only
+    (ipc/add-acl auth :queue :queue/1 :poll "jak")        ;; :queue/1 allow poll only
+    (ipc/add-acl auth :queue :queue/1 :poll "jak")        ;; :queue/2 allow poll only
+    (ipc/add-acl auth :queue :queue/1 :offer "pax")       ;; :queue/1 allow offer only
     (ipc/add-acl auth :queue :queue/1 :deny "jon")        ;; :queue/1 deny offer/poll
 
     (try-with [server    (ipc/server 33333 :encrypt true :authenticator auth)
@@ -1287,11 +1287,11 @@ Grant specific principals (users) to:
   - publish messages to a topic
   - deny accessing a topic
 
-| Authorization          | Access Mode  | Example                                          |
-| :--                    | :--          | :--                                              |
-| subscribe to a topic   | `:read`       | `(ipc/add-acl auth :topic :topic/1 :read "user1")`   |
-| publish to a topic     | `:write`      | `(ipc/add-acl auth :topic :topic/1 :write "user2")`  |
-| deny accessing a topic | `:deny`       | `(ipc/add-acl auth :topic :topic/1 :deny "user3")`   |
+| Authorization          | Access Mode  | Example                                           |
+| :--                    | :--          | :--                                               |
+| subscribe to a topic   | `:subscribe`  | `(ipc/add-acl auth :topic :topic/1 :subscribe "user1")`|
+| publish to a topic     | `:publish`    | `(ipc/add-acl auth :topic :topic/1 :publish "user2")`  |
+| deny accessing a topic | `:deny`       | `(ipc/add-acl auth :topic :topic/1 :deny "user3")`    |
 
 *Any number of access control items can be assigned to a principal (user)*
 
@@ -1311,11 +1311,11 @@ Grant specific principals (users) to:
     (ipc/add-credentials auth "jon" "ph$54")              ;; user 'jon'
     (ipc/add-credentials auth "max" "zu*67" :admin)       ;; user 'max' (admin)
 
-    (ipc/add-acl auth :topic :topic/1 :read "jak")        ;; :topic/1 allow subscribe only
-    (ipc/add-acl auth :topic :topic/2 :read "jak")        ;; :topic/2 allow subscribe only
-    (ipc/add-acl auth :topic :topic/1 :write "pax")       ;; :topic/1 allow publish only
-    (ipc/add-acl auth :topic :topic/1 :read-write "tom")  ;; :topic/1 allow publish/subscribe
-    (ipc/add-acl auth :topic :topic/1 :deny "jon")        ;; :topic/1 deny publish/subscribe
+    (ipc/add-acl auth :topic :topic/1 :subscribe "jak")         ;; :topic/1 allow subscribe only
+    (ipc/add-acl auth :topic :topic/2 :subscribe "jak")         ;; :topic/2 allow subscribe only
+    (ipc/add-acl auth :topic :topic/1 :publish "pax")           ;; :topic/1 allow publish only
+    (ipc/add-acl auth :topic :topic/1 :publish-subscribe "tom") ;; :topic/1 allow publish/subscribe
+    (ipc/add-acl auth :topic :topic/1 :deny "jon")               ;; :topic/1 deny publish/subscribe
 
     (try-with [server    (ipc/server 33333 :encrypt true :authenticator auth)
                clientPax (ipc/client "localhost" 33333 :user-name "pax" :password "ph$54")
@@ -1341,7 +1341,7 @@ Grant specific principals (users) to:
 
 | Authorization             | Access Mode  | Example                                          |
 | :--                       | :--          | :--                                              |
-| execute a function        | `:execute`    | `(ipc/add-acl auth :function :echo :read "user1")`   |
+| execute a function        | `:execute`    | `(ipc/add-acl auth :function :echo :execute "user1")` |
 | deny accessing a function | `:deny`       | `(ipc/add-acl auth :function :echo :deny "user2")`   |
 
 *Any number of access control items can be assigned to a principal (user)*
