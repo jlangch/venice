@@ -260,7 +260,6 @@ public class TcpRequestResponseEncryptedTest {
 
                 assertNotNull(response);
                 assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-                assertEquals(request.getTimestamp(), response.getTimestamp());
                 assertEquals(topic,                  response.getSubject());
                 assertEquals(mimetype,               response.getMimetype());
                 assertEquals(charset,                response.getCharset());

@@ -632,11 +632,11 @@ public class ServerConnection implements IPublisher, Runnable {
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
         final String queueName = Coerce.toVncString(payload.get(new VncString("name"))).getValue();
         final int capacity = Coerce.toVncLong(payload.get(new VncString("capacity"))).toJavaInteger();
-        final boolean bounded = Coerce.toVncBoolean(payload.get(new VncString("bounded"))).getValue();
-        final boolean durable = Coerce.toVncBoolean(payload.get(new VncString("durable"))).getValue();
+        final String sType = Coerce.toVncString(payload.get(new VncString("type"))).getValue();
+        final String sPersistence = Coerce.toVncString(payload.get(new VncString("persistence"))).getValue();
 
-        final QueueType type = bounded ? QueueType.BOUNDED : QueueType.CIRCULAR;
-        final QueuePersistence persistence = durable ? QueuePersistence.DURABLE : QueuePersistence.TRANSIENT;
+        final QueueType type = QueueType.valueOf(sType);
+        final QueuePersistence persistence = QueuePersistence.valueOf(sPersistence);
         queueManager.createQueue(queueName, capacity, type, persistence);
 
         return createOkTextResponse(

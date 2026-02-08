@@ -610,8 +610,8 @@ public class Client implements Cloneable, AutoCloseable {
         final String payload = new JsonBuilder()
                                     .add("name", queueName)
                                     .add("capacity", capacity)
-                                    .add("bounded", type == QueueType.BOUNDED)
-                                    .add("durable", persistence == QueuePersistence.DURABLE)
+                                    .add("type", type.name())
+                                    .add("persistence", persistence.name())
                                     .toJson(false);
 
         final Message m = new Message(
