@@ -175,12 +175,12 @@ Transient queues and its messages live only as long as the servers lives.
       (println "ORDER:" (ipc/message->json true order))
 
       ;; client1 offers the order
-      (->> (ipc/offer client1 :orders 300 order)
+      (->> (ipc/offer client1 :orders 300 order) ;; offer message with 300ms queue offer timeout
            (ipc/message->json true)
            (println "OFFERED:")))
 
     ;; client2 polls next order from the queue
-    (->> (ipc/poll client2 :orders 300)
+    (->> (ipc/poll client2 :orders 300) ;; poll message with 300ms queue poll timeout
          (ipc/message->json true)
          (println "POLLED:"))))
 ```
@@ -205,13 +205,13 @@ Transient queues and its messages live only as long as the servers lives.
       (println "ORDER:" (ipc/message->json true order))
 
       ;; client1 offers the order
-      (-<> (ipc/offer-async client1 :orders 300 order)  ;; returns a future
+      (-<> (ipc/offer-async client1 :orders 300 order)  ;; returns a future (300ms queue offer timeout)
            (deref <> 1_000 :timeout)
            (ipc/message->json true <>)
            (println "OFFERED:" <>)))
 
     ;; client2 polls next order from the queue
-    (-<> (ipc/poll-async client2 :orders 300)  ;; returns a future
+    (-<> (ipc/poll-async client2 :orders 300)  ;; returns a future (300ms queue poll timeout)
          (deref <> 1_000 :timeout)
          (ipc/message->json true <>)
          (println "POLLED:" <>))))
@@ -267,12 +267,12 @@ Coffee order example:
              client1  (ipc/client 33333)
              client2  (ipc/client 33333)
              barista  (ipc/client 33333)]
-    (let [client1-reply-queue     (ipc/create-temporary-queue client1 100)
+    (let [client1-reply-queue     (ipc/create-temporary-queue client1 100)  ;; with capacity=100
           client1-request-counter (atom 0)
-          client2-reply-queue     (ipc/create-temporary-queue client2 100)
+          client2-reply-queue     (ipc/create-temporary-queue client2 100)  ;; with capacity=100
           client2-request-counter (atom 0)]
 
-      ;; create the orders queue
+      ;; create the orders queue (capacity=100)
       (ipc/create-queue server :orders 100)
 
       ;; start the barista workers (1 worker currently)
@@ -306,7 +306,7 @@ the server.
 
       (sleep 100)
 
-      ;; create the durable queue :testq
+      ;; create the durable queue :testq (capacity=100)
       (ipc/create-queue server :testq 100 :bounded :durable)
 
       ;; offer 3 durable and 1 nondurable messages
@@ -334,7 +334,7 @@ the server.
 
       (sleep 100)
 
-      ;; create the durable queue :testq
+      ;; create a bounded, durable queue :testq (capacity=100)
       ;; if the queue already exists due to the WAL recovery process, this
       ;; queue create request will just be skipped!
       (ipc/create-queue server :testq 100 :bounded :durable)
