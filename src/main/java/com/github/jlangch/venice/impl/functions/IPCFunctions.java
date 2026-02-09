@@ -139,7 +139,7 @@ public class IPCFunctions {
                         "| :dead-letter-queue-size n    | The dead letter queue size. A size of 0 deactivates the dead" +
                                                         " letter queue.¶" +
                                                         " Note that the dead letter queue is not durable.¶" +
-                                                         "Defaults to a size of 100|\n" +
+                                                        " Defaults to a size of 100|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
