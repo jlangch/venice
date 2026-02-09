@@ -381,7 +381,14 @@ public class Message implements IMessage {
 
     @Override
     public boolean hasSameId(final IMessage other) {
-    	return other != null && Objects.equals(id, other.getId());
+        // message IDs are never null
+        return other != null && Objects.equals(id, other.getId());
+    }
+
+    @Override
+    public boolean hasSameRequestId(final IMessage other) {
+        // request IDs can be null
+        return other != null && id != null && id.equals(other.getId());
     }
 
 

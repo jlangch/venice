@@ -75,18 +75,6 @@ public class Client implements Cloneable, AutoCloseable {
         return client;
     }
 
-    public Client openClone() {
-        final Client client = new Client(config);
-        if (u != null && p != null) {
-            client.open(String.valueOf(u), String.valueOf(p));
-        }
-        else {
-            client.open();
-        }
-        return client;
-    }
-
-
     /**
      * @return the this client's configuration
      */
@@ -191,9 +179,6 @@ public class Client implements Cloneable, AutoCloseable {
             ClientConnection c = null;
             try {
                 conn = new ClientConnection(config, userName, password);
-
-                this.u = userName == null ? null : userName.toCharArray();
-                this.p = password == null ? null : password.toCharArray();
 
                 return this;
             }
@@ -1276,9 +1261,6 @@ public class Client implements Cloneable, AutoCloseable {
         return s.getBytes(Charset.forName(charset));
     }
 
-
-    private volatile char[] u = null;
-    private volatile char[] p = null;
 
     private final String endpointId;
 

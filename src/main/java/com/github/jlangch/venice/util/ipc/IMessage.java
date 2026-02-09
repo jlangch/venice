@@ -163,12 +163,12 @@ public interface IMessage {
     byte[] getData();
 
     /**
-     * @return the message textual payload data. Throws a VncException if the payload is binary data.
+     * @return the message textual payload data. Throws an IpcException if the payload is binary data.
      */
     String getText() ;
 
     /**
-     * @return the message payload as Venice data. Throws a VncException if the payload cannot be converted.
+     * @return the message payload as Venice data. Throws an IpcException if the payload cannot be converted.
      */
     VncVal getVeniceData();
 
@@ -187,4 +187,11 @@ public interface IMessage {
      * @return <code>true</code> if this message has the same ID as another message else <code>false</code>
      */
     boolean hasSameId(IMessage other);
+
+    /**
+     * @param other a message
+     * @return <code>true</code> if this message has the same request ID as another message else
+     *         <code>false</code>. Returns <code>false</code> if both request IDs are <code>null</code>.
+     */
+    boolean hasSameRequestId(IMessage other);
 }

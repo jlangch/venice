@@ -34,7 +34,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.util.IO;
@@ -201,7 +200,7 @@ public class Benchmark {
             if (print) System.out.println("Benchmark server stopped!");
         }
         catch(Exception ex) {
-            throw new VncException("Benchmark server failed!", ex);
+            throw new IpcException("Benchmark server failed!", ex);
         }
     }
 
@@ -227,7 +226,7 @@ public class Benchmark {
             return benchmark();
         }
         catch(Exception ex) {
-            throw new VncException("Benchmark failed!", ex);
+            throw new IpcException("Benchmark failed!", ex);
         }
     }
 

@@ -402,7 +402,27 @@ public class IPCFunctions {
                         "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello\"))           \n" +
                         "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello\"))           \n" +
                         "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello\"))           \n" +
-                        "    (send client-4 (ipc/plain-text-message \"4\" \"test\" \"hello\"))))         ")
+                        "    (send client-4 (ipc/plain-text-message \"4\" \"test\" \"hello\"))))         ",
+                        "(do                                                                             \n" +
+                        "  (defn echo-handler [m]                                                        \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))                               \n" +
+                        "    m)                                                                          \n" +
+                        "                                                                                \n" +
+                        "  (defn send [client msg]                                                       \n" +
+                        "    (->> (ipc/send client :echo msg)                                            \n" +
+                        "         (ipc/message->map)                                                     \n" +
+                        "         (println \"RESPONSE: \")))                                             \n" +
+                        "                                                                                \n" +
+                        "  (let [auth (ipc/authenticator)]                                               \n" +
+                        "    (ipc/add-credentials auth \"tom\" \"3-kio\")                                \n" +
+                        "    (try-with [server (ipc/server 33333                                         \n" +
+                        "                                  :encrypt true                                 \n" +
+                        "                                  :authenticator auth)                          \n" +
+                        "               client (ipc/client \"localhost\" 33333                           \n" +
+                        "                                  :user-name \"tom\"                            \n" +
+                        "                                  :password \"3-kio\")]                         \n" +
+                        "      (ipc/create-function server :echo echo-handler)                           \n" +
+                        "      (send client (ipc/plain-text-message \"1\" \"test\" \"hello\")))))        ")
                     .seeAlso(
                         "ipc/server",
                         "ipc/close",
@@ -504,15 +524,16 @@ public class IPCFunctions {
         };
 
 
-    public static VncFunction ipc_clone =
+    public static VncFunction ipc_copy =
         new VncFunction(
-                "ipc/clone",
+                "ipc/copy",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(ipc/clone client)")
+                        "(ipc/copy client)",
+                        "(ipc/copy client user-name password)")
                     .doc(
-                        "Clone a client with all its configuration")
+                        "Copy a client with all its configuration, except 'user-name', 'password'.")
                     .examples(
                         "(do                                                                             \n" +
                         "  (defn echo-handler [m]                                                        \n" +
@@ -526,12 +547,38 @@ public class IPCFunctions {
                         "                                                                                \n" +
                         "  (try-with [server   (ipc/server 33333)                                        \n" +
                         "             client-1 (ipc/client \"localhost\" 33333 :encrypted true)          \n" +
-                        "             client-2 (ipc/clone client-1)                                      \n" +
-                        "             client-3 (ipc/clone client-1)]                                     \n" +
+                        "             client-2 (ipc/copy client-1)                                       \n" +
+                        "             client-3 (ipc/copy client-1)]                                      \n" +
                         "    (ipc/create-function server :echo echo-handler)                             \n" +
                         "    (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))         \n" +
                         "    (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))         \n" +
-                        "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))))       ")
+                        "    (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\"))))       ",
+                        "(do                                                                             \n" +
+                        "  (defn echo-handler [m]                                                        \n" +
+                        "    (println \"REQUEST:  \" (ipc/message->map m))                               \n" +
+                        "    m)                                                                          \n" +
+                        "                                                                                \n" +
+                        "  (defn send [client msg]                                                       \n" +
+                        "    (->> (ipc/send client :echo msg)                                            \n" +
+                        "         (ipc/message->map)                                                     \n" +
+                        "         (println \"RESPONSE: \")))                                             \n" +
+                        "                                                                                \n" +
+                        "  (let [auth (ipc/authenticator)]                                               \n" +
+                        "    (ipc/add-credentials auth \"tom\" \"3-kio\")                                \n" +
+                        "    (ipc/add-credentials auth \"max\" \"67-po\")                                \n" +
+                        "    (ipc/add-credentials auth \"jak\" \"99-af\")                                \n" +
+                        "    (try-with [server   (ipc/server 33333                                       \n" +
+                        "                                    :encrypt true                               \n" +
+                        "                                    :authenticator auth)                        \n" +
+                        "               client-1 (ipc/client \"localhost\" 33333                         \n" +
+                        "                                    :user-name \"tom\"                          \n" +
+                        "                                    :password \"3-kio\")                        \n" +
+                        "               client-2 (ipc/copy client-1 \"max\" \"67-po\")                   \n" +
+                        "               client-3 (ipc/copy client-1 \"jak\" \"99-af\")]                  \n" +
+                        "      (ipc/create-function server :echo echo-handler)                           \n" +
+                        "      (send client-1 (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))       \n" +
+                        "      (send client-2 (ipc/plain-text-message \"2\" \"test\" \"hello 2\"))       \n" +
+                        "      (send client-3 (ipc/plain-text-message \"3\" \"test\" \"hello 3\")))))    ")
                     .seeAlso(
                         "ipc/client",
                         "ipc/close",
@@ -540,13 +587,20 @@ public class IPCFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 3);
 
                 final Client client = Coerce.toVncJavaObject(args.first(), Client.class);
 
-                final Client cloned = client.openClone();
+                final Client copied = client.copy();
 
-                return new VncJavaObject(cloned);
+                if (args.size() == 1) {
+                    return new VncJavaObject(copied.open());
+                }
+                else {
+                    final String userName = Coerce.toVncString(args.second()).getValue();
+                    final String password = Coerce.toVncString(args.third()).getValue();
+                    return new VncJavaObject(copied.open(userName, password));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -4267,7 +4321,7 @@ public class IPCFunctions {
             new SymbolMapBuilder()
                     .add(ipc_server)
                     .add(ipc_client)
-                    .add(ipc_clone)
+                    .add(ipc_copy)
                     .add(ipc_close)
                     .add(ipc_runnningQ)
 

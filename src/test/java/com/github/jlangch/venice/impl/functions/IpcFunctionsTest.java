@@ -376,7 +376,7 @@ public class IpcFunctionsTest {
     }
 
     @Test
-    public void test_client_clone() {
+    public void test_client_copy() {
         final Venice venice = new Venice();
 
         final String script =
@@ -390,10 +390,10 @@ public class IpcFunctionsTest {
                 "             client-2  (ipc/client \"localhost\" 33333)                         \n" +
                 "             client-3  (ipc/client :localhost 33333)                            \n" +
                 "             client-4  (ipc/client \"af-inet://localhost:33333\")               \n" +
-                "             client-1c (ipc/clone client-1)                                     \n" +
-                "             client-2c (ipc/clone client-2)                                     \n" +
-                "             client-3c (ipc/clone client-3)                                     \n" +
-                "             client-4c (ipc/clone client-4)]                                    \n" +
+                "             client-1c (ipc/copy client-1)                                      \n" +
+                "             client-2c (ipc/copy client-2)                                      \n" +
+                "             client-3c (ipc/copy client-3)                                      \n" +
+                "             client-4c (ipc/copy client-4)]                                     \n" +
                 "    (ipc/create-function server :echo echo-handler)                             \n" +
                 "    (ipc/send client-1c :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\")) \n" +
                 "    (ipc/send client-2c :echo (ipc/plain-text-message \"2\" \"test\" \"hello 2\")) \n" +
@@ -430,10 +430,10 @@ public class IpcFunctionsTest {
                 "                                    :user-name \"joe\" :password \"123\")       \n" +
                 "               client-4 (ipc/client \"af-inet://localhost:33333\"               \n" +
                 "                                    :user-name \"joe\" :password \"123\")       \n" +
-                "               client-1c (ipc/clone client-1)                                   \n" +
-                "               client-2c (ipc/clone client-2)                                   \n" +
-                "               client-3c (ipc/clone client-3)                                   \n" +
-                "               client-4c (ipc/clone client-4)]                                  \n" +
+                "               client-1c (ipc/copy client-1 \"joe\" \"123\")                    \n" +
+                "               client-2c (ipc/copy client-2 \"joe\" \"123\")                    \n" +
+                "               client-3c (ipc/copy client-3 \"joe\" \"123\")                    \n" +
+                "               client-4c (ipc/copy client-4 \"joe\" \"123\")]                   \n" +
                 "    (ipc/create-function server :echo echo-handler)                             \n" +
                 "    (ipc/send client-1c :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\")) \n" +
                 "    (ipc/send client-2c :echo (ipc/plain-text-message \"2\" \"test\" \"hello 2\")) \n" +
