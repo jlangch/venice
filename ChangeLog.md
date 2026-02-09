@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- IPC response messages mirror the request's destination name even in error case.
+
 
 
 ## [1.12.78] - 2026-02-08
