@@ -144,6 +144,7 @@ public class TcpOfferPollTest {
             final IMessage r = client1.offer(m, "queue/x", null, 1_000);
 
             assertEquals(ResponseStatus.QUEUE_NOT_FOUND, r.getResponseStatus());
+            assertEquals("queue/x",          r.getDestinationName());
 
             IO.sleep(200);
         }
@@ -186,6 +187,11 @@ public class TcpOfferPollTest {
             assertEquals(ResponseStatus.OK, r3.getResponseStatus());
             assertEquals(ResponseStatus.QUEUE_FULL, r4.getResponseStatus());
 
+            assertEquals("queue/1", r1.getDestinationName());
+            assertEquals("queue/1", r2.getDestinationName());
+            assertEquals("queue/1", r3.getDestinationName());
+            assertEquals("queue/1", r4.getDestinationName());
+
             IO.sleep(200);
         }
         finally {
@@ -224,12 +230,18 @@ public class TcpOfferPollTest {
 
             // offer
             assertEquals(ResponseStatus.OK, r1.getResponseStatus());
+            assertEquals("queue/1", r1.getDestinationName());
             assertEquals(ResponseStatus.OK, r2.getResponseStatus());
+            assertEquals("queue/1", r2.getDestinationName());
 
             // poll
             assertEquals(ResponseStatus.OK, r3.getResponseStatus());
+            assertEquals("queue/1", r3.getDestinationName());
             assertEquals(ResponseStatus.OK, r4.getResponseStatus());
+            assertEquals("queue/1", r4.getDestinationName());
             assertEquals(ResponseStatus.QUEUE_EMPTY, r5.getResponseStatus());
+            assertEquals("queue/1", r5.getDestinationName());
+
 
             IO.sleep(200);
         }
