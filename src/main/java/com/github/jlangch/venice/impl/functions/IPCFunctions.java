@@ -424,6 +424,7 @@ public class IPCFunctions {
                         "      (ipc/create-function server :echo echo-handler)                           \n" +
                         "      (send client (ipc/plain-text-message \"1\" \"test\" \"hello\")))))        ")
                     .seeAlso(
+                        "ipc/copy",
                         "ipc/server",
                         "ipc/close",
                         "ipc/running?",

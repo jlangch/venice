@@ -65,6 +65,7 @@ public class TcpOfferPollTest {
 
             assertNotNull(m2);
             assertEquals(ResponseStatus.OK,  m2.getResponseStatus());
+            assertEquals("queue-1",          m2.getDestinationName());
             assertEquals("queue-test",       m2.getSubject());
             assertEquals("text/plain",       m2.getMimetype());
             assertEquals("UTF-8",            m2.getCharset());

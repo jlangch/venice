@@ -873,6 +873,7 @@ public class ServerConnection implements IPublisher, Runnable {
                        request.getId(),
                        DIFFIE_HELLMAN_NAK,
                        null,
+                       null,
                        "",
                        "Error: Diffie-Hellman key already exchanged!");
         }
@@ -899,6 +900,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            request.getId(),
                            DIFFIE_HELLMAN_ACK,
                            null,
+                           null,
                            "",
                            dhKeys.getPublicKeyBase64());
             }
@@ -908,6 +910,7 @@ public class ServerConnection implements IPublisher, Runnable {
                 return createPlainTextResponse(
                            request.getId(),
                            DIFFIE_HELLMAN_NAK,
+                           null,
                            null,
                            "",
                            "Failed to exchange Diffie-Hellman key! Reason: " + ex.getMessage());
@@ -1084,6 +1087,7 @@ public class ServerConnection implements IPublisher, Runnable {
                     request.getId(),
                     responseStatus,
                     request.getRequestId(),
+                    request.getDestinationName(),
                     request.getSubject(),
                     message);
     }
@@ -1107,7 +1111,11 @@ public class ServerConnection implements IPublisher, Runnable {
                 true,   // oneway
                 false,  // transient
                 false,  // not a subscription msg
+                request.getDestinationName(),
+                null,
+                -1L,
                 Messages.EXPIRES_NEVER,
+                Messages.NO_TIMEOUT,
                 request.getSubject(),
                 "application/json",
                 "UTF-8",
@@ -1118,6 +1126,7 @@ public class ServerConnection implements IPublisher, Runnable {
             final UUID id,
             final ResponseStatus status,
             final String requestID,
+            final String destinationName,
             final String subject,
             final String text
     ) {
@@ -1129,7 +1138,11 @@ public class ServerConnection implements IPublisher, Runnable {
                 true,   // oneway
                 false,  // transient
                 false,  // not a subscription msg
+                destinationName,
+                null,
+                -1L,
                 Messages.EXPIRES_NEVER,
+                Messages.NO_TIMEOUT,
                 subject,
                 "text/plain",
                 "UTF-8",
