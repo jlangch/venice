@@ -1609,7 +1609,7 @@ public class IOFunctions {
                             while ((b = raf.read()) != -1) {
                                 if (b == '\n') {
                                     // We are positioned AFTER reading '\n' -> file pointer
-                                	// is at the start of the next line
+                                    // is at the start of the next line
                                     startPos = raf.getFilePointer();
                                     break;
                                 }
@@ -1618,7 +1618,7 @@ public class IOFunctions {
                             if (startPos == -1L) {
                                 // No newline found after cutoff:
                                 // The tail is a single (too long) line; to keep line integrity
-                            	// and size limit, keep nothing.
+                                // and size limit, keep nothing.
                                 startPos = fileSize;
                             }
                         }

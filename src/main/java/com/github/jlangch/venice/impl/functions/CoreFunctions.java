@@ -8107,10 +8107,10 @@ public class CoreFunctions {
                         "  (println (poll! q))      \n" +
                         "  (println q))")
                     .seeAlso(
-                    	"deque",
-                		"put!", "take!", "poll!",
+                        "deque",
+                        "put!", "take!", "poll!",
                         "put-head!", "take-tail!", "poll-tail!",
-                		"peek", "empty?", "count")
+                        "peek", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -8260,10 +8260,10 @@ public class CoreFunctions {
                         "  (println (poll! q)) \n" +
                         "  (println q))        ")
                     .seeAlso(
-                    	"deque",
-                    	"take!", "offer!", "poll!",
+                        "deque",
+                        "take!", "offer!", "poll!",
                         "take-tail!", "offer-head!", "poll-tail!",
-                    	"peek", "empty?", "count")
+                        "peek", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -8426,10 +8426,10 @@ public class CoreFunctions {
                         "  (println (poll! q))              \n" +
                         "  (println q))")
                     .seeAlso(
-                    	"deque",
-                    	"put!", "take!", "offer!",
+                        "deque",
+                        "put!", "take!", "offer!",
                         "put-head!", "take-tail!", "offer-head!",
-                    	"peek", "empty?", "count")
+                        "peek", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -8543,10 +8543,10 @@ public class CoreFunctions {
                         "  (println (take! q))      \n" +
                         "  (println q))             ")
                     .seeAlso(
-                    	"deque",
-                    	"put!", "offer!", "poll!",
+                        "deque",
+                        "put!", "offer!", "poll!",
                         "put-head!", "offer-head!", "poll-tail!",
-                    	"peek", "empty?", "count")
+                        "peek", "empty?", "count")
                     .build()
         ) {
             @Override

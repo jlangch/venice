@@ -37,7 +37,7 @@ public abstract class MessageFactory {
     // Text messages
     // ------------------------------------------------------------------------
 
-	/**
+    /**
      * Create a text message
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
