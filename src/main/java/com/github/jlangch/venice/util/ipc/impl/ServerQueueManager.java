@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.ipc.impl;
 
 import static com.github.jlangch.venice.util.ipc.QueuePersistence.DURABLE;
+import static com.github.jlangch.venice.util.ipc.QueueType.CIRCULAR;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.github.jlangch.venice.util.ipc.QueueType;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.CircularBuffer;
 import com.github.jlangch.venice.util.ipc.impl.dest.queue.IpcQueue;
+import com.github.jlangch.venice.util.ipc.impl.dest.queue.NullQueue;
 import com.github.jlangch.venice.util.ipc.impl.util.ServerLogger;
 import com.github.jlangch.venice.util.ipc.impl.wal.WalQueueManager;
 
@@ -299,13 +301,18 @@ public class ServerQueueManager {
     }
 
     private IpcQueue<Message> creatDeadLetterQueue(final int size) {
-        final IpcQueue<Message> q = new CircularBuffer<Message>(
+        final IpcQueue<Message> q = size > 0
+                                        ? new CircularBuffer<Message>(
                                             DEAD_LETTER_QUEUE_NAME,
                                             size,
-                                            false);
+                                            false)
+                                        : new NullQueue<Message>(
+                                            DEAD_LETTER_QUEUE_NAME,
+                                            CIRCULAR);
         q.updateAcls(
                 new HashMap<String,Acl>(),
                 new Acl(DEAD_LETTER_QUEUE_NAME, null, AccessMode.DENY)); // admin only
+
         return q;
     }
 

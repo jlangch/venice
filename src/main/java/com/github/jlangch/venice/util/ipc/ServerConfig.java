@@ -360,11 +360,12 @@ public class ServerConfig {
          *
          * <p>Defaults to 100
          *
-         * @param size the dead letter queue's size.
+         * @param size the dead letter queue's size. A size of 0 deactivates
+         *             the dead letter queue
          * @return this builder
          */
         public Builder deadLetterQueueSize(final int size) {
-            this.deadLetterQueueSize = Math.min(10_000, Math.max(10, size));
+            this.deadLetterQueueSize = Math.min(10_000, Math.max(0, size));
             return this;
         }
 

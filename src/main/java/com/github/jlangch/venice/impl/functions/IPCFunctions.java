@@ -133,10 +133,11 @@ public class IPCFunctions {
                                                         " Defaults to `false`.|\n" +
                         "| :write-ahead-log-compact b   | If `true` compacts the write-ahead-logs at server start.¶" +
                                                         " Defaults to `false`.|\n" +
-                        "| :authenticator a             | An authenticator. If an authenticator is used encryption must " +
+                        "| :authenticator a             | An authenticator. If an authenticator is used encryption must" +
                                                         " be enabled to safely transmit users credentials!¶" +
                                                         " Defaults to `nil`.|\n" +
-                        "| :dead-letter-queue-size n    | The dead letter queue size.¶Defaults to 100|\n" +
+                        "| :dead-letter-queue-size n    | The dead letter queue size. A size of 0 deactivates the dead" +
+                                                        " letter queue. ¶Defaults to 100|\n" +
                         "| :socket-snd-buf-size n       | The server socket's send buffer size.¶" +
                                                         " Defaults to `-1` (use the sockets default buf size).¶" +
                                                         " The size can be specified as a number like `64536`" +
