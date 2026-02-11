@@ -57,6 +57,7 @@ import static com.github.jlangch.venice.util.ipc.ResponseStatus.TOPIC_NOT_FOUND;
 
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,12 +168,9 @@ public class ServerConnection implements IPublisher, Runnable {
             publisherThread.setDaemon(true);
             publisherThread.start();
 
-            if (heartbeatIntervalSeconds <= 0L) {
-                logInfo("Heartbeat is not active");
-            }
-            else {
-                logInfo("Heartbeat (" + heartbeatIntervalSeconds + "s) is active");
-            }
+            logInfo(heartbeatIntervalSeconds <= 0L
+                      ? "Heartbeat is not active"
+                      : "Heartbeat (" + heartbeatIntervalSeconds + "s) is active");
 
             // enter message request processing loop
             while(!isStop()) {
@@ -872,8 +870,8 @@ public class ServerConnection implements IPublisher, Runnable {
             return createPlainTextResponse(
                        request.getId(),
                        DIFFIE_HELLMAN_NAK,
-                       null,
-                       null,
+                       null,  // no request id
+                       null,  // no destination name
                        "",
                        "Error: Diffie-Hellman key already exchanged!");
         }
@@ -899,8 +897,8 @@ public class ServerConnection implements IPublisher, Runnable {
                 return createPlainTextResponse(
                            request.getId(),
                            DIFFIE_HELLMAN_ACK,
-                           null,
-                           null,
+                           null,  // no request id
+                           null,  // no destination name
                            "",
                            dhKeys.getPublicKeyBase64());
             }
@@ -910,8 +908,8 @@ public class ServerConnection implements IPublisher, Runnable {
                 return createPlainTextResponse(
                            request.getId(),
                            DIFFIE_HELLMAN_NAK,
-                           null,
-                           null,
+                           null,  // no request id
+                           null,  // no destination name
                            "",
                            "Failed to exchange Diffie-Hellman key! Reason: " + ex.getMessage());
             }
@@ -954,8 +952,8 @@ public class ServerConnection implements IPublisher, Runnable {
                         request.getRequestId(),
                         RESPONSE,
                         OK,
-                        true,   // oneway
-                        false,  // transient
+                        ONEWAY_MSG,
+                        TRANSIENT_MSG,
                         false,  // not a subscription msg
                         Messages.EXPIRES_NEVER,
                         request.getSubject(),
@@ -1108,12 +1106,12 @@ public class ServerConnection implements IPublisher, Runnable {
                 request.getRequestId(),
                 RESPONSE,
                 status,
-                true,   // oneway
-                false,  // transient
+                ONEWAY_MSG,
+                TRANSIENT_MSG,
                 false,  // not a subscription msg
                 request.getDestinationName(),
                 null,
-                -1L,
+                Instant.now().toEpochMilli(),
                 Messages.EXPIRES_NEVER,
                 Messages.NO_TIMEOUT,
                 request.getSubject(),
@@ -1135,12 +1133,12 @@ public class ServerConnection implements IPublisher, Runnable {
                 requestID,
                 RESPONSE,
                 status,
-                true,   // oneway
-                false,  // transient
+                ONEWAY_MSG,
+                TRANSIENT_MSG,
                 false,  // not a subscription msg
                 destinationName,
                 null,
-                -1L,
+                Instant.now().toEpochMilli(),
                 Messages.EXPIRES_NEVER,
                 Messages.NO_TIMEOUT,
                 subject,
@@ -1234,6 +1232,9 @@ public class ServerConnection implements IPublisher, Runnable {
 
 
     public static final int ERROR_QUEUE_CAPACITY = 50;
+
+    private static final boolean ONEWAY_MSG = true;
+    private static final boolean TRANSIENT_MSG = false;
 
 
     private volatile long lastHeartbeat = System.currentTimeMillis();  // Millis since epoch

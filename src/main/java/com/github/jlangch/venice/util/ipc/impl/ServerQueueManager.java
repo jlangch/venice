@@ -55,7 +55,7 @@ public class ServerQueueManager {
         this.wal = wal;
         this.logger = logger;
         this.maxQueues = config.getMaxQueues();
-        this.deadLetterQueue = creatDeadLetterQueue(config.getDeadLetterQueueSize());
+        this.deadLetterQueue = createDeadLetterQueue(config.getDeadLetterQueueSize());
     }
 
     /**
@@ -300,7 +300,7 @@ public class ServerQueueManager {
         }
     }
 
-    private IpcQueue<Message> creatDeadLetterQueue(final int size) {
+    private IpcQueue<Message> createDeadLetterQueue(final int size) {
         final IpcQueue<Message> q = size > 0
                                         ? new CircularBuffer<Message>(
                                             DEAD_LETTER_QUEUE_NAME,
