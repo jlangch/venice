@@ -568,8 +568,14 @@ public class Types {
             else if (Types.isVncString(a) && Types.isVncChar(b)) {
                 return ((VncString)a).getValue().equals(((VncChar)b).getValue().toString());
             }
+            else if (Types.isVncString(a) && Types.isVncKeyword(b)) {
+                return ((VncString)a).getValue().equals(((VncKeyword)b).getQualifiedName());
+            }
             else if (Types.isVncChar(a) && Types.isVncString(b)) {
                 return ((VncChar)a).getValue().toString().equals(((VncString)b).getValue());
+            }
+            else if (Types.isVncKeyword(a) && Types.isVncString(b)) {
+                return (((VncKeyword)a).getQualifiedName()).equals(((VncString)b).getValue());
             }
         }
 

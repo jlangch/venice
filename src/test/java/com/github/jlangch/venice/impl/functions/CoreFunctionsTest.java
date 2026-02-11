@@ -1176,8 +1176,8 @@ public class CoreFunctionsTest {
         assertTrue((Boolean)venice.eval("(== \"aa\" \"aa\" \"aa\")"));
 
         // String/Keyword
-        assertFalse((Boolean)venice.eval("(== \"aa\" :aa)"));
-        assertFalse((Boolean)venice.eval("(== :aa \"aa\")"));
+        assertTrue((Boolean)venice.eval("(== \"aa\" :aa)"));
+        assertTrue((Boolean)venice.eval("(== :aa \"aa\")"));
 
         // String/Char
         assertTrue((Boolean)venice.eval("(== \"a\" (char \"a\"))"));

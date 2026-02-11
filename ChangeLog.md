@@ -17,12 +17,12 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.79] - 2026-02-xx
+## [1.12.79] - 2026-02-11
 
 ### Enhancements
 
 - Bumped VAVR from 0.11.0 to 1.0.0
-- IPC dead letter queue can now be disabled (by default it is enabled)
+- IPC dead letter queue can now be disabled (dead letter queue is enabled by default)
 - IPC response messages mirror now the request's destination name even in error case.
 
 

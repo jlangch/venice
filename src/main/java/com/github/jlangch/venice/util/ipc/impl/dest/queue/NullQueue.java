@@ -71,17 +71,17 @@ public class NullQueue<T> extends Destination implements IpcQueue<T> {
     }
 
     @Override
-    public T poll(long timeout, TimeUnit unit) throws InterruptedException {
+    public T poll(final long timeout, final TimeUnit unit) throws InterruptedException {
         return null;
     }
 
     @Override
-    public boolean offer(T item) throws InterruptedException {
+    public boolean offer(final T item) throws InterruptedException {
         return false;
     }
 
     @Override
-    public boolean offer(T item, long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean offer(final T item, final long timeout, final TimeUnit unit) throws InterruptedException {
         return false;
     }
 

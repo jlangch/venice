@@ -30,7 +30,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
  
 
 > [!NOTE]
-> All examples require Venice 1.12.78+
+> All examples require Venice 1.12.79+
 >
 > For API details please see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/6caed37/cheatsheet.pdf) under *Overview* -> *I/O* -> *Inter Process Communication*
 >
@@ -77,21 +77,21 @@ pluggable handler function computes the response from the request.
 ;; request:  {:x 100, :y 200}
 ;; response: {:z 300}
 (do
-  (defn handler [m]
-    (let [topic      (ipc/message-field m :topic)
-          _          (assert (= :add topic))
+  (defn add-handler [m]
+    (let [subject    (ipc/message-field m :subject)
+          _          (assert (== :add subject))
           request-id (ipc/message-field m :request-id)
           request    (ipc/message-field m :payload-venice)
           result     {:z (+ (:x request) (:y request))}]
-      (ipc/venice-message request-id topic result)))
+      (ipc/venice-message request-id subject result)))
 
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
 
-    (ipc/create-function server :handler handler)
+    (ipc/create-function server :add add-handler)
 
     (->> (ipc/venice-message "1" :add {:x 100 :y 200})
-         (ipc/send client :handler)
+         (ipc/send client :add)
          (ipc/message->json true)
          (println))))
 ```

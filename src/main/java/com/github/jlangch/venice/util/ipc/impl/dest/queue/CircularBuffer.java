@@ -92,7 +92,7 @@ public class CircularBuffer<T> extends Destination implements IpcQueue<T> {
     }
 
     @Override
-    public T poll(long timeout, TimeUnit unit) {
+    public T poll(final long timeout, final TimeUnit unit) {
         return buffer.poll();
     }
 
@@ -103,7 +103,7 @@ public class CircularBuffer<T> extends Destination implements IpcQueue<T> {
     }
 
     @Override
-    public boolean offer(final T item, long timeout, TimeUnit unit) {
+    public boolean offer(final T item, final long timeout, final TimeUnit unit) {
         Objects.requireNonNull(item);
         return buffer.offer(item);
     }
