@@ -81,7 +81,7 @@ public class Message implements IMessage {
         this.timestamp = Instant.now().toEpochMilli();
         this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
         this.subject = subject;
-        this.timeout = Messages.DEFAULT_TIMEOUT;
+        this.destinationActionTimeout = Messages.DEFAULT_TIMEOUT;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -123,7 +123,7 @@ public class Message implements IMessage {
         this.timestamp = Instant.now().toEpochMilli();
         this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
         this.subject = subject;
-        this.timeout = Messages.DEFAULT_TIMEOUT;
+        this.destinationActionTimeout = Messages.DEFAULT_TIMEOUT;
         this.mimetype = mimetype;
         this.charset = charset;
         this.data = data;
@@ -141,7 +141,7 @@ public class Message implements IMessage {
             final String replyToQueueName,
             final long timestamp,
             final long expiresAt,
-            final long timeout,
+            final long destinationActionTimeout,
             final String subject,
             final String mimetype,
             final String charset,
@@ -168,7 +168,9 @@ public class Message implements IMessage {
         this.replyToQueueName = replyToQueueName;
         this.timestamp = timestamp <= 0 ? Instant.now().toEpochMilli() : timestamp;
         this.expiresAt = expiresAt < 0 ? Messages.EXPIRES_NEVER : expiresAt;
-        this.timeout = timeout < 0 ? Messages.NO_TIMEOUT : timeout;
+        this.destinationActionTimeout = destinationActionTimeout < 0
+                                            ? Messages.NO_TIMEOUT
+                                            : destinationActionTimeout;
         this.subject = subject;
         this.mimetype = mimetype;
         this.charset = charset;
@@ -194,7 +196,7 @@ public class Message implements IMessage {
                 id, requestId,
                 type, responseStatus, oneway, durable, subscriptionReply,
                 destinationName, replyToQueueName, timestamp, expiresAt,
-                timeout, subject, mimetype, charset, data);
+                destinationActionTimeout, subject, mimetype, charset, data);
   }
 
     /**
@@ -219,7 +221,7 @@ public class Message implements IMessage {
                 id, requestId,
                 type, responseStatus, oneway, durable, subscriptionReply,
                 destinationName, replyToQueueName, timestamp, expiresAt,
-                timeout, subject, mimetype, charset, data);
+                destinationActionTimeout, subject, mimetype, charset, data);
     }
 
 
@@ -236,7 +238,7 @@ public class Message implements IMessage {
                 id, requestId,
                 type, responseStatus, oneway, durable, subscriptionReply,
                 destinationName, replyToQueueName, timestamp, expiresAt,
-                timeout, subject, mimetype, charset, data);
+                destinationActionTimeout, subject, mimetype, charset, data);
   }
 
     @Override
@@ -289,8 +291,9 @@ public class Message implements IMessage {
         return expiresAt >= 0 && expiresAt < System.currentTimeMillis();
     }
 
-    public long getTimeout() {
-        return timeout;
+    @Override
+    public long getDestinationActionTimeout() {
+        return destinationActionTimeout;
     }
 
     @Override
@@ -449,7 +452,7 @@ public class Message implements IMessage {
        sb.append(String.format(
                    "%s %s\n",
                    padRight("Timeout:", 12),
-                   timeout < 0 ? "-" : String.valueOf(timeout) + "ms"));
+                   destinationActionTimeout < 0 ? "-" : String.valueOf(destinationActionTimeout) + "ms"));
 
        sb.append(String.format(
                    "%s %s\n",
@@ -491,7 +494,7 @@ public class Message implements IMessage {
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseStatus == null) ? 0 : responseStatus.hashCode());
         result = prime * result + (subscriptionReply ? 1231 : 1237);
-        result = prime * result + (int) (timeout ^ (timeout >>> 32));
+        result = prime * result + (int) (destinationActionTimeout ^ (destinationActionTimeout >>> 32));
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((subject == null) ? 0 : subject.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -549,7 +552,7 @@ public class Message implements IMessage {
             return false;
         if (subscriptionReply != other.subscriptionReply)
             return false;
-        if (timeout != other.timeout)
+        if (destinationActionTimeout != other.destinationActionTimeout)
             return false;
         if (timestamp != other.timestamp)
             return false;
@@ -647,7 +650,7 @@ public class Message implements IMessage {
     private final String replyToQueueName;  // used for offer/poll messages
     private final long timestamp;
     private final long expiresAt;
-    private final long timeout;
+    private final long destinationActionTimeout;
     private final String subject;
     private final String mimetype;
     private final String charset;

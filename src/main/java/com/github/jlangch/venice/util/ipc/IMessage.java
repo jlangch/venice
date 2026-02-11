@@ -132,7 +132,7 @@ public interface IMessage {
     LocalDateTime getExpiresAtAsLocalDateTime();
 
     /**
-     * @return the message destionation name (queue/topic/function)
+     * @return the message destination name (queue/topic/function)
      */
     String getDestinationName();
 
@@ -140,6 +140,21 @@ public interface IMessage {
      * @return the message replyTo queue name
      */
     String getReplyToQueueName();
+
+    /**
+     * The timeout in milliseconds for destination actions at server side.
+     *
+     * <ul>
+     *   <li>timeout to offer the message to a queue</li>
+     *   <li>timeout to process the publishing of a message</li>
+     *   <li>timeout to call a function and get the result</li>
+     *   <li></li>
+     * </ul>
+     *
+     * @return the message replyTo queue name
+     */
+    long getDestinationActionTimeout();
+
 
     /**
      * @return the message's subject

@@ -56,7 +56,7 @@ public abstract class Messages {
     // Message timeout
     public static final long EXPIRES_NEVER   = -1L;
     public static final long NO_TIMEOUT      = -1L;
-    public static final long DEFAULT_TIMEOUT = 300L;  // 300ms
+    public static final long DEFAULT_TIMEOUT = 500L;  // 500ms
     public static final long ZERO_TIMEOUT    = 0L;    //   0ms
 
     // Queues

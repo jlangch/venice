@@ -201,10 +201,10 @@ public class ServerConnection implements IPublisher, Runnable {
             // to this channels's client.
             // The publish queue is blocking to not get overrun. To prevent
             // a backlash if the queue is full, the message will be discarded!
-            final long timeout = pubMsg.getTimeout();
-            final boolean ok = timeout < 0L
+            final long timeoutMillis = pubMsg.getDestinationActionTimeout();
+            final boolean ok = timeoutMillis <= 0L
                                 ? publishQueue.offer(pubMsg)
-                                : publishQueue.offer(pubMsg, timeout, TimeUnit.SECONDS);
+                                : publishQueue.offer(pubMsg, timeoutMillis, TimeUnit.MILLISECONDS);
             if (!ok) {
                 throw new RuntimeException("Publish failure!");
             }
@@ -534,11 +534,11 @@ public class ServerConnection implements IPublisher, Runnable {
 
             // convert message type from OFFER to REQUEST
             final Message msg = request.withType(REQUEST, request.isOneway());
-            final long timeout = msg.getTimeout();
+            final long timeoutMillis = msg.getDestinationActionTimeout();
 
-            final boolean ok = timeout < 0
+            final boolean ok = timeoutMillis <= 0
                                 ? queue.offer(msg)
-                                : queue.offer(msg, timeout, TimeUnit.MILLISECONDS);
+                                : queue.offer(msg, timeoutMillis, TimeUnit.MILLISECONDS);
             if (ok) {
                 return createOkTextResponse(
                         request,
@@ -572,7 +572,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
         final String queueName = request.getDestinationName();
         try {
-            final long timeout = request.getTimeout();
+            final long timeoutMillis = request.getDestinationActionTimeout();
             final IpcQueue<Message> queue = queueManager.getQueue(queueName);
             if (queue == null) {
                 return createQueueNotFoundResponse(request);
@@ -589,9 +589,9 @@ public class ServerConnection implements IPublisher, Runnable {
             }
 
             while(true) {
-                final Message msg = timeout < 0
+                final Message msg = timeoutMillis <= 0
                                         ? queue.poll()
-                                        : queue.poll(timeout, TimeUnit.MILLISECONDS);
+                                        : queue.poll(timeoutMillis, TimeUnit.MILLISECONDS);
                 if (msg == null) {
                     return createTextResponse(
                             request,
