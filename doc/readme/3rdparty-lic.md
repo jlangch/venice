@@ -2,7 +2,7 @@
 
 **The Venice JAR contains the following repackaged libraries and fonts:**
 
-* [VAVR 0.11.0](https://github.com/vavr-io/vavr)  ([License](https://raw.githubusercontent.com/vavr-io/vavr/master/LICENSE)) (repackaged binary jar)
+* [VAVR 1.0.0](https://github.com/vavr-io/vavr)  ([License](https://raw.githubusercontent.com/vavr-io/vavr/master/LICENSE)) (repackaged binary jar)
 * [JLine3 3.21.0](https://github.com/jline/jline3)  ([License](https://raw.githubusercontent.com/jline/jline3/master/LICENSE.txt)) (repackaged binary jar)
 * [zip4j 2.11.5](https://github.com/srikanth-lingala/zip4j)  ([License](https://www.apache.org/licenses/LICENSE-2.0.txt)) (repackaged binary jar)
 * [nanojson 1.6.0](https://github.com/mmastrac/nanojson)  ([License](https://www.apache.org/licenses/LICENSE-2.0.txt)) (repackaged source code, and modified by Venice)

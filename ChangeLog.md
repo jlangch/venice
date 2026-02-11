@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.79] - 2026-02-xx
+## [1.12.80] - 2026-02-xx
 
 ### Enhancements
 
@@ -15,7 +15,14 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
-- IPC response messages mirror the request's destination name even in error case.
+
+
+## [1.12.79] - 2026-02-xx
+
+### Enhancements
+
+- Bumped VAVR from 0.11.0 to 1.0.0 
+- IPC response messages mirror now the request's destination name even in error case.
 
 
 
