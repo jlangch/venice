@@ -322,7 +322,7 @@ public class Tokenizer {
                 if (errorOnUnbalancedStringQuotes) {
                     throw new ParseError(formatParseError(
                             new Token(STRING_BLOCK, sb.toString(), fileName, posStart),
-                            "Expected closing \" for triple quoted string but got EOF"));
+                            "Expected closing \"\"\" for triple quoted string but got EOF"));
                 }
                 break;
             }

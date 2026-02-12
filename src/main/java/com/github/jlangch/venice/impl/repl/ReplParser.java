@@ -55,6 +55,7 @@ public class ReplParser extends DefaultParser {
             }
             else {
                 if (context != ParseContext.COMPLETE) {
+                    // allow unbalanced string quotes in a REPL
                     venice.READ(line, "repl", false);
                 }
                 eof = false;
