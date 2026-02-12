@@ -91,13 +91,24 @@ public class Reader {
 
     public static VncVal read_str(final String str, final String filename) {
         final Reader r = reader(str, filename);
+        return read_form(r);
+    }
 
+    public static VncVal read_str(
+            final String str,
+            final String filename,
+            final boolean errorOnUnbalancedStringQuotes
+    ) {
+        final Reader r = new Reader(
+                                filename,
+                                str,
+                                tokenize(str, filename, errorOnUnbalancedStringQuotes, true));
         return read_form(r);
     }
 
     private static Reader reader(final String str, final String filename) {
         // Modules.validateFileName(filename);
-        return new Reader(filename, str, tokenize(str, filename));
+        return new Reader(filename, str, tokenize(str, filename, true, true));
     }
 
     public String unprocessedRest() {

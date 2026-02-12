@@ -15,6 +15,15 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+### Bugs
+
+- Allow unbalanced string quotes in a REPL
+
+  Allow unbalanced string quotes when strings are used within a 
+  partial expression that will be completed step by step through user input.
+
+  Allow  `(def x """<CR>   ` and `(def x "<CR>    `
+
 
 
 ## [1.12.79] - 2026-02-11

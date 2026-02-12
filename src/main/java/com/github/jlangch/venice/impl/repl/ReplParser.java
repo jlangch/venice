@@ -55,7 +55,7 @@ public class ReplParser extends DefaultParser {
             }
             else {
                 if (context != ParseContext.COMPLETE) {
-                    venice.READ(line, "repl");
+                    venice.READ(line, "repl", false);
                 }
                 eof = false;
                 return super.parse(line, cursor, context);
