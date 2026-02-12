@@ -221,29 +221,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     }
 
     @Override
-    public VncVal READ(
-            final String script,
-            final String filename,
-            final boolean errorOnUnbalancedStringQuotes
-    ) {
-        if (meterRegistry.enabled) {
-            final long nanos = System.nanoTime();
-            final VncVal val = com.github.jlangch.venice.impl.reader.Reader.read_str(
-                                    script,
-                                    filename,
-                                    errorOnUnbalancedStringQuotes);
-            meterRegistry.record("venice.read", System.nanoTime() - nanos);
-            return val;
-        }
-        else {
-            return com.github.jlangch.venice.impl.reader.Reader.read_str(
-                        script,
-                        filename,
-                        errorOnUnbalancedStringQuotes);
-        }
-    }
-
-    @Override
     public VncVal EVAL(final VncVal ast, final Env env) {
         if (meterRegistry.enabled) {
             final long nanos = System.nanoTime();

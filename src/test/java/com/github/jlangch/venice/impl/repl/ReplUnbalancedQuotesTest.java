@@ -27,129 +27,99 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.UnbalancedStringParseError;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
 
 public class ReplUnbalancedQuotesTest {
-
     @Test
-    public void test_triple_quotes__no_errorOnUnbalancedStringQuotes() {
+    public void test_triple_quotes_expr__with_errorOnUnbalancedStringQuotes() {
         IVeniceInterpreter interpreter = new VeniceInterpreter(new AcceptAllInterceptor());
 
         try {
-            interpreter.READ("(def x \"\"\"", "test", false);
-            fail("Expected EofException");
-        }
-        catch(EofException ex) {
-           assertEquals("Expected ')', got EOF. File <unknown> (1,1)", ex.getMessage());
-        }
-        catch(ParseError ex) {
-            fail("Did not expect a ParseError exception");
-        }
-
-        try {
-            interpreter.READ("(def x \"\"\"123", "test", false);
-            fail("Expected EofException");
-        }
-        catch(EofException ex) {
-           assertEquals("Expected ')', got EOF. File <unknown> (1,1)", ex.getMessage());
-        }
-        catch(ParseError ex) {
-            fail("Did not expect a ParseError exception");
-        }
-
-        interpreter.READ("(def x \"\"\"123\"\"\")", "test", false);
-    }
-
-    @Test
-    public void test_triple_quotes__with_errorOnUnbalancedStringQuotes() {
-        IVeniceInterpreter interpreter = new VeniceInterpreter(new AcceptAllInterceptor());
-
-        try {
-            interpreter.READ("(def x \"\"\"", "test", true);
+            interpreter.READ("(def x \"\"\"", "test");
             fail("Expected ParseError");
         }
         catch(EofException ex) {
             fail("Did not expect a EofException exception");
         }
-        catch(ParseError ex) {
-            assertEquals("Parse error (tokenizer phase) while reading from input", ex.getMessage());
+        catch(UnbalancedStringParseError ex) {
+            assertEquals("Expected closing \"\"\" for triple quoted string but got EOF. File <test> (1,8)", ex.getMessage());
         }
 
         try {
-            interpreter.READ("(def x \"\"\"123", "test", true);
+            interpreter.READ("(def x \"\"\"123", "test");
             fail("Expected EofException");
         }
         catch(EofException ex) {
             fail("Did not expect a EofException exception");
         }
-        catch(ParseError ex) {
-            assertEquals("Parse error (tokenizer phase) while reading from input", ex.getMessage());
+        catch(UnbalancedStringParseError ex) {
+            assertEquals("Expected closing \"\"\" for triple quoted string but got EOF. File <test> (1,8)", ex.getMessage());
         }
 
-        interpreter.READ("(def x \"\"\"123\"\"\")", "test", true);
+        interpreter.READ("(def x \"\"\"123\"\"\")", "test");
     }
 
 
     @Test
-    public void test_single_quotes__no_errorOnUnbalancedStringQuotes() {
+    public void test_single_quotes_expr__with_errorOnUnbalancedStringQuotes() {
         IVeniceInterpreter interpreter = new VeniceInterpreter(new AcceptAllInterceptor());
 
         try {
-            interpreter.READ("(def x \"", "test", false);
-            fail("Expected EofException");
-        }
-        catch(EofException ex) {
-           assertEquals("Expected ')', got EOF. File <unknown> (1,1)", ex.getMessage());
-        }
-        catch(ParseError ex) {
-            fail("Did not expect a ParseError exception");
-        }
-
-        try {
-            interpreter.READ("(def x \"123", "test", false);
-            fail("Expected EofException");
-        }
-        catch(EofException ex) {
-           assertEquals("Expected ')', got EOF. File <unknown> (1,1)", ex.getMessage());
-        }
-        catch(ParseError ex) {
-            fail("Did not expect a ParseError exception");
-        }
-
-        interpreter.READ("(def x \"123\")", "test", false);
-    }
-
-    @Test
-    public void test_single_quotes__with_errorOnUnbalancedStringQuotes() {
-        IVeniceInterpreter interpreter = new VeniceInterpreter(new AcceptAllInterceptor());
-
-        try {
-            interpreter.READ("(def x \"", "test", true);
+            interpreter.READ("(def x \"", "test");
             fail("Expected ParseError");
         }
         catch(EofException ex) {
             fail("Did not expect a EofException exception");
         }
-        catch(ParseError ex) {
-            assertEquals("Parse error (tokenizer phase) while reading from input", ex.getMessage());
+        catch(UnbalancedStringParseError ex) {
+            assertEquals("Expected closing \" for single quoted string but got EOF. File <test> (1,8)", ex.getMessage());
         }
 
         try {
-            interpreter.READ("(def x \"123", "test", true);
+            interpreter.READ("(def x \"123", "test");
             fail("Expected ParseError");
         }
         catch(EofException ex) {
             fail("Did not expect a EofException exception");
         }
-        catch(ParseError ex) {
-            assertEquals("Parse error (tokenizer phase) while reading from input", ex.getMessage());
+        catch(UnbalancedStringParseError ex) {
+            assertEquals("Expected closing \" for single quoted string but got EOF. File <test> (1,8)", ex.getMessage());
         }
 
-        interpreter.READ("(def x \"123\")", "test", true);
+        interpreter.READ("(def x \"123\")", "test");
+    }
+
+    @Test
+    public void test_single_quotes_literal__with_errorOnUnbalancedStringQuotes() {
+        IVeniceInterpreter interpreter = new VeniceInterpreter(new AcceptAllInterceptor());
+
+        try {
+            interpreter.READ("\"", "test");
+            fail("Expected ParseError");
+        }
+        catch(EofException ex) {
+            fail("Did not expect a EofException exception");
+        }
+        catch(UnbalancedStringParseError ex) {
+            assertEquals("Expected closing \" for single quoted string but got EOF. File <test> (1,1)", ex.getMessage());
+        }
+
+        try {
+            interpreter.READ("\"123", "test");
+            fail("Expected ParseError");
+        }
+        catch(EofException ex) {
+            fail("Did not expect a EofException exception");
+        }
+        catch(UnbalancedStringParseError ex) {
+            assertEquals("Expected closing \" for single quoted string but got EOF. File <test> (1,1)", ex.getMessage());
+        }
+
+        interpreter.READ("\"123\")", "test");
     }
 
  }

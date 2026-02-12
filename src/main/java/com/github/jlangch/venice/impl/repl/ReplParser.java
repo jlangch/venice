@@ -29,6 +29,7 @@ import org.jline.reader.SyntaxError;
 import org.jline.reader.impl.DefaultParser;
 
 import com.github.jlangch.venice.EofException;
+import com.github.jlangch.venice.UnbalancedStringParseError;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -56,7 +57,13 @@ public class ReplParser extends DefaultParser {
             else {
                 if (context != ParseContext.COMPLETE) {
                     // allow unbalanced string quotes in a REPL
-                    venice.READ(line, "repl", false);
+                    try {
+                        venice.READ(line, "repl");
+                    }
+                    catch(UnbalancedStringParseError ex) {
+                        // let the user complete the string
+                        throw new EOFError(1, 1, ex.getMessage());
+                    }
                 }
                 eof = false;
                 return super.parse(line, cursor, context);
@@ -67,6 +74,7 @@ public class ReplParser extends DefaultParser {
             // proceed with multi-line editing
             throw new EOFError(1, 1, ex.getMessage());
         }
+
     }
 
     public boolean isEOF() {

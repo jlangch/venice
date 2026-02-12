@@ -49,11 +49,6 @@ public interface IVeniceInterpreter {
 
     VncVal READ(String script, String filename);
 
-    VncVal READ(
-            String script,
-            String filename,
-            boolean errorOnUnbalancedStringQuotes);
-
     VncVal EVAL(VncVal ast, Env env);
 
     VncVal MACROEXPAND(VncVal ast, Env env);

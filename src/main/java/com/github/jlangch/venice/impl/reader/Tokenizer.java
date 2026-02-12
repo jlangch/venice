@@ -34,6 +34,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.UnbalancedStringParseError;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
@@ -185,6 +186,9 @@ public class Tokenizer {
                 }
             }
         }
+        catch(UnbalancedStringParseError ex) {
+            throw ex;
+        }
         catch(RuntimeException ex) {
             throw new ParseError("Parse error (tokenizer phase) while reading from input", ex);
         }
@@ -285,9 +289,10 @@ public class Tokenizer {
 
             if (ch == EOF) {
                 if (errorOnUnbalancedStringQuotes) {
-                    throw new ParseError(formatParseError(
-                            new Token(STRING, sb.toString(), fileName, posStart),
-                            "Expected closing \" for single quoted string but got EOF"));
+                    throw new UnbalancedStringParseError(
+                                formatParseError(
+                                    new Token(STRING, sb.toString(), fileName, posStart),
+                                    "Expected closing \" for single quoted string but got EOF"));
                 }
                 break;
             }
@@ -320,9 +325,10 @@ public class Tokenizer {
 
             if (ch == EOF) {
                 if (errorOnUnbalancedStringQuotes) {
-                    throw new ParseError(formatParseError(
-                            new Token(STRING_BLOCK, sb.toString(), fileName, posStart),
-                            "Expected closing \"\"\" for triple quoted string but got EOF"));
+                    throw new UnbalancedStringParseError(
+                                formatParseError(
+                                    new Token(STRING_BLOCK, sb.toString(), fileName, posStart),
+                                    "Expected closing \"\"\" for triple quoted string but got EOF"));
                 }
                 break;
             }
