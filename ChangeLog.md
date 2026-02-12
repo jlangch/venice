@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
   Allow unbalanced string quotes for single and triple quoted strings.
   The user may interactively add new lines and complete the string literal
-  with the closing quotes.
+  with the closing quote.
 
   Allow  `(def x """<CR>   ` and `(def x "<CR>    `
 
