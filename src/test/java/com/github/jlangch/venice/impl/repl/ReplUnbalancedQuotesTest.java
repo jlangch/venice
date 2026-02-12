@@ -140,7 +140,7 @@ public class ReplUnbalancedQuotesTest {
 
         try {
             interpreter.READ("(def x \"123", "test", true);
-            fail("Expected EofException");
+            fail("Expected ParseError");
         }
         catch(EofException ex) {
             fail("Did not expect a EofException exception");
