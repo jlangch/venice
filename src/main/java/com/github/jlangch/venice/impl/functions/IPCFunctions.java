@@ -89,16 +89,15 @@ public class IPCFunctions {
                         "(ipc/server conn-uri & options)")
                     .doc(
                         "Create a new server on the specified port or connection URI.\n\n" +
-                        "*Arguments:* \n\n" +
-                        "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
-                        "| port p     | A TCP/IP port. E.g.: 33333 |\n" +
-                        "| conn-uri u | A connection URI¶" +
-                                      " \u00A0 • TCP/IP sockets¶" +
-                                      " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
-                                      " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
-                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
-                        "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
+                        "| *Arguments:*                 | |\n" +
+                        "| port p                       | A TCP/IP port. E.g.: 33333 |\n" +
+                        "| conn-uri u                   | A connection URI¶" +
+                                                        " \u00A0 • TCP/IP sockets¶" +
+                                                        " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
+                                                        " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
+                                                        " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
+                        "| \u00A0¶*Options:*            | |\n" +
                         "| :max-connections n           | The number of the max connections the server can handle" +
                                                         " in parallel.¶Defaults to 20.|\n" +
                         "| :max-message-size n          | The max size of the message payload.¶" +
@@ -358,15 +357,15 @@ public class IPCFunctions {
                     .doc(
                         "Create a new client connecting to a server on the specified " +
                         "host and port.\n\n" +
-                        "*Arguments:* \n\n" +
-                        "| port p     | The server's TCP/IP port |\n" +
-                        "| host h     | The server's TCP/IP host |\n" +
-                        "| conn-uri u | A connection URI¶" +
-                                      " \u00A0 • TCP/IP sockets¶" +
-                                      " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
-                                      " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
-                                      " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n\n" +
-                        "*Options:* \n\n" +
+                        "| *Arguments:*            | |\n" +
+                        "| port p                  | The server's TCP/IP port |\n" +
+                        "| host h                  | The server's TCP/IP host |\n" +
+                        "| conn-uri u              | A connection URI¶" +
+                                                   " \u00A0 • TCP/IP sockets¶" +
+                                                   " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
+                                                   " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
+                                                   " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
+                        "| \u00A0¶*Options:*       | |\n" +
                         "| :encrypt b              | If `true` encrypt the payload data of all messages exchanged" +
                                                    " between this client and its associated server.¶" +
                                                    " The data is AES-256-GCM encrypted using a secret that is" +
@@ -732,19 +731,18 @@ public class IPCFunctions {
                         "(ipc/benchmark conn-uri msg-size duration & options)")
                     .doc(
                         "Runs a benchmark.\n\n" +
-                        "*Arguments:* \n\n" +
-                        "| [![text-align: left; width: 10%]] | [![text-align: left; width: 90%]] |\n" +
-                        "| conn-uri u  | A connection URI¶" +
-                                       " \u00A0 • TCP/IP sockets¶" +
-                                       " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
-                                       " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
-                                       " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
-                        "| msg-size n  | The message payload size (payload is random data).¶" +
-                                       " The size can be specified as a number like `16384`" +
-                                       " or a number with a unit like `:16KB` or `:1MB`.|\n" +
-                        "| duration n  | The duration in seconds.|\n\n" +
-                        "*Options:* \n\n" +
                         "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
+                        "| *Arguments:*                 | | \n" +
+                        "| conn-uri u                   | A connection URI¶" +
+                                                        " \u00A0 • TCP/IP sockets¶" +
+                                                        " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
+                                                        " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
+                                                        " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
+                        "| msg-size n                   | The message payload size (payload is random data).¶" +
+                                                        " The size can be specified as a number like `16384`" +
+                                                        " or a number with a unit like `:16KB` or `:1MB`.|\n" +
+                        "| duration n                   | The duration in seconds.|\n" +
+                        "| \u00A0¶*Options:*            | | \n" +
                         "| :mode m                      | Operation mode `:client`, `:server`, or `:client-server`. " +
                                                         "Defaults to `:client-server`|\n" +
                         "| :print b                     | If `true` print the result to stdout. Defaults to `false`|\n" +
