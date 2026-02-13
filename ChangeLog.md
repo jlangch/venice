@@ -17,16 +17,16 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.80] - 2026-02-xx
+## [1.12.80] - 2026-02-14
 
 ### Bugs
 
 - Allow multiline single and triple quoted string literals in the REPL
 
 ```
-  venice> (def x """            venice> (def x "123
-                 123                            456")
-                 456                           
+  venice> (def x """                 venice> (def x "123
+                 123                                 456")
+                 456
                  """)
 ```
 
@@ -64,7 +64,7 @@ All notable changes to this project will be documented in this file.
 
 - Added IPC ACLs
 - Added IPC heartbeat checking
-- Added IPC dead-letter queue
+- Made IPC dead-letter queue publicly available
 
 
 
