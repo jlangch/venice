@@ -21,13 +21,14 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Allow unbalanced string quotes in the REPL
+- Allow multiline single and triple quoted string literals in the REPL
 
-  Allow unbalanced string quotes for single and triple quoted strings.
-  The user may interactively add new lines and complete the string literal
-  with the closing quote.
-
-  Allow  `(def x """<CR>   ` and `(def x "<CR>    `
+  ```
+  venice> (def x """            venice> (def x "
+                 123                    123
+                 456                    456
+                 """)                   ")
+```
 
 
 
