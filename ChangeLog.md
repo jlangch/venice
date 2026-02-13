@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 
 - Allow multiline single and triple quoted string literals in the REPL
 
-  ```
+```
   venice> (def x """            venice> (def x "
                  123                    123
                  456                    456
