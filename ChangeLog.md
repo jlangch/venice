@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Added an option to install a minimal REPL
+- Added the setup option `-minimal` to setup a minimal REPL
 
 ```
 $ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
