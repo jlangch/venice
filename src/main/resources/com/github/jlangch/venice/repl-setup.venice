@@ -295,6 +295,7 @@
   (let [options       (apply hash-map options)
         color-mode    (:color-mode options :none)        ;; {:none :light :dark}
         silent        (not (:ansi-terminal options false))       ;; {true false}
+        minimal?      (:minimal options false)                   ;; {true false}
         charset       (name (charset-default-encoding))
         install-dir   (-> (:install-dir options ".")
                           (io/file)
@@ -304,10 +305,10 @@
         tmp-dir       (io/file install-dir "tmp")
         tools-dir     (io/file install-dir "tools")]
     (println)
-    (println (str "Setting up the REPL on '" (os-name) "' " (os-version)))
+    (println "Setting up the" (if minimal? "minimal REPL" "REPL") "on" (os-name) (os-version))
     (println "Install dir:" install-dir)
-    (println "Color mode:" color-mode)
-    (println "Charset:" charset "(platform default)")
+    (println "Color mode: " color-mode)
+    (println "Charset:    " charset "(platform default)")
     (println)
 
     (try 
@@ -320,33 +321,35 @@
       (when-not (io/exists-dir? libs-dir)
         (io/mkdirs libs-dir))
 
-      (when-not (io/exists-dir? scripts-dir)
-        (io/mkdirs scripts-dir))
+      (when-not minimal?
+        (when-not (io/exists-dir? scripts-dir)
+          (io/mkdirs scripts-dir))
 
-      (when-not (io/exists-dir? (io/file scripts-dir "pdf"))
-       (io/mkdirs  (io/file scripts-dir "pdf")))
+        (when-not (io/exists-dir? (io/file scripts-dir "pdf"))
+        (io/mkdirs  (io/file scripts-dir "pdf")))
 
-      (when-not (io/exists-dir? (io/file scripts-dir "webapp"))
-        (io/mkdirs (io/file scripts-dir "webapp")))
+        (when-not (io/exists-dir? (io/file scripts-dir "webapp"))
+          (io/mkdirs (io/file scripts-dir "webapp")))
+
+        (when-not (io/exists-dir? tools-dir)
+          (io/mkdirs tools-dir)))
 
       (when-not (io/exists-dir? tmp-dir)
         (io/mkdirs tmp-dir))
-
-      (when-not (io/exists-dir? tools-dir)
-        (io/mkdirs tools-dir))
 
       (let [{version :version, vendor :vendor} (java-version-info)]
         (println (str "Running on Java VM: " version " (" vendor ")"))
         (println))
 
       (repl-setup/copy-venice-jar libs-dir)
-      (repl-setup/install-maven tools-dir)
       (repl-setup/download-modules-libs libs-dir initial-modules silent)
       (repl-setup/setup-repl-config libs-dir)
       (repl-setup/setup-repl-launcher install-dir color-mode)
-      (repl-setup/setup-runscript-launcher install-dir)
-      (repl-setup/setup-scripts scripts-dir)
-      (repl-setup/setup-shebang-demo-script install-dir scripts-dir)
+      (when-not minimal?
+        (repl-setup/setup-runscript-launcher install-dir)
+        (repl-setup/install-maven tools-dir)
+        (repl-setup/setup-scripts scripts-dir)
+        (repl-setup/setup-shebang-demo-script install-dir scripts-dir))
 
       (when-not (jansi-available? libs-dir)
         (throw :jansi-not-available))

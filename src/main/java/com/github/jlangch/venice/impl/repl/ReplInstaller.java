@@ -46,13 +46,16 @@ public class ReplInstaller {
 
             ThreadContext.setInterceptor(interceptor);
 
-            System.out.println("Venice REPL setup...");
+            final CommandLineArgs cli = new CommandLineArgs(args);
+
+            final String installDir = cli.switchValue("-dir", ".");
+            final boolean minimal = cli.switchPresent("-minimal");
+
+            System.out.println("Venice" + (minimal ? " minimal " : " ") + "REPL setup...");
             System.out.println("Venice REPL: V" + Venice.getVersion());
             System.out.println("Java: " + System.getProperty("java.version"));
 
-            final CommandLineArgs cli = new CommandLineArgs(args);
             final ReplConfig config = ReplConfig.load(cli);
-            final String installDir = cli.switchValue("-dir", ".");
 
             final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -78,8 +81,10 @@ public class ReplInstaller {
                                     "  (load-module :repl-setup)                \n" +
                                     "  (repl-setup/setup :color-mode :%s        \n" +
                                     "                    :ansi-terminal false   \n" +
+                                    "                    :minimal %b            \n" +
                                     "                    :install-dir \"%s\"))  ",
                                     colorMode.name().toLowerCase(),
+                                    minimal,
                                     slashifyFilePath(installDir));
 
             venice.RE(script, "setup", env);
