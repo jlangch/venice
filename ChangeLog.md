@@ -15,6 +15,12 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+- Added an option to install a minimal REPL
+
+```
+$ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
+```
+
 
 
 ## [1.12.80] - 2026-02-14
