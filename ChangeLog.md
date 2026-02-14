@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.81] - 2026-02-xx
+## [1.12.82] - 2026-02-xx
 
 ### Enhancements
 
@@ -15,12 +15,25 @@ All notable changes to this project will be documented in this file.
 - Added :openai module support for assistant run api (...)
 - Added :openai module support for assistant run steps api (...)
 
+
+
+
+## [1.12.81] - 2026-02-xx
+
+### Enhancements
+
 - Added an option to install a minimal REPL
 
 ```
 $ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
 ```
 
+- The REPL installer creates now an additional 'repl.sh.command' file on Mac OSX.
+  While the 'repl.sh' shell script must be executed from within a terminal,
+  the 'repl.sh.command' shell script can be double-clicked in the OSX Finder 
+  to run. 
+  Note: 'repl.sh' can be manually associated with the Terminal App to allow 
+        double click to run it
 
 
 ## [1.12.80] - 2026-02-14
