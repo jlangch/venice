@@ -816,10 +816,11 @@
 
 
 (defn- mvn-binary []
-  (case (os-type)
-    :mac-osx (str (maven/mvn-home) "/bin/mvn")
-    :linux   (str (maven/mvn-home) "/bin/mvn")
-    :windows (str (maven/mvn-home) "/bin/mvn.cmd")))
+  (->> (case (os-type)
+          :mac-osx (str (maven/mvn-home) "/bin/mvn")
+          :linux   (str (maven/mvn-home) "/bin/mvn")
+          :windows (str (maven/mvn-home) "/bin/mvn.cmd"))
+       (validate-mvn-binary)))
 
 
 (defn- validate-mvn-binary [binary]

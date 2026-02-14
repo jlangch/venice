@@ -27,7 +27,6 @@ All notable changes to this project will be documented in this file.
 ```
 $ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
 
-
      REPL_HOME
      ├── libs
      │   ├── venice-1.12.81.jar
@@ -39,7 +38,7 @@ $ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
 ```
 
 
-- The REPL installer creates now an additional 'repl.sh.command' file on Mac OSX.
+- The REPL installer creates now an additional *repl.sh.command* file on Mac OSX.
   While the *repl.sh* shell script must be executed from within a terminal,
   the *repl.sh.command* shell script can be double-clicked in the OSX Finder 
   to run. 
