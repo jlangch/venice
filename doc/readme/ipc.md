@@ -395,6 +395,7 @@ close the IPC client.
            (ipc/message->json true)
            (println "PUBLISHED:")))
 
+    ;; give the subscriber time to receive and print the published message
     (sleep 300)))
 ```
 
@@ -427,6 +428,7 @@ close the IPC client.
            (ipc/message->json true <>)
            (println "PUBLISHED:" <>)))
 
+    ;; give the subscriber time to receive and print the published message
     (sleep 300)))
 ```
 
