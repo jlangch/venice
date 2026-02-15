@@ -25,12 +25,13 @@ $ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
 ```
 
 
-- The REPL installer creates now an additional *repl.command* file on Mac OSX.
+- Mac OSX: The REPL installer creates now an additional *repl.command* file.
   While the *repl.sh* shell script must be executed from within a terminal,
   the *repl.command* shell script can be double-clicked in the OSX Finder 
   to run. 
-  Note: *repl.sh* can be manually associated with the Terminal App to allow 
+  Note: *repl.sh* can be manually associated with the *Terminal* App to allow 
         double click to run it
+
 
 
 ## [1.12.80] - 2026-02-14

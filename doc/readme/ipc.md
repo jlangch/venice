@@ -304,8 +304,6 @@ the server.
                                   :write-ahead-log-compact true)  ;; compact WAL at startup
                client (ipc/client 33333)]
 
-      (sleep 100)
-
       ;; create the durable queue :testq (capacity=100)
       (ipc/create-queue server :testq 100 :bounded :durable)
 
@@ -331,8 +329,6 @@ the server.
                                   :write-ahead-log-compress true
                                   :write-ahead-log-compact true)
                client (ipc/client 33333)]
-
-      (sleep 100)
 
       ;; create a bounded, durable queue :testq (capacity=100)
       ;; if the queue already exists due to the WAL recovery process, this
