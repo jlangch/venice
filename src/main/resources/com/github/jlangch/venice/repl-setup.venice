@@ -183,7 +183,7 @@
     (when (io/exists-file? (io/file install-dir "repl.sh"))
       (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file-path install-dir))
       (when (os-type? :mac-osx)
-        (sh "/bin/cp" (io/file install-dir "repl.sh") (io/file install-dir "repl.sh.command"))))))
+        (sh "/bin/cp" (io/file install-dir "repl.sh") (io/file install-dir "repl.command"))))))
 
 
 (defn setup-repl-launcher [install-dir color-mode]
