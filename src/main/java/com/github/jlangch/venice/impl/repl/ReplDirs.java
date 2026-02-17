@@ -104,7 +104,7 @@ public class ReplDirs {
     }
 
 
-    private static File getReplHomeDir() {
+    public static File getReplHomeDir() {
         final String home = StringUtil.trimToNull(System.getProperty("venice.repl.home"));
         return home == null ? null : new File(home);
     }

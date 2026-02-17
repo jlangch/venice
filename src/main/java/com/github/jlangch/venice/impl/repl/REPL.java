@@ -120,7 +120,7 @@ public class REPL implements IRepl {
 
             boolean macroexpand = false;
 
-            config = ReplConfig.load(cli);
+            config = ReplConfig.load(cli, ReplDirs.getReplHomeDir());
 
             initJLineLogger(config);
 

@@ -55,7 +55,7 @@ public class ReplInstaller {
             System.out.println("Venice REPL: V" + Venice.getVersion());
             System.out.println("Java: " + System.getProperty("java.version"));
 
-            final ReplConfig config = ReplConfig.load(cli);
+            final ReplConfig config = ReplConfig.load(cli, null);
 
             final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 

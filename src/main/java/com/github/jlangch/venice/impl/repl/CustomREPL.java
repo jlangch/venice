@@ -80,7 +80,7 @@ public class CustomREPL implements IRepl {
             final CommandLineArgs cli = new CommandLineArgs(args);
             final ILoadPaths loadpaths = interceptor.getLoadPaths();
 
-            config = ReplConfig.load(cli);
+            config = ReplConfig.load(cli, ReplDirs.getReplHomeDir());
 
             initJLineLogger(config);
 

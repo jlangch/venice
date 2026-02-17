@@ -80,14 +80,32 @@ public class ReplConfig {
         this.colors.putAll(colors);
     }
 
-    public static ReplConfig load(final CommandLineArgs cli) {
+    /**
+     * Loads the REPL configuration from a 'repl.json'
+     *
+     * <p>REPL config 'repl.json' load strategy (by priority):
+     * <ol>
+     *   <li>load custom from current working directory</li>
+     *   <li>load custom from REPL home directory</li>
+     *   <li>load custom from root classpath</li>
+     *   <li>load built-in from classpath</li>
+     * </ol>
+     *
+     * @param cli The command line arguments
+     * @param replHomeDir The REPL home dir (may be null)
+     * @return The REP configuration
+     */
+    public static ReplConfig load(
+            final CommandLineArgs cli,
+            final File replHomeDir
+    ) {
         final Map<String,String> colors = new HashMap<>();
 
         // load file
         final String loadFile = cli.switchValue("-load-file");
 
         try {
-            final Tuple2<JsonObject,String> cfg = loadJsonConfig();
+            final Tuple2<JsonObject,String> cfg = loadJsonConfig(replHomeDir);
             final JsonObject jsonObj = cfg._1;
             final String jsonConfigSource = cfg._2;
 
@@ -280,19 +298,32 @@ public class ReplConfig {
         return StringUtil.emptyToNull(colors.get(key));
     }
 
-    private static Tuple2<JsonObject,String> loadJsonConfig() throws Exception {
-
-        // [1] load from current working directory
-        final File fileJson = new File("repl.json");
-        if (fileJson.isFile()) {
-            try (Reader reader = new FileReader(fileJson)) {
+    private static Tuple2<JsonObject,String> loadJsonConfig(
+            final File replHomeDir
+    ) throws Exception {
+        // [1] load custom from current working directory
+        final File replCwdJson = new File("repl.json");
+        if (replCwdJson.isFile()) {
+            try (Reader reader = new FileReader(replCwdJson)) {
                 return new Tuple2<JsonObject,String>(
                             JsonParser.object().from(reader),
-                            "file '" + fileJson.getPath() +"'");
+                            "file '" + replCwdJson.getPath() +"'");
             }
         }
 
-        // [2] load custom from classpath
+        // [2] load custom from REPL home directory
+        if (replHomeDir != null && replHomeDir.isDirectory()) {
+            final File replHomeJson = new File(replHomeDir, "repl.json");
+            if (replHomeJson.isFile()) {
+                try (Reader reader = new FileReader(replHomeJson)) {
+                    return new Tuple2<JsonObject,String>(
+                                JsonParser.object().from(reader),
+                                "REPL home dir (" + replHomeJson + ") 'repl.json'");
+                }
+            }
+        }
+
+        // [3] load custom from root classpath
         try {
             final String clientConfig = new ClassPathResource("repl.json")
                                                 .getResourceAsString("UTF-8");
@@ -304,7 +335,7 @@ public class ReplConfig {
         }
         catch(Exception ex) { /* ignore */ }
 
-        // [3] load built-in from classpath
+        // [4] load built-in from classpath
         final String builtinConfig = getDefaultClasspathConfig();
         if (builtinConfig != null) {
             return new Tuple2<JsonObject,String>(
