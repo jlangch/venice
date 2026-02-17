@@ -708,9 +708,10 @@ task updateCopyright {
                 replace: "Copyright ${yearFrom}-${yearTo} Venice",
                 flags:   'g'
         ) {
-            fileset(dir: '.',   includes: 'build.gradle')
-            fileset(dir: 'src', includes: '**/*.java')
-            fileset(dir: 'src', includes: '**/*.venice')
+            fileset(dir: '.',            includes: 'build.gradle')
+            fileset(dir: 'src',          includes: '**/*.java')
+            fileset(dir: 'src',          includes: '**/*.venice')
+            fileset(dir: 'doc/examples', includes: '**/*.venice')
         }
         println "Updating copyright done."
     }
