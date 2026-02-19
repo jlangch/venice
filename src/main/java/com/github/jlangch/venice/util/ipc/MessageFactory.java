@@ -27,7 +27,6 @@ import java.util.Objects;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
-import com.github.jlangch.venice.util.ipc.impl.TopicValidator;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
@@ -382,21 +381,19 @@ public abstract class MessageFactory {
      * a message
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
-     * @param topic a topic
+     * @param subject a subject
      * @param data venice data
      * @return the message
      */
     public static IMessage venice(
             final String requestId,
-            final String topic,
+            final String subject,
             final VncVal data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(data);
 
-        TopicValidator.validateTopicName(topic);
-
-        return json(requestId, topic, "UTF-8", Json.writeJson(data, false));
+        return json(requestId, subject, "UTF-8", Json.writeJson(data, false));
     }
 
     /**
@@ -407,22 +404,20 @@ public abstract class MessageFactory {
      *
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
-     * @param topic a topic
+     * @param subject a subject
      * @param data venice data
      * @return the message
      */
     public static IMessage venice(
             final String requestId,
             final long expiresAt,
-            final String topic,
+            final String subject,
             final VncVal data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(data);
 
-        TopicValidator.validateTopicName(topic);
-
-        return json(requestId, expiresAt, topic, "UTF-8", Json.writeJson(data, false));
+        return json(requestId, expiresAt, subject, "UTF-8", Json.writeJson(data, false));
     }
 
     /**
@@ -434,7 +429,7 @@ public abstract class MessageFactory {
      * @param requestId an optional request ID (may be used for idempotency checks by the receiver)
      * @param expiresAt message expiration timestamp (millis since epoch, -1 means never expires)
      * @param durable a durable message
-     * @param topic a topic
+     * @param subject a subject
      * @param data venice data
      * @return the message
      */
@@ -442,15 +437,13 @@ public abstract class MessageFactory {
             final String requestId,
             final long expiresAt,
             final boolean durable,
-            final String topic,
+            final String subject,
             final VncVal data
     ) {
-        Objects.requireNonNull(topic);
+        Objects.requireNonNull(subject);
         Objects.requireNonNull(data);
 
-        TopicValidator.validateTopicName(topic);
-
-        return json(requestId, expiresAt, durable, topic, "UTF-8", Json.writeJson(data, false));
+        return json(requestId, expiresAt, durable, subject, "UTF-8", Json.writeJson(data, false));
     }
 
 
@@ -462,7 +455,7 @@ public abstract class MessageFactory {
      * Create a simple hello message.
      *
      * <ul>
-     *   <li>topic: "hello"</li>
+     *   <li>subject: "hello"</li>
      *   <li>mimetype: "text/plain"</li>
      *   <li>charset: "UTF-8"</li>
      *   <li>text: "Hello!"</li>
