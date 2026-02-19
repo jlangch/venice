@@ -27,11 +27,11 @@
     "system": "\u001b[48;5;35m\u001b[38;5;255m",
     "interrupt": "\u001b[48;5;196m\u001b[38;5;255m"
   },
-    
+
   "syntax-highlighting": {
     "enabled": true
   },
-  
+
   "jline": {
     "loglevel": null,
     "dumb-terminal": false
