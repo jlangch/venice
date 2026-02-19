@@ -306,10 +306,10 @@ public class Launcher {
              "                     E.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
              "\n" +
              "  -setup             setup a REPL \n" +
-             "                     E.g.:  java -jar venice-1.12.80.jar -setup -colors \n" +
-             "                            java -jar venice-1.12.80.jar -setup -colors-light \n" +
-             "                            java -jar venice-1.12.80.jar -setup -colors-dark \n" +
-             "                            java -jar venice-1.12.80.jar -setup -colors -dir /Users/foo/repl \n" +
+             "                     E.g.:  java -jar venice-1.12.80.jar -setup -colors -dir ./repl \n" +
+             "                            java -jar venice-1.12.80.jar -setup -minimal -colors-dir ./repl \n" +
+             "                            java -jar venice-1.12.80.jar -setup -colors-light ./repl \n" +
+             "                            java -jar venice-1.12.80.jar -setup -colors-dark ./repl \n" +
             "\n" +
              "  -help              prints a help \n" +
              "\n" +
