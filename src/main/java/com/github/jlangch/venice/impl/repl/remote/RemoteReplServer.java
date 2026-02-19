@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.repl;
+package com.github.jlangch.venice.impl.repl.remote;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
@@ -50,9 +50,9 @@ import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 
 
-public class VeniceReplServer implements AutoCloseable  {
+public class RemoteReplServer implements AutoCloseable  {
 
-    public VeniceReplServer(
+    public RemoteReplServer(
             final IVeniceInterpreter interpreter,
             final int port,
             final String principal,
@@ -127,6 +127,7 @@ public class VeniceReplServer implements AutoCloseable  {
     }
 
     private IMessage handler(final IMessage request) {
+        final long start = System.currentTimeMillis();
         final long count = requestCounter.incrementAndGet();
 
         try(CapturingPrintStream out = new CapturingPrintStream();
@@ -146,30 +147,34 @@ public class VeniceReplServer implements AutoCloseable  {
 
                 final VncVal result = interpreter.RE("xxxxxx", "repl", env);
 
+                final long elapsed = System.currentTimeMillis() - start;
+
                 out.flush();
                 err.flush();
 
                 final String sOut = out.getOutput();
                 final String sErr = err.getOutput();
 
-                VncMap map = createDataMap(count, formVal, result, null, sOut, sErr);
+                VncMap map = createDataMap(count, formVal, result, null, sOut, sErr, elapsed);
 
                 return request;
             }
             catch(Exception ex) {
+                final long elapsed = System.currentTimeMillis() - start;
+
                 out.flush();
                 err.flush();
 
                 final String sOut = out.getOutput();
                 final String sErr = err.getOutput();
 
-                VncMap map = createDataMap(count, formVal, Nil, ex, sOut, sErr);
+                VncMap map = createDataMap(count, formVal, Nil, ex, sOut, sErr, elapsed);
 
                 return request;
             }
         }
         catch(Exception ex) {
-            VncMap map = createDataMap(count, Nil, Nil, ex, "", "");
+            VncMap map = createDataMap(count, Nil, Nil, ex, "", "", 0L);
 
             // Build a response message from the exception
             return request;
@@ -182,7 +187,8 @@ public class VeniceReplServer implements AutoCloseable  {
             final VncVal ret,
             final Exception ex,
             final String out,
-            final String err
+            final String err,
+            final long elapsedMillis
     ) {
         return VncHashMap.of(
                 new VncString("id"),     new VncLong(count),
@@ -190,7 +196,8 @@ public class VeniceReplServer implements AutoCloseable  {
                 new VncString("return"), ret,
                 new VncString("ex"),     new VncString(formatEx(ex)),
                 new VncString("out"),    new VncString(out),
-                new VncString("err"),    new VncString(err));
+                new VncString("err"),    new VncString(err),
+                new VncString("ms"),     new VncLong(elapsedMillis));
     }
 
     private String formatEx(final Exception ex) {

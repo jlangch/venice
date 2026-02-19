@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.repl;
+package com.github.jlangch.venice.impl.repl.remote;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,11 +28,12 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.Client;
 import com.github.jlangch.venice.util.ipc.ClientConfig;
+import com.github.jlangch.venice.util.ipc.IMessage;
 
 
-public class VeniceReplClient implements AutoCloseable  {
+public class RemoteReplClient implements AutoCloseable  {
 
-    public VeniceReplClient(
+    public RemoteReplClient(
             final String host,
             final int port,
             final String principal,
@@ -41,6 +42,14 @@ public class VeniceReplClient implements AutoCloseable  {
         this.ipcClient = createIpcClient(host, port, principal, password);
     }
 
+
+    public FormResult eval(final String form) {
+        final IMessage m = null;
+
+        final IMessage result = ipcClient.sendMessage(m, "func/repl");
+
+        return new FormResult(0, null, null, null, null, null, 0);
+    }
 
     public boolean isRunning() {
         return ipcClient != null && ipcClient.isRunning() && !isStop();
@@ -97,7 +106,7 @@ public class VeniceReplClient implements AutoCloseable  {
             return client;
         }
         catch(Exception ex) {
-            throw new VncException("Failed to start Venice REPL server", ex);
+            throw new VncException("Failed to start Venice REPL client", ex);
         }
     }
 
