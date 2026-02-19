@@ -164,6 +164,8 @@ public class Launcher {
         final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 
         final boolean macroexpand = isMacroexpand(cli);
+        final int replServerPort = getReplServerPort(cli);
+        final String replServerPassword = getReplServerPasswordFromEnvVar();
 
         // run the file from the filesystem
         final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
@@ -172,8 +174,10 @@ public class Launcher {
         final String scriptWrapped = "(do " + script + ")";
 
         final String result = runScript(
-                                cli.removeSwitches("-file", "-macroexpand", "-loadpath"),
+                                cli.removeSwitches("-file", "-macroexpand", "-repl-server", "-loadpath"),
                                 macroexpand,
+                                replServerPort,
+                                replServerPassword,
                                 interceptor,
                                 scriptWrapped,
                                 new File(file).getName());
@@ -190,14 +194,18 @@ public class Launcher {
         final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 
         final boolean macroexpand = isMacroexpand(cli);
+        final int replServerPort = getReplServerPort(cli);
+        final String replServerPassword = getReplServerPasswordFromEnvVar();
 
         // run the file from the classpath
         final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
         final String script = new ClassPathResource(file).getResourceAsString();
 
         final String result = runScript(
-                                cli.removeSwitches("-cp-file", "-macroexpand", "-loadpath"),
+                                cli.removeSwitches("-cp-file", "-macroexpand", "-repl-server", "-loadpath"),
                                 macroexpand,
+                                replServerPort,
+                                replServerPassword,
                                 interceptor,
                                 script,
                                 new File(file).getName());
@@ -214,17 +222,21 @@ public class Launcher {
         final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 
         final boolean macroexpand = isMacroexpand(cli);
+        final int replServerPort = getReplServerPort(cli);
+        final String replServerPassword = getReplServerPasswordFromEnvVar();
 
         // run the script passed as command line argument
         final String script = cli.switchValue("-script");
 
-        System.out.println(
-                runScript(
-                    cli.removeSwitches("-script", "-macroexpand", "-loadpath"),
-                    macroexpand,
-                    interceptor,
-                    script,
-                    "script"));
+        final String result = runScript(
+                                cli.removeSwitches("-script", "-macroexpand", "-repl-server", "-loadpath"),
+                                macroexpand,
+                                replServerPort,
+                                replServerPassword,
+                                interceptor,
+                                script,
+                                "script");
+        System.out.println(result);
     }
 
     private static void runAppCmd(
@@ -321,6 +333,8 @@ public class Launcher {
     private static String runScript(
             final CommandLineArgs cli,
             final boolean macroexpand,
+            final int replServerPort,
+            final String replServerPassword,
             final IInterceptor interceptor,
             final String script,
             final String name
@@ -358,6 +372,22 @@ public class Launcher {
         else {
             return true;  // defaults to true (macroexpand on)
         }
+    }
+
+    private static int getReplServerPort(final CommandLineArgs cli) {
+        if (cli.switchPresent("-repl-server")) {
+             final long port = cli.switchLongValue("-repl-server", 0L);
+             if (port < 0L) return 0;
+             if (port > 65536) return 0;
+             return (int)port;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    private static String getReplServerPasswordFromEnvVar() {
+       return System.getenv("REPL_SERVER_PASSWORD");
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {
