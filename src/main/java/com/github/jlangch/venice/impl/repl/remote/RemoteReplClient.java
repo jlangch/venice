@@ -23,12 +23,20 @@ package com.github.jlangch.venice.impl.repl.remote;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.ipc.Client;
 import com.github.jlangch.venice.util.ipc.ClientConfig;
 import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.MessageFactory;
+
+import joptsimple.internal.Objects;
 
 
 public class RemoteReplClient implements AutoCloseable  {
@@ -44,11 +52,24 @@ public class RemoteReplClient implements AutoCloseable  {
 
 
     public FormResult eval(final String form) {
-        final IMessage m = null;
+        Objects.ensureNotNull(form);
+
+        final IMessage m = MessageFactory.venice(
+                                String.valueOf(requestId.incrementAndGet()),
+                                "form",
+                                createDataMap(form));
 
         final IMessage result = ipcClient.sendMessage(m, "func/repl");
 
-        return new FormResult(0, null, null, null, null, null, 0);
+        final VncMap resultData = (VncMap)result.getVeniceData();
+
+        return new FormResult(
+                    ((VncString)resultData.get(new VncString("form"))).getValue(),
+                    ((VncString)resultData.get(new VncString("return"))).getValue(),
+                    ((VncString)resultData.get(new VncString("ex"))).getValue(),
+                    ((VncString)resultData.get(new VncString("out"))).getValue(),
+                    ((VncString)resultData.get(new VncString("err"))).getValue(),
+                    ((VncLong)resultData.get(new VncString("ms"))).getValue());
     }
 
     public boolean isRunning() {
@@ -110,7 +131,15 @@ public class RemoteReplClient implements AutoCloseable  {
         }
     }
 
+    private VncHashMap createDataMap(
+            final String form
+    ) {
+        return VncHashMap.of(
+                new VncString("form"), new VncString(form));
+    }
+
 
     private final Client ipcClient;
     private final AtomicBoolean stop = new AtomicBoolean(false);
+    private final AtomicLong requestId = new AtomicLong(0L);
 }

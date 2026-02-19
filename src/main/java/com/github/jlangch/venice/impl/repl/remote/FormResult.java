@@ -25,15 +25,13 @@ package com.github.jlangch.venice.impl.repl.remote;
 public class FormResult {
 
     public FormResult(
-            final long count,
             final String form,
             final String result,
-            final Exception ex,
+            final String ex,
             final String out,
             final String err,
             final long elapsedMillis
     ) {
-        this.count = count;
         this.form = form;
         this.result = result;
         this.ex = ex;
@@ -43,10 +41,6 @@ public class FormResult {
     }
 
 
-    public long getCount() {
-        return count;
-    }
-
     public String getForm() {
         return form;
     }
@@ -55,7 +49,7 @@ public class FormResult {
         return result;
     }
 
-    public Exception getEx() {
+    public String getEx() {
         return ex;
     }
 
@@ -72,10 +66,9 @@ public class FormResult {
     }
 
 
-    private final long count;
     private final String form;
     private final String result;
-    private final Exception ex;
+    private final String ex;
     private final String out;
     private final String err;
     private final long elapsedMillis;

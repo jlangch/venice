@@ -28,7 +28,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
@@ -128,14 +127,12 @@ public class RemoteReplServer implements AutoCloseable  {
 
     private IMessage handler(final IMessage request) {
         final long start = System.currentTimeMillis();
-        final long count = requestCounter.incrementAndGet();
 
         try(CapturingPrintStream out = new CapturingPrintStream();
             CapturingPrintStream err = new CapturingPrintStream()
         ) {
             final VncVal r = request.getVeniceData();
 
-            final VncVal namespaceVal = ((VncMap)r).get(new VncString("ns"));
             final VncVal formVal = ((VncMap)r).get(new VncString("form"));
 
             try {
@@ -155,7 +152,7 @@ public class RemoteReplServer implements AutoCloseable  {
                 final String sOut = out.getOutput();
                 final String sErr = err.getOutput();
 
-                VncMap map = createDataMap(count, formVal, result, null, sOut, sErr, elapsed);
+                VncMap map = createDataMap(formVal, result, null, sOut, sErr, elapsed);
 
                 return request;
             }
@@ -168,13 +165,13 @@ public class RemoteReplServer implements AutoCloseable  {
                 final String sOut = out.getOutput();
                 final String sErr = err.getOutput();
 
-                VncMap map = createDataMap(count, formVal, Nil, ex, sOut, sErr, elapsed);
+                VncMap map = createDataMap(formVal, Nil, ex, sOut, sErr, elapsed);
 
                 return request;
             }
         }
         catch(Exception ex) {
-            VncMap map = createDataMap(count, Nil, Nil, ex, "", "", 0L);
+            VncMap map = createDataMap( Nil, Nil, ex, "", "", 0L);
 
             // Build a response message from the exception
             return request;
@@ -182,7 +179,6 @@ public class RemoteReplServer implements AutoCloseable  {
     }
 
     private VncHashMap createDataMap(
-            final long count,
             final VncVal form,
             final VncVal ret,
             final Exception ex,
@@ -191,7 +187,6 @@ public class RemoteReplServer implements AutoCloseable  {
             final long elapsedMillis
     ) {
         return VncHashMap.of(
-                new VncString("id"),     new VncLong(count),
                 new VncString("form"),   form,
                 new VncString("return"), ret,
                 new VncString("ex"),     new VncString(formatEx(ex)),
@@ -224,6 +219,5 @@ public class RemoteReplServer implements AutoCloseable  {
 
     private final IVeniceInterpreter interpreter;
     private final Server ipcServer;
-    private final AtomicLong requestCounter = new AtomicLong(0L);
     private final AtomicBoolean stop = new AtomicBoolean(false);
 }
