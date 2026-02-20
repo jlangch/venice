@@ -22,6 +22,8 @@
 ;;;; ---------------------------------------------------------------------------
 ;;;; Remote REPL demo (server)
 ;;;;
+;;;; add "export REPL_SERVER_PASSWORD=123" to the 'repl.env' file
+;;;;
 ;;;; [server]
 ;;;; $ source repl.env
 ;;;; $ java -jar venice-1.12.81.jar -file remote-repl-demo.venice -repl-server 33334
@@ -31,6 +33,7 @@
 ;;;; venice> (+ 1 2)
 ;;;; venice> (do (println "test...") (+ 1 2))
 ;;;; venice> (demo/sum 1 2)
+;;;; venice> (demo/stop)
 ;;;; ---------------------------------------------------------------------------
 
 (ns demo)
@@ -44,6 +47,7 @@
 (defn sum [x y] 
   (println "Add function called")
   (+ x y))
+
 
 (println "Started server")
 
