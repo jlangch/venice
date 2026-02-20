@@ -228,7 +228,7 @@ public class RemoteReplServer implements AutoCloseable  {
         return threadBridge.bridgeFunction((IMessage m) -> handler.apply(m));
     }
 
-    private IMessage responseMessage(final IMessage request, VncMap responseData) {
+    private IMessage responseMessage(final IMessage request, final VncMap responseData) {
         return MessageFactory.venice(
                 request.getRequestId(),
                 request.getSubject(),
