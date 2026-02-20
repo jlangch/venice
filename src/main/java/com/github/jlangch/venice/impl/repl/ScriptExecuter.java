@@ -39,13 +39,13 @@ import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class ScriptExecuter {
+public class ScriptExecuter implements IScriptExecuter{
 
     public ScriptExecuter() {
 
     }
 
-
+    @Override
     public void runSync(
             final String script,
             final IVeniceInterpreter venice,
@@ -71,6 +71,7 @@ public class ScriptExecuter {
         }
     }
 
+    @Override
     public void runAsync(
             final String script,
             final IVeniceInterpreter venice,
@@ -132,6 +133,7 @@ public class ScriptExecuter {
         futures.add(executor.submit(task));
     }
 
+    @Override
     public void runDebuggerExpressionAsync(
             final String expr,
             final IVeniceInterpreter venice,
@@ -163,6 +165,7 @@ public class ScriptExecuter {
         }
     }
 
+    @Override
     public boolean runInitialLoadFile(
             final String loadFile,
             final IVeniceInterpreter venice,
@@ -187,6 +190,7 @@ public class ScriptExecuter {
         }
     }
 
+    @Override
     public void cancelAsyncScripts() {
         futures.forEach(f -> f.cancel(true));
 
@@ -196,6 +200,9 @@ public class ScriptExecuter {
                     .collect(Collectors.toList());
     }
 
+    @Override
+    public void close() {
+    }
 
 
     private List<Future<Boolean>> futures = new ArrayList<>();

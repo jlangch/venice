@@ -58,7 +58,6 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.IRepl;
-import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.LicenseMgr;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.SourceCodeRenderer;
@@ -633,6 +632,9 @@ public class REPL implements IRepl {
                     case "debug":         handleDebugHelpCommand(); break;
                     case "source-pdf":    handleSourcePdfCommand(args); break;
                     case "license":       handleLicenseCommand(args); break;
+                    case "local":         handleSwitchToLocalReplCommand(); break;
+                    case "remote":        handleSwitchToRemoteReplCommand(args); break;
+
                     default:              handleInvalidCommand(cmd); break;
                 }
             }
@@ -1127,6 +1129,34 @@ public class REPL implements IRepl {
         printer.println("stdout", "Java VM Vendor:  " + System.getProperty("java.vm.vendor"));
     }
 
+    private void handleSwitchToRemoteReplCommand(final List<String> params) {
+        if (params.size() != 4) {
+            printer.println("error", "Require host, port principal, and password arguments to switch to remote REPL");
+            return;
+        }
+        final String host = params.get(0);
+        final String port = params.get(1);
+        final String principal = params.get(2);
+        final String password = params.get(3);
+
+        // [1] If a remote REPL is active close it
+
+        // [2] Open a new remote REPL client
+
+        // [3] Switch to the remote REPL client
+
+        scriptExec = scriptExecLocal;
+        printer.println("system", "Switched to remote REPL " + host + "@" + port);
+    }
+
+    private void handleSwitchToLocalReplCommand() {
+        // [1] If a remote REPL is active close it
+
+        // [2] Switch back to the local REPL
+        scriptExec = scriptExecLocal;
+        printer.println("system", "Switched to local REPL");
+    }
+
     private void handleInvalidCommand(final String cmd) {
         if (ReplDebugClient.isDebugCommand(cmd)) {
             printer.println(
@@ -1461,5 +1491,6 @@ public class REPL implements IRepl {
     private ReplDebugClient debugClient = null;
     private ReplDirs replDirs;
 
-    private final ScriptExecuter scriptExec = new ScriptExecuter();
+    private IScriptExecuter scriptExecLocal = new ScriptExecuter();
+    private IScriptExecuter scriptExec = scriptExecLocal;
 }
