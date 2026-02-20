@@ -21,10 +21,14 @@
  */
 package com.github.jlangch.venice.impl.repl.remote;
 
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+
 
 public class FormResult {
 
-    public FormResult(
+    private FormResult(
             final String form,
             final String result,
             final String ex,
@@ -38,6 +42,17 @@ public class FormResult {
         this.out = out;
         this.err = err;
         this.elapsedMillis = elapsedMillis;
+    }
+
+
+    public static FormResult of(final VncMap result) {
+        return new FormResult(
+                    ((VncString)result.get(new VncString("form"))).getValue(),
+                    ((VncString)result.get(new VncString("return"))).getValue(),
+                    ((VncString)result.get(new VncString("ex"))).getValue(),
+                    ((VncString)result.get(new VncString("out"))).getValue(),
+                    ((VncString)result.get(new VncString("err"))).getValue(),
+                    ((VncLong)result.get(new VncString("ms"))).getValue());
     }
 
 

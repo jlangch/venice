@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -37,6 +38,8 @@ import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.repl.ReplInstaller;
+import com.github.jlangch.venice.impl.repl.remote.RemoteReplServer;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -348,7 +351,23 @@ public class Launcher {
                             Arrays.asList(
                                 convertCliArgsToVar(cli)));
 
-        return venice.PRINT(venice.RE(script, name, env));
+        if (replServerPort > 0) {
+            env.setGlobal(new Var(new VncSymbol("repl/repl-server?"), VncBoolean.True, false, Var.Scope.Global));
+
+            try (RemoteReplServer server = new RemoteReplServer(
+                                                venice,
+                                                replServerPort,
+                                                replServerPassword)
+            ) {
+                return venice.PRINT(venice.RE(script, name, env));
+            }
+            catch(IOException ex) {
+                throw new VncException("Failed to close Remote REPL server!", ex);
+            }
+        }
+        else {
+            return venice.PRINT(venice.RE(script, name, env));
+        }
     }
 
     private static Env createEnv(

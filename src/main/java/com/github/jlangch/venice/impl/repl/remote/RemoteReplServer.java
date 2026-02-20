@@ -40,11 +40,13 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.IMessage;
+import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 
@@ -54,12 +56,11 @@ public class RemoteReplServer implements AutoCloseable  {
     public RemoteReplServer(
             final IVeniceInterpreter interpreter,
             final int port,
-            final String principal,
             final String password
     ) {
         this.interpreter = interpreter;
 
-        this.ipcServer = createIpcServer(port, principal, password);
+        this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password);
     }
 
 
@@ -97,7 +98,9 @@ public class RemoteReplServer implements AutoCloseable  {
         }
         if (StringUtil.isEmpty(password)) {
             throw new VncException(
-                    "Failed to start Venice REPL server. The password must not be empty!");
+                    "Failed to start Venice REPL server. The password must not be empty! "
+                    + "Please set environment var 'REPL_SERVER_PASSWORD' in the 'repl.env' "
+                    + "file!");
         }
 
         try {
@@ -112,7 +115,7 @@ public class RemoteReplServer implements AutoCloseable  {
                                             .build();
 
             final Server server = Server.of(config);
-            server.createFunction("func/repl", this::handler);
+            server.createFunction(RemoteRepl.FUNCTION, this::handler);
 
             server.start();
 
@@ -135,6 +138,8 @@ public class RemoteReplServer implements AutoCloseable  {
 
             final VncVal formVal = ((VncMap)r).get(new VncString("form"));
 
+            final String form = Coerce.toVncString(formVal).getValue();
+
             try {
                 final Env env = interpreter
                                     .createEnv(false, false, RunMode.REPL)
@@ -142,7 +147,7 @@ public class RemoteReplServer implements AutoCloseable  {
                                     .setStderrPrintStream(err)
                                     .setStdinReader(new InputStreamReader(new NullInputStream()));
 
-                final VncVal result = interpreter.RE("xxxxxx", "repl", env);
+                final VncVal result = interpreter.RE(form, "repl", env);
 
                 final long elapsed = System.currentTimeMillis() - start;
 
@@ -152,9 +157,12 @@ public class RemoteReplServer implements AutoCloseable  {
                 final String sOut = out.getOutput();
                 final String sErr = err.getOutput();
 
-                VncMap map = createDataMap(formVal, result, null, sOut, sErr, elapsed);
+                VncMap data = createDataMap(formVal, result, null, sOut, sErr, elapsed);
 
-                return request;
+                return MessageFactory.venice(
+                        request.getRequestId(),
+                        request.getSubject(),
+                        data);
             }
             catch(Exception ex) {
                 final long elapsed = System.currentTimeMillis() - start;
@@ -165,16 +173,21 @@ public class RemoteReplServer implements AutoCloseable  {
                 final String sOut = out.getOutput();
                 final String sErr = err.getOutput();
 
-                VncMap map = createDataMap(formVal, Nil, ex, sOut, sErr, elapsed);
+                VncMap data = createDataMap(formVal, Nil, ex, sOut, sErr, elapsed);
 
-                return request;
+                return MessageFactory.venice(
+                        request.getRequestId(),
+                        request.getSubject(),
+                        data);
             }
         }
         catch(Exception ex) {
-            VncMap map = createDataMap( Nil, Nil, ex, "", "", 0L);
+            VncMap data = createDataMap(Nil, Nil, ex, "", "", 0L);
 
-            // Build a response message from the exception
-            return request;
+            return MessageFactory.venice(
+                    request.getRequestId(),
+                    request.getSubject(),
+                    data);
         }
     }
 

@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -44,10 +43,9 @@ public class RemoteReplClient implements AutoCloseable  {
     public RemoteReplClient(
             final String host,
             final int port,
-            final String principal,
             final String password
     ) {
-        this.ipcClient = createIpcClient(host, port, principal, password);
+        this.ipcClient = createIpcClient(host, port, RemoteRepl.PRINCIPAL, password);
     }
 
 
@@ -59,17 +57,10 @@ public class RemoteReplClient implements AutoCloseable  {
                                 "form",
                                 createDataMap(form));
 
-        final IMessage result = ipcClient.sendMessage(m, "func/repl");
+        final IMessage result = ipcClient.sendMessage(m, RemoteRepl.FUNCTION);
 
         final VncMap resultData = (VncMap)result.getVeniceData();
-
-        return new FormResult(
-                    ((VncString)resultData.get(new VncString("form"))).getValue(),
-                    ((VncString)resultData.get(new VncString("return"))).getValue(),
-                    ((VncString)resultData.get(new VncString("ex"))).getValue(),
-                    ((VncString)resultData.get(new VncString("out"))).getValue(),
-                    ((VncString)resultData.get(new VncString("err"))).getValue(),
-                    ((VncLong)resultData.get(new VncString("ms"))).getValue());
+        return FormResult.of(resultData);
     }
 
     public boolean isRunning() {
@@ -85,10 +76,10 @@ public class RemoteReplClient implements AutoCloseable  {
         }
     }
 
+
     private boolean isStop() {
         return stop.get();
     }
-
 
     private Client createIpcClient(
             final String host,
@@ -107,11 +98,12 @@ public class RemoteReplClient implements AutoCloseable  {
         }
         if (StringUtil.isEmpty(password)) {
             throw new VncException(
-                    "Failed to start Venice REPL server. The password must not be empty!");
+                    "Failed to start Venice REPL server. The password must not be empty! "
+                    + "Please set environment var 'REPL_SERVER_PASSWORD' in the 'repl.env' "
+                    + "file!");
         }
 
         try {
-
             final ClientConfig config = ClientConfig
                                             .builder()
                                             .conn(host, port)
