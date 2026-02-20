@@ -77,6 +77,7 @@ import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.repl.remote.RemoteScriptExecuter;
 import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -1130,31 +1131,58 @@ public class REPL implements IRepl {
     }
 
     private void handleSwitchToRemoteReplCommand(final List<String> params) {
-        if (params.size() != 4) {
-            printer.println("error", "Require host, port principal, and password arguments to switch to remote REPL");
+        if (params.size() != 3) {
+            printer.println("error", "Require host, port, and password arguments to switch to remote REPL");
             return;
         }
         final String host = params.get(0);
-        final String port = params.get(1);
-        final String principal = params.get(2);
-        final String password = params.get(3);
+        final int port;
+        final String password = params.get(2);
+
+        try {
+            port = Integer.parseInt(params.get(1));
+        }
+        catch(NumberFormatException ex) {
+            printer.println("system", "Expected an integer for port argument!");
+            return;
+        }
 
         // [1] If a remote REPL is active close it
+        if (scriptExec instanceof RemoteScriptExecuter) {
+            printer.println("stdout", "Closing remote REPL client...");
+            scriptExec.close();
+            scriptExec = scriptExecLocal;
+        }
 
         // [2] Open a new remote REPL client
+        try {
+            printer.println("stdout", "Starting new remote REPL client...");
+            final RemoteScriptExecuter rexec = new RemoteScriptExecuter(host, port, password);
 
-        // [3] Switch to the remote REPL client
-
-        scriptExec = scriptExecLocal;
-        printer.println("system", "Switched to remote REPL " + host + "@" + port);
+            // [3] Switch to the remote REPL client
+            scriptExec = rexec;
+            printer.println("system", "Switched to remote REPL " + port + "@" + host);
+        }
+        catch(Exception ex) {
+            printer.println("error", ex.getMessage());
+            if (ex.getCause() != null) {
+                printer.println("error", "Cause: " + ex.getCause().getMessage());
+            }
+        }
     }
 
     private void handleSwitchToLocalReplCommand() {
-        // [1] If a remote REPL is active close it
+        // [1] If a remote REPL is active close it first
+        if (scriptExec instanceof RemoteScriptExecuter) {
+            scriptExec.close();
 
-        // [2] Switch back to the local REPL
-        scriptExec = scriptExecLocal;
-        printer.println("system", "Switched to local REPL");
+            // [2] Switch back to the local REPL
+            scriptExec = scriptExecLocal;
+            printer.println("system", "Switched to local REPL");
+        }
+        else {
+            printer.println("stdout", "Local REPL is already active");
+        }
     }
 
     private void handleInvalidCommand(final String cmd) {
@@ -1463,6 +1491,7 @@ public class REPL implements IRepl {
                         app.getPath()));
         }
     }
+
 
 
 
