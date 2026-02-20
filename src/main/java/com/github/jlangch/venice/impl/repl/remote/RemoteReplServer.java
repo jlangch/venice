@@ -143,9 +143,7 @@ public class RemoteReplServer implements AutoCloseable  {
             CapturingPrintStream err = new CapturingPrintStream()
         ) {
             final VncVal r = request.getVeniceData();
-
             final VncVal formVal = ((VncMap)r).get(new VncKeyword("form"));
-
             final String form = Coerce.toVncString(formVal).getValue();
 
             try {
@@ -155,45 +153,16 @@ public class RemoteReplServer implements AutoCloseable  {
 
                 final VncVal result = interpreter.RE(form, "repl", env);
 
-                final long elapsed = System.currentTimeMillis() - start;
-
-                out.flush();
-                err.flush();
-
-                final String sOut = out.getOutput();
-                final String sErr = err.getOutput();
-
-                VncMap data = createDataMap(formVal, result, null, sOut, sErr, elapsed);
-
-                return MessageFactory.venice(
-                        request.getRequestId(),
-                        request.getSubject(),
-                        data);
+                final VncMap data = createDataMap(formVal, result, null, out, err, elapsed(start));
+                return responseMessage(request, data);
             }
             catch(Exception ex) {
-                final long elapsed = System.currentTimeMillis() - start;
-
-                out.flush();
-                err.flush();
-
-                final String sOut = out.getOutput();
-                final String sErr = err.getOutput();
-
-                VncMap data = createDataMap(formVal, Nil, ex, sOut, sErr, elapsed);
-
-                return MessageFactory.venice(
-                        request.getRequestId(),
-                        request.getSubject(),
-                        data);
+                final VncMap data = createDataMap(formVal, Nil, ex, out, err, elapsed(start));
+                return responseMessage(request, data);
             }
         }
         catch(Exception ex) {
-            VncMap data = createDataMap(Nil, Nil, ex, "", "", 0L);
-
-            return MessageFactory.venice(
-                    request.getRequestId(),
-                    request.getSubject(),
-                    data);
+            return responseMessage(request, createDataMap(Nil, Nil, ex, null, null, 0L));
         }
     }
 
@@ -201,10 +170,23 @@ public class RemoteReplServer implements AutoCloseable  {
             final VncVal form,
             final VncVal ret,
             final Exception ex,
-            final String out,
-            final String err,
+            final CapturingPrintStream outPS,
+            final CapturingPrintStream errPS,
             final long elapsedMillis
     ) {
+        String out = "";
+        String err = "";
+
+        if (outPS != null) {
+            outPS.flush();
+            out = outPS.getOutput();
+        }
+
+        if (errPS != null) {
+            errPS.flush();
+            err = errPS.getOutput();
+        }
+
         return VncHashMap.of(
                 new VncKeyword("form"),   form,
                 new VncKeyword("return"), ret,
@@ -246,6 +228,16 @@ public class RemoteReplServer implements AutoCloseable  {
         return threadBridge.bridgeFunction((IMessage m) -> handler.apply(m));
     }
 
+    private IMessage responseMessage(final IMessage request, VncMap responseData) {
+        return MessageFactory.venice(
+                request.getRequestId(),
+                request.getSubject(),
+                responseData);
+    }
+
+    private long elapsed(final long start) {
+        return System.currentTimeMillis() - start;
+    }
 
 
     private final IVeniceInterpreter interpreter;
