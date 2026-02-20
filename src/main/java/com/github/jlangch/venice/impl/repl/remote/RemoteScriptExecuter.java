@@ -110,6 +110,9 @@ public class RemoteScriptExecuter implements IScriptExecuter{
             final TerminalPrinter printer,
             final String resultPrefix
     ) {
+        printer.println(
+                "error",
+                "A remote REPL does not support intial load files!");
         return false;
     }
 
@@ -126,6 +129,7 @@ public class RemoteScriptExecuter implements IScriptExecuter{
             catch(Exception ignore) {}
         }
     }
+
 
     private final RemoteReplClient client;
 }
