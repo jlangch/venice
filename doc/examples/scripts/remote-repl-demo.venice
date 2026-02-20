@@ -28,6 +28,8 @@
 ;;;;
 ;;;; [client REPL]
 ;;;; venice> !remote localhost 33334 123
+;;;; venice> (+ 1 2)
+;;;; venice> (do (println "test...") (+ 1 2))
 ;;;; venice> (demo/sum 1 2)
 ;;;; ---------------------------------------------------------------------------
 

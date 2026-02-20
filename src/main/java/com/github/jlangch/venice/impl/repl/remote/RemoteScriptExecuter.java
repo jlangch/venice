@@ -54,14 +54,14 @@ public class RemoteScriptExecuter implements IScriptExecuter{
         try {
             final FormResult result = client.eval(script);
             if (result.getEx() != null) {
-                printer.println("error", resultPrefix + result.getEx());
+                printer.println("error", result.getEx());
             }
             else {
                 if (StringUtil.isNotBlank(result.getOut())) {
-                    printer.println("stdout", resultPrefix + result.getOut());
+                    printer.println("stdout", result.getOut());
                 }
                 if (StringUtil.isNotBlank(result.getErr())) {
-                    printer.println("stderr", resultPrefix + result.getErr());
+                    printer.println("stderr", result.getErr());
                 }
 
                 printer.println();
