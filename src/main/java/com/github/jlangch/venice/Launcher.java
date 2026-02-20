@@ -356,6 +356,7 @@ public class Launcher {
 
             try (RemoteReplServer server = new RemoteReplServer(
                                                 venice,
+                                                new Env(env),  // run in own context
                                                 replServerPort,
                                                 replServerPassword)
             ) {

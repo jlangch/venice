@@ -34,7 +34,6 @@ import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -59,10 +58,12 @@ public class RemoteReplServer implements AutoCloseable  {
 
     public RemoteReplServer(
             final IVeniceInterpreter interpreter,
+            final Env env,
             final int port,
             final String password
     ) {
         this.interpreter = interpreter;
+        this.env = env;
 
         this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password);
     }
@@ -148,11 +149,9 @@ public class RemoteReplServer implements AutoCloseable  {
             final String form = Coerce.toVncString(formVal).getValue();
 
             try {
-                final Env env = interpreter
-                                    .createEnv(false, false, RunMode.REPL)
-                                    .setStdoutPrintStream(out)
-                                    .setStderrPrintStream(err)
-                                    .setStdinReader(new InputStreamReader(new NullInputStream()));
+                env.setStdoutPrintStream(out)
+                   .setStderrPrintStream(err)
+                   .setStdinReader(new InputStreamReader(new NullInputStream()));
 
                 final VncVal result = interpreter.RE(form, "repl", env);
 
@@ -239,22 +238,18 @@ public class RemoteReplServer implements AutoCloseable  {
     private static Function<IMessage,IMessage> wrapFunction(
             final Function<IMessage,IMessage> handler
     ) {
-        if (handler == null) {
-            return null; // no handler passed
-        }
-        else {
-            final CallFrame[] cf = new CallFrame[] { };
+        final CallFrame[] cf = new CallFrame[] { };
 
-            // Create a wrapper that inherits the Venice thread context!
-            final ThreadBridge threadBridge = ThreadBridge.create("tcp-repl-server-handler", cf);
+        // Create a wrapper that inherits the Venice thread context!
+        final ThreadBridge threadBridge = ThreadBridge.create("tcp-repl-server-handler", cf);
 
-            return threadBridge.bridgeFunction((IMessage m) -> handler.apply(m));
-        }
+        return threadBridge.bridgeFunction((IMessage m) -> handler.apply(m));
     }
 
 
 
     private final IVeniceInterpreter interpreter;
+    private final Env env;
     private final Server ipcServer;
     private final AtomicBoolean stop = new AtomicBoolean(false);
 }
