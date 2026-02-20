@@ -22,10 +22,12 @@
 package com.github.jlangch.venice.impl.repl.remote;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -34,8 +36,6 @@ import com.github.jlangch.venice.util.ipc.Client;
 import com.github.jlangch.venice.util.ipc.ClientConfig;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
-
-import joptsimple.internal.Objects;
 
 
 public class RemoteReplClient implements AutoCloseable  {
@@ -50,7 +50,7 @@ public class RemoteReplClient implements AutoCloseable  {
 
 
     public FormResult eval(final String form) {
-        Objects.ensureNotNull(form);
+        Objects.requireNonNull(form);
 
         final IMessage m = MessageFactory.venice(
                                 String.valueOf(requestId.incrementAndGet()),
@@ -123,11 +123,9 @@ public class RemoteReplClient implements AutoCloseable  {
         }
     }
 
-    private VncHashMap createDataMap(
-            final String form
-    ) {
+    private VncHashMap createDataMap(final String form) {
         return VncHashMap.of(
-                new VncString("form"), new VncString(form));
+                new VncKeyword("form"), new VncString(form));
     }
 
 

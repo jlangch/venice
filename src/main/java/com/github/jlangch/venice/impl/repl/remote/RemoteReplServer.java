@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -136,7 +137,7 @@ public class RemoteReplServer implements AutoCloseable  {
         ) {
             final VncVal r = request.getVeniceData();
 
-            final VncVal formVal = ((VncMap)r).get(new VncString("form"));
+            final VncVal formVal = ((VncMap)r).get(new VncKeyword("form"));
 
             final String form = Coerce.toVncString(formVal).getValue();
 
@@ -200,12 +201,12 @@ public class RemoteReplServer implements AutoCloseable  {
             final long elapsedMillis
     ) {
         return VncHashMap.of(
-                new VncString("form"),   form,
-                new VncString("return"), ret,
-                new VncString("ex"),     new VncString(formatEx(ex)),
-                new VncString("out"),    new VncString(out),
-                new VncString("err"),    new VncString(err),
-                new VncString("ms"),     new VncLong(elapsedMillis));
+                new VncKeyword("form"),   form,
+                new VncKeyword("return"), ret,
+                new VncKeyword("ex"),     ex == null ? Nil : new VncString(formatEx(ex)),
+                new VncKeyword("out"),    new VncString(out),
+                new VncKeyword("err"),    new VncString(err),
+                new VncKeyword("ms"),     new VncLong(elapsedMillis));
     }
 
     private String formatEx(final Exception ex) {

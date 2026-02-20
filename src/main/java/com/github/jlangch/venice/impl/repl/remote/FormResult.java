@@ -21,10 +21,13 @@
  */
 package com.github.jlangch.venice.impl.repl.remote;
 
-import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 public class FormResult {
 
@@ -46,13 +49,22 @@ public class FormResult {
 
 
     public static FormResult of(final VncMap result) {
+        final VncVal form = result.get(new VncKeyword("form"));
+        final VncVal ret = result.get(new VncKeyword("return"));
+        final VncVal ex = result.get(new VncKeyword("ex"));
+        final VncVal out = result.get(new VncKeyword("out"));
+        final VncVal err = result.get(new VncKeyword("err"));
+        final VncVal ms = result.get(new VncKeyword("ms"));
+
         return new FormResult(
-                    ((VncString)result.get(new VncString("form"))).getValue(),
-                    ((VncString)result.get(new VncString("return"))).getValue(),
-                    ((VncString)result.get(new VncString("ex"))).getValue(),
-                    ((VncString)result.get(new VncString("out"))).getValue(),
-                    ((VncString)result.get(new VncString("err"))).getValue(),
-                    ((VncLong)result.get(new VncString("ms"))).getValue());
+                form == null || form == Nil ? null : form.toString(),
+                ret == null || ret == Nil ? null : ret.toString(),
+                ex == null || ex == Nil ? null : ex.toString(),
+                out == null || out == Nil ? null : out.toString(),
+                err == null || err == Nil ? null : err.toString(),
+                ms == null || ms == Nil
+                    ? 0L
+                    : Types.isVncLong(ms) ? ((VncLong)ms).getValue() : 0L);
     }
 
 
