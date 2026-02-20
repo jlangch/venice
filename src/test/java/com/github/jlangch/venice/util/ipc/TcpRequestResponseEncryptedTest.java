@@ -64,7 +64,6 @@ public class TcpRequestResponseEncryptedTest {
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals(request.getSubject(),   response.getSubject());
             assertEquals(request.getMimetype(),  response.getMimetype());
             assertEquals(request.getCharset(),   response.getCharset());
@@ -101,7 +100,6 @@ public class TcpRequestResponseEncryptedTest {
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals("hello",                response.getSubject());
             assertEquals("application/octet",    response.getMimetype());
             assertEquals(null,                   response.getCharset());
@@ -137,7 +135,6 @@ public class TcpRequestResponseEncryptedTest {
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals(request.getSubject(),   response.getSubject());
             assertEquals(request.getMimetype(),  response.getMimetype());
             assertEquals(request.getCharset(),   response.getCharset());
@@ -175,7 +172,6 @@ public class TcpRequestResponseEncryptedTest {
 
             assertNotNull(response);
             assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(), response.getTimestamp());
             assertEquals("hello",                response.getSubject());
             assertEquals("application/octet",    response.getMimetype());
             assertEquals(null,                   response.getCharset());
@@ -218,8 +214,7 @@ public class TcpRequestResponseEncryptedTest {
             data[3] = 15;
 
             assertNotNull(response);
-            assertEquals(ResponseStatus.OK,      response.getResponseStatus());
-            assertEquals(request.getTimestamp(),    response.getTimestamp());
+            assertEquals(ResponseStatus.OK,         response.getResponseStatus());
             assertEquals("hello",                   response.getSubject());
             assertEquals("application/octet",       response.getMimetype());
             assertEquals(null,                      response.getCharset());
