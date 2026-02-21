@@ -71,7 +71,7 @@ public class RemoteReplClient implements AutoCloseable  {
         final IMessage m = MessageFactory.venice(
                                 String.valueOf(requestId.incrementAndGet()),
                                 "env",
-                                createDataMap("env", cmd, "arg", arg));
+                                createDataMap("cmd", cmd, "arg", arg));
 
         final IMessage result = ipcClient.sendMessage(m, RemoteRepl.FUNCTION);
 

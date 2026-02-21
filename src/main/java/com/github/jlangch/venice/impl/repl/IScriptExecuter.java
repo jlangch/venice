@@ -29,7 +29,7 @@ import com.github.jlangch.venice.impl.env.Env;
 
 public interface IScriptExecuter {
 
-    public void runSync(
+    void runSync(
             final String script,
             final IVeniceInterpreter venice,
             final Env env,
@@ -38,7 +38,7 @@ public interface IScriptExecuter {
             final ReplResultHistory resultHistory,
             final Consumer<Exception> errorHandler);
 
-    public void runAsync(
+    void runAsync(
             final String script,
             final IVeniceInterpreter venice,
             final Env env,
@@ -47,21 +47,33 @@ public interface IScriptExecuter {
             final ReplResultHistory resultHistory,
             final Consumer<Exception> errorHandler);
 
-    public void runDebuggerExpressionAsync(
+    void runDebuggerExpressionAsync(
             final String expr,
             final IVeniceInterpreter venice,
             final Env env,
             final TerminalPrinter printer,
             final Consumer<Exception> errorHandler);
 
-    public boolean runInitialLoadFile(
+    boolean runInitialLoadFile(
             final String loadFile,
             final IVeniceInterpreter venice,
             final Env env,
             final TerminalPrinter printer,
             final String resultPrefix);
 
-    public void cancelAsyncScripts();
+    void cancelAsyncScripts();
 
-    public void close();
+    void envPrint(
+            final String symbol,
+            final IVeniceInterpreter venice,
+            final Env env,
+            final TerminalPrinter printer);
+
+    void envGlobal(
+            final String filter,
+            final IVeniceInterpreter venice,
+            final Env env,
+            final TerminalPrinter printer);
+
+    void close();
 }

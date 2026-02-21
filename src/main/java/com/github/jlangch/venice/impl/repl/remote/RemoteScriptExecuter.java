@@ -120,6 +120,38 @@ public class RemoteScriptExecuter implements IScriptExecuter{
     }
 
     @Override
+    public void envPrint(
+            final String symbol,
+            final IVeniceInterpreter venice,
+            final Env env,
+            final TerminalPrinter printer
+    ) {
+        try {
+            final FormResult result = client.env("print", symbol);
+            printer.println("stdout", result.getResult());
+        }
+        catch(Exception ex) {
+            printer.printex("error", ex);
+        }
+    }
+
+    @Override
+    public void envGlobal(
+            final String filter,
+            final IVeniceInterpreter venice,
+            final Env env,
+            final TerminalPrinter printer
+    ) {
+        try {
+            final FormResult result = client.env("global", filter);
+            printer.println("stdout", result.getResult());
+        }
+        catch(Exception ex) {
+            printer.printex("error", ex);
+        }
+    }
+
+    @Override
     public void close() {
         if (client != null) {
             try {

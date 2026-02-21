@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
-import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,7 +69,6 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.env.EnvUtils;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
@@ -84,7 +82,6 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -793,31 +790,23 @@ public class REPL implements IRepl {
             final List<String> params,
             final Env env
     ) {
-        if (isRemoteRepl()) {
-            printer.println("error", "Env commands are not supported on a remote REPL!");
-            return;
-        }
-
         if (params.isEmpty()) {
             printer.println("stdout", ReplHelp.ENV);
             return;
         }
         else if (first(params).equals("print")) {
             if (params.size() == 2) {
-                final VncVal val = env.get(new VncSymbol(second(params)));
-                printer.println("stdout", venice.PRINT(val));
+                scriptExec.envPrint(second(params), venice, env, printer);
                 return;
             }
         }
         else if (first(params).equals("global")) {
             if (params.size() == 1) {
-                printer.println("stdout", EnvUtils.envGlobalsToString(env, null));
+                scriptExec.envGlobal(null, venice, env, printer);
                 return;
             }
             else if (params.size() == 2) {
-                String filter = trimToNull(second(params));
-                filter = filter == null ? null : filter.replaceAll("[*]", ".*");
-                printer.println("stdout", EnvUtils.envGlobalsToString(env, filter));
+                scriptExec.envGlobal(second(params), venice, env, printer);
                 return;
             }
         }

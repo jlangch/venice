@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -34,8 +36,10 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.EnvUtils;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -198,6 +202,39 @@ public class ScriptExecuter implements IScriptExecuter{
                     .stream()
                     .filter(f -> !f.isDone())
                     .collect(Collectors.toList());
+    }
+
+    @Override
+    public void envPrint(
+            final String symbol,
+            final IVeniceInterpreter venice,
+            final Env env,
+            final TerminalPrinter printer
+    ) {
+        try {
+            final VncVal val = env.get(new VncSymbol(symbol));
+            printer.println("stdout", venice.PRINT(val));
+        }
+        catch(Exception ex) {
+            printer.printex("error", ex);
+        }
+    }
+
+    @Override
+    public void envGlobal(
+            final String filter,
+            final IVeniceInterpreter venice,
+            final Env env,
+            final TerminalPrinter printer
+    ) {
+        try {
+            String filter_ = trimToNull(filter);
+            filter_ = filter_ == null ? null : filter_.replaceAll("[*]", ".*");
+            printer.println("stdout", EnvUtils.envGlobalsToString(env, filter_));
+        }
+        catch(Exception ex) {
+            printer.printex("error", ex);
+        }
     }
 
     @Override

@@ -165,7 +165,7 @@ public class RemoteReplServer implements AutoCloseable  {
             final VncVal cmdVal = ((VncMap)r).get(new VncKeyword("cmd"));
             final VncVal argVal = ((VncMap)r).get(new VncKeyword("arg"));
             final String cmd = Coerce.toVncString(cmdVal).getValue();
-            final String arg = argVal == null ? null : Coerce.toVncString(cmdVal).getValue();
+            final String arg = argVal == null ? null : Coerce.toVncString(argVal).getValue();
 
             try {
                 env.setStdoutPrintStream(out)
@@ -174,8 +174,8 @@ public class RemoteReplServer implements AutoCloseable  {
 
                 switch(cmd) {
                     case "print": {
-                        final VncVal result = env.get(new VncSymbol(arg));
-                        final VncMap data = createDataMap(cmdVal, result, null, out, err, elapsed(start));
+                        final String result = interpreter.PRINT(env.get(new VncSymbol(arg)));
+                        final VncMap data = createDataMap(cmdVal, new VncString(result), null, out, err, elapsed(start));
                         return responseMessage(request, data);
                     }
 
