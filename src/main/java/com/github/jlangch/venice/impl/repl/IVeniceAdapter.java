@@ -27,7 +27,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 
 
-public interface IScriptExecuter {
+public interface IVeniceAdapter {
 
     void runSync(
             final String script,

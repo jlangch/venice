@@ -25,15 +25,15 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.repl.IScriptExecuter;
+import com.github.jlangch.venice.impl.repl.IVeniceAdapter;
 import com.github.jlangch.venice.impl.repl.ReplResultHistory;
 import com.github.jlangch.venice.impl.repl.TerminalPrinter;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class RemoteScriptExecuter implements IScriptExecuter{
+public class RemoteVeniceAdapter implements IVeniceAdapter{
 
-    public RemoteScriptExecuter(
+    public RemoteVeniceAdapter(
             final String host,
             final int port,
             final String password

@@ -75,7 +75,7 @@ import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
-import com.github.jlangch.venice.impl.repl.remote.RemoteScriptExecuter;
+import com.github.jlangch.venice.impl.repl.remote.RemoteVeniceAdapter;
 import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -256,7 +256,7 @@ public class REPL implements IRepl {
         env = loadEnv(venice, cli, terminal, out, err, in, false);
         venice.setMacroExpandOnLoad(macroexpand);
 
-        if (!scriptExec.runInitialLoadFile(
+        if (!veniceAdapter.runInitialLoadFile(
                 config.getLoadFile(), venice, env, printer, resultPrefix)
         ) {
             printer.println("error", "Stopped REPL");
@@ -344,7 +344,7 @@ public class REPL implements IRepl {
                                 break;
 
                             case "terminate":
-                                scriptExec.cancelAsyncScripts();
+                                veniceAdapter.cancelAsyncScripts();
                                 agent.clearBreaks();
                                 break;
 
@@ -490,7 +490,7 @@ public class REPL implements IRepl {
             final String resultPrefix,
             final ReplResultHistory resultHistory
     ) throws Exception {
-        scriptExec.runSync(
+        veniceAdapter.runSync(
                 script,
                 venice,
                 env,
@@ -505,7 +505,7 @@ public class REPL implements IRepl {
             final String resultPrefix,
             final ReplResultHistory resultHistory
     ) throws Exception {
-        scriptExec.runAsync(
+        veniceAdapter.runAsync(
                 script,
                 venice,
                 env,
@@ -519,7 +519,7 @@ public class REPL implements IRepl {
             final String expr,
             final Env env
     ) {
-        scriptExec.runDebuggerExpressionAsync(
+        veniceAdapter.runDebuggerExpressionAsync(
                 expr,
                 venice,
                 env,
@@ -796,17 +796,17 @@ public class REPL implements IRepl {
         }
         else if (first(params).equals("print")) {
             if (params.size() == 2) {
-                scriptExec.envPrint(second(params), venice, env, printer);
+                veniceAdapter.envPrint(second(params), venice, env, printer);
                 return;
             }
         }
         else if (first(params).equals("global")) {
             if (params.size() == 1) {
-                scriptExec.envGlobal(null, venice, env, printer);
+                veniceAdapter.envGlobal(null, venice, env, printer);
                 return;
             }
             else if (params.size() == 2) {
-                scriptExec.envGlobal(second(params), venice, env, printer);
+                veniceAdapter.envGlobal(second(params), venice, env, printer);
                 return;
             }
         }
@@ -1157,19 +1157,19 @@ public class REPL implements IRepl {
         }
 
         // [1] If a remote REPL is active close it
-        if (scriptExec instanceof RemoteScriptExecuter) {
+        if (isRemoteRepl()) {
             printer.println("stdout", "Closing remote REPL client...");
-            scriptExec.close();
-            scriptExec = scriptExecLocal;
+            veniceAdapter.close();
+            veniceAdapter = veniceAdapterLocal;
         }
 
         // [2] Open a new remote REPL client
         try {
             printer.println("stdout", "Starting new remote REPL client...");
-            final RemoteScriptExecuter rexec = new RemoteScriptExecuter(host, port, password);
+            final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(host, port, password);
 
             // [3] Switch to the remote REPL client
-            scriptExec = rexec;
+            veniceAdapter = rexec;
             printer.println("system", "Switched to remote REPL " + port + "@" + host);
         }
         catch(Exception ex) {
@@ -1182,11 +1182,11 @@ public class REPL implements IRepl {
 
     private void handleSwitchToLocalReplCommand() {
         // [1] If a remote REPL is active close it first
-        if (scriptExec instanceof RemoteScriptExecuter) {
-            scriptExec.close();
+        if (isRemoteRepl()) {
+            veniceAdapter.close();
 
             // [2] Switch back to the local REPL
-            scriptExec = scriptExecLocal;
+            veniceAdapter = veniceAdapterLocal;
             printer.println("system", "Switched to local REPL");
         }
         else {
@@ -1502,7 +1502,7 @@ public class REPL implements IRepl {
     }
 
     private boolean isRemoteRepl() {
-        return scriptExec instanceof RemoteScriptExecuter;
+        return veniceAdapter instanceof RemoteVeniceAdapter;
     }
 
 
@@ -1533,6 +1533,6 @@ public class REPL implements IRepl {
     private ReplDebugClient debugClient = null;
     private ReplDirs replDirs;
 
-    private IScriptExecuter scriptExecLocal = new ScriptExecuter();
-    private IScriptExecuter scriptExec = scriptExecLocal;
+    private IVeniceAdapter veniceAdapterLocal = new LocalVeniceAdapter();
+    private IVeniceAdapter veniceAdapter = veniceAdapterLocal;
 }

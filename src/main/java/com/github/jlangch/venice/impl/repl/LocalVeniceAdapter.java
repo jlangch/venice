@@ -43,9 +43,9 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class ScriptExecuter implements IScriptExecuter{
+public class LocalVeniceAdapter implements IVeniceAdapter{
 
-    public ScriptExecuter() {
+    public LocalVeniceAdapter() {
 
     }
 
