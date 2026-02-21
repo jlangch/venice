@@ -89,18 +89,16 @@ public class RemoteReplClient implements AutoCloseable  {
     ) {
         if (port <= 0 || port > 65536) {
             throw new VncException(
-                    "Invalid Venice REPL server port. The port (" + port + ") "
-                    + "must be in the range [0..65536]!");
+                "Failed to start Venice REPL client. "
+                + "The port (" + port + ") must be in the range [0..65536]! ");
         }
         if (StringUtil.isEmpty(principal)) {
             throw new VncException(
-                    "Failed to start Venice REPL server. The principal must not be empty!");
+                    "Failed to start Venice REPL client. The principal must not be empty!");
         }
         if (StringUtil.isEmpty(password)) {
             throw new VncException(
-                    "Failed to start Venice REPL server. The password must not be empty! "
-                    + "Please set environment var 'REPL_SERVER_PASSWORD' in the 'repl.env' "
-                    + "file!");
+                    "Failed to start Venice REPL client. The password must not be empty!");
         }
 
         try {

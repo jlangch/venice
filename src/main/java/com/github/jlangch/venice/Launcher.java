@@ -168,7 +168,7 @@ public class Launcher {
 
         final boolean macroexpand = isMacroexpand(cli);
         final int replServerPort = getReplServerPort(cli);
-        final String replServerPassword = getReplServerPasswordFromEnvVar();
+        final String replServerPassword = getReplServerPassword(cli);
 
         // run the file from the filesystem
         final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
@@ -177,7 +177,8 @@ public class Launcher {
         final String scriptWrapped = "(do " + script + ")";
 
         final String result = runScript(
-                                cli.removeSwitches("-file", "-macroexpand", "-repl-server", "-loadpath"),
+                                cli.removeSwitches("-script", "-macroexpand", "-loadpath",
+                                                   "-repl-port", "-repl-pwd"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
@@ -198,14 +199,15 @@ public class Launcher {
 
         final boolean macroexpand = isMacroexpand(cli);
         final int replServerPort = getReplServerPort(cli);
-        final String replServerPassword = getReplServerPasswordFromEnvVar();
+        final String replServerPassword = getReplServerPassword(cli);
 
         // run the file from the classpath
         final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
         final String script = new ClassPathResource(file).getResourceAsString();
 
         final String result = runScript(
-                                cli.removeSwitches("-cp-file", "-macroexpand", "-repl-server", "-loadpath"),
+                                cli.removeSwitches("-script", "-macroexpand", "-loadpath",
+                                                   "-repl-port", "-repl-pwd"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
@@ -226,13 +228,14 @@ public class Launcher {
 
         final boolean macroexpand = isMacroexpand(cli);
         final int replServerPort = getReplServerPort(cli);
-        final String replServerPassword = getReplServerPasswordFromEnvVar();
+        final String replServerPassword = getReplServerPassword(cli);
 
         // run the script passed as command line argument
         final String script = cli.switchValue("-script");
 
         final String result = runScript(
-                                cli.removeSwitches("-script", "-macroexpand", "-repl-server", "-loadpath"),
+                                cli.removeSwitches("-script", "-macroexpand", "-loadpath",
+                                                   "-repl-port", "-repl-pwd"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
@@ -352,7 +355,7 @@ public class Launcher {
                                 convertCliArgsToVar(cli)));
 
         if (replServerPort > 0) {
-            env.setGlobal(new Var(new VncSymbol("repl/repl-server?"), VncBoolean.True, false, Var.Scope.Global));
+            env.setGlobal(new Var(new VncSymbol("repl/repl?"), VncBoolean.True, false, Var.Scope.Global));
 
             try (RemoteReplServer server = new RemoteReplServer(
                                                 venice,
@@ -395,8 +398,8 @@ public class Launcher {
     }
 
     private static int getReplServerPort(final CommandLineArgs cli) {
-        if (cli.switchPresent("-repl-server")) {
-             final long port = cli.switchLongValue("-repl-server", 0L);
+        if (cli.switchPresent("-repl-port")) {
+             final long port = cli.switchLongValue("-repl-port", 0L);
              if (port < 0L) return 0;
              if (port > 65536) return 0;
              return (int)port;
@@ -406,8 +409,20 @@ public class Launcher {
         }
     }
 
-    private static String getReplServerPasswordFromEnvVar() {
-       return System.getenv("REPL_SERVER_PASSWORD");
+    private static String getReplServerPassword(final CommandLineArgs cli) {
+        if (cli.switchPresent("-repl-pwd")) {
+            final String pwd = cli.switchValue("-repl-pwd");
+            if (pwd.startsWith("env:")) {
+                final String envVar = pwd.substring(4);
+                return System.getenv(envVar);
+            }
+            else {
+                return pwd;
+            }
+       }
+       else {
+            return null;
+       }
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {

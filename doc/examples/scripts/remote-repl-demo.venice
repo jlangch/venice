@@ -22,11 +22,8 @@
 ;;;; ---------------------------------------------------------------------------
 ;;;; Remote REPL demo (server)
 ;;;;
-;;;; add "export REPL_SERVER_PASSWORD=123" to the 'repl.env' file
-;;;;
 ;;;; [server]
-;;;; $ source repl.env
-;;;; $ java -jar venice-1.12.81.jar -file remote-repl-demo.venice -repl-server 33334
+;;;; $ java -jar venice-1.12.81.jar -file remote-repl-demo.venice -repl-port 33334 -repl-pwd 123
 ;;;;
 ;;;; [client REPL]
 ;;;; venice> !remote localhost 33334 123
