@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.repl.remote;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,10 +36,12 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.EnvUtils;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -138,6 +141,67 @@ public class RemoteReplServer implements AutoCloseable  {
     }
 
     private IMessage handler(final IMessage request) {
+        final String subject = request.getSubject();
+
+        switch(subject) {
+            case "eval": return handleEval(request);
+            case "env":  return handleEnv(request);
+            default:     return responseMessage(
+                                    request,
+                                    createDataMap(
+                                        Nil, Nil,
+                                        new RuntimeException("Invalid command: " + subject),
+                                        null, null, 0L));
+        }
+    }
+
+    private IMessage handleEnv(final IMessage request) {
+        final long start = System.currentTimeMillis();
+
+        try(CapturingPrintStream out = new CapturingPrintStream();
+            CapturingPrintStream err = new CapturingPrintStream()
+        ) {
+            final VncVal r = request.getVeniceData();
+            final VncVal cmdVal = ((VncMap)r).get(new VncKeyword("cmd"));
+            final VncVal argVal = ((VncMap)r).get(new VncKeyword("arg"));
+            final String cmd = Coerce.toVncString(cmdVal).getValue();
+            final String arg = argVal == null ? null : Coerce.toVncString(cmdVal).getValue();
+
+            try {
+                env.setStdoutPrintStream(out)
+                   .setStderrPrintStream(err)
+                   .setStdinReader(new InputStreamReader(new NullInputStream()));
+
+                switch(cmd) {
+                    case "print": {
+                        final VncVal result = env.get(new VncSymbol(arg));
+                        final VncMap data = createDataMap(cmdVal, result, null, out, err, elapsed(start));
+                        return responseMessage(request, data);
+                    }
+
+                    case "global": {
+                        String filter = trimToNull(arg);
+                        filter = filter == null ? null : filter.replaceAll("[*]", ".*");
+                        final String result = EnvUtils.envGlobalsToString(env, null);
+                        final VncMap data = createDataMap(cmdVal, new VncString(result), null, out, err, elapsed(start));
+                        return responseMessage(request, data);
+                    }
+
+                    default:
+                        throw new RuntimeException("Invalid command: " + cmd);
+                }
+            }
+            catch(Exception ex) {
+                final VncMap data = createDataMap(cmdVal, Nil, ex, out, err, elapsed(start));
+                return responseMessage(request, data);
+            }
+        }
+        catch(Exception ex) {
+            return responseMessage(request, createDataMap(Nil, Nil, ex, null, null, 0L));
+        }
+    }
+
+    private IMessage handleEval(final IMessage request) {
         final long start = System.currentTimeMillis();
 
         try(CapturingPrintStream out = new CapturingPrintStream();

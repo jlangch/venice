@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.repl.remote;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,8 +56,22 @@ public class RemoteReplClient implements AutoCloseable  {
 
         final IMessage m = MessageFactory.venice(
                                 String.valueOf(requestId.incrementAndGet()),
-                                "form",
-                                createDataMap(form));
+                                "eval",
+                                createDataMap("form", form));
+
+        final IMessage result = ipcClient.sendMessage(m, RemoteRepl.FUNCTION);
+
+        final VncMap resultData = (VncMap)result.getVeniceData();
+        return FormResult.of(resultData);
+    }
+
+    public FormResult env(final String cmd, final String arg) {
+        Objects.requireNonNull(cmd);
+
+        final IMessage m = MessageFactory.venice(
+                                String.valueOf(requestId.incrementAndGet()),
+                                "env",
+                                createDataMap("env", cmd, "arg", arg));
 
         final IMessage result = ipcClient.sendMessage(m, RemoteRepl.FUNCTION);
 
@@ -121,9 +137,31 @@ public class RemoteReplClient implements AutoCloseable  {
         }
     }
 
-    private VncHashMap createDataMap(final String form) {
+    private VncHashMap createDataMap(
+            final String key,
+            final String value
+    ) {
+        Objects.requireNonNull(key);
+
         return VncHashMap.of(
-                new VncKeyword("form"), new VncString(form));
+                new VncKeyword(key),
+                value == null ? Nil : new VncString(value));
+    }
+
+    private VncHashMap createDataMap(
+            final String key1,
+            final String val1,
+            final String key2,
+            final String val2
+    ) {
+        Objects.requireNonNull(key1);
+        Objects.requireNonNull(key2);
+
+        return VncHashMap.of(
+                new VncKeyword(key1),
+                val1 == null ? Nil : new VncString(val1),
+                new VncKeyword(key2),
+                val2 == null ? Nil : new VncString(val2));
     }
 
 
