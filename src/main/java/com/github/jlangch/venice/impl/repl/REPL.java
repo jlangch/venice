@@ -687,6 +687,11 @@ public class REPL implements IRepl {
             final Terminal terminal,
             final Env env
     ) {
+        if (isRemoteRepl()) {
+            printer.println("error", "App commands are not supported on a remote REPL!");
+            return;
+        }
+
         if (params.size() != 1) {
             printer.println("stdout", ReplHelp.APP);
             return;
@@ -755,6 +760,11 @@ public class REPL implements IRepl {
             final Terminal terminal,
             final Env env
     ) {
+        if (isRemoteRepl()) {
+            printer.println("error", "App manifest commands are not supported on a remote REPL!");
+            return;
+        }
+
         if (params.size() != 1) {
             printer.println("stdout", ReplHelp.APP);
             return;
@@ -783,6 +793,11 @@ public class REPL implements IRepl {
             final List<String> params,
             final Env env
     ) {
+        if (isRemoteRepl()) {
+            printer.println("error", "Env commands are not supported on a remote REPL!");
+            return;
+        }
+
         if (params.isEmpty()) {
             printer.println("stdout", ReplHelp.ENV);
             return;
@@ -815,6 +830,11 @@ public class REPL implements IRepl {
             final Terminal terminal,
             final Env env
     ) {
+        if (isRemoteRepl()) {
+            printer.println("error", "Sandbox commands are not supported on a remote REPL!");
+            return;
+        }
+
         if (params.isEmpty()) {
             terminal.writer().println(ReplHelp.SANDBOX);
             return;
@@ -1490,6 +1510,10 @@ public class REPL implements IRepl {
                         "The Venice application archive '%s' does not exist",
                         app.getPath()));
         }
+    }
+
+    private boolean isRemoteRepl() {
+        return scriptExec instanceof RemoteScriptExecuter;
     }
 
 

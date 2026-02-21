@@ -175,25 +175,12 @@ public class RemoteReplServer implements AutoCloseable  {
             final CapturingPrintStream errPS,
             final long elapsedMillis
     ) {
-        String out = "";
-        String err = "";
-
-        if (outPS != null) {
-            outPS.flush();
-            out = outPS.getOutput();
-        }
-
-        if (errPS != null) {
-            errPS.flush();
-            err = errPS.getOutput();
-        }
-
         return VncHashMap.of(
                 new VncKeyword("form"),   form,
                 new VncKeyword("return"), ret,
                 new VncKeyword("ex"),     ex == null ? Nil : new VncString(formatEx(ex)),
-                new VncKeyword("out"),    new VncString(out),
-                new VncKeyword("err"),    new VncString(err),
+                new VncKeyword("out"),    new VncString(capturedText(outPS)),
+                new VncKeyword("err"),    new VncString(capturedText(errPS)),
                 new VncKeyword("ms"),     new VncLong(elapsedMillis));
     }
 
@@ -234,6 +221,16 @@ public class RemoteReplServer implements AutoCloseable  {
                 request.getRequestId(),
                 request.getSubject(),
                 responseData);
+    }
+
+    private String capturedText(final CapturingPrintStream ps) {
+        if (ps != null) {
+            ps.flush();
+           return ps.getOutput();
+        }
+        else {
+            return "";
+        }
     }
 
     private long elapsed(final long start) {
