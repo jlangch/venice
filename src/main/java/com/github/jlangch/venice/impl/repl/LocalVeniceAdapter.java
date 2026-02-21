@@ -198,10 +198,13 @@ public class LocalVeniceAdapter implements IVeniceAdapter{
     public void cancelAsyncScripts() {
         futures.forEach(f -> f.cancel(true));
 
-        futures = futures
-                    .stream()
-                    .filter(f -> !f.isDone())
-                    .collect(Collectors.toList());
+        final List<Future<Boolean>> inwork = futures
+                                                .stream()
+                                                .filter(f -> !f.isDone())
+                                                .collect(Collectors.toList());
+
+        futures.clear();
+        futures.addAll(inwork);
     }
 
     @Override
@@ -242,7 +245,7 @@ public class LocalVeniceAdapter implements IVeniceAdapter{
     }
 
 
-    private List<Future<Boolean>> futures = new ArrayList<>();
+    private final List<Future<Boolean>> futures = new ArrayList<>();
 
     private final AtomicLong asyncCounter = new AtomicLong(1L);
 
