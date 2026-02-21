@@ -22,10 +22,10 @@
 ;;;; ---------------------------------------------------------------------------
 ;;;; Remote REPL demo (server)
 ;;;;
-;;;; [server]
+;;;; [start a Venice app with a remote REPL server enabled]
 ;;;; $ java -jar venice-1.12.81.jar -file remote-repl-demo.venice -repl-port 33334 -repl-pwd 123
 ;;;;
-;;;; [client REPL]
+;;;; [operate from the client REPL]
 ;;;; venice> !remote localhost 33334 123
 ;;;; venice> (+ 1 2)
 ;;;; venice> (do (println "test...") (+ 1 2))
