@@ -18,7 +18,7 @@ Java can be downloaded from:
 - [Eclipse Temurin](https://adoptium.net/de/temurin/releases/)
 - [Zulu](https://www.azul.com/downloads/zulu-community/)
 
-The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice is regulary compiled and unit tested with Java 8, 11, and 17.
+The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice is regulary compiled and unit tested with Java 8, 17, and 21.
 
 
 ### 2. Get the Venice JAR file
