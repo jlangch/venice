@@ -63,35 +63,6 @@ The `-setup` option will cause the Venice setup to:
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png" width="500">
 
  
-Now the Venice REPL can be started simply by executing the REPL launcher.
-
-on MacOSX and Linux:
-
-```text
-cd repl
-./repl.sh
-```
-
-on Windows:
-
-```text
-cd repl
-repl.bat
-```
-
-
-The REPL is started and prompts for input:
-
-```text
-Venice REPL: 1.12.30
-Home: /Users/juerg/Desktop/test
-Java: 1.8.0_392
-Loading configuration from classpath custom 'repl.json'
-Using Ansi terminal (light color mode turned on)
-Use the commands !lightmode or !darkmode to adapt to the terminal's colors
-Type '!' for help.
-venice>
-```
 
 #### REPL setup directory structure (on MacOS / Linux)
 
@@ -156,8 +127,40 @@ REPL_HOME
 ```
 
 
+### 4. Start the REPL
 
-### 4. Run expressions in the REPL
+The Venice REPL can be started simply by executing the REPL launcher.
+
+on *MacOSX* and *Linux*:
+
+```text
+cd repl
+./repl.sh
+```
+
+on *Windows*:
+
+```text
+cd repl
+repl.bat
+```
+
+
+The REPL is started and prompts for input:
+
+```text
+Venice REPL: 1.12.30
+Home: /Users/juerg/Desktop/test
+Java: 1.8.0_392
+Loading configuration from classpath custom 'repl.json'
+Using Ansi terminal (light color mode turned on)
+Use the commands !lightmode or !darkmode to adapt to the terminal's colors
+Type '!' for help.
+venice>
+```
+
+
+### 5. Run expressions in the REPL
 
 Type an expression like `(+ 1 1)` followed by a `<CR>`
 
