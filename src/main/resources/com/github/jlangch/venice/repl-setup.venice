@@ -318,6 +318,9 @@
         (throw :internet-not-available))
 
       (when-not (io/exists-dir? install-dir)
+        (io/mkdirs install-dir))
+
+      (when-not (io/exists-dir? install-dir)
         (throw :install-dir-not-exist))
 
       (when-not (io/exists-dir? libs-dir)
