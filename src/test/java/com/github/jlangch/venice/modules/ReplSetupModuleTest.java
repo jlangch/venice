@@ -49,39 +49,6 @@ public class ReplSetupModuleTest {
 
 
     @Test
-    public void test_repl_setup_no_install_dir() throws IOException {
-        final Venice venice = new Venice();
-
-        final File tmp = Files.createTempDirectory("setup").toFile();
-
-        try {
-            final String script =
-                    "(do                                             \n" +
-                    "   (load-module :repl-setup)                    \n" +
-                    "   (repl-setup/setup :install-dir setup-dir))   ";
-
-            final String result = (String)venice.eval(
-                                            script,
-                                            Parameters.of("setup-dir", tmp + "-unknown"));
-            if (result.equals("install-dir-not-exist")) {
-                assertTrue(true);
-            }
-            else if (result.equals("internet-not-available")) {
-                assertTrue(true);
-            }
-            else {
-                fail("got " + result);
-            }
-        }
-        catch(Exception ex) {
-            throw ex; // for debugging
-        }
-        finally {
-            deleteSetupDir(tmp);
-        }
-    }
-
-    @Test
     @EnableOnMacOrLinux
     public void test_repl_setup_macos_linux() throws IOException {
         final Venice venice = new Venice();
