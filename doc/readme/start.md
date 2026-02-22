@@ -173,7 +173,7 @@ venice>
 
 ### VSCode 
 
-This VSCode **settings.json** file will establish syntax highlighting for Venice source files
+If you use VSCode to edit Venice files, this VSCode **settings.json** file will establish syntax highlighting for Venice source files
 
 ```json
 {
@@ -182,7 +182,7 @@ This VSCode **settings.json** file will establish syntax highlighting for Venice
     },
     
     "workbench.colorTheme": "Tomorrow Night Blue",
-    "redhat.telemetry.enabled": false    
+    "redhat.telemetry.enabled": false
 }
 ```
 

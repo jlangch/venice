@@ -155,6 +155,7 @@ REPL_HOME
 ├── libs
 │   ├── venice-1.12.81.jar
 │   ├── jansi-2.4.1.jar
+│   ├── xchart-3.8.8.jar    (added jar)
 │   └── repl.json
 ├── tools
 │   └── apache-maven-3.9.6
@@ -183,6 +184,7 @@ REPL classpath:
   libs
   libs/jansi-2.4.1.jar
   libs/venice-1.12.81.jar
+  libs/xchart-3.8.8.jar
 ```
 
 
