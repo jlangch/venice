@@ -133,7 +133,7 @@ REPL_HOME
 ```
 
 
-### 3b. Setup a minimal Venice REPL
+### 3b. Setup a minimal REPL
 
 To setup a minimal REPL add the option `-minimal`:
 
@@ -141,7 +141,7 @@ To setup a minimal REPL add the option `-minimal`:
 java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
 ```
 
-This will setup a fully functional REPL but omit the demo scripts and the local Maven.
+This will setup a fully functional REPL but omits the demo scripts and the local Maven.
 
 
 ```text
