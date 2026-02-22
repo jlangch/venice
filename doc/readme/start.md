@@ -133,6 +133,30 @@ REPL_HOME
 ```
 
 
+### 3b. Setup a minimal Venice REPL
+
+To setup a minimal REPL add the option `-minimal`:
+
+```text
+java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
+```
+
+This will setup a fully functional REPL but omit the demo scripts and the local Maven.
+
+
+```text
+REPL_HOME
+├── libs
+│   ├── venice-1.12.81.jar
+│   ├── jansi-2.4.1.jar
+│   └── repl.json
+├── tmp
+├── repl.env
+└── repl.sh
+```
+
+
+
 ### 4. Run expressions in the REPL
 
 Type an expression like `(+ 1 1)` followed by a `<CR>`
