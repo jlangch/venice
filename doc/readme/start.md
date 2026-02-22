@@ -39,10 +39,10 @@ correctly setup, will download the *Jansi* library from Maven, and add some exam
 Venice scripts. The setups works on MacOS, Linux, and Windows.
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
-the REPL in setup mode:
+the REPL in setup:
 
 ```text
-foo> java -jar venice-1.12.80.jar -setup -colors
+java -jar venice-1.12.80.jar -setup -colors -dir ./repl
 ```
 
 For a REPL run in a darkmode terminal use the option `-colors-dark` instead of
@@ -50,7 +50,8 @@ For a REPL run in a darkmode terminal use the option `-colors-dark` instead of
 launcher shell script `repl.bat` or `repl.sh` respectively.
 
 The `-setup` option will cause the Venice setup to:
-  - create a `libs`, `tmp`, `tools`, and `scripts` directory in the current working dir
+  - create the setup dir given by the option `-dir ./repl` if it does not exist
+  - create a `libs`, `tmp`, `tools`, and `scripts` directory in the setup dir
   - install Maven locally to the REPL in the `tools` dir. Maven is used to download (if required so), 
     additional 3rdParty packages with its dependencies. It's only used when you need
     additional packages like the Apache-POI libraries for dealing with Excel files.
@@ -67,13 +68,15 @@ Now the Venice REPL can be started simply by executing the REPL launcher.
 on MacOSX and Linux:
 
 ```text
-foo> ./repl.sh
+cd repl
+./repl.sh
 ```
 
 on Windows:
 
 ```text
-foo> repl.bat
+cd repl
+repl.bat
 ```
 
 
