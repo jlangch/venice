@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.81] - 2026-02-xx
+## [1.12.82] - 2026-02-xx
+
+### Enhancements
+
+- ...
+
+
+
+## [1.12.81] - 2026-02-22
 
 ### Enhancements
 
