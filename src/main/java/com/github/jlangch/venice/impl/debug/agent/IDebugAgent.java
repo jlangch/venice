@@ -26,6 +26,7 @@ import java.util.List;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.util.StepValidity;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 
 
 public interface IDebugAgent {
@@ -181,5 +182,23 @@ public interface IDebugAgent {
      *         not
      */
     StepValidity isStepPossible(StepMode mode);
+
+
+
+    // -------------------------------------------------------------------------
+    // CallFrames
+    // -------------------------------------------------------------------------
+
+    boolean hasCurrCallFrame();
+
+    CallFrame getCurrCallFrame();
+
+    int getCurrCallFrameLevel();
+
+    void setCurrCallFrame(CallFrame frame, int level);
+
+    void clearCurrCallFrame();
+
+    List<CallFrame> getCallFrames(final Break br);
 
 }

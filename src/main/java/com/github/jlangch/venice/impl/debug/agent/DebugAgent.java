@@ -64,6 +64,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
 
 
@@ -583,6 +584,48 @@ public class DebugAgent implements IDebugAgent {
         }
     }
 
+
+    // -------------------------------------------------------------------------
+    // CallFrames
+    // -------------------------------------------------------------------------
+
+    @Override
+    public boolean hasCurrCallFrame() {
+        return currCallFrame != null;
+    }
+
+    @Override
+    public CallFrame getCurrCallFrame() {
+        return currCallFrame;
+    }
+
+    @Override
+    public int getCurrCallFrameLevel() {
+        return currCallFrameLevel;
+    }
+
+    @Override
+    public void setCurrCallFrame(final CallFrame frame, final int level) {
+        this.currCallFrame = frame;
+        this.currCallFrameLevel = level;
+    }
+
+    @Override
+    public void clearCurrCallFrame() {
+        currCallFrame = null;
+        currCallFrameLevel = 0;
+    }
+
+    @Override
+    public List<CallFrame> getCallFrames(final Break br) {
+        return br.getCallStack().callstack();
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Utils
+    // -------------------------------------------------------------------------
+
     @Override
     public String toString() {
         cleanBreaks();
@@ -820,4 +863,11 @@ public class DebugAgent implements IDebugAgent {
     private volatile IBreakListener breakListener = null;
     private final ConcurrentHashMap<BreakpointFnRef,BreakpointFn> breakpoints =
             new ConcurrentHashMap<>();
+
+    // if the 'currCallFrame' is not null the debug commands !params and
+    // !list operate on the args/env of the current call frame instead of the
+    // args/env function in the break
+    private volatile CallFrame currCallFrame;
+    private volatile int currCallFrameLevel = 0;
+
 }

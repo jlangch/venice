@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_DebugFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_DefFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_ImportFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_LoadCodeMacros;
@@ -123,13 +124,13 @@ public class Functions {
         functions.putAll(SpecialForms_NamespaceFunctions.ns);
         functions.putAll(SpecialForms_TryCatchFunctions.ns);
         functions.putAll(SpecialForms_VarFunctions.ns);
+        functions.putAll(SpecialForms_DebugFunctions.ns);
         functions.putAll(SpecialForms_OtherFunctions.ns);
         functions.putAll(SpecialForms_LoadCodeMacros.ns);
 
         functions.putAll(CoreFunctions.ns);
         functions.putAll(CoreConcurrencyFunctions.ns);
         functions.putAll(CoreSystemFunctions.ns);
-        functions.putAll(DebuggerFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);
         functions.putAll(BytebufFunctions.ns);
         functions.putAll(TransducerFunctions.ns);

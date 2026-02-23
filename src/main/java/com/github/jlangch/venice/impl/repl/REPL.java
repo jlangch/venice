@@ -330,7 +330,7 @@ public class REPL implements IRepl {
                 }
 
                 if (DebugAgent.isAttached()) {
-                    final DebugAgent agent = DebugAgent.current();
+                    final DebugAgent agent = ((VeniceInterpreter)venice).getDebugAgent();
 
                     if (ReplParser.isCommand(line)) {
                         final String cmd = trimToEmpty(line.trim().substring(1));
@@ -430,8 +430,8 @@ public class REPL implements IRepl {
     private void switchToRegularREPL() {
         debugClient = null;
 
-        final DebugAgent agent = DebugAgent.current();
-        if (agent != null) {
+        if (DebugAgent.isAttached()) {
+            final DebugAgent agent = ((VeniceInterpreter)venice).getDebugAgent();
             agent.storeBreakpoints();
             agent.detach();
             DebugAgent.unregister();
@@ -446,10 +446,10 @@ public class REPL implements IRepl {
 
     private void switchToDebugREPL() {
         if (DebugAgent.isAttached()) {
-            printer.println("debug", "Debugger: already attached");
+            printer.println("error", "Debugger: already attached");
         }
         else {
-            final DebugAgent agent = new DebugAgent();
+            final DebugAgent agent = ((VeniceInterpreter)venice).getDebugAgent();
             DebugAgent.register(agent);
             agent.restoreBreakpoints();
             printer.println("debug", "Debugger: attached");
@@ -1251,7 +1251,7 @@ public class REPL implements IRepl {
             final IInterceptor interceptor,
             final boolean macroExpandOnLoad
     ) {
-        final DebugAgent agent = DebugAgent.current();
+        final DebugAgent agent = ((VeniceInterpreter)venice).getDebugAgent();
 
         this.interceptor = interceptor;
         this.venice = new VeniceInterpreter(interceptor);
@@ -1430,7 +1430,7 @@ public class REPL implements IRepl {
     }
 
     private boolean hasActiveDebugSession() {
-        final DebugAgent agent = DebugAgent.current();
+        final DebugAgent agent = ((VeniceInterpreter)venice).getDebugAgent();
         return agent != null && agent.hasActiveBreak();
     }
 

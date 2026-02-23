@@ -148,7 +148,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
         this.functionBuilder = new FunctionBuilder(this::evaluate, this.optimized);
 
-        this.specialFormsContext= new SpecialFormsContext(
+        this.specialFormsContext = new SpecialFormsContext(
                                         this,
                                         this::evaluate,
                                         this::evaluate_values,
@@ -407,6 +407,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     public NamespaceRegistry getNamespaceRegistry() {
         return nsRegistry;
     }
+
+    public DebugAgent getDebugAgent() {
+        return debugAgent;
+    }
+
 
     private VncVal evaluate(
             final VncVal ast_,
@@ -1269,4 +1274,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     private final boolean optimized;
 
     private volatile boolean macroExpandOnLoad = false;
+
+    private final DebugAgent debugAgent = new DebugAgent();
 }
