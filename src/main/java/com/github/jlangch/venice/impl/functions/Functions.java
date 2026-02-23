@@ -129,6 +129,7 @@ public class Functions {
         functions.putAll(CoreFunctions.ns);
         functions.putAll(CoreConcurrencyFunctions.ns);
         functions.putAll(CoreSystemFunctions.ns);
+        functions.putAll(DebuggerFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);
         functions.putAll(BytebufFunctions.ns);
         functions.putAll(TransducerFunctions.ns);
