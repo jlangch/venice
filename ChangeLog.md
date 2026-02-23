@@ -9,7 +9,12 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- Allow the REPL to remotely connect to a running Venice program
+
+### Decommissioned
+
+- Removed `!env` command from the REPL. 
+  The functionality is available as Venice `(finder ...)` function
 
 
 
