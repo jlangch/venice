@@ -620,7 +620,6 @@ public class REPL implements IRepl {
                     case "launcher":      handleLauncherCommand(); break;
                     case "app":           handleAppCommand(args, terminal, env); break;
                     case "manifest":      handleAppManifestCommand(args, terminal, env); break;
-                    case "env":           handleEnvCommand(args, env); break;
                     case "hist":          handleHistoryCommand(args, terminal, history); break;
                     case "sandbox":       handleSandboxCommand(args, terminal, env); break;
                     case "colors":        handleConfiguredColorsCommand(); break;
@@ -784,34 +783,6 @@ public class REPL implements IRepl {
         catch (Exception ex) {
             handleException(ex);
         }
-    }
-
-    private void handleEnvCommand(
-            final List<String> params,
-            final Env env
-    ) {
-        if (params.isEmpty()) {
-            printer.println("stdout", ReplHelp.ENV);
-            return;
-        }
-        else if (first(params).equals("print")) {
-            if (params.size() == 2) {
-                veniceAdapter.envPrint(second(params), venice, env, printer);
-                return;
-            }
-        }
-        else if (first(params).equals("global")) {
-            if (params.size() == 1) {
-                veniceAdapter.envGlobal(null, venice, env, printer);
-                return;
-            }
-            else if (params.size() == 2) {
-                veniceAdapter.envGlobal(second(params), venice, env, printer);
-                return;
-            }
-        }
-
-        printer.println("error", "Invalid env command");
     }
 
     private void handleSandboxCommand(

@@ -63,17 +63,5 @@ public interface IVeniceAdapter {
 
     void cancelAsyncScripts();
 
-    void envPrint(
-            final String symbol,
-            final IVeniceInterpreter venice,
-            final Env env,
-            final TerminalPrinter printer);
-
-    void envGlobal(
-            final String filter,
-            final IVeniceInterpreter venice,
-            final Env env,
-            final TerminalPrinter printer);
-
     void close();
 }

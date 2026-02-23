@@ -47,11 +47,6 @@ public class ReplHelp {
             "               modules. \n" +
             "               This can speed-up script execution by a factor 3\n" +
             "               or 5 and even more with complex code!\n" +
-            "  !env         print env symbols:\n" +
-            "                 !env print {symbol-name}\n" +
-            "                 !env global\n" +
-            "                 !env global io/*\n" +
-            "                 !env global *file*\n" +
             "  !sandbox     sandbox\n" +
             "                 !sandbox status\n" +
             "                 !sandbox config\n" +
@@ -92,13 +87,6 @@ public class ReplHelp {
             "  ctrl-L   clear the screen\n" +
             "  ctrl-Y   yank the text from the cut-buffer\n" +
             "  ctrl-_   undo\n";
-
-    public final static String ENV =
-            "Please choose from:\n" +
-            "   !env print {symbol-name}\n" +
-            "   !env global\n" +
-            "   !env global io/*\n" +
-            "   !env global *file*\n";
 
     public final static String APP =
             "Please pass an app name:\n" +

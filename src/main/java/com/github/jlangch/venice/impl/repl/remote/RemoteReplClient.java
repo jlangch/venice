@@ -65,20 +65,6 @@ public class RemoteReplClient implements AutoCloseable  {
         return FormResult.of(resultData);
     }
 
-    public FormResult env(final String cmd, final String arg) {
-        Objects.requireNonNull(cmd);
-
-        final IMessage m = MessageFactory.venice(
-                                String.valueOf(requestId.incrementAndGet()),
-                                "env",
-                                createDataMap("cmd", cmd, "arg", arg));
-
-        final IMessage result = ipcClient.sendMessage(m, RemoteRepl.FUNCTION);
-
-        final VncMap resultData = (VncMap)result.getVeniceData();
-        return FormResult.of(resultData);
-    }
-
     public boolean isRunning() {
         return ipcClient != null && ipcClient.isRunning() && !isStop();
     }
