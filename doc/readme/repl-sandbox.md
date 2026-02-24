@@ -72,6 +72,7 @@ Sandbox rules:
    class:java.lang.Exception:*
    class:java.lang.Float
      :
+   maxExecTimeSeconds:no-limit
 
 venice> 
 ```
@@ -88,6 +89,8 @@ venice> !sandbox reject-all
 
 #### Test the sandbox
 
+Test #1
+
 ```clojure
 ; all Venice I/O functions are rejected
 (io/exists-dir? (io/file "/tmp"))
@@ -98,6 +101,8 @@ venice> !sandbox reject-all
 ; [Callstack]
 ;     at: io/file (user: line 1, col 18)
 ```
+
+Test #2
 
 ```clojure
 ; all Java calls are rejected
@@ -120,6 +125,8 @@ venice> !sandbox customized
 
 #### Test the sandbox
 
+Test #1
+
 ```clojure
 ; Venice I/O functions are accepted
 (io/exists-dir? (io/file "/tmp"))
@@ -127,12 +134,16 @@ venice> !sandbox customized
 ; => true
 ```
 
+Test #2
+
 ```clojure
 ; Java calls matching the default rules are accepted
 (. :java.util.Date :new)
 
 ; => Fri Nov 03 19:05:34 CET 2023
 ```
+
+Test #3
 
 ```clojure
 ; Java calls not matching the default rules are rejected
@@ -189,30 +200,42 @@ venice> !sandbox add-rule blacklist:venice:func:count
 
 #### ...and test it
 
+Test #1 (accepted by rule `class:java.lang.Math:*`)
+
 ```clojure
 ; Java calls to java.lang.Math are accepted
 (. :java.lang.Math :min 2 3)
 ```
+
+Test #2 (accepted by rule `system.property:venice.repl.home`)
 
 ```clojure
 ; Accessing system property 'venice.repl.home'
 (system-prop :venice.repl.home)
 ```
 
+Test #3 (accepted by rule `system.env:REPL_HOME`)
+
 ```clojure
 ; Accessing environment variable 'REPL_HOME'
 (system-env :REPL_HOME)
 ```
+
+Test #4 (rejected by rule `blacklist:venice:func:*io*`)
 
 ```clojure
 ; all Venice I/O functions are rejected (except the whitelisted printing functions)
 (io/exists-dir? (io/file "/tmp"))
 ```
 
+Test #5 (accepted by rule `whitelist:venice:func:*print*`)
+
 ```clojure
 ; the Venice I/O function 'println' is allowed
 (println 1000)
 ```
+
+Test #6 (rejected by rule `blacklist:venice:func:count`)
 
 ```clojure
 ; the Venice function 'count' is rejected
