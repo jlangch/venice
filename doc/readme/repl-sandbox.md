@@ -123,7 +123,7 @@ Test #2
 venice> !sandbox customized
 ```
 
-#### Test the sandbox
+#### Test the sandbox with the default rules in place
 
 Test #1
 
@@ -180,7 +180,8 @@ List the functions in the group `*print*`:
 venice> !sandbox fn-group *print*
 ```
 
-#### Customize the sandbox...
+#### Customize the sandbox with specific rules...
+
 * enable calls to *java.lang.Math*
 * enable access to system property *venice.repl.home*
 * enable access to system environment variable *REPL_HOME*
