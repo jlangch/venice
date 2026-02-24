@@ -1,6 +1,11 @@
 # Sandbox with the REPL
 
-The initial REPL sandbox accepts all Java calls and Venice functions without any restrictions
+Please read the [Sandbox Overview](sandbox.md) first.
+
+ 
+ 
+
+In a REPL the sandbox is initially turned off and the REPL accepts all Java calls and Venice functions without any restrictions
 
 ```
 venice> !sandbox status
@@ -8,19 +13,18 @@ No sandbox active (AcceptAllInterceptor)
 venice> 
 ```
 
-#### Change to a restricted _reject-all_ sandbox
+ 
 
-Establishes a Venice sandbox that rejects all IO related functions. Scripts cannot access 
-the OS (all resources like files, processes, shell, ...) and the Internet. Java interop is 
-disabled as well as all multi-threading related functions in Venice. Loading Venice forms and
-manipulating namespaces are disabled too.
+#### Change to a restricted *reject-all* sandbox
 
-The *reject-all* sandbox is safe.
+Establishes a Venice sandbox that rejects all unsafe functions.
 
 ```
 venice> !sandbox reject-all
+
 venice> !sandbox status
 Sandbox active (RejectAllInterceptor). Rejects all Java calls and default blacklisted Venice functions
+
 venice> !sandbox config
 [reject-all] SAFE restricted sandbox
 Java calls:
@@ -39,15 +43,19 @@ Blacklisted Venice functions:
 venice> 
 ```
 
-#### Change to a _customized_ sandbox
+ 
+
+#### Change to a *customized* sandbox
 
 The sandbox can be customized to specific needs. All gradation from *reject-all* to 
-*accept-all* is possible. Even functions like `+` can be blacklisted if required so.
+*accept-all* is possible. Even Venice functions like `+` can be blacklisted if required so.
  
 ```
 venice> !sandbox customized
+
 venice> !sandbox status
 Customized sandbox active (SandboxInterceptor)
+
 venice> !sandbox config
 [customized] Customized sandbox
 Sandbox rules:
@@ -65,9 +73,11 @@ Sandbox rules:
 venice> 
 ```
 
-## Testing the _reject-all_ sandbox
+ 
 
-#### Enable the _reject-all_ sandbox
+## Testing the *reject-all* sandbox
+
+#### Enable the *reject-all* sandbox
 
 ```
 venice> !sandbox reject-all
@@ -97,9 +107,9 @@ venice> !sandbox reject-all
 ;    at: . (user: line 1, col 2)
 ```
 
-## Testing the _customized_ sandbox
+## Testing the *customized* sandbox
 
-#### Enable the _customized_ sandbox.
+#### Enable the *customized* sandbox.
 
 ```
 venice> !sandbox customized
@@ -145,19 +155,21 @@ To simplify sandbox configuration Venice supports predefined function groups:
 Use the REPL sandbox command 'fn-group' to list the functions in a specific group
 
 List the available function groups:
+
 ```
 venice> !sandbox fn-group
 ```
 
 List the functions in the group `*print*`:
+
 ```
 venice> !sandbox fn-group *print*
 ```
 
 #### Customize the sandbox...
-* enable calls to _java.lang.Math_
-* enable access to system property _venice.repl.home_
-* enable access to system environment variable _REPL_HOME_
+* enable calls to *java.lang.Math*
+* enable access to system property *venice.repl.home*
+* enable access to system environment variable *REPL_HOME*
 * blacklist all Venice I/O functions (using the group ref `*io*`)
 * whitelist rule `*print*` to offset the blacklisted `*io*` rule to allow printing values
 * blacklist the Venice 'count' function
