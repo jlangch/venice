@@ -52,21 +52,6 @@ venice> /Users/foo/test.venice
 This is identical to run `(load-file "/Users/foo/test.venice")`.
 
 
-
-## Display global symbols
-
-```text
-venice> !env global
-```
-
-Use wildcards to filter global symbols:
-
-```text
-venice> !env global io/*
-venice> !env global *file*
-```
-
-
 ## Function documentation
 
 Print the documentation for a Venice function
