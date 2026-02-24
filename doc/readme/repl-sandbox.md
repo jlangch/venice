@@ -10,6 +10,7 @@ In a REPL the sandbox is initially turned off and the REPL accepts all Java call
 ```
 venice> !sandbox status
 No sandbox active (AcceptAllInterceptor)
+
 venice> 
 ```
 
@@ -40,6 +41,7 @@ Blacklisted Venice functions:
    agent-error
    agent-error-mode
      :
+
 venice> 
 ```
 
@@ -70,6 +72,7 @@ Sandbox rules:
    class:java.lang.Exception:*
    class:java.lang.Float
      :
+
 venice> 
 ```
 

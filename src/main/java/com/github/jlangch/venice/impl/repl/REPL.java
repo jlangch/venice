@@ -1255,13 +1255,13 @@ public class REPL implements IRepl {
             final IInterceptor interceptor,
             final boolean macroExpandOnLoad
     ) {
-        final DebugAgent agent = ((VeniceInterpreter)venice).getDebugAgent();
-
         this.interceptor = interceptor;
         this.venice = new VeniceInterpreter(interceptor);
         this.venice.setMacroExpandOnLoad(macroExpandOnLoad);
 
-        DebugAgent.register(agent);
+        if (DebugAgent.isAttached()) {
+            switchToRegularREPL() ;
+        }
     }
 
     private PrintStream createPrintStream(
