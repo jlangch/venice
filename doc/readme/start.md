@@ -10,6 +10,8 @@ like Linux, MacOSX, or Windows.
 
 ## Venice Local Setup
 
+ 
+
 ### 1. Install Java
 
 Venice requires Java 8 or newer.
@@ -20,6 +22,7 @@ Java can be downloaded from:
 
 The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice is regulary compiled and unit tested with Java 8, 17, and 21.
 
+ 
 
 ### 2. Get the Venice JAR file
 
@@ -31,6 +34,7 @@ or download it with `curl`:
 curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.81/venice-1.12.81.jar" --output ./venice-1.12.81.jar
 ```
 
+ 
 
 ### 3. Setup the Venice REPL
 
@@ -126,6 +130,7 @@ REPL_HOME
 └── repl.sh
 ```
 
+ 
 
 ### 4. Start the REPL
 
@@ -169,6 +174,7 @@ Type '!' for help.
 venice>
 ```
 
+ 
 
 ### 5. Run expressions in the REPL
 
@@ -180,6 +186,7 @@ venice> (+ 1 1)
 venice>
 ```
 
+ 
 
 ### VSCode 
 
