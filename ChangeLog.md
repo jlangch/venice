@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Allow the REPL to remotely connect to a running Venice program
+- Support remote REPL connections to a running Venice program for interactive inspection and control.
 
 ### Decommissioned
 
