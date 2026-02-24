@@ -10,6 +10,13 @@ venice>
 
 #### Change to a restricted _reject-all_ sandbox
 
+Establishes a Venice sandbox that rejects all IO related functions. Scripts cannot access 
+the OS (all resources like files, processes, shell, ...) and the Internet. Java interop is 
+disabled as well as all multi-threading related functions in Venice. Loading Venice forms and
+manipulating namespaces are disabled too.
+
+The *reject-all* sandbox is safe.
+
 ```
 venice> !sandbox reject-all
 venice> !sandbox status
@@ -34,6 +41,9 @@ venice>
 
 #### Change to a _customized_ sandbox
 
+The sandbox can be customized to specific needs. All gradation from *reject-all* to 
+*accept-all* is possible. Even functions like `+` can be blacklisted if required so.
+ 
 ```
 venice> !sandbox customized
 venice> !sandbox status

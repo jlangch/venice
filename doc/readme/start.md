@@ -164,10 +164,12 @@ C:\path-to-repl\repl.bat
 The REPL is started and prompts for input:
 
 ```text
-Venice REPL: 1.12.30
-Home: /Users/juerg/Desktop/test
-Java: 1.8.0_392
-Loading configuration from classpath custom 'repl.json'
+Venice REPL: 1.12.81
+Home: /Users/juerg/Desktop/venice
+Java: 1.8.0_462
+Jansi: 2.4.1
+Macro expansion: disabled
+Configuration: file 'repl.json'
 Using Ansi terminal (light color mode turned on)
 Use the commands !lightmode or !darkmode to adapt to the terminal's colors
 Type '!' for help.

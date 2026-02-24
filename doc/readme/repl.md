@@ -68,6 +68,16 @@ omit the '-colors' option or place a 'repl.json' config file with customized
 ANSI escape code colors on the working dir. The REPL command `!config` shows
 a sample 'repl.json' that can be modified.
 
+```text
+venice> (+ 10 1)
+=> 11
+venice> (* 5 4)
+=> 20
+venice> (+ *1 *2)
+=> 31
+venice> 
+```
+
  
  
 
