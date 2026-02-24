@@ -131,18 +131,25 @@ REPL_HOME
 
 The Venice REPL can be started simply by executing the REPL launcher.
 
-on *MacOSX* and *Linux*:
+on *Linux*:
 
 ```text
-cd repl
-./repl.sh
+/path-to-repl/repl.sh
 ```
 
+on *MacOSX*:
+
+ 
+```text
+/path-to-repl/repl.sh
+```
+or double-click `repl.command` in the Finder
+
+ 
 on *Windows*:
 
 ```text
-cd repl
-repl.bat
+C:\path-to-repl\repl.bat
 ```
 
 
