@@ -9,7 +9,11 @@ undesirable operations.
 * [Multi-Threading](#multi-threading)
 * [No blacklisting for Java interop](#no-blacklisting-for-java-interop)
 * [Features](#features)
-* [Examples](#examples)
+* Sandbox Types
+    * [Sandbox Turned Off](#sandbox-turned-off)
+    * [Reject-All Sandbox](#reject-all-sandbox)
+    * [Customized Sandbox](#customized-sandbox)
+* [Unmanaged Threads](#unmanaged-threads)
 * [Sandbox with the REPL](#sandbox-with-the-repl)
 
  
@@ -62,10 +66,69 @@ that are available to the script in the JVM!
  
  
 
-## Examples
+## Sandbox Turned Off
 
+Run Venice scripts with no restrictions:
 
-### Customized sandbox
+```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+
+final Venice venice = new Venice(new AcceptAllInterceptor());
+
+...
+```
+
+ 
+
+## Reject-All Sandbox
+
+Prohibit all 'unsafe' functions:
+
+ - Java interop
+ - all Venice I/O functions
+ - all Venice concurrency functions
+ - most Venice extension modules
+ - all unsafe system functions like running GC, reading system properties and
+   environment variables, ...
+ - all unsafe special forms for dynamically loading code, managing vars, 
+   namespaces, ...
+     
+
+```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
+
+final Venice venice = new Venice(new RejectAllInterceptor());
+
+...
+```
+
+To verify which functions / modules are prohibited check the
+reject-all sandbox in the REPL:
+
+```
+venice> !sandbox reject-all
+venice> !sandbox config
+[reject-all] SAFE restricted sandbox
+Java calls:
+   All rejected!
+Whitelisted Venice modules:
+   crypt
+   kira
+   math
+     :
+Blacklisted Venice functions:
+   agent
+   agent-error
+   agent-error-mode
+     :
+venice> 
+```
+
+ 
+
+## Customized Sandbox
 
 ```java
 import com.github.jlangch.venice.Venice;
@@ -185,67 +248,9 @@ new SandboxRules()
      .sandbox
 ```
 
+ 
 
-
-### Sandbox rejecting all 'unsafe' functions
-
-Prohibit all 'unsafe' functions:
-
- - Java interop
- - all Venice I/O functions
- - all Venice concurrency functions
- - most Venice extension modules
- - all unsafe system functions like running GC, reading system properties and
-   environment variables, ...
- - all unsafe special forms for dynamically loading code, managing vars, 
-   namespaces, ...
-     
-
-```java
-import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
-
-final Venice venice = new Venice(new RejectAllInterceptor());
-
-...
-```
-
-To verify which functions / modules are prohibited check the
-reject-all sandbox in the REPL:
-
-```
-venice> !sandbox reject-all
-venice> !sandbox config
-[reject-all] SAFE restricted sandbox
-Java calls:
-   All rejected!
-Whitelisted Venice modules:
-   crypt
-   kira
-   math
-     :
-Blacklisted Venice functions:
-   agent
-   agent-error
-   agent-error-mode
-     :
-venice> 
-```
-
-
-### Sandbox turned off
-
-Run Venice scripts with no restrictions:
-
-```java
-import com.github.jlangch.venice.Venice;
-
-final Venice venice = new Venice();
-
-...
-```
-
-### Creating your own unmanaged threads
+## Unmanaged Threads
 
 As mentioned above you can create your own threads if the configured 
 sandbox allows it. 
