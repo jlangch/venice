@@ -359,7 +359,11 @@ public class REPL implements IRepl {
                     }
                     else if (agent.hasActiveBreak()) {
                         // run the expression in the context of the break
-                        runDebuggerExprAsync(line, debugClient.getEnv());
+                        final Env env = agent.hasCurrCallFrame()
+                                         ? agent.getCurrCallFrame().getEnv()
+                                         : agent.getActiveBreak().getEnv();
+
+                        runDebuggerExprAsync(line, env);
                     }
                     else {
                         // run the s-expr read from the line reader

@@ -102,11 +102,6 @@ public class ReplDebugClient {
         return DEBUG_COMMANDS.contains(cmd);
     }
 
-    public Env getEnv() {
-        return agent.hasCurrCallFrame()
-                ? agent.getCurrCallFrame().getEnv()
-                : agent.getActiveBreak().getEnv();
-    }
 
     public void handleCommand(final String cmdLine) {
         final List<String> params = Arrays.asList(cmdLine.split(" +"));
