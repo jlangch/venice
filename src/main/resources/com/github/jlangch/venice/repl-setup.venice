@@ -30,7 +30,7 @@
 (load-module :ansi)
 
 
-(def initial-modules [ :jansi-install ])
+(def initial-modules [])  ;; no modules yet
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -80,6 +80,11 @@
     (installer/install-module m :dir dir :silent silent)
     (println "Installing ~{r} done.")))
 
+
+(defn install-jansi [dir silent]
+  (println "Installing jansi ...")
+  (installer/install-module :jansi-install :dir dir :silent silent)
+  (println "Installing jansi done."))
 
 (defn download-modules-libs [dir modules_ silent]
   (when-not (empty? modules_)
@@ -298,6 +303,7 @@
         color-mode    (:color-mode options :none)        ;; {:none :light :dark}
         silent        (not (:ansi-terminal options false))       ;; {true false}
         minimal?      (:minimal options false)                   ;; {true false}
+        jansi?        (:jansi options true)                      ;; {true false}
         charset       (name (charset-default-encoding))
         install-dir   (-> (:install-dir options ".")
                           (io/file)
@@ -347,6 +353,7 @@
         (println))
 
       (repl-setup/copy-venice-jar libs-dir)
+      (when jansi? (repl-setup/install-jansi libs-dir silent))
       (repl-setup/download-modules-libs libs-dir initial-modules silent)
       (repl-setup/setup-repl-config libs-dir)
       (repl-setup/setup-repl-launcher install-dir color-mode)
