@@ -63,11 +63,6 @@ with the up/down arrows.
 A history of the last three result values is kept by the REPL, accessible through 
 the Venice symbols `*1`, `*2`, `*3`, `**`.
 
-If the REPL colors don't harmonize well with your terminal color schema 
-omit the '-colors' option or place a 'repl.json' config file with customized 
-ANSI escape code colors on the working dir. The REPL command `!config` shows
-a sample 'repl.json' that can be modified.
-
 ```text
 venice> (+ 10 1)
 => 11
@@ -77,6 +72,11 @@ venice> (+ *1 *2)
 => 31
 venice> 
 ```
+
+If the REPL colors don't harmonize well with your terminal color schema 
+omit the '-colors' option or place a 'repl.json' config file with customized 
+ANSI escape code colors in the repl home dir. The REPL command `!config` shows
+a sample 'repl.json' that can be modified.
 
  
  
