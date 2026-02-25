@@ -245,7 +245,7 @@ new SandboxRules()
      .rejectAllSystemFunctions()
      .rejectAllSenstiveSpecialForms()
      .rejectAllJavaInteropFunctions()
-     .sandbox
+     .sandbox()
 ```
 
  
