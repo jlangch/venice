@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.repl;
+package com.github.jlangch.venice.impl.repl.debug;
 
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpoints;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.debug.agent.StepMode;
 import com.github.jlangch.venice.impl.debug.util.StepValidity;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.repl.TerminalPrinter;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
@@ -84,11 +85,11 @@ public class ReplDebugClient {
     public ReplDebugClient(
             final IDebugAgent agent,
             final TerminalPrinter printer,
-            final Thread replThread
+            final Runnable interruptReplHook
     ) {
         this.agent = agent;
         this.printer = printer;
-        this.replThread = replThread;
+        this.interruptReplHook = interruptReplHook;
 
         agent.addBreakListener(this::breakpointListener);
     }
@@ -611,7 +612,7 @@ public class ReplDebugClient {
         printer.println("debug", formatStop(b));
 
         // Interrupt the LineReader to display a new prompt
-        replThread.interrupt();
+        interruptReplHook.run();
     }
 
     private String renderIfSpecialFormParams(final Break br) {
@@ -951,5 +952,5 @@ public class ReplDebugClient {
 
     private final TerminalPrinter printer;
     private final IDebugAgent agent;
-    private final Thread replThread;
+    private final Runnable interruptReplHook;
 }

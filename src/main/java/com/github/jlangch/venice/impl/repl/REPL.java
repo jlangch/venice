@@ -75,6 +75,7 @@ import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.repl.debug.ReplDebugClient;
 import com.github.jlangch.venice.impl.repl.remote.RemoteVeniceAdapter;
 import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -457,10 +458,12 @@ public class REPL implements IRepl {
             DebugAgent.register(agent);
             agent.restoreBreakpoints();
             printer.println("debug", "Debugger: attached");
+            final Thread mainThread = Thread.currentThread();
             debugClient = new ReplDebugClient(
                                 agent,
                                 printer,
-                                Thread.currentThread());
+                                // hook: interrupt the LineReader to display a new prompt
+                                () -> mainThread.interrupt());
         }
         changePrompt(promptDebug);
     }
