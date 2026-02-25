@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 
 - Improved REPL documentation
 
+### Bugs
+
+- Fixed the :ansi progress demos:  `(do (load-module :ansi) (ansi/demo))`
+
 ### Decommissioned
 
 - Removed `!env` command from the REPL. 
