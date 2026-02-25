@@ -1488,14 +1488,17 @@ public class REPL implements IRepl {
 
     private final Semaphore semaphore = new Semaphore(1);
 
-    private Terminal terminal;
-
     private ReplConfig config;
+    private ReplDirs replDirs;
+
     private IInterceptor interceptor;
     private volatile IVeniceInterpreter venice;
     private Env env;
+
+    private Terminal terminal;
     private TerminalPrinter printer;
     private ReplHighlighter highlighter;
+
     private boolean ansiTerminal = false;
     private boolean highlight = true;
     private boolean javaExceptions = false;
@@ -1505,8 +1508,8 @@ public class REPL implements IRepl {
     private String prompt;
     private String secondaryPrompt;
     private String resultPrefix = "=> ";
+
     private ReplDebugClient debugClient = null;
-    private ReplDirs replDirs;
 
     private IVeniceAdapter veniceAdapterLocal = new LocalVeniceAdapter();
     private IVeniceAdapter veniceAdapter = veniceAdapterLocal;

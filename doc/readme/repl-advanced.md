@@ -57,9 +57,18 @@ This is identical to run `(load-file "/Users/foo/test.venice")`.
 Print the documentation for a Venice function
 
 ```text
-venice> (doc filter)
+venice> (doc count)
+(count coll)
 
-venice> (doc +)
+Returns the number of items in the collection. (count nil) returns 0. Also works
+on strings, and Java Collections
+
+EXAMPLES:
+   (count {:a 1 :b 2})
+
+   (count [1 2])
+
+   (count "abc")
 ```
 
 
@@ -67,7 +76,26 @@ E.g.: Find the Venice cryptography PBKDF2 hash function and print the doc for it
 
 ```text
 venice> (load-module :crypt)
-venice> !env global crypt*
+
+venice> (finder "crypt*")
+crypt/add-bouncy-castle-provider                  :core/function
+crypt/ciphers                                     :core/function
+crypt/encryptor-aes-256-cbc                       :core/function
+crypt/encryptor-aes-256-cbc-supported?            :core/function
+crypt/encryptor-aes-256-gcm                       :core/function
+crypt/encryptor-aes-256-gcm-supported?            :core/function
+crypt/encryptor-chacha20                          :core/function
+crypt/encryptor-chacha20-bouncycastle             :core/function
+crypt/encryptor-chacha20-bouncycastle-supported?  :core/function
+crypt/encryptor-chacha20-supported?               :core/function
+crypt/hash-file                                   :core/function
+crypt/max-key-size                                :core/function
+crypt/md5-hash                                    :core/function
+crypt/pbkdf2-hash                                 :core/function
+crypt/provider?                                   :core/function
+crypt/sha1-hash                                   :core/function
+crypt/sha512-hash                                 :core/function
+crypt/verify-file-hash                            :core/function
 
 venice> (doc crypt/pbkdf2-hash)
 ```
@@ -88,8 +116,8 @@ regex/group             regex/pattern           regex/find-all-groups
 regex/reset             regex/matches?
 ```
 
-Cycle through the candidates with the `TAB` key or narrow the candidates by 
-typing more characters.
+Cycle through the candidates with the `TAB`, `←`, `↑`, `→`, `↓` keys or narrow 
+the candidates by typing more characters. `Ctrl-C` stops the completion.
 
 
 ### Code completion for loading a module
@@ -115,7 +143,7 @@ venice> (load-module :grep ['grep :as 'g])
 ### Code completion for loading a Venice file
 
 ```text
-venice> (load-file <TAB>
+venice> (load-file "<TAB>
 chart.venice             exception.venice         perf-test-1.venice
 indent.venice            parsatron.venice         perf-test-2.venice
 script.venice            chart-swing.venice       login-webapp.venice
