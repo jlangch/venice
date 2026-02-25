@@ -418,14 +418,15 @@
               :failed   (println failed-msg)
                         (println "Invalid status '~{status}'"))
             nil))
-      (fn progress-handler [percent status]
-        (case status
-          :start    nil
-          :progress nil
-          :end      (println end-msg)
-          :failed   (println failed-msg)
-                    (println "Invalid status '~{status}'"))
-        nil))))
+      (fn progress-handler [percent status elapsed]
+        (let [elapsedMS (if (neg? elapsed) "?ms" (str elapsed "ms"))]
+          (case status
+            :start    nil
+            :progress nil
+            :end      (println (str/replace-first end-msg "{{elapsed}}" elapsedMS))
+            :failed   (println failed-msg)
+                      (println "Invalid status '~{status}'"))
+          nil)))))
 
 
 (defn
@@ -627,17 +628,17 @@
   (without-cursor
     (let [pg (ansi/progress :caption "Download:")]
       (println "Progress demo (percent)")
-      (pg 0 :start)
-      (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
-      (pg 100 :end))))
+      (pg 0 :start 0)
+      (docoll (fn [x] (pg x :progress 0) (sleep 100)) (range 0 101))
+      (pg 100 :end 0))))
 
 (defn demo-progress-2 []
   (without-cursor
     (let [pg (ansi/progress :caption "Download:" :mode :custom)]
       (println "Progress demo (custom)")
-      (pg "" :start)
-      (docoll (fn [x] (pg (str (* 10 x) "KB") :progress) (sleep 100)) (range 0 101))
-      (pg "" :end))))
+      (pg "" :start 0)
+      (docoll (fn [x] (pg (str (* 10 x) "KB") :progress 0) (sleep 100)) (range 0 101))
+      (pg "" :end 0))))
 
 (defn demo-progress-bar []
   (without-cursor
@@ -647,9 +648,9 @@
                  :show-percent true)]
 
       (println "Progress bar demo")
-      (pg 0 :start)
-      (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
-      (pg 100 :end))))
+      (pg 0 :start 0)
+      (docoll (fn [x] (pg x :progress 0) (sleep 100)) (range 0 101))
+      (pg 100 :end 0))))
 
 
 (defn demo-colors []
