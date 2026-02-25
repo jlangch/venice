@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 
 - Support remote REPL connections to a running Venice program for interactive inspection and control.
 
+- Improved REPL documentation
+
 ### Decommissioned
 
 - Removed `!env` command from the REPL. 
