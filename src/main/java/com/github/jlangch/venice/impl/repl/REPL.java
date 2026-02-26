@@ -326,13 +326,15 @@ public class REPL implements IRepl {
                 }
 
                 if (DebugAgent.isAttached()) {
+                    // only debug commands available
+
                     final DebugAgent agent = ((VeniceInterpreter)venice).getDebugAgent();
 
                     if (ReplParser.isCommand(line)) {
                         final String cmd = trimToEmpty(line.trim().substring(1));
                         switch(cmd) {
                             case "attach":
-                                printer.println("debug", "The debugger is already attached!");
+                                switchToDebugREPL();
                                 break;
 
                             case "detach":
@@ -393,7 +395,7 @@ public class REPL implements IRepl {
                                 break;
 
                             case "detach":
-                                printer.println("error", "There is no debugger attached!");
+                                switchToRegularREPL();
                                 break;
 
                             case "clear":
