@@ -67,10 +67,20 @@ The remote REPL demo application looks like:
 
 ## Connect from a REPL
 
+Start a REPL and connect to the remote REPL server
+
 ```
 venice> !remote localhost 33334 123
 
 remote>
+```
+
+call a remote function
+
+```
+remote> (demo/sum 3 4)
+Function 'sum' called
+=> 7
 ```
 
 switch back to local REPL environment
