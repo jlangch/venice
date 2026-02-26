@@ -131,19 +131,10 @@ client and displayed.
 </tr>
 <tr>
 <td>
-
-```
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/remote-repl-client.png" width="500">
-
-```
-
 </td>
 <td>
-
-```
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/remote-repl-server.png" width="500">
-```
-
 </td>
 </tr>
 </table>
