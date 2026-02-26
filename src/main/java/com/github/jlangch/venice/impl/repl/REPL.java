@@ -215,6 +215,7 @@ public class REPL implements IRepl {
             final boolean macroexpand
     ) throws Exception {
         promptVenice = config.getPrompt();
+        promptRemote = "remote> ";
         promptDebug = "debug> ";
         resultPrefix = config.getResultPrefix();
 
@@ -1149,6 +1150,7 @@ public class REPL implements IRepl {
             // [3] Switch to the remote REPL client
             veniceAdapter = rexec;
             printer.println("system", "Switched to remote REPL " + port + "@" + host);
+            changePrompt(promptRemote);
         }
         catch(Exception ex) {
             printer.println("error", ex.getMessage());
@@ -1166,6 +1168,7 @@ public class REPL implements IRepl {
             // [2] Switch back to the local REPL
             veniceAdapter = veniceAdapterLocal;
             printer.println("system", "Switched to local REPL");
+            changePrompt(promptVenice);
         }
         else {
             printer.println("stdout", "Local REPL is already active");
@@ -1506,6 +1509,7 @@ public class REPL implements IRepl {
     private boolean highlight = true;
     private boolean javaExceptions = false;
     private boolean restartable = false;
+    private String promptRemote;
     private String promptVenice;
     private String promptDebug;
     private String prompt;

@@ -35,7 +35,7 @@
 
 (ns demo)
 
-(def stop? (atom false))
+(def- stop? (atom false))
 
 (defn stop [] 
   (reset! stop? true)
@@ -52,4 +52,3 @@
   (sleep 1000))
 
 (println "Stopped server")
-  
