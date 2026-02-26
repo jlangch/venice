@@ -57,11 +57,13 @@ public class RemoteVeniceAdapter implements IVeniceAdapter{
                 printer.println("error", result.getEx());
             }
             else {
-                if (StringUtil.isNotBlank(result.getOut())) {
-                    printer.println("stdout", result.getOut());
+                final String out = result.getOut();
+                if (StringUtil.isNotBlank(out)) {
+                    printer.println("stdout", out.trim());
                 }
-                if (StringUtil.isNotBlank(result.getErr())) {
-                    printer.println("stderr", result.getErr());
+                final String err = result.getErr();
+                if (StringUtil.isNotBlank(err)) {
+                    printer.println("stderr", err.trim());
                 }
                 printer.println("result", resultPrefix + result.getResult());
             }
