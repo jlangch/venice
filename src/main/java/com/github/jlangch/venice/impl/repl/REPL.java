@@ -233,12 +233,6 @@ public class REPL implements IRepl {
         if (OSUtils.IS_WINDOWS) {
             builder.jansi(ansiTerminal);
         }
-        else if (isRunningOnLinuxGitPod()) {
-            // The terminal detection on Linux GitPod instances is wrong "xterm-color"
-            // so set it explicitly to "xterm-256color"!
-            builder.encoding("UTF-8");
-            builder.type("xterm-256color");
-        }
         else {
             builder.encoding("UTF-8");
         }
@@ -1105,7 +1099,6 @@ public class REPL implements IRepl {
         printer.println("stdout", "Scripts dir:     " + replDirs.getScriptsDir());
         printer.println("stdout", "");
         printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
-        printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
         printer.println("stdout", "");
         printer.println("stdout", "OS Arch:         " + System.getProperty("os.arch"));
         printer.println("stdout", "OS Name:         " + System.getProperty("os.name"));
@@ -1239,17 +1232,16 @@ public class REPL implements IRepl {
             final BufferedReader in,
             final boolean macroexpand
     ) {
-        final Env env =
-                venice
-                    .createEnv(macroexpand, ansiTerminal, RunMode.REPL)
-                    .setGlobal(new Var(
-                                     new VncSymbol("*ARGV*"),
-                                     cli.argsAsList(),
-                                     false,
-                                     Var.Scope.Global))
-                    .setStdoutPrintStream(out)
-                    .setStderrPrintStream(err)
-                    .setStdinReader(in);
+        final Env env = venice
+                            .createEnv(macroexpand, ansiTerminal, RunMode.REPL)
+                            .setGlobal(new Var(
+                                             new VncSymbol("*ARGV*"),
+                                             cli.argsAsList(),
+                                             false,
+                                             Var.Scope.Global))
+                            .setStdoutPrintStream(out)
+                            .setStderrPrintStream(err)
+                            .setStdinReader(in);
 
         return ReplFunctions.register(
                     env,
@@ -1350,11 +1342,6 @@ public class REPL implements IRepl {
 
     private boolean isMacroexpand(final CommandLineArgs cli) {
         return cli.switchPresent("-macroexpand");
-    }
-
-    private boolean isRunningOnLinuxGitPod() {
-        return  "Linux".equals(System.getProperty("os.name"))
-                    && System.getenv("GITPOD_REPO_ROOT") != null;
     }
 
     private void clearCommandHistoryIfRequired(final History history) {
