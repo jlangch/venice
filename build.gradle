@@ -657,6 +657,7 @@ task updateReleaseVersion {
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'repl-advanced.md')
+            fileset(dir: 'doc/readme', includes: 'repl-remote.md')
         }
         
         println "Updating version ${project.version} -> 'Launcher.java'"
