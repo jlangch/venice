@@ -213,6 +213,6 @@ If you use VSCode to edit Venice files, this VSCode **settings.json** file will 
 - working with a [REPL](https://github.com/jlangch/venice/blob/master/doc/readme/repl.md)
 - [Venice first steps](https://github.com/jlangch/venice/blob/master/doc/readme/functional-first-steps.md)
 - browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md#documentation)
-- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/f1f6c9d/cheatsheet.pdf) and use it as a quick reference
+- see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/54eb666/cheatsheet.pdf) and use it as a quick reference
 
 
