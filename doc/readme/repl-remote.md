@@ -83,7 +83,7 @@ Function 'sum' called
 => 7
 ```
 
-switch back to local REPL environment
+switch back to the local REPL environment
 
 ```
 remote> !local
