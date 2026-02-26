@@ -31,7 +31,7 @@ To attach a REPL server to a Venice application just add two launch parameters t
 Start the application with the REPL server port and password:
 
 ```text
-java -jar libs/venice-1.12.82.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-demo.venice
+java -jar ./venice-1.12.82.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-demo.venice
 ```
 
  
