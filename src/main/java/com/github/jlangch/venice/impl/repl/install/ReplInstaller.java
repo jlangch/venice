@@ -51,7 +51,8 @@ public class ReplInstaller {
 
             final String installDir = cli.switchValue("-dir", ".");
             final boolean minimal = cli.switchPresent("-minimal");
-            final boolean jansi = true; // cli.switchPresent("-jansi");
+            final boolean silent = true;
+            final boolean jansi = true;
 
             System.out.println("Venice" + (minimal ? " minimal " : " ") + "REPL setup...");
             System.out.println("Venice REPL: V" + Venice.getVersion());
@@ -82,11 +83,12 @@ public class ReplInstaller {
                                     "(do                                        \n" +
                                     "  (load-module :repl-setup)                \n" +
                                     "  (repl-setup/setup :color-mode :%s        \n" +
-                                    "                    :ansi-terminal false   \n" +
+                                    "                    :silent %b             \n" +
                                     "                    :minimal %b            \n" +
                                     "                    :jansi %b              \n" +
                                     "                    :install-dir \"%s\"))  ",
                                     colorMode.name().toLowerCase(),
+                                    silent,
                                     minimal,
                                     jansi,
                                     slashifyFilePath(installDir));

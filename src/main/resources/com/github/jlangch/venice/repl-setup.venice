@@ -301,7 +301,7 @@
 (defn setup [& options]
   (let [options       (apply hash-map options)
         color-mode    (:color-mode options :none)        ;; {:none :light :dark}
-        silent        (not (:ansi-terminal options false))       ;; {true false}
+        silent        (:silent options true)                     ;; {true false}
         minimal?      (:minimal options false)                   ;; {true false}
         jansi?        (:jansi options true)                      ;; {true false}
         charset       (name (charset-default-encoding))
