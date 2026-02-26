@@ -77,7 +77,11 @@ Venice requires Java 8 or newer.
 **Language**
 
 * [Getting started](doc/readme/start.md)
-* [REPL](doc/readme/repl.md)
+* REPL
+    * [Basics](doc/readme/repl.md)
+    * [Advanced](doc/readme/repl-advanced.md)
+    * [Sandbox](doc/readme/repl-sandbox.md)
+    * [Remote](doc/readme/repl-remote.md)
 * [On Functional Programming](doc/readme/functional-about.md)
 * [First Steps in Venice](doc/readme/functional-first-steps.md)
 * [Example: Sudoku Solver](doc/readme/sudoku-solver.md)
