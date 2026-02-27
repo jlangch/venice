@@ -24,10 +24,10 @@ Venice applications are *not* aware of the REPL server. No specific preparations
 To attach a REPL server to a Venice application just add two launch parameters to set a port and a password:
 
 
-| Option                 | Mandatory   | Description              | Example                |
-| :--                    | :--:        | :--                      | :--                    |
-| `-repl-port {port}`      | yes         | REPL communication port  | `-repl-port 33334`      |
-| `-repl-pwd {password}`   | yes         | REPL password            | `-repl-pwd xcf6zu=UI`    |
+| Option                 | Mandatory   | Default Value  | Description              | Example                |
+| :--                    | :--:        | :--            | :--                      | :--                    |
+| `-repl-port {port}`      | yes         | -              | REPL communication port  | `-repl-port 33334`      |
+| `-repl-pwd {password}`   | yes         | -              | REPL password            | `-repl-pwd xcf6zu=UI`    |
 
  
 
