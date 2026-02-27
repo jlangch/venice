@@ -26,7 +26,7 @@ To attach a REPL server to a Venice application just add two launch parameters t
 
 | Option                 | Mandatory   | Description              | Example                |
 | :--                    | :--:        | :--                      | :--                    |
-| `-repl-port {port}`      | yes         | REPL communication port  | `-repl-port 333334`     |
+| `-repl-port {port}`      | yes         | REPL communication port  | `-repl-port 33334`      |
 | `-repl-pwd {password}`   | yes         | REPL password            | `-repl-pwd xcf6zu=UI`    |
 
  
