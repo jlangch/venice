@@ -65,7 +65,8 @@ public class RemoteVeniceAdapter implements IVeniceAdapter{
                 if (err != null) {
                     printer.println("stderr", err);
                 }
-                printer.println("result", resultPrefix + result.getResult());
+                final String ret = result.getResult();
+                printer.println("result", resultPrefix + (ret == null ? "Nil" : ret));
             }
         }
         catch (Exception ex) {
