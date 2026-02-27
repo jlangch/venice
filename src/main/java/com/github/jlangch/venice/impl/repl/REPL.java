@@ -430,6 +430,11 @@ public class REPL implements IRepl {
     }
 
     private void switchToRegularREPL() {
+        if (isRemoteRepl()) {
+            printer.println("error", "Debug commands are not supported on a remote REPL!");
+            return;
+        }
+
         debugClient = null;
 
         if (DebugAgent.isAttached()) {
@@ -447,6 +452,11 @@ public class REPL implements IRepl {
     }
 
     private void switchToDebugREPL() {
+        if (isRemoteRepl()) {
+            printer.println("error", "Debug commands are not supported on a remote REPL!");
+            return;
+        }
+
         if (DebugAgent.isAttached()) {
             printer.println("error", "Debugger: already attached");
         }
@@ -670,6 +680,10 @@ public class REPL implements IRepl {
     }
 
     private void handleDebugHelpCommand() {
+        if (isRemoteRepl()) {
+            printer.println("error", "Debug commands are not supported on a remote REPL!");
+            return;
+        }
         ReplDebugClient.pringHelp(printer);
     }
 
