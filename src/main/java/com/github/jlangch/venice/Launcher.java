@@ -445,27 +445,28 @@ public class Launcher {
     }
 
     private static boolean getReplEncrypt(final CommandLineArgs cli) {
-        if (cli.switchPresent("-repl-encrypt")) {
-             final String encrypt = cli.switchValue("-repl-encrypt", "yes");
-             if ("yes".equalsIgnoreCase(encrypt)) return true;
-             if ("no".equalsIgnoreCase(encrypt)) return false;
-             return true;
-        }
-        else {
-            return true;
-        }
+        return cli.switchPresent("-repl-encrypt")
+                ? isTrue(cli.switchValue("-repl-encrypt", "yes"), true)
+                : true;
     }
 
     private static boolean getReplCompress(final CommandLineArgs cli) {
-        if (cli.switchPresent("-repl-compress")) {
-             final String encrypt = cli.switchValue("-repl-compress", "yes");
-             if ("yes".equalsIgnoreCase(encrypt)) return true;
-             if ("no".equalsIgnoreCase(encrypt)) return false;
-             return true;
-        }
-        else {
-            return true;
-        }
+       return cli.switchPresent("-repl-compress")
+                ? isTrue(cli.switchValue("-repl-compress", "yes"), true)
+                : true;
+    }
+
+    private static boolean isTrue(final String s, final boolean defaultVal) {
+        if ("yes".equalsIgnoreCase(s)) return true;
+        if ("no".equalsIgnoreCase(s)) return false;
+
+        if ("on".equalsIgnoreCase(s)) return true;
+        if ("off".equalsIgnoreCase(s)) return false;
+
+        if ("true".equalsIgnoreCase(s)) return true;
+        if ("false".equalsIgnoreCase(s)) return false;
+
+        return true;
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {
