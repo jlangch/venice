@@ -67,7 +67,7 @@ The remote REPL demo application looks like:
 
 ## Connect from a REPL
 
-Start a REPL and connect to the remote REPL server (pass host, port, and password)
+Start a REPL and connect to the remote REPL server (pass *host*, *port*, and *password*)
 
 ```
 venice> !remote localhost 33334 123
