@@ -446,27 +446,27 @@ public class Launcher {
 
     private static boolean getReplEncrypt(final CommandLineArgs cli) {
         return cli.switchPresent("-repl-encrypt")
-                ? isTrue(cli.switchValue("-repl-encrypt", "yes"), true)
+                ? isTrue(cli.switchValue("-repl-encrypt", "on"), true)
                 : true;
     }
 
     private static boolean getReplCompress(final CommandLineArgs cli) {
        return cli.switchPresent("-repl-compress")
-                ? isTrue(cli.switchValue("-repl-compress", "yes"), true)
+                ? isTrue(cli.switchValue("-repl-compress", "off"), false)
                 : true;
     }
 
     private static boolean isTrue(final String s, final boolean defaultVal) {
-        if ("yes".equalsIgnoreCase(s)) return true;
-        if ("no".equalsIgnoreCase(s)) return false;
-
         if ("on".equalsIgnoreCase(s)) return true;
         if ("off".equalsIgnoreCase(s)) return false;
+
+        if ("yes".equalsIgnoreCase(s)) return true;
+        if ("no".equalsIgnoreCase(s)) return false;
 
         if ("true".equalsIgnoreCase(s)) return true;
         if ("false".equalsIgnoreCase(s)) return false;
 
-        return true;
+        return defaultVal;
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {
