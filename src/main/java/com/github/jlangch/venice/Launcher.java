@@ -169,6 +169,8 @@ public class Launcher {
         final boolean macroexpand = isMacroexpand(cli);
         final int replServerPort = getReplServerPort(cli);
         final String replServerPassword = getReplServerPassword(cli);
+        final boolean replServerEncrypt = getReplEncrypt(cli);
+        final boolean replServerCompress = getReplCompress(cli);
 
         // run the file from the filesystem
         final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
@@ -178,10 +180,13 @@ public class Launcher {
 
         final String result = runScript(
                                 cli.removeSwitches("-script", "-macroexpand", "-loadpath",
-                                                   "-repl-port", "-repl-pwd"),
+                                                   "-repl-port", "-repl-pwd",
+                                                   "-repl-encrypt", "-repl-compress"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
+                                replServerEncrypt,
+                                replServerCompress,
                                 interceptor,
                                 scriptWrapped,
                                 new File(file).getName());
@@ -200,6 +205,8 @@ public class Launcher {
         final boolean macroexpand = isMacroexpand(cli);
         final int replServerPort = getReplServerPort(cli);
         final String replServerPassword = getReplServerPassword(cli);
+        final boolean replServerEncrypt = getReplEncrypt(cli);
+        final boolean replServerCompress = getReplCompress(cli);
 
         // run the file from the classpath
         final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
@@ -207,10 +214,13 @@ public class Launcher {
 
         final String result = runScript(
                                 cli.removeSwitches("-script", "-macroexpand", "-loadpath",
-                                                   "-repl-port", "-repl-pwd"),
+                                                   "-repl-port", "-repl-pwd",
+                                                   "-repl-encrypt", "-repl-compress"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
+                                replServerEncrypt,
+                                replServerCompress,
                                 interceptor,
                                 script,
                                 new File(file).getName());
@@ -229,16 +239,21 @@ public class Launcher {
         final boolean macroexpand = isMacroexpand(cli);
         final int replServerPort = getReplServerPort(cli);
         final String replServerPassword = getReplServerPassword(cli);
+        final boolean replServerEncrypt = getReplEncrypt(cli);
+        final boolean replServerCompress = getReplCompress(cli);
 
         // run the script passed as command line argument
         final String script = cli.switchValue("-script");
 
         final String result = runScript(
                                 cli.removeSwitches("-script", "-macroexpand", "-loadpath",
-                                                   "-repl-port", "-repl-pwd"),
+                                                   "-repl-port", "-repl-pwd",
+                                                   "-repl-encrypt", "-repl-compress"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
+                                replServerEncrypt,
+                                replServerCompress,
                                 interceptor,
                                 script,
                                 "script");
@@ -341,6 +356,8 @@ public class Launcher {
             final boolean macroexpand,
             final int replServerPort,
             final String replServerPassword,
+            final boolean replServerEncrypt,
+            final boolean replServerCompress,
             final IInterceptor interceptor,
             final String script,
             final String name
@@ -361,7 +378,9 @@ public class Launcher {
                                                 venice,
                                                 new Env(env),  // run in own context
                                                 replServerPort,
-                                                replServerPassword)
+                                                replServerPassword,
+                                                replServerEncrypt,
+                                                replServerCompress)
             ) {
                 return venice.PRINT(venice.RE(script, name, env));
             }
@@ -423,6 +442,30 @@ public class Launcher {
        else {
             return null;
        }
+    }
+
+    private static boolean getReplEncrypt(final CommandLineArgs cli) {
+        if (cli.switchPresent("-repl-encrypt")) {
+             final String encrypt = cli.switchValue("-repl-encrypt", "yes");
+             if ("yes".equalsIgnoreCase(encrypt)) return true;
+             if ("no".equalsIgnoreCase(encrypt)) return false;
+             return true;
+        }
+        else {
+            return true;
+        }
+    }
+
+    private static boolean getReplCompress(final CommandLineArgs cli) {
+        if (cli.switchPresent("-repl-compress")) {
+             final String encrypt = cli.switchValue("-repl-compress", "yes");
+             if ("yes".equalsIgnoreCase(encrypt)) return true;
+             if ("no".equalsIgnoreCase(encrypt)) return false;
+             return true;
+        }
+        else {
+            return true;
+        }
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {

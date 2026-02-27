@@ -63,12 +63,14 @@ public class RemoteReplServer implements AutoCloseable  {
             final IVeniceInterpreter interpreter,
             final Env env,
             final int port,
-            final String password
+            final String password,
+            final boolean encrypt,
+            final boolean compress
     ) {
         this.interpreter = interpreter;
         this.env = env;
 
-        this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password);
+        this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password, encrypt, compress);
     }
 
 
@@ -93,7 +95,9 @@ public class RemoteReplServer implements AutoCloseable  {
     private Server createIpcServer(
             final int port,
             final String principal,
-            final String password
+            final String password,
+            final boolean encrypt,
+            final boolean compress
     ) {
         if (port <= 0 || port > 65536) {
             throw new VncException(
@@ -120,7 +124,8 @@ public class RemoteReplServer implements AutoCloseable  {
                                             .builder()
                                             .conn(port)
                                             .authenticator(authenticator)
-                                            .encrypt(true)
+                                            .encrypt(encrypt)
+                                            .compressCutoffSize(compress ? CompressCutoffSize : -1)
                                             .build();
 
             final Server server = Server.of(config);
@@ -301,6 +306,8 @@ public class RemoteReplServer implements AutoCloseable  {
         return System.currentTimeMillis() - start;
     }
 
+
+    private static final int CompressCutoffSize = 8 * 1024 * 1024;  // 8KB
 
     private final IVeniceInterpreter interpreter;
     private final Env env;
