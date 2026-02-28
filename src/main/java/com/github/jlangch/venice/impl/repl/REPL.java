@@ -378,6 +378,13 @@ public class REPL implements IRepl {
                                 break;
 
                             case "restart":
+                                if (isRemoteRepl()) {
+                                    printer.println(
+                                        "error",
+                                        "Cannot restart this REPL as long as a remote REPL is active!");
+                                    return;
+                                }
+
                                 if (restartable) {
                                     printer.println("system", "Restarting REPL...");
                                     ReplRestart.restart(
@@ -617,11 +624,12 @@ public class REPL implements IRepl {
             }
             else {
                 switch(cmd) {
-                    case "macroexpand":   handleMacroExpandCommand(env); break;
-                    case "me":            handleMacroExpandCommand(env); break;
                     case "":              handleHelpCommand(); break;
                     case "?":             handleHelpCommand(); break;
                     case "help":          handleHelpCommand(); break;
+                    case "version":       handleVersionCommand(); break;
+                    case "macroexpand":   handleMacroExpandCommand(env); break;
+                    case "me":            handleMacroExpandCommand(env); break;
                     case "config":        handleConfigCommand(); break;
                     case "dark":          handleColorModeCommand(ColorMode.Dark); break;
                     case "darkmode":      handleColorModeCommand(ColorMode.Dark); break;
@@ -677,6 +685,10 @@ public class REPL implements IRepl {
 
     private void handleHelpCommand() {
         printer.println("stdout", ReplHelp.COMMANDS);
+    }
+
+    private void handleVersionCommand() {
+        printer.println("stdout", "Venice REPL: V" + Venice.getVersion());
     }
 
     private void handleDebugHelpCommand() {

@@ -39,16 +39,16 @@
 
 (defn stop [] 
   (reset! stop? true)
-  (println "Stopping server..."))
+  (println "Stopping demo server..."))
 
 (defn sum [x y] 
   (println "Function 'sum' called")
   (+ x y))
 
 
-(println "Started server")
+(println "Started demo server")
 
 (while (not @stop?)
-  (sleep 1000))
+  (sleep 500))
 
-(println "Stopped server")
+(println "Stopped demo server")

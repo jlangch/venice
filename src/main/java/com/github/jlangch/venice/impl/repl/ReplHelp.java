@@ -34,6 +34,7 @@ public class ReplHelp {
             "               note: the REPL launcher script must support REPL\n" +
             "                     restarting.\n" +
             "  !, !?, !help help\n" +
+            "  !version     print the REPL version info\n" +
             "  !darkmode    switch to Venice's dark color theme\n" +
             "  !lightmode   switch to Venice's light color theme\n" +
             "  !info        show REPL setup context data\n" +
