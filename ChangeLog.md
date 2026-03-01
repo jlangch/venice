@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Updated dependencies:
+
+- Bumped VAVR from 1.0.0 to 1.0.1
+
 
 
 ## [1.12.82] - 2026-02-26
