@@ -57,6 +57,22 @@ venice> (sum 1 4)
 venice>
 ```
 
+Check the current namespace
+
+```text
+venice> *ns*
+=> user
+venice>
+```
+
+Change to the *demo* namespace
+
+```text
+venice> (ns demo)
+=> demo
+venice>
+```
+
 
 ### REPL commands
 

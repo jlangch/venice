@@ -130,7 +130,7 @@ It offers two public functions that can be remotely called:
 
 | Function         | Description            | Example                |
 | :--              | :--                    | :--                    |
-| `demo/sum`        | sum up two numbers     | `(demo/sum 2 3)`        |
+| `demo/sum`        | sum two numbers        | `(demo/sum 2 3)`        |
 | `demo/stop`       | stop the application   | `(demo/stop)`           |
 
 Standard out/err text produced by the remote functions are routed back to the REPL
