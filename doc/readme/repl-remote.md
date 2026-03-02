@@ -78,6 +78,13 @@ venice> !remote localhost 33334 123
 remote>
 ```
 
+check the remote REPL Venice version
+
+```
+remote> (version)
+=> 1.12.82
+```
+
 call a remote function
 
 ```
