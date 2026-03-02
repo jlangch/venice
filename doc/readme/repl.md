@@ -6,6 +6,9 @@ that takes user inputs (lines of code), executes them, and returns the result
 to the user. This process allows for real-time feedback and is great for learning, 
 testing code snippets, and debugging.
 
+By default, the Venic REPL starts in the *user* namespace and this namespace is 
+typically used for exploratory work.
+
  
  
 
