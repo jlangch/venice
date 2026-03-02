@@ -50,20 +50,20 @@ The remote REPL demo application looks like:
 
   (defn stop [] 
     (reset! stop? true)
-    (println "Stopping server..."))
+    (println "Stopping demo server..."))
 
   (defn sum [x y] 
     (println "Function 'sum' called")
     (+ x y))
 
 
-  (println "Started server")
+  (println "Started demo server")
 
   ;; just sleep until we get stopped
   (while (not @stop?)
     (sleep 1000))
 
-  (println "Stopped server"))
+  (println "Stopped demo server"))
 ```
 
  
@@ -116,20 +116,20 @@ The demo uses this Venice server application:
 
   (defn stop [] 
     (reset! stop? true)
-    (println "Stopping server..."))
+    (println "Stopping demo server..."))
 
   (defn sum [x y] 
     (println "Function 'sum' called")
     (+ x y))
 
 
-  (println "Started server")
+  (println "Started demo server")
   
   ;; just sleep until we get stopped
   (while (not @stop?)
     (sleep 1000))
 
-  (println "Stopped server"))
+  (println "Stopped demo server"))
 ```
 
 
