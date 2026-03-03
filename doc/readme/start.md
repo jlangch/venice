@@ -189,6 +189,39 @@ venice>
 ```
 
  
+ 
+
+### VSCodium 
+
+[VSCodium](https://vscodium.com/) is a community-driven, freely-licensed binary distribution of Microsoft’s editor VS Code.
+
+ 
+
+**Install VSCodium in Mac OSX**
+
+If you are on a Mac and have [Homebrew](https://brew.sh/) installed:
+
+```
+brew install --cask vscodium
+```
+
+ 
+
+Edit the VSCodium **settings.json** file to establish syntax highlighting for Venice source files
+
+```json
+{
+    "files.associations": {
+        "*.venice": "clojure"
+    },
+    
+    "workbench.colorTheme": "Tomorrow Night Blue",
+    "redhat.telemetry.enabled": false
+}
+```
+
+ 
+ 
 
 ### VSCode 
 
