@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -47,6 +48,7 @@ public class RemoteReplClient implements AutoCloseable  {
             final int port,
             final String password
     ) {
+        this.sessionId = UUID.randomUUID().toString();
         this.ipcClient = createIpcClient(host, port, RemoteRepl.PRINCIPAL, password);
     }
 
@@ -55,7 +57,8 @@ public class RemoteReplClient implements AutoCloseable  {
         Objects.requireNonNull(form);
 
         final IMessage m = MessageFactory.venice(
-                                String.valueOf(requestId.incrementAndGet()),
+                                sessionId,
+                                // String.valueOf(requestId.incrementAndGet()),
                                 "eval",
                                 createDataMap("form", form));
 
@@ -151,6 +154,7 @@ public class RemoteReplClient implements AutoCloseable  {
     }
 
 
+    private final String sessionId;
     private final Client ipcClient;
     private final AtomicBoolean stop = new AtomicBoolean(false);
     private final AtomicLong requestId = new AtomicLong(0L);

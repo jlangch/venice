@@ -146,6 +146,7 @@ public class RemoteReplServer implements AutoCloseable  {
     }
 
     private IMessage handler(final IMessage request) {
+        final String sessionId = request.getRequestId();
         final String subject = request.getSubject();
 
         switch(subject) {
