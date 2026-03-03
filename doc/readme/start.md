@@ -203,6 +203,8 @@ If you are on a Mac and have [Homebrew](https://brew.sh/) installed:
 brew install --cask vscodium
 ```
 
+or install the VSCodium *.dmg* package from [Install](https://vscodium.com/#install)
+
 **Syntax Highlighting**
 
 Edit the VSCodium **settings.json** file to establish syntax highlighting for Venice source files
