@@ -167,6 +167,14 @@ client and displayed.
 The remote REPL allows the tracing of functions in the remote application. The tracing can 
 be turned on and off for any public function in the remote application.
 
+Functions under tracing behave as the original functions. Venice just adds a function
+interceptor that wraps the original function and when called:
+
+    * prints the function name and its arguments
+    * calls the orginal function
+    * prints the orginal function's return value
+    * returns the original function's return value
+
  
 
 > [!NOTE]
@@ -205,6 +213,8 @@ The remote REPL demo application looks like:
 
   (println "Stopped demo server"))
 ```
+
+ 
 
 **i) Start the remote application**
 
