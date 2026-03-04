@@ -170,9 +170,9 @@ tracing can be turned on and off for any public function in the remote applicati
 A function under tracing behaves as the original function. Venice just adds an
 interceptor that wraps the original function and when called:
 
-* prints the function name and its arguments
-* calls the orginal function
-* prints the orginal function's return value
+* prints the function name and its evaluated arguments
+* calls the original function
+* prints the original function's return value
 * returns the original function's return value
 
  
