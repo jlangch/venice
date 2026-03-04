@@ -54,6 +54,16 @@ public class RemoteVeniceAdapter implements IVeniceAdapter{
         try {
             final FormResult result = client.eval(script);
             if (result.getEx() != null) {
+                final String out = StringUtil.trimToNull(result.getOut());
+                if (out != null) {
+                    printer.println("stdout", out);
+                    printer.println();
+                }
+                final String err = StringUtil.trimToNull(result.getErr());
+                if (err != null) {
+                    printer.println("stderr", err);
+                    printer.println();
+                }
                 printer.println("error", result.getEx());
             }
             else {
