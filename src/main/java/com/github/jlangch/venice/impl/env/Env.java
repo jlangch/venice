@@ -607,7 +607,7 @@ public class Env implements Serializable {
             if (globalVarLookupOptimization) {
                 if (local != null) {
                     return local instanceof GlobalRefVar ? getGlobalVar(sym) : local;
-               }
+                }
                 else {
                     final Var glob = getGlobalVar(sym);
                     if (glob != null) {
