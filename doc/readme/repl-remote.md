@@ -265,10 +265,10 @@ TRACE t18: (demo/bar 5)
 TRACE t19: | (demo/zoo 5)
 TRACE t20: | | (demo/foo 5)
 TRACE t21: | | | (core/+ 5 2)
-TRACE t21: | | | | => 7
-TRACE t20: | | | => 7
-TRACE t19: | | => 7
-TRACE t18: | => 7
+TRACE t21: | | | => 7
+TRACE t20: | | => 7
+TRACE t19: | => 7
+TRACE t18: => 7
 
 => 7
 ```
@@ -285,9 +285,9 @@ with the output:
 TRACE t22: (demo/bar-ex 5)
 TRACE t23: | (demo/foo-ex 5)
 TRACE t24: | | (core// 5 0)
-TRACE t24: | | | => com.github.jlangch.venice.VncException: / by zero
-TRACE t23: | | => com.github.jlangch.venice.VncException: / by zero
-TRACE t22: | => com.github.jlangch.venice.VncException: / by zero
+TRACE t24: | | => com.github.jlangch.venice.VncException: / by zero
+TRACE t23: | => com.github.jlangch.venice.VncException: / by zero
+TRACE t22: => com.github.jlangch.venice.VncException: / by zero
 ```
 
 *Example 3*
@@ -305,12 +305,12 @@ TRACE t27: | | (demo/factorial 3)
 TRACE t28: | | | (demo/factorial 2)
 TRACE t29: | | | | (demo/factorial 1)
 TRACE t30: | | | | | (demo/factorial 0)
-TRACE t30: | | | | | | => 1
-TRACE t29: | | | | | => 1
-TRACE t28: | | | | => 2
-TRACE t27: | | | => 6
-TRACE t26: | | => 24
-TRACE t25: | => 120
+TRACE t30: | | | | | => 1
+TRACE t29: | | | | => 1
+TRACE t28: | | | => 2
+TRACE t27: | | => 6
+TRACE t26: | => 24
+TRACE t25: => 120
 ```
 
 **v) Turn off tracing**

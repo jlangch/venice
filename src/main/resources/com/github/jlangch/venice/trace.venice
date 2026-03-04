@@ -50,16 +50,20 @@
   (apply str (repeat *trace-depth* "| ")))
 
 
+(defn- trace-indent-result []
+  (apply str (repeat (dec *trace-depth*) "| ")))
+
+
 (defn trace-fn-call [name f args]
   (let [id (gensym "t")]
     (tracer id (str (trace-indent) (pr-str (cons name args))))
     (binding [*trace-depth* (inc *trace-depth*)]
       (try
         (let [result (apply f args)]
-          (tracer id (str (trace-indent) "=> " (pr-str result)))
+          (tracer id (str (trace-indent-result) "=> " (pr-str result)))
           result)
         (catch :Exception e
-          (tracer id (str (trace-indent) "=> " (pr-str e)))
+          (tracer id (str (trace-indent-result) "=> " (pr-str e)))
           (throw e))))))
 
 
