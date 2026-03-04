@@ -466,7 +466,7 @@ public class ReplFunctions {
                             "The REPL env file ('repl.env' on Unix or 'repl.env.bat' " +
                             "on Windows ) is 'sourced' at REPL start time to make the " +
                             "contained vars available as system env vars!\n\n"+
-                           "Note: This function is only available when called from " +
+                            "Note: This function is only available when called from " +
                             "within a REPL!")
                         .examples(
                             "(repl/get-env \"DEMO\")")
