@@ -160,3 +160,137 @@ client and displayed.
 </table>
 
 
+
+## Tracing via the Remote REPL
+
+The remote REPL allows the tracing of functions in the remote application. The tracing can 
+be turned on and off for any public function in the remote application.
+
+ 
+
+> [!NOTE]
+> Tracing via remote REPL requires Venice 1.12.83+
+>
+
+ 
+
+
+The remote REPL demo application looks like:
+
+```clojure
+(do
+  (ns demo)
+
+  (def- stop? (atom false))
+
+  (defn stop [] 
+    (reset! stop? true)
+    (println "Stopping demo server..."))
+
+
+;; trace demo functions
+(defn foo [x] (+ x 2))
+(defn zoo [x] (foo x))
+(defn bar [x] (zoo x))
+(defn foo-ex [x] (/ x 0)) ;; division by zero!
+(defn bar-ex [x] (foo-ex x))
+
+
+  (println "Started demo server")
+
+  ;; just sleep until we get stopped
+  (while (not @stop?)
+    (sleep 1000))
+
+  (println "Stopped demo server"))
+```
+
+**1. Start the remote application**
+
+```text
+java -jar ./venice-1.12.82.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-trace-demo.venice
+```
+
+**2. Connect from a REPL**
+
+Start a REPL and connect to the remote REPL server (pass *host*, *port*, and *password*)
+and load the tracing module (this module is loaded into the server application!). 
+
+```
+venice> !remote localhost 33334 123
+
+remote> (load-module :trace)
+```
+
+**3. Enable demo app functions for tracing**
+
+```
+remote> (trace/trace-var +)
+remote> (trace/trace-var demo/foo)
+remote> (trace/trace-var demo/zoo)
+remote> (trace/trace-var demo/bar)
+
+remote> (trace/trace-var /)
+remote> (trace/trace-var demo/foo-ex)
+remote> (trace/trace-var demo/bar-ex)
+```
+
+
+**4. Call a remote function**
+
+*Example 1*
+
+```
+remote> (demo/bar 5)
+```
+
+with the output:
+
+```
+TRACE t18: (demo/bar 5)
+TRACE t19: | (demo/zoo 5)
+TRACE t20: | | (demo/foo 5)
+TRACE t21: | | | (core/+ 5 2)
+TRACE t21: | | | | => 7
+TRACE t20: | | | => 7
+TRACE t19: | | => 7
+TRACE t18: | => 7
+
+=> 7
+```
+
+*Example 2*
+
+```
+remote> (demo/bar-ex 5)
+```
+
+with the output:
+
+```
+TRACE t22: (demo/bar-ex 5)
+TRACE t23: | (demo/foo-ex 5)
+TRACE t24: | | (core// 5 0)
+TRACE t24: | | | => com.github.jlangch.venice.VncException: / by zero
+TRACE t23: | | => com.github.jlangch.venice.VncException: / by zero
+TRACE t22: | => com.github.jlangch.venice.VncException: / by zero
+
+Exception in thread "venice-repl-server-worker" VncException: / by zero
+
+[Callstack]
+    at: apply (trace: line 58, col 23)
+    at: try (trace: line 57, col 8)
+    at: binding (trace: line 56, col 6)
+    at: trace/trace-fn-call (trace: line 198, col 24)
+    at: user/tracing-wrapper (remote-repl-trace-demo.venice: line 54, col 19)
+    at: apply (trace: line 58, col 23)
+    at: try (trace: line 57, col 8)
+    at: binding (trace: line 56, col 6)
+    at: trace/trace-fn-call (trace: line 198, col 24)
+    at: user/tracing-wrapper (remote-repl-trace-demo.venice: line 55, col 19)
+    at: apply (trace: line 58, col 23)
+    at: try (trace: line 57, col 8)
+    at: binding (trace: line 56, col 6)
+    at: trace/trace-fn-call (trace: line 198, col 24)
+    at: user/tracing-wrapper (repl: line 1, col 2)
+```
