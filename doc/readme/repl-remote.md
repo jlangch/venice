@@ -159,7 +159,8 @@ client and displayed.
 </tr>
 </table>
 
-
+ 
+ 
 
 ## Tracing via the Remote REPL
 
@@ -205,13 +206,13 @@ The remote REPL demo application looks like:
   (println "Stopped demo server"))
 ```
 
-**1. Start the remote application**
+**i) Start the remote application**
 
 ```text
 java -jar ./venice-1.12.82.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-trace-demo.venice
 ```
 
-**2. Connect from a REPL**
+**ii) Connect from a REPL**
 
 Start a REPL and connect to the remote REPL server (pass *host*, *port*, and *password*)
 and load the tracing module (this module is loaded into the server application!). 
@@ -222,7 +223,7 @@ venice> !remote localhost 33334 123
 remote> (load-module :trace)
 ```
 
-**3. Enable demo app functions for tracing**
+**iii) Enable demo app functions for tracing**
 
 ```
 remote> (trace/trace-var +)
@@ -236,7 +237,7 @@ remote> (trace/trace-var demo/bar-ex)
 ```
 
 
-**4. Call a remote function**
+**iv) Call a remote function**
 
 *Example 1*
 
@@ -293,4 +294,21 @@ Exception in thread "venice-repl-server-worker" VncException: / by zero
     at: binding (trace: line 56, col 6)
     at: trace/trace-fn-call (trace: line 198, col 24)
     at: user/tracing-wrapper (repl: line 1, col 2)
+```
+
+**v) Turn of tracing**
+
+> [!ALERT]
+> Do NOT forget to turn off tracing, unless you shutdown the remote application.
+>
+
+```
+remote> (trace/untrace-var +)
+remote> (trace/untrace-var demo/foo)
+remote> (trace/untrace-var demo/zoo)
+remote> (trace/untrace-var demo/bar)
+
+remote> (trace/untrace-var /)
+remote> (trace/untrace-var demo/foo-ex)
+remote> (trace/untrace-var demo/bar-ex)
 ```
