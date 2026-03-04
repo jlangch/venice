@@ -244,6 +244,8 @@ remote> (trace/trace-var demo/bar)
 remote> (trace/trace-var /)
 remote> (trace/trace-var demo/foo-ex)
 remote> (trace/trace-var demo/bar-ex)
+
+remote> (trace/trace-var demo/factorial)
 ```
 
 
@@ -287,6 +289,29 @@ TRACE t23: | | => com.github.jlangch.venice.VncException: / by zero
 TRACE t22: | => com.github.jlangch.venice.VncException: / by zero
 ```
 
+*Example 3*
+
+```
+remote> (demo/factorial 5)
+```
+
+with the output:
+
+```
+TRACE t25: (user/factorial 5)
+TRACE t26: | (user/factorial 4)
+TRACE t27: | | (user/factorial 3)
+TRACE t28: | | | (user/factorial 2)
+TRACE t29: | | | | (user/factorial 1)
+TRACE t30: | | | | | (user/factorial 0)
+TRACE t30: | | | | | | => 1
+TRACE t29: | | | | | => 1
+TRACE t28: | | | | => 2
+TRACE t27: | | | => 6
+TRACE t26: | | => 24
+TRACE t25: | => 120
+```
+
 **v) Turn off tracing**
 
 > [!CAUTION]
@@ -302,4 +327,6 @@ remote> (trace/untrace-var demo/bar)
 remote> (trace/untrace-var /)
 remote> (trace/untrace-var demo/foo-ex)
 remote> (trace/untrace-var demo/bar-ex)
+
+remote> (trace/untrace-var demo/factorial)
 ```
