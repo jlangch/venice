@@ -203,6 +203,7 @@ The remote REPL demo application looks like:
   (defn bar [x] (zoo x))
   (defn foo-ex [x] (/ x 0)) ;; division by zero!
   (defn bar-ex [x] (foo-ex x))
+  (defn factorial [n] (if (= n 0) 1 (* n (factorial (- n 1)))))
 
 
   (println "Started demo server")
