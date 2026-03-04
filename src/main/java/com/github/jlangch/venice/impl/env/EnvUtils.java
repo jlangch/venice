@@ -102,6 +102,10 @@ public class EnvUtils {
                 return new VncKeyword(vJava.getDelegate().getClass().getName());
             }
         }
+        else if (var_ instanceof DynamicVar) {
+            final VncKeyword type = Types.getType(val);
+            return new VncKeyword(type.getQualifiedName() + "$dynamic");
+        }
         else {
             return Types.getType(val);
         }
