@@ -287,7 +287,7 @@ TRACE t23: | | => com.github.jlangch.venice.VncException: / by zero
 TRACE t22: | => com.github.jlangch.venice.VncException: / by zero
 ```
 
-**v) Turn of tracing**
+**v) Turn off tracing**
 
 > [!CAUTION]
 > Do NOT forget to turn off tracing, unless you shutdown the remote application anyway.
