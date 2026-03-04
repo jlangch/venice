@@ -298,12 +298,12 @@ remote> (demo/factorial 5)
 with the output:
 
 ```
-TRACE t25: (user/factorial 5)
-TRACE t26: | (user/factorial 4)
-TRACE t27: | | (user/factorial 3)
-TRACE t28: | | | (user/factorial 2)
-TRACE t29: | | | | (user/factorial 1)
-TRACE t30: | | | | | (user/factorial 0)
+TRACE t25: (demo/factorial 5)
+TRACE t26: | (demo/factorial 4)
+TRACE t27: | | (demo/factorial 3)
+TRACE t28: | | | (demo/factorial 2)
+TRACE t29: | | | | (demo/factorial 1)
+TRACE t30: | | | | | (demo/factorial 0)
 TRACE t30: | | | | | | => 1
 TRACE t29: | | | | | => 1
 TRACE t28: | | | | => 2
