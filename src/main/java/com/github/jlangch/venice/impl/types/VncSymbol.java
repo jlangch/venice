@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.ReservedSymbols;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -81,6 +82,10 @@ public class VncSymbol extends VncVal implements INamespaceAware {
     @Override
     public VncSymbol withMeta(final VncVal meta) {
         return new VncSymbol(this, meta);
+    }
+
+    public VncSymbol asPrivate() {
+        return withMeta(VncHashMap.of(new VncKeyword("private"), VncBoolean.True));
     }
 
     public VncSymbol withNamespace(final VncSymbol namespace) {
