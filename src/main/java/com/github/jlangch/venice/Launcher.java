@@ -39,7 +39,6 @@ import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.repl.install.ReplInstaller;
 import com.github.jlangch.venice.impl.repl.remote.RemoteReplServer;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -372,8 +371,6 @@ public class Launcher {
                                 convertCliArgsToVar(cli)));
 
         if (replServerPort > 0) {
-            env.setGlobal(new Var(new VncSymbol("repl/repl?"), VncBoolean.True, false, Var.Scope.Global));
-
             try (RemoteReplServer server = new RemoteReplServer(
                                                 venice,
                                                 new Env(env),  // run in own context

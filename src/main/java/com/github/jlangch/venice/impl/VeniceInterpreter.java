@@ -67,6 +67,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncScalar;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
@@ -349,6 +350,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         final VncMutableSet loadedModules = new VncMutableSet();
         env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true, Var.Scope.Global));
         env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true, Var.Scope.Global));
+
+        // tracing
+        env.setGlobalDynamic(new VncSymbol("trace/*trace-depth*").asPrivate(), new VncLong(0));
+        env.setGlobalDynamic(new VncSymbol("trace/*trace-str-limit*").asPrivate(),new VncLong(80));
 
         if (stdOut != null) {
             env.setStdoutPrintStream(stdOut);

@@ -33,8 +33,6 @@
 ;;;; venice> (demo/stop)
 ;;;; ---------------------------------------------------------------------------
 
-(load-module :trace)
-
 (ns demo)
 
 (def- stop? (atom false))

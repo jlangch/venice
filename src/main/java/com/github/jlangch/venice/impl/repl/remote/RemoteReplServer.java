@@ -28,8 +28,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
@@ -37,7 +38,11 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.EnvUtils;
-import com.github.jlangch.venice.impl.thread.ThreadBridge;
+import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -47,7 +52,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.ipc.Authenticator;
@@ -70,7 +74,14 @@ public class RemoteReplServer implements AutoCloseable  {
         this.interpreter = interpreter;
         this.env = env;
 
+        env.setGlobal(new Var(new VncSymbol("repl/remote-repl?"), VncBoolean.True, false, Var.Scope.Global));
+        env.setGlobalDynamic(new VncSymbol("repl/session-id"), Constants.Nil);
+
+        // Save the thread context for use with client REPL session threads
+        this.mainThreadContextSnapshot = ThreadContext.snapshot();
+
         this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password, encrypt, compress);
+        this.executors = new SessionThreadExecutors(TimeUnit.MINUTES.toSeconds(30));
     }
 
 
@@ -83,6 +94,7 @@ public class RemoteReplServer implements AutoCloseable  {
         if (stop.compareAndSet(false, true)) {
             if (ipcServer != null) {
                 ipcServer.close();
+                executors.shutdown();
             }
         }
     }
@@ -130,9 +142,7 @@ public class RemoteReplServer implements AutoCloseable  {
 
             final Server server = Server.of(config);
 
-            final Function<IMessage,IMessage> fnWrapper = wrapFunction(this::handler);
-
-            server.createFunction(RemoteRepl.FUNCTION, fnWrapper);
+            server.createFunction(RemoteRepl.FUNCTION, this::handler);
 
             server.start();
 
@@ -146,18 +156,34 @@ public class RemoteReplServer implements AutoCloseable  {
     }
 
     private IMessage handler(final IMessage request) {
+        // Get the executor thread for this session, start a new one if it does not exist yet
         final String sessionId = request.getRequestId();
-        final String subject = request.getSubject();
+        final SessionThreadExecutor executor = executors.getForSession(
+                                                    sessionId,
+                                                    () -> ThreadContext.inheritFrom(mainThreadContextSnapshot));
 
-        switch(subject) {
-            case "eval": return handleEval(request);
-            case "env":  return handleEnv(request);
-            default:     return responseMessage(
-                                    request,
-                                    createDataMap(
-                                        Nil, Nil,
-                                        new RuntimeException("Invalid command: " + subject),
-                                        null, null, 0L));
+        final String subject = request.getSubject();
+        try {
+            switch(subject) {
+                case "eval": return executor.submit(() -> handleEval(request)).get();
+                default:     return responseMessage(
+                                        request,
+                                        createDataMap(
+                                            Nil, Nil,
+                                            new RuntimeException("Invalid command: " + subject),
+                                            null, null, 0L));
+            }
+        }
+        catch(ExecutionException ex) {
+            final Exception cause = ex.getCause() != null ? (Exception)ex.getCause() : ex;
+            return responseMessage(
+                    request,
+                    createDataMap(Nil, Nil, cause, null, null, 0L));
+        }
+        catch(Exception ex) {
+            return responseMessage(
+                    request,
+                    createDataMap(Nil, Nil, ex, null, null, 0L));
         }
     }
 
@@ -209,6 +235,8 @@ public class RemoteReplServer implements AutoCloseable  {
 
     private IMessage handleEval(final IMessage request) {
         final long start = System.currentTimeMillis();
+
+        env.pushGlobalDynamic(new VncSymbol("repl/session-id"), new VncString(request.getRequestId()));
 
         try(CapturingPrintStream out = new CapturingPrintStream();
             CapturingPrintStream err = new CapturingPrintStream()
@@ -275,17 +303,6 @@ public class RemoteReplServer implements AutoCloseable  {
         return sw.toString();
     }
 
-    private static Function<IMessage,IMessage> wrapFunction(
-            final Function<IMessage,IMessage> handler
-    ) {
-        final CallFrame[] cf = new CallFrame[] { };
-
-        // Create a wrapper that inherits the Venice thread context!
-        final ThreadBridge threadBridge = ThreadBridge.create("tcp-repl-server-handler", cf);
-
-        return threadBridge.bridgeFunction((IMessage m) -> handler.apply(m));
-    }
-
     private IMessage responseMessage(final IMessage request, final VncMap responseData) {
         return MessageFactory.venice(
                 request.getRequestId(),
@@ -296,7 +313,7 @@ public class RemoteReplServer implements AutoCloseable  {
     private String capturedText(final CapturingPrintStream ps) {
         if (ps != null) {
             ps.flush();
-           return ps.getOutput();
+            return ps.getOutput();
         }
         else {
             return "";
@@ -313,5 +330,7 @@ public class RemoteReplServer implements AutoCloseable  {
     private final IVeniceInterpreter interpreter;
     private final Env env;
     private final Server ipcServer;
+    private final ThreadContextSnapshot mainThreadContextSnapshot;
     private final AtomicBoolean stop = new AtomicBoolean(false);
+    private final SessionThreadExecutors executors;
 }

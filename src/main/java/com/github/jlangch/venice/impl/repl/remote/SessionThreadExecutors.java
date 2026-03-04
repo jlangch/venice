@@ -29,16 +29,20 @@ import java.util.concurrent.TimeUnit;
 
 public class SessionThreadExecutors {
 
-    public SessionThreadExecutors(final int timeoutSeconds) {
+    public SessionThreadExecutors(final long timeoutSeconds) {
         this.timeoutMillils = TimeUnit.SECONDS.toMillis(timeoutSeconds);
 
+        // Garbage collect timeouted sessions
         this.gcThread = new Thread(() -> { while (!stop) { gc(); sleep(INTERVAL); } },
                                    "venice-repl-server-gc");
         this.gcThread.start();
     }
 
-    public SessionThreadExecutor getForSession(final String sessionId) {
-        return executors.computeIfAbsent(sessionId, id -> new SessionThreadExecutor());
+    public SessionThreadExecutor getForSession(
+            final String sessionId,
+            final Runnable onInitSession
+    ) {
+        return executors.computeIfAbsent(sessionId, id -> new SessionThreadExecutor(onInitSession));
     }
 
     public void shutdown() {
@@ -55,11 +59,18 @@ public class SessionThreadExecutors {
         }
     }
 
+    public int getSessionCount() {
+        return executors.size();
+    }
+
     private void gc() {
         final List<String> removableSessions = new ArrayList<>();
         for(String sessionId : executors.keySet()) {
             final SessionThreadExecutor e = executors.get(sessionId);
-            if (e.isRunning()) {
+            if (e == null) {
+                continue;
+            }
+            else if (e.isRunning()) {
                 if (isTimeout(e)) {
                     removableSessions.add(sessionId);
                     try { e.shutdown(); } catch(Exception ignore) {}
@@ -83,7 +94,7 @@ public class SessionThreadExecutors {
     }
 
 
-    private static long INTERVAL = TimeUnit.MINUTES.toMillis(30);
+    private static long INTERVAL = TimeUnit.SECONDS.toMillis(60);
 
     private volatile boolean stop = false;
 

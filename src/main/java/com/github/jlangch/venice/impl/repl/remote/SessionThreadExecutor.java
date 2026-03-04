@@ -28,25 +28,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 
 
-
 public class SessionThreadExecutor {
 
-    public SessionThreadExecutor() {
+    public SessionThreadExecutor(final Runnable onInit) {
         this.lastUsedTime = System.currentTimeMillis();
-        this.worker = new Thread(() -> {
-                            while (!stop) {
-                                final Job<?> job = tasks.poll();
-                                if (job != null) {
-                                    lastUsedTime = System.currentTimeMillis();
-                                    job.run();
-                                }
-                                else {
-                                    sleep(5);
-                                }
-                            }
-                        },
-                        "venice-repl-server-worker");
-
+        this.worker = new Thread(() -> worker(onInit), "venice-repl-server-worker");
         worker.start();
     }
 
@@ -73,11 +59,34 @@ public class SessionThreadExecutor {
     }
 
 
+    private void worker(final Runnable onInit) {
+        try {
+            if (onInit != null) {
+                onInit.run();  // run the session initializer
+            }
+
+            while (!stop) {
+                final Runnable job = tasks.poll();
+                if (job != null) {
+                    lastUsedTime = System.currentTimeMillis();
+                    job.run();
+                }
+                else {
+                    sleep(5);
+                }
+            }
+        }
+        finally {
+            stop = true;
+        }
+    }
+
+
     private static void sleep(final long millis) {
         try { Thread.sleep(millis); } catch(Exception ignore) {};
     }
 
-    private static class Job<T> {
+    private static class Job<T> implements Runnable {
         public Job(
                 final CompletableFuture<T> future,
                 final Callable<T> task
@@ -86,6 +95,7 @@ public class SessionThreadExecutor {
             this.task = task;
         }
 
+        @Override
         public void run() {
             try {
                 future.complete(task.call());

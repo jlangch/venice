@@ -9,7 +9,11 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- Added sessions to the remote REPL connections to support current namespace and dynamic vars. 
+  All forms evaluated within a session run within the same session related thread on the server.
+  The session implicitly starts with the `!remote` command and stops with the `!local` command.
+
+- The `finder` function marks now dynamic vars as 'dynamic' in the generated output
 
 ### Updated dependencies:
 
