@@ -331,3 +331,7 @@ remote> (trace/untrace-var demo/bar-ex)
 
 remote> (trace/untrace-var demo/factorial)
 ```
+
+> [!NOTE]
+> The next Venice 1.12.84 allows you to simply `remote> (trace/untrace-all)`
+>
