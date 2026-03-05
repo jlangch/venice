@@ -466,10 +466,10 @@ public class Launcher {
 
     private static int getReplSessionTimeoutMinutes(final CommandLineArgs cli) {
         if (cli.switchPresent("-repl-session-timeout")) {
-             final long timeoutMinutes = cli.switchLongValue("-repl-session-timeout", DEFAULT_REPL_SESSION_TIMEOUT);
-             if (timeoutMinutes < 0L) return 1;
-             if (timeoutMinutes > 1440L) return 1440;
-             return (int)timeoutMinutes;
+            final long timeoutMinutes = cli.switchLongValue(
+                                                "-repl-session-timeout",
+                                                DEFAULT_REPL_SESSION_TIMEOUT);
+            return (int)Math.min(1440L, Math.max(1L, timeoutMinutes));
         }
         else {
             return (int)DEFAULT_REPL_SESSION_TIMEOUT;
