@@ -117,9 +117,9 @@ public class TraceModuleTest {
                 "TRACE t00: (user/bar 5)\n" +
                 "TRACE t00: | (user/foo 5)\n" +
                 "TRACE t00: | | (core/+ 5 2)\n" +
-                "TRACE t00: | | | => 7\n" +
                 "TRACE t00: | | => 7\n" +
-                "TRACE t00: | => 7\n",
+                "TRACE t00: | => 7\n" +
+                "TRACE t00: => 7\n",
                 StringUtil.crlf_to_lf(cps.getOutput()).replaceAll("t[0-9]+:", "t00:"));
     }
 
@@ -150,9 +150,9 @@ public class TraceModuleTest {
                 "TRACE t00: (user/bar 5)\n" +
                 "TRACE t00: | (user/foo 5)\n" +
                 "TRACE t00: | | (core// 5 0)\n" +
-                "TRACE t00: | | | => com.github.jlangch.venice.VncException: / by zero\n" +
                 "TRACE t00: | | => com.github.jlangch.venice.VncException: / by zero\n" +
-                "TRACE t00: | => com.github.jlangch.venice.VncException: / by zero\n",
+                "TRACE t00: | => com.github.jlangch.venice.VncException: / by zero\n" +
+                "TRACE t00: => com.github.jlangch.venice.VncException: / by zero\n",
                 StringUtil.crlf_to_lf(cps.getOutput()).replaceAll("t[0-9]+:", "t00:"));
     }
 
