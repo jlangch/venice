@@ -170,7 +170,13 @@ The remote REPL allows the *ad hoc* tracing of functions in the remote applicati
 tracing can be turned on and off for any public function in the remote application.
 
 A function under tracing behaves as the original function. Venice just adds an
-interceptor that wraps the original function and when called:
+interceptor that wraps the original function. Tracing interceptors can be dynamically 
+added and removed.
+
+A trace prints the arguments when the function is entered and the value of the function when 
+it exits; indentation shows the level of recursive nesting.
+
+Trace actions:
 
 * prints the function name and its evaluated arguments
 * calls the original function
