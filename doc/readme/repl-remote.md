@@ -162,7 +162,7 @@ client and displayed.
  
  
 
-## Tracing via the remote REPL
+## Tracing via remote REPL
 
 The remote REPL allows the *ad hoc* tracing of functions in the remote application. The 
 tracing can be turned on and off for any public function in the remote application.
@@ -258,7 +258,7 @@ remote> (trace/trace-var demo/factorial)
 remote> (demo/bar 5)
 ```
 
-with the output:
+output:
 
 ```
 TRACE t18: (demo/bar 5)
@@ -279,7 +279,7 @@ TRACE t18: => 7
 remote> (demo/bar-ex 5)
 ```
 
-with the output:
+output:
 
 ```
 TRACE t22: (demo/bar-ex 5)
@@ -296,7 +296,7 @@ TRACE t22: => com.github.jlangch.venice.VncException: / by zero
 remote> (demo/factorial 5)
 ```
 
-with the output:
+output:
 
 ```
 TRACE t25: (demo/factorial 5)
