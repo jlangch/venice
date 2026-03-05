@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -39,6 +38,7 @@ import com.github.jlangch.venice.util.ipc.Client;
 import com.github.jlangch.venice.util.ipc.ClientConfig;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
+import com.github.jlangch.venice.util.ipc.ResponseStatus;
 
 
 public class RemoteReplClient implements AutoCloseable  {
@@ -48,8 +48,10 @@ public class RemoteReplClient implements AutoCloseable  {
             final int port,
             final String password
     ) {
-        this.sessionId = UUID.randomUUID().toString();
-        this.ipcClient = createIpcClient(host, port, RemoteRepl.PRINCIPAL, password);
+        final String uuid = UUID.randomUUID().toString();
+
+        this.sessionId = uuid;
+        this.ipcClient = createIpcClient(host, port, RemoteRepl.PRINCIPAL, password, uuid);
     }
 
 
@@ -86,46 +88,6 @@ public class RemoteReplClient implements AutoCloseable  {
         return stop.get();
     }
 
-    private Client createIpcClient(
-            final String host,
-            final int port,
-            final String principal,
-            final String password
-    ) {
-        if (port <= 0 || port > 65536) {
-            throw new VncException(
-                "Failed to start Venice REPL client. "
-                + "The port (" + port + ") must be in the range [0..65536]! ");
-        }
-        if (StringUtil.isEmpty(principal)) {
-            throw new VncException(
-                    "Failed to start Venice REPL client. The principal must not be empty!");
-        }
-        if (StringUtil.isEmpty(password)) {
-            throw new VncException(
-                    "Failed to start Venice REPL client. The password must not be empty!");
-        }
-
-        try {
-            final ClientConfig config = ClientConfig
-                                            .builder()
-                                            .conn(host, port)
-                                            .encrypt(true)
-                                            .build();
-
-            final Client client = Client.of(config);
-
-            client.open(principal, password);
-
-            stop.set(false);
-
-            return client;
-        }
-        catch(Exception ex) {
-            throw new VncException("Failed to start Venice REPL client", ex);
-        }
-    }
-
     private VncHashMap createDataMap(
             final String key,
             final String value
@@ -154,8 +116,58 @@ public class RemoteReplClient implements AutoCloseable  {
     }
 
 
+    private static Client createIpcClient(
+            final String host,
+            final int port,
+            final String principal,
+            final String password,
+            final String sessionId
+    ) {
+        if (port <= 0 || port > 65536) {
+            throw new VncException(
+                "Failed to start Venice REPL client. "
+                + "The port (" + port + ") must be in the range [0..65536]! ");
+        }
+        if (StringUtil.isEmpty(principal)) {
+            throw new VncException(
+                    "Failed to start Venice REPL client. The principal must not be empty!");
+        }
+        if (StringUtil.isEmpty(password)) {
+            throw new VncException(
+                    "Failed to start Venice REPL client. The password must not be empty!");
+        }
+
+        try {
+            final ClientConfig config = ClientConfig
+                                            .builder()
+                                            .conn(host, port)
+                                            .encrypt(true)
+                                            .build();
+
+            final Client client = Client.of(config);
+
+            client.open(principal, password);
+
+            sendSessionInit(client, sessionId);
+
+            return client;
+        }
+        catch(Exception ex) {
+            throw new VncException("Failed to start Venice REPL client", ex);
+        }
+    }
+
+    private static void sendSessionInit(final Client client, final String sessionId) {
+        final IMessage m = MessageFactory.text(sessionId, "session-init", "text/plain", "UTF-8", "");
+
+        final IMessage r = client.sendMessage(m, RemoteRepl.FUNCTION);
+        if (r.getResponseStatus() != ResponseStatus.OK) {
+            throw new VncException("REPL remote session initialization failure");
+        }
+    }
+
+
     private final String sessionId;
     private final Client ipcClient;
     private final AtomicBoolean stop = new AtomicBoolean(false);
-    private final AtomicLong requestId = new AtomicLong(0L);
 }

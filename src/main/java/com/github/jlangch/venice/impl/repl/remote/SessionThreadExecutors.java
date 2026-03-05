@@ -39,24 +39,34 @@ public class SessionThreadExecutors {
         this.gcThread.start();
     }
 
-    public SessionThreadExecutor getForSession(
+
+    public SessionThreadExecutor createSession(
             final String sessionId,
             final Runnable onInitSession
     ) {
-        if (isInvalidatedSession(sessionId)) {
-            throw new RuntimeException("The remote REPL session has been invalidated!");
+        final SessionThreadExecutor e = executors.computeIfAbsent(
+                                            sessionId,
+                                            id -> new SessionThreadExecutor(onInitSession));
+
+        if (e.isRunning()) {
+            return e;
         }
         else {
-            final SessionThreadExecutor e = executors.computeIfAbsent(
-                                                sessionId,
-                                                id -> new SessionThreadExecutor(onInitSession));
+            throw new RuntimeException("The remote REPL session has been invalidated!");
+        }
+    }
 
-            if (e.isRunning()) {
-               return e;
-            }
-            else {
-                throw new RuntimeException("The remote REPL session has been invalidated!");
-            }
+    public SessionThreadExecutor getSession(final String sessionId) {
+        final SessionThreadExecutor e = executors.get(sessionId);
+
+        if (e == null) {
+            throw new RuntimeException("No remote REPL session found, session invalidated due to timeout!");
+        }
+        else if (e.isRunning()) {
+            return e;
+        }
+        else {
+            throw new RuntimeException("The remote REPL session has been invalidated!");
         }
     }
 
@@ -99,12 +109,7 @@ public class SessionThreadExecutors {
         removableSessions.forEach(id -> invalidateSession(id));
     }
 
-    private boolean isInvalidatedSession(final String sessionId) {
-        return invalidatedSessions.containsKey(sessionId);
-    }
-
     private void invalidateSession(final String sessionId) {
-        invalidatedSessions.put(sessionId, "");
         executors.remove(sessionId);
     }
 
@@ -124,5 +129,4 @@ public class SessionThreadExecutors {
     private final long timeoutMillils;
     private final Thread gcThread;
     private final ConcurrentHashMap<String, SessionThreadExecutor> executors = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String> invalidatedSessions = new ConcurrentHashMap<>();
 }
