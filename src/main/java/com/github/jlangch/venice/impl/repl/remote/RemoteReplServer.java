@@ -156,29 +156,28 @@ public class RemoteReplServer implements AutoCloseable  {
     }
 
     private IMessage handler(final IMessage request) {
-        // Get the executor thread for this session, start a new one if it does not exist yet
-        final String sessionId = request.getRequestId();
-        final SessionThreadExecutor executor = executors.getForSession(
-                                                    sessionId,
-                                                    () -> ThreadContext.inheritFrom(mainThreadContextSnapshot));
-
-        final String subject = request.getSubject();
         try {
-            switch(subject) {
-                case "eval": return executor.submit(() -> handleEval(request)).get();
-                default:     return responseMessage(
-                                        request,
-                                        createDataMap(
-                                            Nil, Nil,
-                                            new RuntimeException("Invalid command: " + subject),
-                                            null, null, 0L));
+            // Get the executor thread for this session, start a new one if it does not exist yet
+            final String sessionId = request.getRequestId();
+            final SessionThreadExecutor executor = executors.getForSession(
+                                                        sessionId,
+                                                        () -> ThreadContext.inheritFrom(mainThreadContextSnapshot));
+
+            final String subject = request.getSubject();
+            try {
+                switch(subject) {
+                    case "eval": return executor.submit(() -> handleEval(request)).get();
+                    default:     return responseMessage(
+                                            request,
+                                            createDataMap(
+                                                Nil, Nil,
+                                                new RuntimeException("Invalid command: " + subject),
+                                                null, null, 0L));
+                }
             }
-        }
-        catch(ExecutionException ex) {
-            final Exception cause = ex.getCause() != null ? (Exception)ex.getCause() : ex;
-            return responseMessage(
-                    request,
-                    createDataMap(Nil, Nil, cause, null, null, 0L));
+            catch(ExecutionException ex) {
+                throw ex.getCause() != null ? (Exception)ex.getCause() : ex;
+            }
         }
         catch(Exception ex) {
             return responseMessage(

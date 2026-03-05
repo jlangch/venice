@@ -33,7 +33,8 @@ public class SessionThreadExecutor {
     public SessionThreadExecutor(final Runnable onInit) {
         this.lastUsedTime = System.currentTimeMillis();
         this.worker = new Thread(() -> worker(onInit), "venice-repl-server-worker");
-        worker.start();
+        this.worker.setDaemon(true);
+        this.worker.start();
     }
 
     public <T> Future<T> submit(final Callable<T> task) {

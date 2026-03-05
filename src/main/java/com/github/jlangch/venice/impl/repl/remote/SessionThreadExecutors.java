@@ -35,6 +35,7 @@ public class SessionThreadExecutors {
         // Garbage collect timeouted sessions
         this.gcThread = new Thread(() -> { while (!stop) { gc(); sleep(INTERVAL); } },
                                    "venice-repl-server-gc");
+        this.gcThread.setDaemon(true);
         this.gcThread.start();
     }
 
@@ -42,7 +43,12 @@ public class SessionThreadExecutors {
             final String sessionId,
             final Runnable onInitSession
     ) {
-        return executors.computeIfAbsent(sessionId, id -> new SessionThreadExecutor(onInitSession));
+        if (isInvalidatedSession(sessionId)) {
+            throw new RuntimeException("The remote REPL session '" + sessionId + "' has been invalidated!");
+        }
+        else {
+            return executors.computeIfAbsent(sessionId, id -> new SessionThreadExecutor(onInitSession));
+        }
     }
 
     public void shutdown() {
@@ -81,9 +87,17 @@ public class SessionThreadExecutors {
             }
         }
 
-        removableSessions.forEach(id -> executors.remove(id));
+        removableSessions.forEach(id -> invalidateSession(id));
     }
 
+    private boolean isInvalidatedSession(final String sessionId) {
+        return invalidatedSession.contains(sessionId);
+    }
+
+    private void invalidateSession(final String sessionId) {
+        invalidatedSession.put(sessionId, "");
+        executors.remove(sessionId);
+    }
 
     private boolean isTimeout(final SessionThreadExecutor e) {
         return e.lastUsedTime() + timeoutMillils < System.currentTimeMillis();
@@ -101,4 +115,5 @@ public class SessionThreadExecutors {
     private final long timeoutMillils;
     private final Thread gcThread;
     private final ConcurrentHashMap<String, SessionThreadExecutor> executors = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> invalidatedSession = new ConcurrentHashMap<>();
 }
