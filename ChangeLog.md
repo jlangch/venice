@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Added remote REPL session timeout
+
 - Added function `trace/untrace-all`
 
 - The `finder` function supports now searching for all functions under tracing
