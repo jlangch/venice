@@ -122,6 +122,7 @@
      :see-also '(
         "trace/trace-var"
         "trace/untrace-var"
+        "trace/untrace-all"
         "trace/traceable?"
         "trace/trace" ) }
 
@@ -210,6 +211,7 @@
      :doc "Untraces the var"
      :examples '( "(trace/untrace-var +)" )
      :see-also '(
+        "trace/untrace-all"
         "trace/trace-var"
         "trace/traced?" ) }
 
@@ -221,6 +223,23 @@
       (when-let [delegate (-> f meta :traced)]
         (set! (symbol n) delegate)
         :untraced))))
+
+
+(defn
+  ^{ :arglists '( "(untrace-all)" )
+     :doc "Untraces all"
+     :examples '( "(trace/untrace-all)" )
+     :see-also '(
+        "trace/untrace-var"
+        "trace/traced?" ) }
+
+  untrace-all []
+
+  (->> (finder :tracing :machine)
+       (map first)
+       (map symbol)
+       (docoll #(do (println "Untracing" %) 
+                    (trace/untrace-var (var-get %))))))
 
 
 (defn

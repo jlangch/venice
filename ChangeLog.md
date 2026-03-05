@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- added function `trace/untrace-all`
 
 
 
