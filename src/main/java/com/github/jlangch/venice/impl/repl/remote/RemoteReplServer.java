@@ -81,7 +81,9 @@ public class RemoteReplServer implements AutoCloseable  {
         this.mainThreadContextSnapshot = ThreadContext.snapshot();
 
         this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password, encrypt, compress);
-        this.executors = new SessionThreadExecutors(Math.min(1, sessionTimeoutMinutes));
+
+        final int timeoutMinutes = Math.max(1, sessionTimeoutMinutes);
+        this.executors = new SessionThreadExecutors(timeoutMinutes);
     }
 
 
@@ -295,7 +297,12 @@ public class RemoteReplServer implements AutoCloseable  {
             ((VncException)ex).printVeniceStackTrace(pw);
         }
         else {
-            ex.printStackTrace(pw);
+            pw.print(ex.getClass().getName());
+            pw.print(": ");
+            pw.print(ex.getMessage());
+
+            // do not reveal server side internas!
+            //ex.printStackTrace(pw);
         }
 
         pw.flush();

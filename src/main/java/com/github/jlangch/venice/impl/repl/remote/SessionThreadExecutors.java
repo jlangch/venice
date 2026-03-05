@@ -44,10 +44,19 @@ public class SessionThreadExecutors {
             final Runnable onInitSession
     ) {
         if (isInvalidatedSession(sessionId)) {
-            throw new RuntimeException("The remote REPL session '" + sessionId + "' has been invalidated!");
+            throw new RuntimeException("The remote REPL session has been invalidated!");
         }
         else {
-            return executors.computeIfAbsent(sessionId, id -> new SessionThreadExecutor(onInitSession));
+            final SessionThreadExecutor e = executors.computeIfAbsent(
+                                                sessionId,
+                                                id -> new SessionThreadExecutor(onInitSession));
+
+            if (e.isRunning()) {
+               return e;
+            }
+            else {
+                throw new RuntimeException("The remote REPL session has been invalidated!");
+            }
         }
     }
 
@@ -91,11 +100,11 @@ public class SessionThreadExecutors {
     }
 
     private boolean isInvalidatedSession(final String sessionId) {
-        return invalidatedSession.contains(sessionId);
+        return invalidatedSessions.containsKey(sessionId);
     }
 
     private void invalidateSession(final String sessionId) {
-        invalidatedSession.put(sessionId, "");
+        invalidatedSessions.put(sessionId, "");
         executors.remove(sessionId);
     }
 
@@ -115,5 +124,5 @@ public class SessionThreadExecutors {
     private final long timeoutMillils;
     private final Thread gcThread;
     private final ConcurrentHashMap<String, SessionThreadExecutor> executors = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String> invalidatedSession = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> invalidatedSessions = new ConcurrentHashMap<>();
 }
