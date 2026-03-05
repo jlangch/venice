@@ -66,6 +66,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -171,6 +172,7 @@ public class SpecialForms_OtherFunctions {
                         "|:special-form|filter special forms|\n" +
                         "|:protocol    |filter protocols|\n" +
                         "|:value       |filter values|\n" +
+                        "|:tracing     |filter symbols under tracing (functions only)|\n" +
                         "|:machine     |return the result as Venice data otherwise print it in table format |")
                     .examples(
                         "(finder \"io/zip*\")",
@@ -179,7 +181,11 @@ public class SpecialForms_OtherFunctions {
                         "(finder #\"io/zip.*\")",
                         "(finder #\".*delete-file*.\")",
                         "(finder #\"io/zip.*\" :machine)",
-                        "(finder zip)")
+                        "(finder zip)",
+                        "(do                           \n" +
+                        "  (load-module :trace)        \n" +
+                        "  (trace/trace-var bigint)    \n" +
+                        "  (finder \"big*\" :tracing)) ")
                     .seeAlso(
                         "doc", "ns-list", "modules")
                     .build()
@@ -204,6 +210,7 @@ public class SpecialForms_OtherFunctions {
                                                  .filter(a -> !Types.isVncKeyword(a))
                                                  .collect(Collectors.toList());
 
+                final boolean tracing = flags.contains(":tracing");
                 final boolean machine = flags.contains(":machine");
                 final boolean functionType = flags.contains(":function");  // :core/function || :core/protocol-function
                 final boolean macroType = flags.contains(":macro");  // :core/macro
@@ -260,6 +267,12 @@ public class SpecialForms_OtherFunctions {
                                           || (protocolType && isProtocolType(v._2))
                                           || (valueType && isValueType(v._2)))
                              .collect(Collectors.toList());
+
+                if (tracing) {
+                    items = items.stream()
+                                 .filter(v -> isTracing(v._1, env))
+                                 .collect(Collectors.toList());
+                }
 
                 // map to machine or human readable form
                 if (machine) {
@@ -1154,6 +1167,21 @@ public class SpecialForms_OtherFunctions {
     private static boolean isProtocolType(final VncKeyword type) {
         return "core/protocol".equals(type.getQualifiedName());
    }
+
+    private static boolean isTracing(final VncSymbol sym, final Env env) {
+        final Var var_ = env.getVar(sym);
+        if (var_ != null) {
+            final VncVal val = var_.getVal();
+            if (val != null) {
+                final VncVal meta = val.getMeta();
+                if (meta != null && meta instanceof VncMap) {
+                    final VncVal fn = ((VncMap)meta).get(new VncKeyword("traced"));
+                    return fn != null && fn != Nil;
+                }
+            }
+        }
+        return false;
+    }
 
     private static boolean isValueType(final VncKeyword type) {
         return !isFunctionType(type)
