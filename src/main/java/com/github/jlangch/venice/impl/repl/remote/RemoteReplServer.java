@@ -161,7 +161,7 @@ public class RemoteReplServer implements AutoCloseable  {
         final String subject = request.getSubject();
 
         if (subject.equals("session-init")) {
-           return handleSessionInit(request);
+            return handleSessionInit(request);
         }
         else if (subject.equals("session-close")) {
             return handleSessionClose(request);
