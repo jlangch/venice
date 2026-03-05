@@ -76,7 +76,7 @@ public class SessionThreadExecutors {
 
             for(SessionThreadExecutor e : executors.values()) {
                 if (e.isRunning()) {
-                     try { e.shutdown(); } catch(Exception ignore) {}
+                    try { e.shutdown(); } catch(Exception ignore) {}
                 }
             }
 
@@ -116,6 +116,7 @@ public class SessionThreadExecutors {
     private boolean isTimeout(final SessionThreadExecutor e) {
         return e.lastUsedTime() + timeoutMillils < System.currentTimeMillis();
     }
+
 
     private static void sleep(final long millis) {
         try { Thread.sleep(millis); } catch(Exception ignore) {};
