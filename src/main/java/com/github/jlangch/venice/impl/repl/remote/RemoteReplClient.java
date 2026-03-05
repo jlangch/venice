@@ -78,6 +78,7 @@ public class RemoteReplClient implements AutoCloseable  {
     public void close() throws IOException {
         if (stop.compareAndSet(false, true)) {
             if (ipcClient != null) {
+                try { sendSessionClose(ipcClient, sessionId); } catch(Exception ignore) {}
                 ipcClient.close();
             }
         }
@@ -163,6 +164,15 @@ public class RemoteReplClient implements AutoCloseable  {
         final IMessage r = client.sendMessage(m, RemoteRepl.FUNCTION);
         if (r.getResponseStatus() != ResponseStatus.OK) {
             throw new VncException("REPL remote session initialization failure");
+        }
+    }
+
+    private static void sendSessionClose(final Client client, final String sessionId) {
+        final IMessage m = MessageFactory.text(sessionId, "session-close", "text/plain", "UTF-8", "");
+
+        final IMessage r = client.sendMessage(m, RemoteRepl.FUNCTION);
+        if (r.getResponseStatus() != ResponseStatus.OK) {
+            throw new VncException("REPL remote session close failure");
         }
     }
 

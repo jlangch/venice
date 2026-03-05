@@ -158,22 +158,18 @@ public class RemoteReplServer implements AutoCloseable  {
     }
 
     private IMessage handler(final IMessage request) {
-        try {
-            final String subject = request.getSubject();
-            final String sessionId = request.getRequestId();
+        final String subject = request.getSubject();
 
-            if (subject.equals("session-init")) {
-                // create an executor thread for this new session
-                executors.createSession(
-                        sessionId,
-                        () -> ThreadContext.inheritFrom(mainThreadContextSnapshot));
+        if (subject.equals("session-init")) {
+           return handleSessionInit(request);
+        }
+        else if (subject.equals("session-close")) {
+            return handleSessionClose(request);
+        }
+        else {
+            try {
+                final String sessionId = request.getRequestId();
 
-                return MessageFactory.text(
-                        request.getRequestId(),
-                        request.getSubject(),
-                        "text/plain", "UTF-8", "Session created");
-            }
-            else {
                 // get the executor thread for this session
                 final SessionThreadExecutor executor = executors.getSession(sessionId);
 
@@ -192,11 +188,72 @@ public class RemoteReplServer implements AutoCloseable  {
                     throw ex.getCause() != null ? (Exception)ex.getCause() : ex;
                 }
             }
+            catch(Exception ex) {
+                return responseMessage(
+                        request,
+                        createDataMap(Nil, Nil, ex, null, null, 0L));
+            }
+        }
+    }
+
+    private IMessage handleSessionInit(final IMessage request) {
+        final String sessionId = request.getRequestId();
+
+        // create an executor thread for this new session
+        if (executors.getSessionCount() >= MaxSessions) {
+            throw new RuntimeException("Too many remote REPL sessions!");
+        }
+
+        executors.createSession(
+                sessionId,
+                () -> ThreadContext.inheritFrom(mainThreadContextSnapshot));
+
+        return MessageFactory.text(
+                request.getRequestId(),
+                request.getSubject(),
+                "text/plain", "UTF-8", "Session created");
+    }
+
+    private IMessage handleSessionClose(final IMessage request) {
+        final String sessionId = request.getRequestId();
+
+        executors.removeSession(sessionId);
+
+        return MessageFactory.text(
+                request.getRequestId(),
+                request.getSubject(),
+                "text/plain", "UTF-8", "Session removed");
+    }
+
+    private IMessage handleEval(final IMessage request) {
+        final long start = System.currentTimeMillis();
+
+        env.pushGlobalDynamic(new VncSymbol("repl/session-id"), new VncString(request.getRequestId()));
+
+        try(CapturingPrintStream out = new CapturingPrintStream();
+            CapturingPrintStream err = new CapturingPrintStream()
+        ) {
+            final VncVal r = request.getVeniceData();
+            final VncVal formVal = ((VncMap)r).get(new VncKeyword("form"));
+            final String form = Coerce.toVncString(formVal).getValue();
+
+            try {
+                env.setStdoutPrintStream(out)
+                   .setStderrPrintStream(err)
+                   .setStdinReader(new InputStreamReader(new NullInputStream()));
+
+                final VncVal result = interpreter.RE(form, "repl", env);
+
+                final VncMap data = createDataMap(formVal, result, null, out, err, elapsed(start));
+                return responseMessage(request, data);
+            }
+            catch(Exception ex) {
+                final VncMap data = createDataMap(formVal, Nil, ex, out, err, elapsed(start));
+                return responseMessage(request, data);
+            }
         }
         catch(Exception ex) {
-            return responseMessage(
-                    request,
-                    createDataMap(Nil, Nil, ex, null, null, 0L));
+            return responseMessage(request, createDataMap(Nil, Nil, ex, null, null, 0L));
         }
     }
 
@@ -238,38 +295,6 @@ public class RemoteReplServer implements AutoCloseable  {
             }
             catch(Exception ex) {
                 final VncMap data = createDataMap(cmdVal, Nil, ex, out, err, elapsed(start));
-                return responseMessage(request, data);
-            }
-        }
-        catch(Exception ex) {
-            return responseMessage(request, createDataMap(Nil, Nil, ex, null, null, 0L));
-        }
-    }
-
-    private IMessage handleEval(final IMessage request) {
-        final long start = System.currentTimeMillis();
-
-        env.pushGlobalDynamic(new VncSymbol("repl/session-id"), new VncString(request.getRequestId()));
-
-        try(CapturingPrintStream out = new CapturingPrintStream();
-            CapturingPrintStream err = new CapturingPrintStream()
-        ) {
-            final VncVal r = request.getVeniceData();
-            final VncVal formVal = ((VncMap)r).get(new VncKeyword("form"));
-            final String form = Coerce.toVncString(formVal).getValue();
-
-            try {
-                env.setStdoutPrintStream(out)
-                   .setStderrPrintStream(err)
-                   .setStdinReader(new InputStreamReader(new NullInputStream()));
-
-                final VncVal result = interpreter.RE(form, "repl", env);
-
-                final VncMap data = createDataMap(formVal, result, null, out, err, elapsed(start));
-                return responseMessage(request, data);
-            }
-            catch(Exception ex) {
-                final VncMap data = createDataMap(formVal, Nil, ex, out, err, elapsed(start));
                 return responseMessage(request, data);
             }
         }
@@ -344,6 +369,7 @@ public class RemoteReplServer implements AutoCloseable  {
 
 
     private static final int CompressCutoffSize = 8 * 1024 * 1024;  // 8KB
+    private static final int MaxSessions = 3;
 
     private final IVeniceInterpreter interpreter;
     private final Env env;

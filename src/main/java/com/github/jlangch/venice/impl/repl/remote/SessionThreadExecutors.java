@@ -56,6 +56,17 @@ public class SessionThreadExecutors {
         }
     }
 
+    public void removeSession(
+            final String sessionId
+    ) {
+        final SessionThreadExecutor e = executors.get(sessionId);
+
+        if (e != null) {
+            try { e.shutdown(); } catch(Exception ignore) {}
+            executors.remove(sessionId);
+        }
+    }
+
     public SessionThreadExecutor getSession(final String sessionId) {
         final SessionThreadExecutor e = executors.get(sessionId);
 
