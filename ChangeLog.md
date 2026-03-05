@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Added remote REPL session timeout
+- Added remote REPL session timeout. Defaults to 30 minutes. Can be configured
+  through the option `-repl-session-timeout t` when starting a REPL server.
 
 - Added function `trace/untrace-all`
 
