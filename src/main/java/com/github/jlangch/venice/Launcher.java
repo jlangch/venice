@@ -170,6 +170,7 @@ public class Launcher {
         final String replServerPassword = getReplServerPassword(cli);
         final boolean replServerEncrypt = getReplEncrypt(cli);
         final boolean replServerCompress = getReplCompress(cli);
+        final int replServerSessionTimeoutMinutes = getReplSessionTimeoutMinutes(cli);
 
         // run the file from the filesystem
         final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
@@ -180,12 +181,14 @@ public class Launcher {
         final String result = runScript(
                                 cli.removeSwitches("-script", "-macroexpand", "-loadpath",
                                                    "-repl-port", "-repl-pwd",
-                                                   "-repl-encrypt", "-repl-compress"),
+                                                   "-repl-encrypt", "-repl-compress",
+                                                   "-repl-session-timeout"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
                                 replServerEncrypt,
                                 replServerCompress,
+                                replServerSessionTimeoutMinutes,
                                 interceptor,
                                 scriptWrapped,
                                 new File(file).getName());
@@ -206,6 +209,7 @@ public class Launcher {
         final String replServerPassword = getReplServerPassword(cli);
         final boolean replServerEncrypt = getReplEncrypt(cli);
         final boolean replServerCompress = getReplCompress(cli);
+        final int replServerSessionTimeoutMinutes = getReplSessionTimeoutMinutes(cli);
 
         // run the file from the classpath
         final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
@@ -214,12 +218,14 @@ public class Launcher {
         final String result = runScript(
                                 cli.removeSwitches("-script", "-macroexpand", "-loadpath",
                                                    "-repl-port", "-repl-pwd",
-                                                   "-repl-encrypt", "-repl-compress"),
+                                                   "-repl-encrypt", "-repl-compress",
+                                                   "-repl-session-timeout"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
                                 replServerEncrypt,
                                 replServerCompress,
+                                replServerSessionTimeoutMinutes,
                                 interceptor,
                                 script,
                                 new File(file).getName());
@@ -240,6 +246,7 @@ public class Launcher {
         final String replServerPassword = getReplServerPassword(cli);
         final boolean replServerEncrypt = getReplEncrypt(cli);
         final boolean replServerCompress = getReplCompress(cli);
+        final int replServerSessionTimeoutMinutes = getReplSessionTimeoutMinutes(cli);
 
         // run the script passed as command line argument
         final String script = cli.switchValue("-script");
@@ -247,12 +254,14 @@ public class Launcher {
         final String result = runScript(
                                 cli.removeSwitches("-script", "-macroexpand", "-loadpath",
                                                    "-repl-port", "-repl-pwd",
-                                                   "-repl-encrypt", "-repl-compress"),
+                                                   "-repl-encrypt", "-repl-compress",
+                                                   "-repl-session-timeout"),
                                 macroexpand,
                                 replServerPort,
                                 replServerPassword,
                                 replServerEncrypt,
                                 replServerCompress,
+                                replServerSessionTimeoutMinutes,
                                 interceptor,
                                 script,
                                 "script");
@@ -357,6 +366,7 @@ public class Launcher {
             final String replServerPassword,
             final boolean replServerEncrypt,
             final boolean replServerCompress,
+            final int replServerSessionTimeoutMinutes,
             final IInterceptor interceptor,
             final String script,
             final String name
@@ -377,7 +387,8 @@ public class Launcher {
                                                 replServerPort,
                                                 replServerPassword,
                                                 replServerEncrypt,
-                                                replServerCompress)
+                                                replServerCompress,
+                                                replServerSessionTimeoutMinutes)
             ) {
                 return venice.PRINT(venice.RE(script, name, env));
             }
@@ -450,7 +461,19 @@ public class Launcher {
     private static boolean getReplCompress(final CommandLineArgs cli) {
        return cli.switchPresent("-repl-compress")
                 ? isTrue(cli.switchValue("-repl-compress", "off"), false)
-                : true;
+                : false;
+    }
+
+    private static int getReplSessionTimeoutMinutes(final CommandLineArgs cli) {
+        if (cli.switchPresent("-repl-session-timeout")) {
+             final long timeoutMinutes = cli.switchLongValue("-repl-session-timeout", DEFAULT_REPL_SESSION_TIMEOUT);
+             if (timeoutMinutes < 0L) return 1;
+             if (timeoutMinutes > 1440L) return 1440;
+             return (int)timeoutMinutes;
+        }
+        else {
+            return (int)DEFAULT_REPL_SESSION_TIMEOUT;
+        }
     }
 
     private static boolean isTrue(final String s, final boolean defaultVal) {
@@ -477,4 +500,7 @@ public class Launcher {
     private static String suffixWithZipFileExt(final String s) {
         return s == null ? null : (s.endsWith(".zip") ? s : s + ".zip");
     }
+
+
+    private final static long DEFAULT_REPL_SESSION_TIMEOUT = 30L;
 }

@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SessionThreadExecutors {
 
-    public SessionThreadExecutors(final long timeoutSeconds) {
-        this.timeoutMillils = TimeUnit.SECONDS.toMillis(timeoutSeconds);
+    public SessionThreadExecutors(final long timeoutMinutes) {
+        this.timeoutMillils = TimeUnit.MINUTES.toMillis(timeoutMinutes);
 
         // Garbage collect timeouted sessions
         this.gcThread = new Thread(() -> { while (!stop) { gc(); sleep(INTERVAL); } },

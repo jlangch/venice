@@ -29,7 +29,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.jlangch.venice.ValueException;
@@ -69,7 +68,8 @@ public class RemoteReplServer implements AutoCloseable  {
             final int port,
             final String password,
             final boolean encrypt,
-            final boolean compress
+            final boolean compress,
+            final int sessionTimeoutMinutes
     ) {
         this.interpreter = interpreter;
         this.env = env;
@@ -81,7 +81,7 @@ public class RemoteReplServer implements AutoCloseable  {
         this.mainThreadContextSnapshot = ThreadContext.snapshot();
 
         this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password, encrypt, compress);
-        this.executors = new SessionThreadExecutors(TimeUnit.MINUTES.toSeconds(30));
+        this.executors = new SessionThreadExecutors(Math.min(1, sessionTimeoutMinutes));
     }
 
 
