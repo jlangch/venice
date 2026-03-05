@@ -8,7 +8,7 @@ like Linux, MacOSX, or Windows.
  
  
 
-## Venice Local Setup
+## Venice Setup
 
  
 
