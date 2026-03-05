@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -292,6 +293,73 @@ public class TraceModuleTest {
                 "   (trace/traced? foo))      ";
 
         assertFalse((Boolean)venice.eval(script3));
+    }
+
+    @Test
+    public void test_traced_with_finder() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                 \n" +
+                "   (load-module :trace)             \n" +
+                "                                    \n" +
+                "   (trace/trace-var +)              \n" +
+                "   (trace/trace-var -)              \n" +
+                "                                    \n" +
+                "   (->> (finder :tracing :machine)  \n" +
+                "        (map first)                 \n" +
+                "        (into #{})))                ";
+
+        @SuppressWarnings("unchecked")
+        final Set<String> symbols = (Set<String>)venice.eval(script1);
+
+        assertEquals(2, symbols.size());
+        assertTrue(symbols.contains("+"));
+        assertTrue(symbols.contains("-"));
+    }
+
+    @Test
+    public void test_untrace_all_1() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                 \n" +
+                "   (load-module :trace)             \n" +
+                "                                    \n" +
+                "   (trace/trace-var +)              \n" +
+                "   (trace/trace-var -)              \n" +
+                "                                    \n" +
+                "   (with-out-str                    \n" +
+                "     (trace/untrace-all))           \n" +
+                "                                    \n" +
+                "   (->> (finder :tracing :machine)  \n" +
+                "        (map first)                 \n" +
+                "        (into #{})))                ";
+
+        @SuppressWarnings("unchecked")
+        final Set<String> symbols = (Set<String>)venice.eval(script1);
+
+        assertEquals(0, symbols.size());
+    }
+
+    @Test
+    public void test_untrace_all_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                 \n" +
+                "   (load-module :trace)             \n" +
+                "                                    \n" +
+                "   (trace/trace-var +)              \n" +
+                "   (trace/trace-var -)              \n" +
+                "                                    \n" +
+                "   (with-out-str                    \n" +
+                "     (trace/untrace-all)))          \n";
+
+        // Must run on *nix and Windows (convert crlf)
+        assertEquals(
+                "Untracing +\nUntracing -\n",
+                StringUtil.crlf_to_lf((String)venice.eval(script)));
     }
 
     @Test
