@@ -9,7 +9,9 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- added function `trace/untrace-all`
+- Added function `trace/untrace-all`
+
+- The `finder` function supports now searching for all functions under tracing
 
 
 
