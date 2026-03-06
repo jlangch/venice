@@ -180,6 +180,7 @@ public class REPL implements IRepl {
         }
         finally {
             semaphore.release();
+            veniceAdapter.close();
             ThreadContext.remove();
         }
     }
