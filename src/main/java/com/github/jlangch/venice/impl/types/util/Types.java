@@ -580,7 +580,12 @@ public class Types {
         }
 
         if (a instanceof VncScalar) {
-            return a.equals(b);
+            if (a instanceof VncKeyword && b instanceof VncJavaObject && JavaInteropUtil.isEnum(b)) {
+                return ((VncKeyword)a).getSimpleName().equals(b.toString());
+            }
+            else {
+                return a.equals(b);
+            }
         }
         else if (a instanceof VncSymbol) {
             return a.equals(b);
@@ -646,6 +651,9 @@ public class Types {
         }
         else if (a instanceof VncJust && b instanceof VncJust) {
             return _equal_Q(((VncJust)a).deref(), ((VncJust)b).deref(), strict);
+        }
+        else if (a instanceof VncJavaObject && JavaInteropUtil.isEnum(a) && b instanceof VncKeyword) {
+        	return ((VncKeyword)b).getSimpleName().equals(a.toString());
         }
         else {
             return a.equals(b);

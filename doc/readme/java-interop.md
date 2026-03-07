@@ -113,7 +113,7 @@ can be sorted and Java types can be used with sets and maps.
 
 ## Enum types
 
-Java _enum_ values can be passed as simple or scoped keywords:
+Java *enum* values can be passed as simple or scoped keywords:
 
 ```clojure
 (. :java.time.LocalDate :of 1994 :JANUARY 21)  
@@ -123,7 +123,7 @@ Java _enum_ values can be passed as simple or scoped keywords:
 ;; => 1994-01-21
 ```
 
-Get a Java _enum_ value
+Get a Java *enum* value
 
 ```clojure
 (. :java.time.Month :JANUARY)
@@ -133,19 +133,32 @@ Get a Java _enum_ value
 ;; => :java.time.Month
 ```
 
-Pass a Java _enum_ value to a function
+Pass a Java *enum* value to a function
 
 ```clojure
 (let [jan (. :java.time.Month :JANUARY)]
   (. :java.time.LocalDate :of 1994 jan 21))
 ```
 
-Get all values of a Java _enum_
+Get all values of a Java *enum*
 
 ```clojure
 (. :java.time.Month :values)
 ;; => [JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER OCTOBER NOVEMBER DECEMBER]
 ```
+
+Equality testing
+
+```
+(let [e (. :java.time.Month :JANUARY)]
+  (= e :JANUARY))
+```
+
+```
+(let [e (. :java.time.Month :JANUARY)]
+  (= :JANUARY e))
+```
+
 
  
  

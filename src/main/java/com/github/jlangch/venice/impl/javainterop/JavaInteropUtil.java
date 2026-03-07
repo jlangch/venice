@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
@@ -423,6 +424,19 @@ public class JavaInteropUtil {
         }
     }
 
+    public static boolean isEnum(final VncVal arg) {
+        try {
+            final Class<?> clazz = JavaInteropUtil.toClass(
+                                        arg,
+                                        Namespaces.getCurrentNamespace().getJavaImports());
+            return clazz.isEnum();
+        }
+        catch(Exception ex) {
+            return false;
+        }
+    }
+
+
     private static boolean isDelayOrAgentClass(final String className) {
         return (className.equals(Delay.class.getName()) || className.equals(Agent.class.getName()));
     }
@@ -430,4 +444,6 @@ public class JavaInteropUtil {
     private static boolean isDelayOrAgentClass(final Object target) {
         return target instanceof Delay || target instanceof Agent;
     }
+
 }
+

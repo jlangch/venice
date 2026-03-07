@@ -1090,15 +1090,7 @@ public class JavaInteropFunctions {
             ArityExceptions.assertArity(this, args, 1);
             sandboxFunctionCallValidation();
 
-            try {
-                final Class<?> clazz = JavaInteropUtil.toClass(
-                                            args.first(),
-                                            Namespaces.getCurrentNamespace().getJavaImports());
-                return VncBoolean.of(clazz.isEnum());
-            }
-            catch(Exception ex) {
-                return VncBoolean.False;
-            }
+            return VncBoolean.of(JavaInteropUtil.isEnum(args.first()));
         }
 
         private static final long serialVersionUID = -1848883965231344442L;

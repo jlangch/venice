@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.javainterop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -66,6 +67,20 @@ public class JavaInterop_enum_Test {
         assertEquals(
                 "com.github.jlangch.venice.support.Color",
                 venice.eval("(type (. :com.github.jlangch.venice.support.Color :blue))"));
+    }
+
+    @Test
+    public void testEnumEquals() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :FEBRUARY))"));
+
+        assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :JANUARY)"));
+        assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :FEBRUARY)"));
+
+        assertTrue((Boolean)venice.eval("(= :JANUARY (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(= :FEBRUARY (. :java.time.Month :JANUARY))"));
     }
 
     @Test
