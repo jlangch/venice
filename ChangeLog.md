@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 - Added function `trace/untrace-all`
 
-- The `finder` function supports now searching for all functions under tracing
+- The `finder` function supports now searching for all functions under tracing: `(finder :tracing)`
 
 - Improved Java interoperability regarding equality checking a Java enum and a keyword
     ```clojure
