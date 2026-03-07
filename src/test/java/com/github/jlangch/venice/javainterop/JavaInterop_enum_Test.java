@@ -84,6 +84,20 @@ public class JavaInterop_enum_Test {
     }
 
     @Test
+    public void testEnumEqualsScoped() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :FEBRUARY))"));
+
+        assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :java.time.Month.JANUARY)"));
+        assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :java.time.Month.FEBRUARY)"));
+
+        assertTrue((Boolean)venice.eval("(= :java.time.Month.JANUARY (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(= :java.time.Month.FEBRUARY (. :java.time.Month :JANUARY))"));
+    }
+
+    @Test
     public void testEnumValueToString() {
         final Venice venice = new Venice();
 

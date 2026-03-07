@@ -580,8 +580,10 @@ public class Types {
         }
 
         if (a instanceof VncScalar) {
-            if (a instanceof VncKeyword && b instanceof VncJavaObject && JavaInteropUtil.isEnum(b)) {
-                return ((VncKeyword)a).getSimpleName().equals(b.toString());
+            if (a instanceof VncKeyword && JavaInteropUtil.isEnum(b)) {
+                final String kwName = ((VncKeyword)a).getSimpleName();
+                return kwName.equals(JavaInteropUtil.enumSimpleName(b))
+                        || kwName.equals(JavaInteropUtil.enumScopedName(b));
             }
             else {
                 return a.equals(b);
@@ -652,8 +654,10 @@ public class Types {
         else if (a instanceof VncJust && b instanceof VncJust) {
             return _equal_Q(((VncJust)a).deref(), ((VncJust)b).deref(), strict);
         }
-        else if (a instanceof VncJavaObject && JavaInteropUtil.isEnum(a) && b instanceof VncKeyword) {
-        	return ((VncKeyword)b).getSimpleName().equals(a.toString());
+        else if (JavaInteropUtil.isEnum(a) && b instanceof VncKeyword) {
+            final String kwName = ((VncKeyword)b).getSimpleName();
+            return kwName.equals(JavaInteropUtil.enumSimpleName(a))
+                    || kwName.equals(JavaInteropUtil.enumScopedName(a));
         }
         else {
             return a.equals(b);

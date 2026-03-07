@@ -436,6 +436,45 @@ public class JavaInteropUtil {
         }
     }
 
+    public static String enumClassName(final VncVal arg) {
+        // (. :java.time.Month :JANUARY) => "java.time.Month"
+
+        if (arg instanceof VncJavaObject) {
+            final Class<?> clazz = ((VncJavaObject)arg).getDelegate().getClass();
+            if (clazz.isEnum()) {
+                return clazz.getName();
+            }
+        }
+
+        throw new VncException("Not a Java enum value");
+    }
+
+    public static String enumSimpleName(final VncVal arg) {
+        // (. :java.time.Month :JANUARY) => "JANUARY"
+
+        if (arg instanceof VncJavaObject) {
+            final Class<?> clazz = ((VncJavaObject)arg).getDelegate().getClass();
+            if (clazz.isEnum()) {
+                return arg.toString();
+            }
+        }
+
+        throw new VncException("Not a Java enum value");
+    }
+
+    public static String enumScopedName(final VncVal arg) {
+        // (. :java.time.Month :JANUARY) => "java.time.Month.JANUARY"
+
+        if (arg instanceof VncJavaObject) {
+            final Class<?> clazz = ((VncJavaObject)arg).getDelegate().getClass();
+            if (clazz.isEnum()) {
+                return clazz.getName() + "." + arg.toString();
+            }
+        }
+
+        throw new VncException("Not a Java enum value");
+    }
+
 
     private static boolean isDelayOrAgentClass(final String className) {
         return (className.equals(Delay.class.getName()) || className.equals(Agent.class.getName()));
