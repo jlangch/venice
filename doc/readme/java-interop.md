@@ -22,19 +22,15 @@ Float, Double, and BigDecimal.
 
 ## Calling Java
 
-Java calls follow the patterns:
+Java calls follow these patterns:
 
-constructor: `(. :class :new arg1 arg2 ...)`
-
-instance method: `(. object :method arg1 arg2 ...)`
-
-static method: `(. :class :method arg1 arg2 ...)`
-
-static field: `(. :class :field)`
-
-enum value: `(. :class :name)`
-
-get property: `(:property object)`
+| :--             | :--                               |
+| constructor     | `(. :class :new arg1 arg2 ...)`      |
+| instance method | `(. object :method arg1 arg2 ...)`   |
+| static method   | `(. :class :method arg1 arg2 ...)`   |
+| static field    | `(. :class :field)`                 |
+| enum value      | `(. :class :name)`                  |
+| get property    | `(:property object)`                |
 
 
 
@@ -151,11 +147,7 @@ Equality testing
 
 ```
 (let [e (. :java.time.Month :JANUARY)]
-  (= e :JANUARY))
-```
-
-```
-(let [e (. :java.time.Month :JANUARY)]
+  (= e :JANUARY)
   (= :JANUARY e))
 ```
 
@@ -302,14 +294,15 @@ use
 
 ```clojure
 (do
-  (load-module :java ['java :as 'j])
+  (load-module :java)
   (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
   ;; public static void testRunnable(final Runnable r) {
   ;;   r.run();
   ;; }
 
-  (def op (j/as-runnable (fn [] (println "running"))))
+  (def op (java/as-runnable (fn [] (println "running"))))
+  
   (. :FunctionalInterfaces :testRunnable op))
 ```
  
@@ -329,14 +322,15 @@ use
 
 ```clojure
 (do
-  (load-module :java ['java :as 'j])
+  (load-module :java)
   (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
   ;; public static Long testFunction(Function<Long,Long> f, Long t) {
   ;;   return f.apply(t);
   ;; }
 
-  (def op (j/as-function (fn [t] (+ t 1))))
+  (def op (java/as-function (fn [t] (+ t 1))))
+  
   (. :FunctionalInterfaces :testFunction op 4))
 ```
 
