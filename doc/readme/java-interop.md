@@ -144,12 +144,27 @@ Get all values of a Java *enum*
 ;; => [JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER OCTOBER NOVEMBER DECEMBER]
 ```
 
-Equality testing
+Equality testing. 
+
+> [!NOTE]
+> Use non strict `==` over strict `=` when equality checking Java enums with Venice keywords!
+>
+> E.g.:
+> `(= 1 1.0)` evaluates to `false` (type and value must be equal)
+> whereas
+> `(== 1 1.0)` evaluates to `true` (only value must be equal)
+>
 
 ```
 (let [e (. :java.time.Month :JANUARY)]
-  (= e :JANUARY)
-  (= :JANUARY e))
+  (== e :JANUARY)   ;; true (value equality)
+  (== :JANUARY e))  ;; true (value equality)
+```
+
+```
+(let [e (. :java.time.Month :JANUARY)]
+  (= e :JANUARY)   ;; false (different types)
+  (= :JANUARY e))  ;; false (different types)
 ```
 
 

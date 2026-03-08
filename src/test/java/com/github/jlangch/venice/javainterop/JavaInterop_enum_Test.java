@@ -76,11 +76,21 @@ public class JavaInterop_enum_Test {
         assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :JANUARY))"));
         assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :FEBRUARY))"));
 
-        assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :JANUARY)"));
+        // strict!
+
+        assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :JANUARY)"));
         assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :FEBRUARY)"));
 
-        assertTrue((Boolean)venice.eval("(= :JANUARY (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(= :JANUARY (. :java.time.Month :JANUARY))"));
         assertFalse((Boolean)venice.eval("(= :FEBRUARY (. :java.time.Month :JANUARY))"));
+
+        // not strict!
+
+        assertTrue((Boolean)venice.eval("(== (. :java.time.Month :JANUARY) :JANUARY)"));
+        assertFalse((Boolean)venice.eval("(== (. :java.time.Month :JANUARY) :FEBRUARY)"));
+
+        assertTrue((Boolean)venice.eval("(== :JANUARY (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(== :FEBRUARY (. :java.time.Month :JANUARY))"));
     }
 
     @Test
@@ -90,11 +100,21 @@ public class JavaInterop_enum_Test {
         assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :JANUARY))"));
         assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) (. :java.time.Month :FEBRUARY))"));
 
-        assertTrue((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :java.time.Month.JANUARY)"));
+        // strict!
+
+        assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :java.time.Month.JANUARY)"));
         assertFalse((Boolean)venice.eval("(= (. :java.time.Month :JANUARY) :java.time.Month.FEBRUARY)"));
 
-        assertTrue((Boolean)venice.eval("(= :java.time.Month.JANUARY (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(= :java.time.Month.JANUARY (. :java.time.Month :JANUARY))"));
         assertFalse((Boolean)venice.eval("(= :java.time.Month.FEBRUARY (. :java.time.Month :JANUARY))"));
+
+        // not strict!
+
+        assertTrue((Boolean)venice.eval("(== (. :java.time.Month :JANUARY) :java.time.Month.JANUARY)"));
+        assertFalse((Boolean)venice.eval("(== (. :java.time.Month :JANUARY) :java.time.Month.FEBRUARY)"));
+
+        assertTrue((Boolean)venice.eval("(== :java.time.Month.JANUARY (. :java.time.Month :JANUARY))"));
+        assertFalse((Boolean)venice.eval("(== :java.time.Month.FEBRUARY (. :java.time.Month :JANUARY))"));
     }
 
     @Test
