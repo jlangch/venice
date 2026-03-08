@@ -144,7 +144,7 @@ Get all values of a Java *enum*
 ;; => [JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER OCTOBER NOVEMBER DECEMBER]
 ```
 
-Equality testing. 
+Equality testing *enums*
 
 > [!NOTE]
 > Use non strict `==` over strict `=` when equality checking Java enums with Venice keywords!
