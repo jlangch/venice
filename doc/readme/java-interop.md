@@ -150,8 +150,11 @@ Equality testing.
 > Use non strict `==` over strict `=` when equality checking Java enums with Venice keywords!
 >
 > E.g.:
+>
 > `(= 1 1.0)` evaluates to `false` (type and value must be equal)
+>
 > whereas
+>
 > `(== 1 1.0)` evaluates to `true` (only value must be equal)
 >
 
