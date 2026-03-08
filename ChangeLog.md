@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - The `finder` function supports now searching for all functions under tracing: `(finder :tracing)`
 
 - Improved Java interoperability regarding equality checking with Java enums. The `==` function 
-  supports now comparing Java enums with keywords.
+  (non strict equal) supports now comparing Java enums with keywords.
     ```clojure
     (let [java-enum (. :java.time.Month :JANUARY)]
       (== java-enum :JANUARY)
