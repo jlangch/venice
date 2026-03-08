@@ -297,7 +297,7 @@ Instead of
 use
 
 ```clojure
-(j/as-runnable #(sleep 10))
+(java/as-runnable #(sleep 10))
 ```
 
 ```clojure
@@ -324,7 +324,7 @@ Instead of
 use 
 
 ```clojure
-(j/as-function #(+ % 1))
+(java/as-function #(+ % 1))
 ```
 
 ```clojure
