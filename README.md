@@ -81,17 +81,25 @@ Grab the Venice JAR from Maven:
 curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.83/venice-1.12.83.jar" --output ./venice-1.12.83.jar
 ```
 
+ 
+
 Setup a REPL in the directory `./repl`
 
 ```shell
 java -jar venice-1.12.83.jar -setup -colors -dir ./repl
 ```
 
+ 
+
 Start the REPL
 
-| Mac OSX               | Linux                 |  Windows                 |
+| MacOSX⁽¹ ⁾            | Linux                 |  Windows                 |
 | :-                    | :-                    | :-                       |
-| `/path-to-repl/repl.sh`. Alternatively click on `repl.command` in the *Finder* | `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
+| `/path-to-repl/repl.sh` | `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
+
+⁽¹⁾ Alternatively click on `repl.command` in the *MacOSX Finder* 
+
+ 
 
 Run an expression like `(+ 1 1)` 
 
