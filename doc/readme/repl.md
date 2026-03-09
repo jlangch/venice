@@ -23,18 +23,11 @@ Install Venice and the REPL following the [Getting started](start.md) guide.
 
 Open a terminal and run the REPL start script.
 
+| MacOSX⁽¹⁾             | Linux                 |  Windows                 |
+| :-                    | :-                    | :-                       |
+| `/path-to-repl/repl.sh` | `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
 
-on MacOSX and Linux (e.g.: Venice installed to `/Users/foo/venice`):
-
-```text
-foo% /Users/foo/venice/repl.sh
-```
-
-on Windows (e.g.: Venice installed to `C:\Users\foo\venice`):
-
-```text
-foo> C:\Users\foo\venice\repl.bat
-```
+⁽¹⁾ Alternatively click on `/path-to-repl/repl.command` in the *MacOSX Finder* 
 
 
 ### Run expressions in the REPL
