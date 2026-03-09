@@ -97,7 +97,8 @@ Start the REPL:
 | :-                    | :-                    | :-                       |
 | `/path-to-repl/repl.sh` | `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
 
-¹⁾ Alternatively double-click on `/path-to-repl/repl.command` in the *MacOSX Finder* 
+¹⁾ Alternatively double-click on `/path-to-repl/repl.command` in the *MacOSX Finder*
+
 ²⁾ Alternatively double-click on `/path-to-repl/repl.bat` in the *File Explorer* 
 
  
