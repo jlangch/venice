@@ -77,13 +77,13 @@ Venice requires Java 8 or newer.
 
 Grab the Venice JAR from Maven:
  
-```bash
+```shell
 curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.83/venice-1.12.83.jar" --output ./venice-1.12.83.jar
 ```
 
 Setup a REPL in the directory `./repl`
 
-```text
+```shell
 java -jar venice-1.12.83.jar -setup -colors -dir ./repl
 ```
 
