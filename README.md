@@ -98,6 +98,7 @@ Run an expression like `(+ 1 1)`
 ```text
 venice> (+ 1 1)
 => 2
+
 venice>
 ```
 
