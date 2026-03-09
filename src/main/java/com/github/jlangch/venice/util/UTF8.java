@@ -123,6 +123,7 @@ public abstract class UTF8 {
     public static char BLACK_VERTICAL_RECTANGLE   = '\u25AE';  // ▮
     public static char WHITE_VERTICAL_RECTANGLE   = '\u25AF';  // ▯
 
+    // Superscript
     public static char SUPERSCRIPT_LEFT_PARENTHESIS   = '\u207D';  // ⁽
     public static char SUPERSCRIPT_RIGHT_PARENTHESIS  = '\u207E';  // ⁾
     public static char SUPERSCRIPT_ONE                = '\u00B9';  // ¹
