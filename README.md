@@ -73,8 +73,37 @@ Venice requires Java 8 or newer.
  
  
 
+## Quickstart
+ 
+Grab the Venice JAR from Maven:
+ 
+```
+curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.83/venice-1.12.83.jar" --output ./venice-1.12.83.jar
+```
 
-**Language**
+Setup a REPL in the directory `./repl`
+
+```text
+java -jar venice-1.12.83.jar -setup -colors -dir ./repl
+```
+
+Start the REPL
+
+| Mac OSX, Linux        |  Windows              |
+| `/path-to-repl/repl.sh` | `/path-to-repl/repl.sh` |
+
+Run an expression like `(+ 1 1)` 
+
+```text
+venice> (+ 1 1)
+=> 2
+venice>
+```
+
+ 
+ 
+
+## Language
 
 * [Getting started](doc/readme/start.md)
 * REPL
@@ -141,8 +170,6 @@ Venice requires Java 8 or newer.
 * [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 
  
- 
-
 ## Getting the latest release
 
 You can can pull it from the central Maven repositories:

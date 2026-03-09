@@ -650,6 +650,7 @@ task updateReleaseVersion {
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'start.md')
+            fileset(dir: '.',          includes: 'README.md')
         }
         ant.replaceregexp(
                 match:   "venice-${version_regex}[.]jar",
