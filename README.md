@@ -83,7 +83,7 @@ curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.83/venice-1.
 
  
 
-Setup a REPL in the directory `./repl`
+Setup a REPL in the directory `./repl`:
 
 ```shell
 java -jar venice-1.12.83.jar -setup -colors -dir ./repl
@@ -91,7 +91,7 @@ java -jar venice-1.12.83.jar -setup -colors -dir ./repl
 
  
 
-Start the REPL
+Start the REPL:
 
 | MacOSX⁽¹⁾             | Linux                 |  Windows                 |
 | :-                    | :-                    | :-                       |
@@ -101,7 +101,7 @@ Start the REPL
 
  
 
-Run an expression like `(+ 1 1)` 
+Run an expression like `(+ 1 1)`:
 
 ```text
 venice> (+ 1 1)
