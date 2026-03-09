@@ -91,9 +91,7 @@ Start the REPL
 
 | Mac OSX               | Linux                 |  Windows                 |
 | :-                    | :-                    | :-                       |
-| `/path-to-repl/repl.sh` 
-  Alternatively click on `repl.command` in the *Finder* 
-| `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
+| `/path-to-repl/repl.sh`. Alternatively click on `repl.command` in the *Finder* | `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
 
 Run an expression like `(+ 1 1)` 
 
