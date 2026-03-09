@@ -123,6 +123,12 @@ public abstract class UTF8 {
     public static char BLACK_VERTICAL_RECTANGLE   = '\u25AE';  // ▮
     public static char WHITE_VERTICAL_RECTANGLE   = '\u25AF';  // ▯
 
+    public static char SUPERSCRIPT_LEFT_PARENTHESIS   = '\u207D';  // ⁽
+    public static char SUPERSCRIPT_RIGHT_PARENTHESIS  = '\u207E';  // ⁾
+    public static char SUPERSCRIPT_ONE                = '\u00B9';  // ¹
+    public static char SUPERSCRIPT_TWO                = '\u00B2';  // ²
+    public static char SUPERSCRIPT_THREE              = '\u00B3';  // ³
+    public static char DEGREE_SIGN                    = '\u00B0';  // °
 
     // Table
     public static String TABLE_1             = "┌───┬───┐"
