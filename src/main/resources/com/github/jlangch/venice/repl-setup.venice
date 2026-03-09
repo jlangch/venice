@@ -357,8 +357,8 @@
       (repl-setup/download-modules-libs libs-dir initial-modules silent)
       (repl-setup/setup-repl-config libs-dir)
       (repl-setup/setup-repl-launcher install-dir color-mode)
+      (repl-setup/setup-runscript-launcher install-dir)
       (when-not minimal?
-        (repl-setup/setup-runscript-launcher install-dir)
         (repl-setup/install-maven tools-dir)
         (repl-setup/setup-scripts scripts-dir)
         (repl-setup/setup-shebang-demo-script install-dir scripts-dir))
