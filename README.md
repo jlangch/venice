@@ -91,7 +91,7 @@ java -jar venice-1.12.83.jar -setup -colors -dir ./repl
 
  
 
-Start the REPL:
+Start the REPL from a terminal:
 
 | MacOSX ¹⁾             | Linux                 |  Windows ²⁾              |
 | :-                    | :-                    | :-                       |
