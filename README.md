@@ -74,7 +74,7 @@ Venice requires Java 8 or newer.
  
 
 ## Quickstart
- 
+
 Grab the Venice JAR from Maven:
  
 ```
@@ -89,8 +89,9 @@ java -jar venice-1.12.83.jar -setup -colors -dir ./repl
 
 Start the REPL
 
-| Mac OSX, Linux        |  Windows              |
-| `/path-to-repl/repl.sh` | `/path-to-repl/repl.sh` |
+| Mac OSX, Linux        |  Windows                 |
+| :-                    | :-                       |
+| `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
 
 Run an expression like `(+ 1 1)` 
 
