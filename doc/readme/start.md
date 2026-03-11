@@ -182,7 +182,7 @@ venice>
 
 [VSCodium](https://vscodium.com/) is a community-driven, freely-licensed binary distribution of Microsoft’s editor VS Code.
 
-**Install VSCodium in Mac OSX**
+**Install VSCodium on Mac OSX**
 
 If you are on a Mac and have [Homebrew](https://brew.sh/) installed:
 
