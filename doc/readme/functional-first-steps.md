@@ -79,7 +79,7 @@ on these fundamental operations.
 
 `if` is the most important conditional expression. It consists of a predicate, a "then", 
 and an "else" part. `if` will only evaluate the branch selected by the predicate. It
-returns the value of the evaluated branch.
+returns the value of the evaluated branch. The else expression is optional.
 
 ```
 (if predicate then-expression else-expression)
@@ -91,6 +91,11 @@ Example:
 (if (< 10 100) 
   "lower than 100" 
   "equal or larger than 100")
+```
+
+```clojure
+(if (< 10 100) 
+  "lower than 100")
 ```
 
 #### do
@@ -166,10 +171,16 @@ to the variable.
 
 *Naming Variables:*
 
-The name of a variable can be composed of letters, digits, and the underscore 
+The name of a variable can be composed of letters, digits, dashes, and the underscore 
 character. It must begin with either a letter or an underscore. 
 
- 
+Lisp dialects traditionally prefer *kebab-case* naming convention over *camelCase* and so does Venice:
+
+```
+(def is-processed true)
+(def plain-date-time-ISO "2026-03-11T14:30:00")
+```
+
  
 
 ## Functions
