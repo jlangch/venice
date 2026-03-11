@@ -178,7 +178,7 @@ Equality testing *enums*
 
 *Venice*
 
-```
+```clojure
 (do
   (import :foo.OuterClass)
   (import :foo.OuterClass$NestedStaticClass)
@@ -192,7 +192,7 @@ Equality testing *enums*
 
 *Java*
 
-```
+```java
 package foo;
 
 public class OuterClass {
