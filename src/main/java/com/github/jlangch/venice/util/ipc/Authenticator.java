@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.util.cidr.CIDR;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.util.ipc.impl.Acl;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
@@ -379,6 +381,25 @@ public class Authenticator {
     }
 
 
+    public List<CIDR> getCidrAcls() {
+        return cidrAcls ;
+    }
+
+    public void addCidrAcl(final CIDR cidr) {
+        Objects.requireNonNull(cidr);
+        cidrAcls.add(cidr);
+    }
+
+    public void removeCidrAcl(final CIDR cidr) {
+        Objects.requireNonNull(cidr);
+        cidrAcls.remove(cidr);
+    }
+
+    public void removeAllCidrAcls() {
+        cidrAcls.clear();
+    }
+
+
     // ------------------------------------------------------------------------
     // Load/Save
     // ------------------------------------------------------------------------
@@ -395,10 +416,11 @@ public class Authenticator {
 
             final VncMap map = (VncMap)Json.readJson(json, false);
 
-            final VncList auths = (VncList)map.get(new VncString("authorizations"));
-            final VncList qacls = (VncList)map.get(new VncString("queue-acls"));
-            final VncList tacls = (VncList)map.get(new VncString("topic-acls"));
-            final VncList facls = (VncList)map.get(new VncString("function-acls"));
+            final VncList auths = (VncList)map.get(new VncString("authorizations", VncList.empty()));
+            final VncList qacls = (VncList)map.get(new VncString("queue-acls", VncList.empty()));
+            final VncList tacls = (VncList)map.get(new VncString("topic-acls", VncList.empty()));
+            final VncList facls = (VncList)map.get(new VncString("function-acls", VncList.empty()));
+            final VncList cacls = (VncList)map.get(new VncString("cidr-acls", VncList.empty()));
 
             final VncMap qdacl = (VncMap)map.get(new VncString("queue-default-acl"));
             final VncMap tdacl = (VncMap)map.get(new VncString("topic-default-acl"));
@@ -419,6 +441,9 @@ public class Authenticator {
 
             facls.forEach(a -> { Acl acl = toAcl((VncMap)a);
                                  setFunctionAcl(acl.getSubject(), acl.getMode(), acl.getPrincipal()); });
+
+            cacls.forEach(a -> { CIDR cider = CIDR.parse(((VncString)a).getValue());
+                                 cidrAcls.add(cider); });
 
             // automatically active after loading credentials
             activate(true);
@@ -452,6 +477,11 @@ public class Authenticator {
                                     .map(a->toVncMap(a))
                                     .collect(Collectors.toList());
 
+        final List<VncVal> cacls = cidrAcls
+                                    .stream()
+                                    .map(c->new VncString(c.getNotation()))
+                                    .collect(Collectors.toList());
+
         final VncHashMap data = VncHashMap.of(
                                     new VncString("authorizations"),
                                     VncList.ofColl(auths),
@@ -468,7 +498,9 @@ public class Authenticator {
                                     new VncString("topic-acls"),
                                     VncList.ofColl(tacls),
                                     new VncString("function-acls"),
-                                    VncList.ofColl(facls));
+                                    VncList.ofColl(facls),
+                                    new VncString("cidr-acls"),
+                                    VncList.ofColl(cacls));
 
         final String json = Json.writeJson(data, true);
 
@@ -597,4 +629,6 @@ public class Authenticator {
 
     // Mapped by functionName -> principal -> ACL
     private final ConcurrentHashMap<String, Map<String, Acl>> functionAcls = new ConcurrentHashMap<>();
+
+    private final CopyOnWriteArrayList<CIDR> cidrAcls = new CopyOnWriteArrayList<>();
 }

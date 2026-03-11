@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.util;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 
@@ -63,4 +65,11 @@ public class IO {
             return null;
         }
     }
+
+    public static InetAddress getInetAddress(final SocketAddress address) {
+        return address != null && address instanceof InetSocketAddress
+                 ? ((InetSocketAddress)address).getAddress()
+                 : null;
+    }
+
 }

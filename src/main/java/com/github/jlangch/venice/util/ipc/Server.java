@@ -23,9 +23,12 @@ package com.github.jlangch.venice.util.ipc;
 
 import java.io.IOException;
 import java.net.BindException;
+import java.net.InetAddress;
+import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -37,6 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.impl.util.cidr.CIDR;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.ServerFunctionManager;
 import com.github.jlangch.venice.util.ipc.impl.ServerQueueManager;
@@ -404,6 +408,15 @@ public class Server implements AutoCloseable {
 
         final long connId = connectionId.incrementAndGet();
 
+        final SocketAddress remoteAddress = IO.getRemoteAddress(channel);
+        final InetAddress remoteInetAddress = IO.getInetAddress(remoteAddress);
+
+        if (!isAccepted(remoteInetAddress)) {
+            logger.error("server", "connection", "New connection from address " + remoteAddress + " rejected!");
+            try { channel.close(); } catch(Exception ignore) {}
+            return;
+        }
+
         final ServerConnection conn = new ServerConnection(
                                                this,
                                                config,
@@ -434,7 +447,7 @@ public class Server implements AutoCloseable {
                 String.format(
                     "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
                     connId,
-                    IO.getRemoteAddress(channel),
+                    remoteAddress.toString(),
                     threadPoolSize,
                     maxThreadPoolSize));
     }
@@ -483,6 +496,22 @@ public class Server implements AutoCloseable {
             server.set(null);
             throw new IpcException(msg, ex);
         }
+    }
+
+    private final boolean isAccepted(final InetAddress remoteInetAddress) {
+        final List<CIDR> cidrs = authenticator.getCidrAcls();
+
+        if (cidrs.isEmpty()) {
+            return true;
+        }
+
+        for(CIDR cidr : authenticator.getCidrAcls()) {
+            if (cidr.isInRange(remoteInetAddress)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void logTooManyConnectionsError() {
