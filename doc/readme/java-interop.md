@@ -158,13 +158,13 @@ Equality testing *enums*
 > `(== 1 1.0)` evaluates to `true` (only value must be equal)
 >
 
-```
+```clojure
 (let [e (. :java.time.Month :JANUARY)]
   (== e :JANUARY)   ;; true (value equality)
   (== :JANUARY e))  ;; true (value equality)
 ```
 
-```
+```clojure
 (let [e (. :java.time.Month :JANUARY)]
   (= e :JANUARY)   ;; false (different types)
   (= :JANUARY e))  ;; false (different types)
