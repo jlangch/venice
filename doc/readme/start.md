@@ -31,7 +31,7 @@ Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/arti
 or download it with `curl`:
 
 ```
-curl -O "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.84/venice-1.12.84.jar"
+curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.84/venice-1.12.84.jar
 ```
 
  
