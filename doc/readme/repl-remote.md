@@ -329,18 +329,5 @@ TRACE t25: => 120
 >
 
 ```
-remote> (trace/untrace-var +)
-remote> (trace/untrace-var demo/foo)
-remote> (trace/untrace-var demo/zoo)
-remote> (trace/untrace-var demo/bar)
-
-remote> (trace/untrace-var /)
-remote> (trace/untrace-var demo/foo-ex)
-remote> (trace/untrace-var demo/bar-ex)
-
-remote> (trace/untrace-var demo/factorial)
+remote> (trace/untrace-all)
 ```
-
-> [!NOTE]
-> The next Venice version 1.12.84 allows you to simply call `(trace/untrace-all)`
->
