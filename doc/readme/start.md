@@ -190,7 +190,7 @@ If you are on a Mac and have [Homebrew](https://brew.sh/) installed:
 brew install --cask vscodium
 ```
 
-or install the VSCodium *.dmg* package from [Install](https://vscodium.com/#install)
+or install the VSCodium *.dmg* package from [VSCodium Install](https://vscodium.com/#install)
 
 **Syntax Highlighting**
 
