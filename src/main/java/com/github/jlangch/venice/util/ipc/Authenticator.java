@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -397,6 +398,20 @@ public class Authenticator {
 
     public void removeAllCidrAcls() {
         cidrAcls.clear();
+    }
+
+    public final boolean isAccepted(final InetAddress remoteInetAddress) {
+        if (cidrAcls.isEmpty()) {
+            return true;
+        }
+
+        for(CIDR cidr : cidrAcls) {
+            if (cidr.isInRange(remoteInetAddress)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

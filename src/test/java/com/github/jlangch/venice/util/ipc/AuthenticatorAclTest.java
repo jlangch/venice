@@ -33,9 +33,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.InetAddress;
 import java.nio.file.Files;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import com.github.jlangch.venice.impl.util.cidr.CIDR;
 
 
 public class AuthenticatorAclTest {
@@ -160,6 +164,18 @@ public class AuthenticatorAclTest {
         assertEquals(0, a.getFunctionAclsMappedByPrincipal("t1").size());
     }
 
+
+    @Test
+    public void test_cidr_acl() throws Exception {
+        final Authenticator a = new Authenticator(false);
+
+        a.addCidrAcl(CIDR.parse("192.168.0.1/16"));
+
+        assertTrue(a.isAccepted(InetAddress.getByName("192.168.0.1")));
+
+        assertFalse(a.isAccepted(InetAddress.getByName("240.168.0.1")));
+    }
+
     @Test
     public void test_queue_acl_load_save() throws Exception {
         final File file = Files.createTempFile("test", ".cred").normalize().toFile();
@@ -278,6 +294,28 @@ public class AuthenticatorAclTest {
         assertEquals("jak", a.getFunctionAclsMappedByPrincipal("t1").get("jak").getPrincipal());
         assertEquals(DENY, a.getFunctionAclsMappedByPrincipal("t1").get("jak").getMode());
         assertFalse(a.getFunctionAclsMappedByPrincipal("t1").get("jak").canExecute());
+   }
+
+
+    @Test
+    public void test_cidr_acl_load_save() throws Exception {
+        final File file = Files.createTempFile("test", ".cred").normalize().toFile();
+        file.deleteOnExit();
+
+        final Authenticator a = new Authenticator(false);
+
+        a.addCidrAcl(CIDR.parse("192.168.0.1/16"));
+
+        a.save(new FileOutputStream(file));
+
+        final Authenticator b = new Authenticator(false);
+        b.load(new FileInputStream(file));
+
+        final List<CIDR> cidrs = a.getCidrAcls();
+
+        assertEquals(1, cidrs.size());
+
+        assertEquals("192.168.0.1/16", cidrs.get(0).getNotation());
    }
 
 }
