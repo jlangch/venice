@@ -60,6 +60,54 @@ public class LauncherTest {
     }
 
     @Test
+    public void test_run_script_with_args() {
+        final PrintStream orgStdOut = System.out;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            System.setOut(new PrintStream(baos));
+
+            final int exitCode = Launcher.run(new String[] {
+                                                    "-script",
+                                                    "(println (+ 1 (long (first *ARGV*))))",
+                                                    "100"});
+
+            assertEquals(0, exitCode);
+
+            // Must run on *nix and Windows
+            assertEquals("101\nnil\n", StringUtil.crlf_to_lf(baos.toString()));
+        }
+        finally {
+            System.setOut(orgStdOut);
+        }
+    }
+
+    @Test
+    public void test_run_script_with_args_macroexpand() {
+        final PrintStream orgStdOut = System.out;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            System.setOut(new PrintStream(baos));
+
+            final int exitCode = Launcher.run(new String[] {
+                                                  "-macroexpand", "true",
+                                                  "-script", "(do " +
+                                                             "  (assert (= 1 (count *ARGV*)))" +
+                                                             "  (println (+ 1 (long (first *ARGV*)))))",
+                                                  "100"});
+
+            assertEquals(0, exitCode);
+
+            // Must run on *nix and Windows
+            assertEquals("101\nnil\n", StringUtil.crlf_to_lf(baos.toString()));
+        }
+        finally {
+            System.setOut(orgStdOut);
+        }
+    }
+
+    @Test
     public void test_run_file() throws Exception {
         final File tmp = Files.createTempDirectory("launcher").toFile();
 
@@ -86,6 +134,66 @@ public class LauncherTest {
     }
 
     @Test
+    public void test_run_file_with_args() throws Exception {
+        final File tmp = Files.createTempDirectory("launcher").toFile();
+
+        final PrintStream orgStdOut = System.out;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            System.setOut(new PrintStream(baos));
+
+            final File script = new File(tmp, "script.venice");
+            FileUtil.save("(println (+ 1 (long (first *ARGV*))))", script, true);
+
+            final int exitCode = Launcher.run(new String[] {"-file", script.getPath(), "200"});
+
+            assertEquals(0, exitCode);
+
+            // Must run on *nix and Windows
+            assertEquals("201\n", StringUtil.crlf_to_lf(baos.toString()));
+        }
+        finally {
+            System.setOut(orgStdOut);
+            deleteSetupDir(tmp);
+        }
+    }
+
+    @Test
+    public void test_run_file_with_args_macroexpand() throws Exception {
+        final File tmp = Files.createTempDirectory("launcher").toFile();
+
+        final PrintStream orgStdOut = System.out;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            System.setOut(new PrintStream(baos));
+
+            final File script = new File(tmp, "script.venice");
+            FileUtil.save(
+                "(do                                      \n" +
+                "  (assert (= 1 (count *ARGV*)))          \n" +
+                "  (println (+ 1 (long (first *ARGV*)))))  ",
+                script,
+                true);
+
+            final int exitCode = Launcher.run(new String[] {
+                                                "-macroexpand", "true",
+                                                "-file", script.getPath(),
+                                                "200"});
+
+            assertEquals(0, exitCode);
+
+            // Must run on *nix and Windows
+            assertEquals("201\n", StringUtil.crlf_to_lf(baos.toString()));
+        }
+        finally {
+            System.setOut(orgStdOut);
+            deleteSetupDir(tmp);
+        }
+    }
+
+    @Test
     public void test_run_classpath_file() {
         final PrintStream orgStdOut = System.out;
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -93,7 +201,9 @@ public class LauncherTest {
         try {
             System.setOut(new PrintStream(baos));
 
-            final int exitCode = Launcher.run(new String[] {"-cp-file", "com/github/jlangch/venice/launcher-classpath-script-test.venice"});
+            final int exitCode = Launcher.run(new String[] {
+                                                "-cp-file",
+                                                "com/github/jlangch/venice/launcher-classpath-script-test.venice"});
 
             assertEquals(0, exitCode);
 
