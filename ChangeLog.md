@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed Venice launcher when `-file` option was used
+- Fixed Venice launcher edge case when `-file` option was used with additional args
 
 
 
