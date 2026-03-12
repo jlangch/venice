@@ -82,6 +82,12 @@ public class IpcSection implements ISectionBuilder {
         acl.addItem(diBuilder.getDocItem("ipc/remove-acl", false));
         acl.addItem(diBuilder.getDocItem("ipc/default-acl", false));
 
+        final DocSection cidr = new DocSection("ACL CIDR", "ipc.cidr");
+        all.addSection(cidr);
+        cidr.addItem(diBuilder.getDocItem("ipc/add-cidr", false));
+        cidr.addItem(diBuilder.getDocItem("ipc/remove-cidr", false));
+        cidr.addItem(diBuilder.getDocItem("ipc/clear-cidrs", false));
+
         final DocSection msg = new DocSection("Messages", "ipc.message");
         all.addSection(msg);
         msg.addItem(diBuilder.getDocItem("ipc/text-message", false));

@@ -410,7 +410,9 @@ public class Server implements AutoCloseable {
         final InetAddress remoteInetAddress = IO.getInetAddress(remoteAddress);
 
         if (!authenticator.isAccepted(remoteInetAddress)) {
-            logger.error("server", "connection", "New connection from address " + remoteAddress + " rejected!");
+            logger.error(
+                    "server", "connection",
+                    "New connection from address " + remoteAddress + " rejected by CIDR ACL!");
             try { channel.close(); } catch(Exception ignore) {}
             return;
         }

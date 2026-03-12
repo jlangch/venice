@@ -59,6 +59,7 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.cidr.CIDR;
 import com.github.jlangch.venice.util.ipc.AccessMode;
 import com.github.jlangch.venice.util.ipc.Authenticator;
 import com.github.jlangch.venice.util.ipc.Benchmark;
@@ -2144,6 +2145,108 @@ public class IPCFunctions {
                 final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
 
                 authenticator.clearCredentials();
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_add_cidr =
+        new VncFunction(
+                "ipc/add-cidr",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/add-cidr authenticator cidr)")
+                    .doc(
+                        "Adds a CIDR (Classless Inter-Domain Routing) block ACL." )
+                    .examples(
+                        "(let [auth (ipc/authenticator)]           \n" +
+                        "  (ipc/add-cidr auth \"192.168.0.1/16\")) ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/remove-cidr",
+                        "ipc/clear-cidrs")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
+                final String cidr = Coerce.toVncString(args.second()).toString();
+
+                authenticator.addCidrAcl(CIDR.parse(cidr));
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_remove_cidr =
+        new VncFunction(
+                "ipc/remove-cidr",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/remove-cidr authenticator cidr)")
+                    .doc(
+                        "Remove a CIDR (Classless Inter-Domain Routing) block ACL from " +
+                        "an authenticator.")
+                    .examples(
+                        "(let [auth (ipc/authenticator)]              \n" +
+                        "  (ipc/add-cidr auth \"192.168.0.1/16\")     \n" +
+                        "  (ipc/remove-cidr auth \"192.168.0.1/16\")) ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/add-cidr",
+                        "ipc/clear-cidrs")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
+                final String cidr = Coerce.toVncString(args.second()).toString();
+
+                authenticator.removeCidrAcl(CIDR.parse(cidr));
+
+                return new VncJavaObject(authenticator);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction ipc_clear_cidrs =
+        new VncFunction(
+                "ipc/clear-cidrs",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(ipc/clear-cidrs authenticator)")
+                    .doc(
+                        "Removes all CIDR (Classless Inter-Domain Routing) block ACLs " +
+                        "from an authenticator.")
+                    .examples(
+                        "(let [auth (ipc/authenticator)]              \n" +
+                        "  (ipc/add-cidr auth \"192.168.0.1/16\")     \n" +
+                        "  (ipc/clear-cidrs auth ))                   ")
+                    .seeAlso(
+                        "ipc/authenticator",
+                        "ipc/add-cidr",
+                        "ipc/remove-cidr")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Authenticator authenticator = Coerce.toVncJavaObject(args.first(), Authenticator.class);
+
+                authenticator.removeAllCidrAcls();
 
                 return new VncJavaObject(authenticator);
             }
@@ -4349,6 +4452,9 @@ public class IPCFunctions {
                     .add(ipc_add_credentials)
                     .add(ipc_remove_credentials)
                     .add(ipc_clear_credentials)
+                    .add(ipc_add_cidr)
+                    .add(ipc_remove_cidr)
+                    .add(ipc_clear_cidrs)
                     .add(ipc_add_acl)
                     .add(ipc_remove_acl)
                     .add(ipc_default_acl)
