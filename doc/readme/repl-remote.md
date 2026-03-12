@@ -44,7 +44,7 @@ java -jar ./venice-1.12.84.jar -repl-port 33334 -repl-pwd 123 -file ./remote-rep
 
 The remote REPL demo application looks like:
 
-```clojure
+``` clojure
 (do
   (ns demo)
 
