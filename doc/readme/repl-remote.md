@@ -36,7 +36,7 @@ To attach a REPL server to a Venice application just add two launch parameters t
 
 Start the application with the REPL server port and password:
 
-```text
+``` shell
 java -jar ./venice-1.12.84.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-demo.venice
 ```
 
@@ -110,7 +110,7 @@ venice>
 
 The demo uses this Venice server application:
 
-```clojure
+``` clojure
 (do
   (ns demo)
 
@@ -195,7 +195,7 @@ Trace actions:
 
 The remote REPL demo application looks like:
 
-```clojure
+``` clojure
 (do
   (ns demo)
 
@@ -228,7 +228,7 @@ The remote REPL demo application looks like:
 
 **i) Start the remote application**
 
-```text
+``` shell
 java -jar ./venice-1.12.84.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-trace-demo.venice
 ```
 
