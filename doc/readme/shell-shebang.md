@@ -13,8 +13,7 @@ This *shebang* demo uses the Venice interpreter from an installed Venice REPL, g
 **Prerequisites**
 
 1. The Venice REPL must be installed
-2. The Venice version must be v1.12.26 or higher
-3. MacOS or Linux operating systems
+2. MacOS or Linux operating systems
 
 
 **Example: shebang-demo.venice**
@@ -72,7 +71,7 @@ available in the installation directory.
 
   # Venice Shebang demo script
 
-  VERSION=1.12.30                      # Venice version to use
+  VERSION=1.12.84                      # Venice version to use
   DIR=/tmp/venice                      # Install dir
   REPO=https://repo1.maven.org/maven2  # Maven repository
 
