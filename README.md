@@ -77,7 +77,7 @@ Venice requires Java 8 or newer.
 
 Grab the Venice JAR from Maven:
  
-```shell
+``` shell
 curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.84/venice-1.12.84.jar
 ```
 
@@ -85,7 +85,7 @@ curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.84/venice-
 
 Setup a REPL in the directory `./repl`:
 
-```shell
+``` shell
 java -jar venice-1.12.84.jar -setup -colors -dir ./repl
 ```
 
@@ -105,7 +105,7 @@ Start the REPL from a terminal:
 
 Run an expression like `(+ 1 1)`:
 
-```text
+```
 venice> (+ 1 1)
 => 2
 
@@ -205,13 +205,13 @@ From a command shell, run `./gradlew shadowJar` in the project home dir, to invo
 
 Give `gradlew` execute permission after cloning the Venice git repository ...
 
-```shell
+``` shell
 venice% chmod +x ./gradlew
 ```
 
 ... and build the project
 
-```shell
+``` shell
 venice% ./gradlew clean shadowJar
 ```
 
