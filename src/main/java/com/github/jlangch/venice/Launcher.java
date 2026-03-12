@@ -179,7 +179,8 @@ public class Launcher {
         final String scriptWrapped = "(do " + script + ")";
 
         final String result = runScript(
-                                cli.removeSwitches("-script", "-macroexpand", "-loadpath",
+                                cli.removeSwitches("-file",
+                                                   "-macroexpand", "-loadpath",
                                                    "-repl-port", "-repl-pwd",
                                                    "-repl-encrypt", "-repl-compress",
                                                    "-repl-session-timeout"),
@@ -216,7 +217,8 @@ public class Launcher {
         final String script = new ClassPathResource(file).getResourceAsString();
 
         final String result = runScript(
-                                cli.removeSwitches("-script", "-macroexpand", "-loadpath",
+                                cli.removeSwitches("-cp-file",
+                                                   "-macroexpand", "-loadpath",
                                                    "-repl-port", "-repl-pwd",
                                                    "-repl-encrypt", "-repl-compress",
                                                    "-repl-session-timeout"),
@@ -252,7 +254,8 @@ public class Launcher {
         final String script = cli.switchValue("-script");
 
         final String result = runScript(
-                                cli.removeSwitches("-script", "-macroexpand", "-loadpath",
+                                cli.removeSwitches("-script",
+                                                   "-macroexpand", "-loadpath",
                                                    "-repl-port", "-repl-pwd",
                                                    "-repl-encrypt", "-repl-compress",
                                                    "-repl-session-timeout"),

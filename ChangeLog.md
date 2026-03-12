@@ -26,6 +26,10 @@ All notable changes to this project will be documented in this file.
 
 - Added CIDR based IP address ACLs to the IPC server.
 
+### Bugs
+
+- Fixed Venice launcher when -file option was used
+
 
 
 ## [1.12.83] - 2026-03-05
