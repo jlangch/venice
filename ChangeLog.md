@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.84] - 2026-03-xx
+## [1.12.84] - 2026-03-12
 
 ### Enhancements
 
@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed Venice launcher when -file option was used
+- Fixed Venice launcher when `-file` option was used
 
 
 
