@@ -5,7 +5,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ## Hello World WEB App
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat ['tomcat :as 'tc])
   (load-module :ring)
@@ -40,7 +40,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ## Hello World WEB App with sessions activated
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat ['tomcat :as 'tc])
   (load-module :ring)
@@ -79,7 +79,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ## Hello World WEB App with request/response dump
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat)
   (load-module :ring)
@@ -116,7 +116,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ## Sample WEB App with multiple routes
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat ['tomcat :as 'tc])
   (load-module :ring)
@@ -182,7 +182,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 Download the [Demo WEB App](../examples/scripts/webapp/login-webapp.venice) to the 
 local filesystem as 'login-webapp.venice' and run the WebApp from the REPL:
 
-```text
+``` text
 venice> (load-file "login-webapp.venice")
 ```
 

@@ -32,7 +32,7 @@ drives the Clojure benchmark, and on Venice the *benchmark* module is used.
 
 **Java VM options:** 
 
-```text
+``` text
 -server  -Xmx6G
 ```
 
@@ -40,7 +40,7 @@ drives the Clojure benchmark, and on Venice the *benchmark* module is used.
 
 ~/.lein/profiles.clj:
 
-```text
+``` text
 {:user {:dependencies [[criterium "0.4.1"]]
         :jvm-opts ["-Xmx6G" "-server"] }}
 ```
@@ -52,7 +52,7 @@ drives the Clojure benchmark, and on Venice the *benchmark* module is used.
 
 **Java**
 
-```java
+``` java
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
 @Fork(1)
@@ -83,7 +83,7 @@ public class CreateMap_Benchmark {
 
 **Clojure**
 
-```clojure
+``` clojure
 (require '[criterium.core :as criterium])
 
 (defn create−persistent-map [size] 
@@ -97,7 +97,7 @@ public class CreateMap_Benchmark {
 
 **Venice**
 
-```clojure
+``` clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
   
@@ -114,7 +114,7 @@ public class CreateMap_Benchmark {
 
 **Java**
 
-```text
+``` text
 Java Benchmark                Mode  Cnt  Score    Error    Units
 -----------------------------------------------------------------
 create_mutable_map            avgt    3  126.334  ± 16.018  µs/op
@@ -123,7 +123,7 @@ create_persistent_map         avgt    3  129.435  ± 24.465  µs/op
 
 **Clojure**
 
-```text
+``` text
 WARNING: Final GC required 18.03001544260917 % of runtime
 Evaluation count : 750 in 6 samples of 125 calls.
              Execution time mean : 808.485571 µs
@@ -135,7 +135,7 @@ Evaluation count : 750 in 6 samples of 125 calls.
 
 **Venice**
 
-```text
+``` text
 Warmup...
 GC...
 Sampling...
@@ -155,7 +155,7 @@ Execution time upper quantile :   2.163 ms (97.5%)
 
 **Java**
 
-```java
+``` java
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
 @Fork(1)
@@ -186,7 +186,7 @@ public class JavaFilterMapReduceBenchmark {
 
 **Clojure**
 
-```clojure
+``` clojure
 (require '[criterium.core :as criterium])
 
 (def data (doall (range 2000)))
@@ -200,7 +200,7 @@ public class JavaFilterMapReduceBenchmark {
 
 **Venice**
 
-```clojure
+``` clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
   
@@ -217,7 +217,7 @@ public class JavaFilterMapReduceBenchmark {
 
 **Java**
 
-```text
+``` text
 Java Benchmark     Mode  Cnt   Score   Error  Units
 ---------------------------------------------------
 filter_map_reduce  avgt    3  13.831 ± 0.662  us/op
@@ -225,7 +225,7 @@ filter_map_reduce  avgt    3  13.831 ± 0.662  us/op
 
 **Clojure**
 
-```text
+``` text
 WARNING: Final GC required 11.646503780833351 % of runtime
 Evaluation count : 5490 in 6 samples of 915 calls.
              Execution time mean : 108.718647 µs
@@ -237,7 +237,7 @@ Evaluation count : 5490 in 6 samples of 915 calls.
 
 **Venice**
 
-```text
+``` text
 Warmup...
 GC...
 Sampling...

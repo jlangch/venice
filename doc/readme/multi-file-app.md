@@ -5,7 +5,7 @@ and resource files, how do you distribute and deploy such an application?
 
 For a hassle-free delivery the application needs some kind of packaging.
 
-```text
+``` text
 billing
 ├── billing.venice
 ├── utils
@@ -31,7 +31,7 @@ and does not require additional 3rd party JARs.
 
 ### Build the application archive
 
-```text
+``` text
 staging
 ├── billing.venice
 ├── utils
@@ -44,7 +44,7 @@ staging
 
 Building the application archive from a REPL:
 
-```text
+``` text
 venice> (load-module :app) 
 venice> (app/build 
             "billing"
@@ -70,7 +70,7 @@ This fragment of the application archive's main file 'billing.venice'
 demonstrates how to load additional files and resources from the archive.
 The main file is bootstrapping the application.
 
-```clojure
+``` clojure
 (ns billing)
 
 ;; load util and render functions
@@ -93,7 +93,7 @@ The main file is bootstrapping the application.
 
 The billing application may be deployed to a file structure like
 
-```text
+``` text
 foo
 ├── billing.zip
 └── libs
@@ -125,7 +125,7 @@ Alternatively the Venice files can be packaged to a Java resource only JAR.
 
 ### Build the application JAR
 
-```text
+``` text
 staging
 ├── billing.venice
 ├── utils
@@ -147,7 +147,7 @@ mars$ jar cf billing.jar utils data billing.venice
 This fragment of the application's main file 'billing.venice' 
 demonstrates how to load additional files and resources from the JAR.
 
-```clojure
+``` clojure
 (ns billing)
 
 ;; load util and render functions
@@ -170,7 +170,7 @@ demonstrates how to load additional files and resources from the JAR.
 
 The billing application JAR may be deployed to a file structure like
 
-```text
+``` text
 foo
 └── libs
     ├── billing.jar

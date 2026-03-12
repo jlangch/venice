@@ -6,7 +6,7 @@ Returns a tree of XML element maps with the
 keys :tag (XML element name), :attrs (XML element attributes), 
 and :content (XML element content).
 
-```clojure
+``` clojure
 (do
    ;; load the Venice XML extension module
    (load-module :xml)
@@ -39,33 +39,33 @@ Alternatively Venice can parse XML data from various sources:
 
 String
 
-```clojure
+``` clojure
 (xml/parse-str "<a><b>B</b></a>")
 ```
 
 SAX Parser InputSource
 
-```clojure
+``` clojure
 (xml/parse (->> (. :java.io.StringReader :new "<a><b>B</b></a>")
                 (. :org.xml.sax.InputSource :new)))
 ```
 
 InputStream
 
-```clojure
+``` clojure
 (try-with [is (. :java.io.FileInputStream :new (io/file "books.xml"))]
   (xml/parse is))
 ```
 
 File
 
-```clojure       
+``` clojure       
 (xml/parse (io/file "books.xml"))
 ```
 
 URI
 
-```clojure       
+``` clojure       
 (xml/parse "https://www.w3schools.com/xml/books.xml")
 ```
 
@@ -119,7 +119,7 @@ The XML [books.xml](https://www.w3schools.com/xml/books.xml):
 
 Parse the XML
 
-```clojure
+``` clojure
 (do
    (load-module :xml)
    
@@ -128,7 +128,7 @@ Parse the XML
 
 `xml/parse` parses the XML into a tree structure like this
 
-```clojure
+``` clojure
 {:tag "bookstore" :content [{:tag "book"} ...]}
 ```
 
@@ -139,13 +139,13 @@ Parse the XML
 
 Descends into the node's child elements
 
-```clojure
+``` clojure
 (xml/children nodes)
 ```
 
 which results in
 
-```clojure
+``` clojure
 ({:tag "bookstore"}
  {:tag "book"
   :attrs {:category "cooking"}
@@ -158,7 +158,7 @@ which results in
 
 ### Select children based on their tag
 
-```clojure
+``` clojure
 (let [path [(xml/tag= "book")
             (xml/tag= "title")
             xml/text]]
@@ -167,14 +167,14 @@ which results in
 
 result:
 
-```clojure
+``` clojure
 '("Everyday Italian" "Harry Potter" "XQuery Kick Start" "Learning XML")
 ```
 
 
 ### Select children based on their tag, attributes and position
 
-```clojure
+``` clojure
 (let [path [(xml/tag= "book")
             (xml/attr= :category "web")
             (xml/tag= "title")
@@ -185,13 +185,13 @@ result:
 
 result:
 
-```clojure
+``` clojure
 "Learning XML"
 ```
 
 Alternatively the query can be written as:
 
-```clojure
+``` clojure
 (->> [nodes]
      ((xml/tag= "book"))
      ((xml/attr= :category "web"))
@@ -202,7 +202,7 @@ Alternatively the query can be written as:
 
 ### Aggregate total price
 
-```clojure
+``` clojure
 (let [path [(xml/tag= "book")
             (xml/attr= :category "web")
             (xml/tag= "price")
@@ -212,7 +212,7 @@ Alternatively the query can be written as:
 
 result:
 
-```clojure
+``` clojure
 89.94M
 ```
 
@@ -233,7 +233,7 @@ result:
   
 #### Example 1: regex predicate for tag and attribute value
 
-```clojure
+``` clojure
 (let [path [(xml/tagp #(match? % "book.*"))
             (xml/attrp :category #(match? % "web.*"))
             (xml/tag= "title")
@@ -244,14 +244,14 @@ result:
 
 result:
 
-```clojure
+``` clojure
 "Learning XML"
 ```
 
 
 #### Example 2: has _:cover_ attribute
 
-```clojure
+``` clojure
 (let [path [(xml/tag= "book")
             (xml/attrp :cover some?)
             (xml/tag= "title")
@@ -261,6 +261,6 @@ result:
 
 result:
 
-```clojure
+``` clojure
 "Learning XML"
 ```

@@ -5,7 +5,7 @@
 
 ## Text blocks
 
-```clojure
+``` clojure
 (do
    (def s1 """{ "fruit": "apple", "color": "red" }""")
 
@@ -33,14 +33,14 @@ string.
 _Interpolation is implemented as a reader macro. It's parsed at read_
 _time and turned into a_ `(str args)` _expression._
 
-```clojure
+``` clojure
 (do
    (let [x 100] 
       (println "x: ~{x}")
       (println "f(x): ~(inc x)")))
 ```
 
-```clojure
+``` clojure
 (do
    (let [x 100] 
       (println """x: ~{x}""")
@@ -51,7 +51,7 @@ The eager parsing by the reader macro can be avoided by quoting the
 interpolation string, thus allow reusing it:
 
 
-```clojure
+``` clojure
 (do
    (def template '"y ~{y}")
    
@@ -61,7 +61,7 @@ interpolation string, thus allow reusing it:
    (println (evaluate 200)))
 ```
 
-```clojure
+``` clojure
 (do
    (def template '"y ~(inc y)")
    

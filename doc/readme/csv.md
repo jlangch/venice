@@ -10,7 +10,7 @@ The separator and the quote char can optionally be specified. They default to
 a comma and a double quote.
 
 
-```clojure
+``` clojure
 (csv/read """
           8000,"Zurich",ZH
           5000,"Aarau",AG
@@ -21,7 +21,7 @@ a comma and a double quote.
 
 With alternate quote and separator:
 
-```clojure
+``` clojure
 (csv/read """
           8000,'Zurich','Wipkingen, Meier''s Ring',ZH
           3000,'Bern','',BE
@@ -40,7 +40,7 @@ With alternate quote and separator:
 
 Writes data in CSV format to a string or a Java Writer
 
-```clojure
+``` clojure
 (csv/write-str [[1 "AC" false] [2 "WS" true]])
   
 ;; => "1,AC,false\n2,WS,true"
@@ -48,7 +48,7 @@ Writes data in CSV format to a string or a Java Writer
 
 With alternate quote, separator, and newline:
 
-```clojure
+``` clojure
 (csv/write-str [[1 "AC" false] [2 "WS;'-1'" true]]
                :quote "'"
                :separator ";"
@@ -60,6 +60,6 @@ With alternate quote, separator, and newline:
 
 Writes data in CSV format to a file:
 
-```clojure
+``` clojure
 (csv/write (io/file "test.csv") [[1 "AC" false] [2 "WS" true]])
 ```

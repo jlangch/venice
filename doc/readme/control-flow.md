@@ -12,7 +12,7 @@ is an expression and returns a value.
 `do` blocks sequentially execute multiple expressions. The value
 of the last expression is returned.
  
-```clojure
+``` clojure
 (do (println "1000")
     (println "2000")
     20)
@@ -25,7 +25,7 @@ of the last expression is returned.
 `if` takes three expressions, a condition, a "then", and an "else"
 expression. The "else" expression is optional:
 
-```clojure
+``` clojure
 (str "2 is " (if (number? 2) "a number" "not a number"))
 ; => "2 is a number"
 
@@ -39,7 +39,7 @@ expression. The "else" expression is optional:
 To handle larger blocks with multiple expressions presumable for 
 side effects use `do`
 
-```clojure
+``` clojure
 (if (number? 5)
   (do (println "5 is number")
       true)
@@ -56,7 +56,7 @@ then evaluates any number of statements as a body in an implicit `do`.
 The value of the last expression is returned. If the condition is 
 false, nil is returned.
 
-```clojure
+``` clojure
 (let [x 6]
   (when (pos? x)
     (println x "is positive")
@@ -69,7 +69,7 @@ false, nil is returned.
 Each test is evaluated in order and the expression is evaluated and 
 returned for the first true test.
 
-```clojure
+``` clojure
 (do
   (defn test [x]
     (cond
@@ -84,7 +84,7 @@ returned for the first true test.
 
 with an else part:
 
-```clojure
+``` clojure
 (do
   (defn test [x]
     (cond
@@ -104,7 +104,7 @@ with an else part:
 `case` takes an expression and a list of clauses. Each clause takes the 
 form of a test constant and a result expression.
 
-```clojure
+``` clojure
 (do
   (defn test [x]
     (case (* x 10)
@@ -121,7 +121,7 @@ form of a test constant and a result expression.
 
 with a default:
 
-```clojure
+``` clojure
 (do
   (defn test [x]
     (case (* x 10)
@@ -146,31 +146,31 @@ with a default:
 *For* list comprehensions take a vector of one or more binding-form or collection-expr pairs, 
 each followed by zero or more modifiers (`:when`, `:while`, `:let`), and yields a collection of evaluations of the body expr.
 
-```clojure
+``` clojure
 (for [x (range 5)] x) 
 
 ;; => [0 1 2 3 4]
 ```
 
-```clojure
+``` clojure
 (for [x (range 10) :when (odd? x)] (* x 2))
 
 ;; => [2 6 10 14 18]
 ```
 
-```clojure
+``` clojure
 (for [x (range 10) :when (odd? x) :let [p (* x 2)]] [x p])
 
 ;; => [[1 2] [3 6] [5 10] [7 14] [9 18]]
 ```
 
-```clojure
+``` clojure
 (for [x [1 2 3] :when (odd? x) y [1 2 3 4] :when (even? y)] [x y])
 
 ;; => [[1 2] [1 4] [3 2] [3 4]]
 ```
 
-```clojure
+``` clojure
 (for [x (range 10) :while (< x 4) y (range 6) :while (< y 6) :when (even? y)] [x y])
 
 ;; => [[0 0] [0 2] [0 4] [1 0] [1 2] [1 4] [2 0] [2 2] [2 4] [3 0] [3 2] [3 4]]
@@ -185,7 +185,7 @@ each followed by zero or more modifiers (`:when`, `:while`, `:let`), and yields 
 `dotimes` repeatedly executes a body with a name bound to integers from 0 through n-1. 
 Returns nil.
 
-```clojure
+``` clojure
 (dotimes [n 3] (println "n is" n))
 
 ; "n is 0"
@@ -203,21 +203,21 @@ Returns nil.
 `doseq` repeatedly executes body (presumably for side-effects) with bindings and filtering 
 as provided by "list-comp". Does not retain the head of the sequence. Returns nil.
 
-```clojure
+``` clojure
 (doseq [x (range 10)] (print x))
 
 ;; 0123456789
 ;; => nil
 ```
 
-```clojure
+``` clojure
 (doseq [x (seq "abc") y [0 1 2]] (print (pr-str [x y])))
 
 ;; ["a" 0]["a" 1]["b" 0]["b" 1]["c" 0]["c" 1]
 ;; => nil
 ```
 
-```clojure
+``` clojure
 (doseq [x (range 10) :when (odd? x)] (print (* x 2) " "))
 
 ;; 2  6  10  14  18
@@ -232,7 +232,7 @@ as provided by "list-comp". Does not retain the head of the sequence. Returns ni
 
 Applies f to the items of the collection presumably for side effects. Returns nil.
 
-```clojure
+``` clojure
 (docoll #(println %) [1 2 3])
 
 ; 1

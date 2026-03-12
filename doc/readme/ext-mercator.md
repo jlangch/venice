@@ -29,7 +29,7 @@ to +180° eastward and -180° westward.
 
 Basic rendering flow:
 
-```clojure
+``` clojure
   (-> (mercator/load-mercator-image)
       (mercator/draw-locations '([47.3717400 8.5422600]))
       (mercator/crop-image 400 600)
@@ -77,7 +77,7 @@ Saves the image to a file in the given format (:png, :jpg, :gif)
 Show a few cities (Zurich, New York, Tokyo, ...) given by its coordinates on 
 a world map:
 
-```clojure
+``` clojure
 (do
   (load-module :mercator)
 
@@ -128,7 +128,7 @@ You can provide your own map though, but it must:
 
 The markers can be customized with a label, size and color passed as an optional map to each location. E.g.:
 
-```clojure
+``` clojure
 { :label         "Zurich"
   :radius        10
   :fill-color    [128 128 255 255]

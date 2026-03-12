@@ -26,7 +26,7 @@ expressions, rules, or scripts.
 
 ### A simple example:
 
-```java
+``` java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
@@ -65,7 +65,7 @@ The Venice evaluator expects any number of named Java objects as parameters and 
 
 It coerces Java data types to/from Venice data types implicitly. Basic types as Boolean, Long, Double, String, BigDecimal, List, Map, ... are coerced to Venice types like long, double, decimal, string, list, map, etc. All other types can be accessed through Java interop. Java bean parameters expose its getters as Map keys in Venice, so the getters can be accessed simply through `(:getterName bean)`
 
-```java
+``` java
 import java.awt.Point;
 
 import com.github.jlangch.venice.Parameters;
@@ -120,7 +120,7 @@ Venice's service registry is used with application scripting scenarios where mul
 The built-in `service` function is used to call a method of a registered named service with the required arguments. The  _service_  function is defined as `(service name method & args)`.
 
 
-```java
+``` java
 import com.github.jlangch.venice.IServiceRegistry;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -167,7 +167,7 @@ public class Embed_12_ServiceRegistry {
 In some integration scenarios it might easier to use dynamic service
 discovery (delegating to a native service registry):
 
-```java
+``` java
 import com.github.jlangch.venice.IServiceRegistry;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -241,7 +241,7 @@ As default Venice uses the *stdout* / *stderr* streams from the hosting Java VM.
 Redirect *stdout* / *stderr* to the *null* device, effectively swallowing everything sent
 to these streams.
 
-```java
+``` java
 venice.eval(
     "(println 100)",  
     Parameters.of("*out*", null,
@@ -255,7 +255,7 @@ The macros `with-out-str` and `with-err-str` capture all output written to
 *stdout* or *stderr*r respectively in the macro's context and return it as the macros 
 return value for further processing.
 
-```java
+``` java
 venice.eval("(with-out-str (println 100))");
 
 venice.eval("(with-out-str (println *out* 100))");
@@ -269,7 +269,7 @@ venice.eval("(with-err-str (println *err* 100))");
 At the Java VM level *stdout* / *stderr* of the invoked script can be redirected
 to dedicated streams.
 
-```java
+``` java
 try(CapturingPrintStream ps_out = new CapturingPrintStream();
     CapturingPrintStream ps_err = new CapturingPrintStream()
 ) {
@@ -289,7 +289,7 @@ try(CapturingPrintStream ps_out = new CapturingPrintStream();
 
 ### stdout-stderr redirection example
 
-```java
+``` java
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -350,7 +350,7 @@ Venice prints informative stack traces with `VncException::printVeniceStackTrace
 _VncException_ is the superclass of all Venice exceptions.
 
 
-```java
+``` java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
@@ -379,7 +379,7 @@ public class Embed_05_Exceptions {
 This prints a nice stack trace with the name of the function 
 and the source location for every call stack level:
 
-```text
+``` text
 Exception in thread "main" VncException: / by zero
 
 [Callstack]
@@ -390,7 +390,7 @@ Exception in thread "main" VncException: / by zero
 On the other hand `VncException::printStackTrace()` prints a technical Java 
 stack trace that is mostly not of much value:
 
-```text
+``` text
 com.github.jlangch.venice.VncException: / by zero
     at com.github.jlangch.venice.impl.types.VncLong.div(VncLong.java:205)
     at com.github.jlangch.venice.impl.functions.MathFunctions$4.apply(MathFunctions.java:247)
@@ -420,7 +420,7 @@ Precompiling Venice speeds up evaluation significantly when calling an expressio
 multiple times with different parameters. Running precompiled scripts is threadsafe. 
 Every evaluation gets its own private Venice context.
 
-```java
+``` java
 import com.github.jlangch.venice.IPreCompiled;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
@@ -474,7 +474,7 @@ The benchmark can be run on the project's Gradle build: `./gradlew jmh -Pinclude
 
 ### Benchmark
 
-```java
+``` java
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
@@ -568,7 +568,7 @@ Prohibits all 'unsafe' functions like Java calls, IO related functions, ... to p
 a safe environment for running scripts.
 
 
-```java
+``` java
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -600,7 +600,7 @@ A customized sandbox allows the configuration of all aspects for Java and
 Venice calls.
 
 
-```java
+``` java
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;

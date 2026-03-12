@@ -36,7 +36,7 @@ Open a terminal and run the REPL start script.
 
 Type an expression like `(+ 1 1)` followed by a `<CR>`
 
-```text
+``` text
 venice> (+ 1 1)
 => 2
 venice>
@@ -44,7 +44,7 @@ venice>
 
 The REPL supports multi-line editing:
 
-```text
+``` text
 venice> (defn sum [x y]
            (+ x y))
 venice> (sum 1 4)
@@ -54,7 +54,7 @@ venice>
 
 Check the current namespace
 
-```text
+``` text
 venice> *ns*
 => user
 venice>
@@ -62,7 +62,7 @@ venice>
 
 Change to the *demo* namespace
 
-```text
+``` text
 venice> (ns demo)
 => demo
 venice>
@@ -77,7 +77,7 @@ with the up/down arrows.
 A history of the last three result values is kept by the REPL, accessible through 
 the Venice symbols `*1`, `*2`, `*3`, `**`.
 
-```text
+``` text
 venice> (+ 10 1)
 => 11
 venice> (* 5 4)
@@ -101,13 +101,13 @@ The documentation for a function can be printed from the REPL:
 
 **Example 1**
 
-```text
+``` text
 venice> (doc map)
 ```
 
 doc output:
 
-```text
+``` text
 (map f coll colls*)
 
 Applys f to the set of first items of each coll, followed by applying f to the
@@ -155,13 +155,13 @@ SEE ALSO:
 
 **Example 2**
 
-```text
+``` text
 venice> (doc +)
 ```
 
 doc output:
 
-```text
+``` text
 (+), (+ x), (+ x y), (+ x y & more)
 
 Returns the sum of the numbers. (+) returns 0.

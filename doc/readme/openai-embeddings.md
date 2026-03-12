@@ -44,7 +44,7 @@ The input text to embed
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 

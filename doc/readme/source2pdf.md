@@ -11,7 +11,7 @@ Open a REPL and use the command `!source-pdf`:
 
 To create a HTML and PDF representation from the 'sudoku.venice' script run:
 
-```clojure
+``` clojure
 venice> !source-pdf ./scripts/sudoku.venice
 ```
 
@@ -45,7 +45,7 @@ and the fonts:
 
 Run this script from the REPL to download the fonts and PDF libraries:
 
-```clojure
+``` clojure
 (do
   (load-module :pdf-install)
   (load-module :fonts)

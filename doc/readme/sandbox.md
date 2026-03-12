@@ -70,7 +70,7 @@ that are available to the script in the JVM!
 
 Run Venice scripts with no restrictions:
 
-```java
+``` java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
@@ -95,7 +95,7 @@ Prohibit all 'unsafe' functions:
    namespaces, ...
      
 
-```java
+``` java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
@@ -130,7 +130,7 @@ venice>
 
 ## Customized Sandbox
 
-```java
+``` java
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.*;
 
@@ -267,7 +267,7 @@ This means:
 - No access to stdin, stdout, and stderr
 - Access only to a few extension modules ("crypt", "kira", "xml")
 
-```clojure
+``` clojure
 (do
   (defn async [f] (-> (. :java.lang.Thread :new f) 
                       (. :start)))

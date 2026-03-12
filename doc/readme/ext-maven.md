@@ -3,7 +3,7 @@
 
 ## Running Maven commands
 
-```clojure 
+``` clojure 
 (do
   (load-module :maven)
   
@@ -18,7 +18,7 @@
 ## Installing Maven locally for the REPL
 
 
-```clojure
+``` clojure
 (do
   (load-module :maven)  
   (maven/install))
@@ -44,7 +44,7 @@ Implicitly excludes dependencies with the group ids (except for :test scope):
  
 **Example 1**
  
-```clojure
+``` clojure
 (do
   (load-module :maven)
   
@@ -68,7 +68,7 @@ org.knowm.xchart:xchart:jar:3.8.6:compile
 
 **Example 2**
 
-```clojure
+``` clojure
 (do
   (load-module :maven)
   
@@ -104,7 +104,7 @@ prints
 
 Download artifacts from a [Maven repository](https://repo1.maven.org/maven2):
 
-```clojure
+``` clojure
 (load-module :maven)
   
 ; download the binary 

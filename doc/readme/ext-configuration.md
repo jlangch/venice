@@ -18,7 +18,7 @@ Reads configuration from multiple sources and recursively merges it:
 
 ## Examples
 
-```
+``` clojure
 (do
   (load-module :config ['config :as 'c])
   
@@ -34,7 +34,7 @@ Reads configuration from multiple sources and recursively merges it:
 
 Reads a JSON file into a configuration map.
 
-```
+``` clojure
 (do
   (load-module :config ['config :as 'c])
 
@@ -67,7 +67,7 @@ to keywords.
 Reads configuration values from environment variables and associates them with the 
 specified paths in the configuration map
 
-```
+``` clojure
 (do
   (load-module :config ['config :as 'c])
   
@@ -85,7 +85,7 @@ specified paths in the configuration map
 
 Specifying default values:
 
-```
+``` clojure
 (do
   (load-module :config ['config :as 'c])
   
@@ -100,7 +100,7 @@ Specifying default values:
 Reads configuration values from system properties and associates them with the 
 specified paths in the configuration map
 
-```
+``` clojure
 (do
   (load-module :config ['config :as 'c])
   
@@ -116,7 +116,7 @@ specified paths in the configuration map
 
 Specifying default values:
 
-```
+``` clojure
 (do
   (load-module :config ['config :as 'c])
   
@@ -128,7 +128,7 @@ Specifying default values:
 
 ## Using configurations with the component module
 
-```
+``` clojure
 (do
   (load-module :config ['config :as 'cfg])
   (load-module :component ['component :as 'cmp])

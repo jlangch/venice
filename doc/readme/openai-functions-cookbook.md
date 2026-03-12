@@ -62,7 +62,7 @@ The function definitions are passed in as `tools` parameter to the OpenAI reques
 
 The weather API functions definitions are defined in the `:openai-demo` module and look like:
 
-```clojure
+``` clojure
 (defn demo-weather-function-defs [] 
    ;; Returns a Venice data map with the OpenAI demo function definitions, that corresponds 
    ;; to the OpenAI chat completion request 'tools' JSON data.
@@ -121,7 +121,7 @@ The weather API functions definitions are defined in the `:openai-demo` module a
 If we prompt the model about the current weather, it will respond with some clarifying 
 questions due to the missing location.
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)  
@@ -145,7 +145,7 @@ questions due to the missing location.
 
 The OpenAI model answers:
 
-```json
+``` json
 [{
   "finish_reason": "stop",
   "index": 0,
@@ -160,7 +160,7 @@ The OpenAI model answers:
 Once we provide the missing information, it will generate the appropriate function 
 arguments for us.
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
@@ -188,7 +188,7 @@ arguments for us.
 
 Returns the message:
 
-```json
+``` json
 [{
   "finish_reason": "tool_calls",
   "index": 0,
@@ -210,7 +210,7 @@ Returns the message:
 
 By prompting it differently, we can get it to target the `get_n_day_weather_forecast` function:
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
@@ -246,7 +246,7 @@ yet. In this case it already knows the location for the forecast, but it needs t
 days are required in the forecast.
 
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
@@ -277,7 +277,7 @@ days are required in the forecast.
 
 Returns the message:
 
-```json
+``` json
 [{
   "finish_reason": "tool_calls",
   "index": 0,
@@ -306,7 +306,7 @@ how to use it.
 
 Force the model to use "get_n_day_weather_forecast"
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
@@ -333,7 +333,7 @@ Force the model to use "get_n_day_weather_forecast"
 
 The OpenAI model answers:
 
-```json
+``` json
 [{
   "finish_reason": "stop",
   "index": 0,
@@ -355,7 +355,7 @@ The OpenAI model answers:
 
 If we don't force the model to use "get_n_day_weather_forecast" it answers
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
@@ -380,7 +380,7 @@ If we don't force the model to use "get_n_day_weather_forecast" it answers
 
 with:
 
-```json
+``` json
 [{
   "finish_reason": "tool_calls",
   "index": 0,
@@ -403,7 +403,7 @@ with:
 We can also force the model to not use a function at all. By doing so we prevent it from 
 producing a proper function call.
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
@@ -428,7 +428,7 @@ producing a proper function call.
 
 Response:
 
-```json
+``` json
 [{
   "finish_reason": "stop",
   "index": 0,
@@ -444,7 +444,7 @@ Response:
 
 Actual GPT-3.5-Turbo models can call multiple functions in one turn.
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
@@ -471,7 +471,7 @@ Actual GPT-3.5-Turbo models can call multiple functions in one turn.
 
 Response:
 
-```json
+``` json
 [{
   "finish_reason": "tool_calls",
   "index": 0,

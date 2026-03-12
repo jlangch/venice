@@ -17,7 +17,7 @@ by reducing the need for explicit indexing or lookups.
 Sequential destructuring breaks up a sequential data structure as a Venice 
 list or vector within a let binding
 
-```clojure
+``` clojure
 (do
    (let [[x y z] [1 2 3]]
       (println x y z))
@@ -40,7 +40,7 @@ list or vector within a let binding
 
 or within function parameters
 
-```clojure
+``` clojure
 (do
    (defn position [[x y]]
       (println "x:" x "y:" y))
@@ -51,7 +51,7 @@ or within function parameters
 
 The destructured collection must not be of same size as the number of binding names
 
-```clojure
+``` clojure
 (do
    (let [[a b c d e f] '(1 2 3)]
       (println a b c d e f))
@@ -65,7 +65,7 @@ The destructured collection must not be of same size as the number of binding na
 
 ### Working with tail elements `&` and ignoring bindings `_`
 
-```clojure
+``` clojure
 (do
    (let [[a b c & z] '(1 2 3 4 5 6 7 8 9)]
       (println a b c z))
@@ -79,7 +79,7 @@ The destructured collection must not be of same size as the number of binding na
 
 ### Binding the entire collection with `:as`
 
-```clojure
+``` clojure
 (do
    (let [[a b c & z :as all] '(1 2 3 4 5 6 7 8 9)]
       (println a b c z all))
@@ -89,7 +89,7 @@ The destructured collection must not be of same size as the number of binding na
 
 ### Nested bindings
 
-```clojure
+``` clojure
 (do
    (def line [[5 10] [10 20]])
    (let [[[x1 y1][x2 y2]] line]
@@ -100,7 +100,7 @@ The destructured collection must not be of same size as the number of binding na
 
 `:as` or `&` can be used at any level
 
-```clojure
+``` clojure
 (do
    (def line [[5 10] [10 20]])
    (let [[[a b :as group1] [c d :as group2]] line]
@@ -113,14 +113,14 @@ The destructured collection must not be of same size as the number of binding na
 
 ### Lazy sequences
 
-```clojure
+``` clojure
 (do
    (let [[x y & z] (lazy-seq 1 inc)]
       (println x y (doall (take 5 z)))))
       ;=> 1 2 (3 4 5 6 7)
 ```
 
-```clojure
+``` clojure
 (do
    (let [[x _ y _ z] (lazy-seq 1 inc)]
       (println x y z)))
@@ -133,7 +133,7 @@ The destructured collection must not be of same size as the number of binding na
 Destructuring can be used directly in function parameters, making it easy to pass 
 and work with complex data structures.
 
-```clojure
+``` clojure
 (do
   (defn sum [[x y]]
     (println "Sum: " (+ x y)))
@@ -149,7 +149,7 @@ and work with complex data structures.
 Associative destructuring breaks up an associative (key/value) data structure 
 as a Venice map within a let binding.
 
-```clojure
+``` clojure
 (do
    (let [{a :a, b :b, c :c} {:a "A" :b "B" :d "D"}]
       (println a b c))
@@ -157,7 +157,7 @@ as a Venice map within a let binding.
 )
 ```
 
-```clojure
+``` clojure
 (do
    (def map_keyword {:a "A" :b "B" :c 3 :d 4})
    (def map_strings {"a" "A" "b" "B" "c" 3 "d" 4})
@@ -174,7 +174,7 @@ as a Venice map within a let binding.
 
 ### Binding the entire collection with `:as`
 
-```clojure
+``` clojure
 (do
    (def map_keyword {:a "A" :b "B" :c 3 :d 4})
 
@@ -186,7 +186,7 @@ as a Venice map within a let binding.
 
 ### Binding with defaults `:or`
 
-```clojure
+``` clojure
 (do
   (defn configure [options]
      (let [{:keys [port debug verbose] :or {port 8000, debug false, verbose false}} options]
@@ -201,7 +201,7 @@ as a Venice map within a let binding.
 
 Associative destructuring can be nested and combined with sequential destructuring
 
-```clojure
+``` clojure
 (do
    (def users
       {:peter {:role "clerk"
@@ -228,7 +228,7 @@ Associative destructuring can be nested and combined with sequential destructuri
 Destructuring can be used directly in function parameters, making it easy to pass 
 and work with complex data structures.
 
-```clojure
+``` clojure
 (do
   (defn greet [{:keys [name age]}]
     (println "Hello," name "you are" age "years old."))

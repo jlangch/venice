@@ -32,7 +32,7 @@ In Venice _nil_ is a value and has a meaning of void. _nil_ can be used for any
 data type. _nil_ has the same value as _null_ in Java but compared to 
 Java _nil_ is a first class value and has a type (:core/nil).
 
-```clojure
+``` clojure
 (def x nil)
 (nil? x)
 (type nil)
@@ -43,7 +43,7 @@ Java _nil_ is a first class value and has a type (:core/nil).
 
 Booleans are defined by the constants _true_ and _false_.
 
-```clojure
+``` clojure
 (and true (== 1 1))
 (and false (== 1 1))
 ```
@@ -51,7 +51,7 @@ Booleans are defined by the constants _true_ and _false_.
 
 ## String
 
-```clojure
+``` clojure
 (println "abcd")
 (println "ab\"cd")
 (println "PI: \u03C0")  ;; string with unicode escaped characters
@@ -64,7 +64,7 @@ Booleans are defined by the constants _true_ and _false_.
 
 ## Character
 
-```clojure
+``` clojure
 ;; char literals
 #\A          ; => "A"
 #\π          ; => "π"
@@ -87,7 +87,7 @@ Booleans are defined by the constants _true_ and _false_.
 
 Based on the Java type _Long_. long is Venice's standard integer type.
 
-```clojure
+``` clojure
 (+ 1 2)
 ```
 
@@ -95,7 +95,7 @@ Based on the Java type _Long_. long is Venice's standard integer type.
 
 Based on the Java type _Integer_.
 
-```clojure
+``` clojure
 (+ 2I 3I)
 ```
 
@@ -103,7 +103,7 @@ Based on the Java type _Integer_.
 
 Based on the Java type _Double_.
 
-```clojure
+``` clojure
 (+ 1.0 2.0)
 ```
 
@@ -111,7 +111,7 @@ Based on the Java type _Double_.
 
 Based on the Java type _BigDecimal_.
 
-```clojure
+``` clojure
 (+ 1.0M 2.0M)
 ```
 
@@ -119,7 +119,7 @@ Based on the Java type _BigDecimal_.
 
 Based on the Java type _BigInteger_.
 
-```clojure
+``` clojure
 (+ 1N 2N)
 ```
 
@@ -127,7 +127,7 @@ Based on the Java type _BigInteger_.
 
 Number types are implicitly coerced to the most complex type in an expression
 
-```clojure
+``` clojure
 (+ 1 2.0 1.0M) ;; => 4.0M
 
 (+ 1.0M 2.0 1I) ;; => 4.0M
@@ -138,7 +138,7 @@ Number types are implicitly coerced to the most complex type in an expression
 
 Keywords (e.g. `:a`) are symbolic identifiers.
 
-```clojure
+``` clojure
 {:a 100, :b 200}
 
 [:a :b]
@@ -149,7 +149,7 @@ Keywords (e.g. `:a`) are symbolic identifiers.
 Symbols are identifiers that are normally used to refer to function parameters, 
 let bindings, and global vars.
 
-```clojure
+``` clojure
 (defn sum [x y] (+ x y))
 
 (def x 100)
@@ -165,7 +165,7 @@ let bindings, and global vars.
 
 Immutable persistent list.
 
-```clojure
+``` clojure
 '(1 2 3)
 (list 1 2 (+ 1 2))
 
@@ -179,7 +179,7 @@ Immutable persistent list.
 
 Immutable persistent vector.
 
-```clojure
+``` clojure
 [1 2 3]
 (vector 1 2 (+ 1 2))
 
@@ -193,7 +193,7 @@ Immutable persistent vector.
 
 Immutable persistent hash set.
 
-```clojure
+``` clojure
 #{1 2 3}
 (set 1 2 3)
 
@@ -205,7 +205,7 @@ Immutable persistent hash set.
 
 Immutable persistent sorted set.
 
-```clojure
+``` clojure
 (sorted-set 2 3 1)
 
 (cons 3 (sorted-set 2 1))          ;; => #{1 2 3}
@@ -216,7 +216,7 @@ Immutable persistent sorted set.
 
 Immutable persistent hash map.
 
-```clojure
+``` clojure
 {:a 100 :b 200}
 (hash-map :a 100 :b 200)
 
@@ -231,7 +231,7 @@ Immutable persistent hash map.
 
 Immutable persistent ordered map.
 
-```clojure
+``` clojure
 (ordered-map :a 100 :b 200)
 
 (cons {:c 3} (ordered-map :a 1 :b 2))  ;; => {:a 1 :b 2 :c 3}
@@ -243,7 +243,7 @@ Immutable persistent ordered map.
 
 Immutable persistent sorted map.
 
-```clojure
+``` clojure
 (sorted-map :a 100 :b 200)
 
 (cons {:c 3} (sorted-map :b 2 :a 1))  ;; => {:a 1 :b 2 :c 3}
@@ -268,7 +268,7 @@ Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
            to/from the head 
 ```
 
-```clojure
+``` clojure
 (stack )
 
 (let [s (stack)]
@@ -294,7 +294,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
            the head                       tail
 ```
 
-```clojure
+``` clojure
 (queue) ;; unbounded queue
 
 (queue 100) ;; bounded queue
@@ -361,7 +361,7 @@ elements from both sides of the queue.
            the head                       the tail
 ```
 
-```clojure
+``` clojure
 (deque) ;; unbounded deque
 
 (deque 100) ;; bounded deque
@@ -438,7 +438,7 @@ unexpired elements.
 
 A delay queue does not permit `nil` elements.
 
-```clojure
+``` clojure
 (let [q (delay-queue)]
   (put! q 1 100)   ;; delay 100ms
   (put! q 1 200)   ;; delay 200ms
@@ -447,7 +447,7 @@ A delay queue does not permit `nil` elements.
 
 **Implement a rate limiter on top of a delay queue:**
 
-```clojure
+``` clojure
 (do
   (defprotocol RateLimiter (init [x]) (aquire [x]))
 
@@ -484,7 +484,7 @@ will be evicted, and then the new element added at the tail.
 
 The circular buffer does not permit `nil` elements."
 
-```clojure
+``` clojure
 (let [q (circular-buffer 3)]
   (put! q 1)
   (put! q 2)

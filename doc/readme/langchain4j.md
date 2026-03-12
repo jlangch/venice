@@ -33,7 +33,7 @@ Parameters:
 | log              | A log function, may be *nil*. E.g: `(fn [s] (println "Qdrant:" s))`|
 
 
-```clojure
+``` clojure
 (do
   (load-module :cargo-qdrant ['cargo-qdrant :as 'qdrant])
    
@@ -44,7 +44,7 @@ Parameters:
 
 ### Stop Qdrant Docker Container
 
-```clojure
+``` clojure
 (do
   (load-module :cargo-qdrant ['cargo-qdrant :as 'qdrant])
    

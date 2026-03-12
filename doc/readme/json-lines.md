@@ -13,7 +13,7 @@ Venice data structures. No 3rd-party libraries are required.
 
 To convert to/from a *JSON Line* string, use *jsonl/write-str* and *jsonl/read-str*:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -25,7 +25,7 @@ To convert to/from a *JSON Line* string, use *jsonl/write-str* and *jsonl/read-s
 ;; {"a":11,"b":21}
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
 
@@ -53,7 +53,7 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
  * `io/buffered-writer`
  * `io/file`
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -65,7 +65,7 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
      (flush wr)))
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -85,14 +85,14 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
  * `io/buffered-reader`
  * `io/file`
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
   (jsonl/slurp (io/file "data.jsonl")))
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -105,7 +105,7 @@ filter-map-reduce functionality:
 
 _Note: make sure that Venice' up-front macro expansion is activated when processing large datasets to get best performance!_
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
 
@@ -137,7 +137,7 @@ JSON handling.
 
 **Map JSON object keys to keywords**
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -148,7 +148,7 @@ JSON handling.
 
 **Mapping JSON Lines object values explicitly**
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -173,7 +173,7 @@ Note: the value function `value-fn` is applied after the key function `key-fn` a
 When dealing with floating-point numbers, we often encounter rounding 
 errors known as the double precision issue.
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -188,7 +188,7 @@ with financial amounts. But JSON does not support decimals as data type.
 
 Venice decimals are converted to strings by default:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -200,7 +200,7 @@ Venice decimals are converted to strings by default:
 But Venice decimals can also be forced to be converted to floating-point 
 numbers:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -219,7 +219,7 @@ the number is directly converted into a decimal without intermediate
 double conversion, thus keeping the precision and allow for full 
 decimal value range.
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
  
@@ -243,7 +243,7 @@ decimal value range.
 Alternatively decimals can be parsed explicitly with a value mapping 
 function:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -263,7 +263,7 @@ function:
 
 Venice binary data is converted to a _Base64_ encoded string:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -278,7 +278,7 @@ Venice binary data is converted to a _Base64_ encoded string:
 
 Venice date/time data types are formatted as ISO date/time strings: 
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -299,7 +299,7 @@ Venice date/time data types are formatted as ISO date/time strings:
 JSON does not distinguish between integer and long values hence Venice integers 
 are converted to longs always on JSON write/read:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -312,7 +312,7 @@ are converted to longs always on JSON write/read:
 
 However, if integers are required they can be parsed explicitly:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   

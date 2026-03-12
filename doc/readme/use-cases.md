@@ -30,7 +30,7 @@ events must be configurable at runtime.
 The filter is stored in the application's configuration database and is 
 defined like:
 
-```clojure
+``` clojure
 (let [event-name  (. event :getName)
       event-type  (. event :getType)
       event-key   (. event :getKey)]
@@ -42,7 +42,7 @@ defined like:
 
 The audit notifier using the filter to send notifications:
 
-```java
+``` java
 public class AuditNotifier {
     public AuditNotifier(Configuration config, NotificationService notifSvc) {
         this.config = config;
@@ -100,7 +100,7 @@ evaluate the rules and apply the appropriate discounts.
 The rule is stored in the application's configuration database and is 
 defined like:
 
-```clojure
+``` clojure
 (do
   (defn calculate [cart coupon]
     (case coupon
@@ -122,7 +122,7 @@ defined like:
 
 Computing discounts:
 
-```java
+``` java
 public class Discount {
     public Discount(double discounPercentage, boolean freeshipping) {
         this.discounPercentage = discounPercentage;

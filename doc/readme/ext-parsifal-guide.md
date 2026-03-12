@@ -29,7 +29,7 @@ Importing
 
 You can grab all the things you'll need by loading the `parsifal` module:
 
-```clojure
+``` clojure
 (load-module :parsifal ['parsifal :as 'p])
 ```
 

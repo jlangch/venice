@@ -73,7 +73,7 @@ The format in which the generated images are returned
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -156,7 +156,7 @@ The format in which the transcribed text is returned
 
 ### Example 1
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -184,7 +184,7 @@ Result:
 
 ### Example 2
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -211,7 +211,7 @@ Result:
 
 Result:
 
-```clojure
+``` clojure
 {:segments ( 
   { :start 0.0
     :avg_logprob -0.5107083320617676 
@@ -291,7 +291,7 @@ The format in which the transcribed text is returned
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 

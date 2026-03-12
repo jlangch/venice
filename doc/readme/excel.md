@@ -12,7 +12,7 @@ available.
 Run this script from the REPL to download the Apache POI 5.4.0 
 libraries:
 
-```clojure
+``` clojure
 (do
   (load-module :excel-install)
   
@@ -87,7 +87,7 @@ The function `excel/writer` opens a new XLS or XLSX Excel file for writing.
 The easiest way to write data to an EXCEL is passing pre-processed ready made data in
 a table data set and map the sheet columns to the map keys in the table.
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -121,7 +121,7 @@ the `.xls` file name extension.
 
 Creating a new Excel from scratch (create-modify-write).
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -145,7 +145,7 @@ Creating a new Excel from scratch (create-modify-write).
 
 Modify an existing Excel (read-modify-write).
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -193,7 +193,7 @@ row and the item is written to column cells in the row. The columns are explicit
 > [!NOTE] 
 If your date does not come in the required data format just apply `filter` and `map` to convert your data
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -219,7 +219,7 @@ If your date does not come in the required data format just apply `filter` and `
 
 The function `excel/write-value` writes values to cells. The row and col numbers are 1-based!
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -243,7 +243,7 @@ The function `excel/write-value` writes values to cells. The row and col numbers
 
 The function `excel/write-values` writes multiple values to consecutive cells in row starting at a column. The row and col numbers are 1-based!
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -266,7 +266,7 @@ The function `excel/write-values` writes multiple values to consecutive cells in
  
 Write the data of a 2D vector to an excel sheet.
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -287,7 +287,7 @@ Write the data of a 2D vector to an excel sheet.
 
 Write the data starting at a row/col offset:
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -309,7 +309,7 @@ Write the data starting at a row/col offset:
 
 #### Write to a file
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -332,7 +332,7 @@ Write the data starting at a row/col offset:
 
 #### Write to an output stream
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -356,7 +356,7 @@ Write the data starting at a row/col offset:
 
 #### Write to a byte buffer
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -386,7 +386,7 @@ Write the data starting at a row/col offset:
 
 To omit the header row pass the option `:no-header-row true` to the excel sheet:
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -412,7 +412,7 @@ To omit the header row pass the option `:no-header-row true` to the excel sheet:
 
 #### Write to multiple sheets
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -458,7 +458,7 @@ The Excel writer supports the Venice data types:
  - date (:java.time.LocalDate)
  - datetime (:java.time.LocalDateTime)
  
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -495,7 +495,7 @@ The Excel writer supports the Venice data types:
 
 #### Insert, Copy, Clear and Delete Rows
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -534,7 +534,7 @@ The Excel writer supports the Venice data types:
 
 #### Merge cells
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -567,7 +567,7 @@ The Excel writer supports the Venice data types:
 
 **Row range**
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
 
@@ -588,7 +588,7 @@ Prints: `[1 2]`
 
 **Col range**
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
 
@@ -613,7 +613,7 @@ Prints: `[1 3]`
 
 #### Formulas
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -638,7 +638,7 @@ Prints: `[1 3]`
 
 This can be further simplified to:
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -663,7 +663,7 @@ This can be further simplified to:
 Venice provides the function `excel/addr->string` to help with building logical 'A1' style cell addresses
 for formulas:
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -697,7 +697,7 @@ for formulas:
 
 *URLs*
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -719,7 +719,7 @@ for formulas:
 
 *EMails*
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -745,7 +745,7 @@ for formulas:
 
 #### Images
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -767,7 +767,7 @@ for formulas:
 
 **Line Chart**
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -816,7 +816,7 @@ for formulas:
 
 **Bar Chart**
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -861,7 +861,7 @@ for formulas:
 
 **Area Chart**
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -897,7 +897,7 @@ for formulas:
 
 **Pie Chart**
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -963,7 +963,7 @@ note: all margins in inches
 ```
 
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook       (excel/create :xlsx)
@@ -989,7 +989,7 @@ note: all margins in inches
 
 **Customizing header and footer**
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook       (excel/create :xlsx)
@@ -1016,7 +1016,7 @@ note: all margins in inches
 
 Set the height of individual rows:
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1047,7 +1047,7 @@ Set the height of individual rows:
 
 Set the width of individual columns:
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1097,7 +1097,7 @@ Define a named font with optional attributes on the workbook.
 | :color c  | color, either an Excel indexed color<br>or a HTML color, e.g. :PLUM, "#00FF00"<br>Note: only XLSX supports 24 bit colors |
 
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1179,7 +1179,7 @@ Available border styles:
 
 **Example 1:**
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1222,7 +1222,7 @@ Available border styles:
 
 **Example 2:**
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1274,7 +1274,7 @@ Available border styles:
 
 ### Background colors
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
   (let [wbook (excel/create :xlsx)
@@ -1304,7 +1304,7 @@ Available border styles:
 
 ### Shading alternate rows
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1334,7 +1334,7 @@ Available border styles:
 
 ### Styling cells
 
-```clojure
+``` clojure
 (do
   (ns test)
   
@@ -1379,7 +1379,7 @@ Available border styles:
 
 ### Styling cell region
 
-```clojure
+``` clojure
 (do
   (ns test)
           
@@ -1416,7 +1416,7 @@ Available border styles:
 
 Freeze the top row:
 
-```clojure
+``` clojure
 (do
   (ns test)
   
@@ -1459,7 +1459,7 @@ The file is specified by:
 
 ### Open Excel
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1523,7 +1523,7 @@ Sheet "Data2" (referenced by index):
 
 Reading cell type, format, empty, locked and hidden status.
 
-```clojure
+``` clojure
 (do
   (load-module :excel)
 
@@ -1576,7 +1576,7 @@ Each cell has one of the predefined cell data types:
   - `:unknown` (unknown cell type)
 
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1650,7 +1650,7 @@ formula itself!
 
 **Reading typed values:**
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1703,7 +1703,7 @@ Cell (1,9): nil
 The Excel module provides the function `excel/read-val` to read the generic raw value of a cell and returning a Venice nil, string boolean, double or timestamp value. Actually Excel just supports blank, string, boolean and number cells. Integer and date cells are just number cells of type double with a format. The function returns a timestamp if a number cell has a date format attached.
 
 
-```clojure
+``` clojure
 (do
   (ns test)
 

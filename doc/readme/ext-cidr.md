@@ -7,7 +7,7 @@ Venice's CIDR module parses CIDR IP notations to IP address ranges. It supports 
 GEO IP database provider like _MaxMind_ publish their data with CIDR IP notations.
 
 
-```clojure
+``` clojure
 (do
   (import :java.net.InetAddress)
 

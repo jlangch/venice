@@ -10,7 +10,7 @@ structures. No 3rd-party libraries are required.
 
 To convert to/from JSON strings, use *json/write-str* and *json/read-str*:
 
-```clojure
+``` clojure
 (json/write-str {:a 1 :b 2})
 ;;=> "{\"a\":1,\"b\":2}"
 
@@ -31,7 +31,7 @@ JSON can be spit to Java OutputStreams, Writers, or files:
  * `io/buffered-writer`
  * `io/file`
 
-```clojure
+``` clojure
 (let [out (io/bytebuf-out-stream)]
   (json/spit out {:a 100 :b 100 :c [10 20 30]})
   (try-with [in (io/bytebuf-in-stream @out)]
@@ -47,11 +47,11 @@ JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
  * `io/buffered-reader`
  * `io/file`
 
-```clojure
+``` clojure
 (json/slurp (io/file "data.jsonl"))
 ```
 
-```clojure
+``` clojure
 (let [json (json/write-str {:a 100 :b 100})]
   (try-with [is (io/string-in-stream json)]
     (pr-str (json/slurp is))))
@@ -64,14 +64,14 @@ JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
 
 **Map JSON object keys to keywords**
 
-```clojure
+``` clojure
 (json/read-str """{"a":100,"b":100}""" :key-fn keyword)
 ;;=> {:a 100 :b 100}
 ```
 
 **Mapping JSON object values explicitly**
 
-```clojure
+``` clojure
 (json/read-str """{"a": "2018-08-01T10:15:30", "b": "100.23", "c": 100}""" 
                :key-fn keyword 
                :value-fn (fn [k v] (case k 
@@ -92,7 +92,7 @@ Note: the value function `value-fn` is applied after the key function `key-fn` a
 When dealing with floating-point numbers, we often encounter rounding 
 errors known as the double precision issue.
 
-```clojure
+``` clojure
 (json/write-str {:a (+ 0.1 0.2)})
 ;;=> "{\"a\":0.30000000000000004}"
 ```
@@ -103,14 +103,14 @@ with financial amounts but JSON does not support decimals as data type.
 
 Venice decimals are converted to strings by default:
 
-```clojure
+``` clojure
 (json/write-str {:a 100.23M})
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
 But Venice decimals can also be forced to be converted to doubles:
 
-```clojure
+``` clojure
 (json/write-str {:a (+ 0.1M 0.2M)} :decimal-as-double true)
 ;;=> "{\"a\":0.3}"
 
@@ -124,7 +124,7 @@ is directly converted into a decimal without intermediate double
 conversion, thus keeping the precision and allow for full decimal 
 value range.
 
-```clojure
+``` clojure
 (do
   (json/write-str {:a 100.33M} :decimal-as-double true)
   ;;=> "{\"a\":100.33}"
@@ -145,7 +145,7 @@ value range.
 
 Parsing decimals explicitly:
 
-```clojure
+``` clojure
 (do
   (load-module :jsonl)
   
@@ -165,7 +165,7 @@ Parsing decimals explicitly:
 
 Venice binary data is converted to a _Base64_ encoded string:
 
-```clojure
+``` clojure
 (json/write-str {:a (bytebuf-from-string "abcdefgh" :utf-8)})
 ;;=> "{\"a\":\"YWJjZGVmZ2g=\"}"
 ```
@@ -175,7 +175,7 @@ Venice binary data is converted to a _Base64_ encoded string:
 
 Venice date/time data types are formatted as ISO date/time strings: 
 
-```clojure
+``` clojure
 (json/write-str {:a (time/local-date 2018 8 1)})
 ;;=> "{\"a\":\"2018-08-01\"}"
 
@@ -192,7 +192,7 @@ Venice date/time data types are formatted as ISO date/time strings:
 JSON does not distinguish between integer and long values hence Venice integers 
 are converted to longs always on JSON write/read:
 
-```clojure
+``` clojure
 (-> (json/write-str {:a 100I})
     (json/read-str :key-fn keyword))
      
@@ -201,7 +201,7 @@ are converted to longs always on JSON write/read:
 
 However, if integers are required they can be parsed explicitly:
 
-```clojure
+``` clojure
 (-> (json/write-str {:a 100I})
     (json/read-str :key-fn keyword 
                    :value-fn (fn [k v] (case k 

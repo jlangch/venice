@@ -30,7 +30,7 @@ activated by the `!macroexpand` command.
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
   
@@ -40,7 +40,7 @@ activated by the `!macroexpand` command.
 
 The benchmark output: 
 
-```text
+``` text
 Warmup...
 GC...
 Sampling...
@@ -66,13 +66,13 @@ A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * I
 
 #### Short warm-up phase
 
-```clojure
+``` clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
   (b/benchmark (apply + (range 100)) 1000 300 :chart true))
 ```
 
-```text
+``` text
 Warmup...
 GC...
 Sampling...
@@ -98,13 +98,13 @@ Saved chart to 'benchmark.png'.
 #### Long warm-up phase
 
 
-```clojure
+``` clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
   (b/benchmark (apply + (range 100)) 1_000_000 10_000 :chart true))
 ```
 
-```text
+``` text
 Warmup...
 GC...
 Sampling...
@@ -129,7 +129,7 @@ Saved chart to 'benchmark.png'.
 
 #### Macro Expansion
 
-```clojure
+``` clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
   
@@ -142,7 +142,7 @@ Saved chart to 'benchmark.png'.
 
 ##### Without macroexpansion-on-load
 
-```text
+``` text
 Warmup...
 GC...
 Sampling...
@@ -161,7 +161,7 @@ Execution time upper quantile :  164.773ms (97.5%)
 
 ##### With macroexpansion-on-load (15x faster)
 
-```text
+``` text
 Warmup...
 GC...
 Sampling...
@@ -216,7 +216,7 @@ for earlier versions, the dependencies have to be added explicitly.
 
 ### Code
 
-```java
+``` java
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 

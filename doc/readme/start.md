@@ -45,7 +45,7 @@ Venice scripts. The setups works on MacOS, Linux, and Windows.
 Open a terminal, move to the directory the Venice JAR is located, and start 
 the REPL in setup:
 
-```text
+``` text
 java -jar venice-1.12.84.jar -setup -colors -dir ./repl
 ```
 
@@ -70,7 +70,7 @@ The `-setup` option will cause the Venice setup to:
 
 #### REPL setup directory structure (on MacOS / Linux)
 
-```text
+``` text
 REPL_HOME
 ├── libs
 │   ├── venice-1.12.84.jar
@@ -90,7 +90,7 @@ REPL_HOME
 
 #### REPL setup directory structure (on Windows)
 
-```text
+``` text
 REPL_HOME
 ├── libs
 │   ├── venice-1.12.84.jar
@@ -112,14 +112,14 @@ REPL_HOME
 
 To setup a minimal REPL add the option `-minimal`:
 
-```text
+``` text
 java -jar venice-1.12.84.jar -setup -minimal -colors -dir ./repl
 ```
 
 This will setup a fully functional REPL but omits the demo scripts and the local Maven.
 
 
-```text
+``` text
 REPL_HOME
 ├── libs
 │   ├── venice-1.12.84.jar
@@ -150,7 +150,7 @@ Open a terminal and run the REPL start script.
 
 The REPL is started and prompts for input:
 
-```text
+``` text
 Venice REPL: 1.12.81
 Home: /Users/juerg/Desktop/venice
 Java: 1.8.0_462
@@ -169,7 +169,7 @@ venice>
 
 Type an expression like `(+ 1 1)` followed by a `<CR>`
 
-```text
+``` text
 venice> (+ 1 1)
 => 2
 venice>
@@ -196,7 +196,7 @@ or install the VSCodium *.dmg* package from [VSCodium Install](https://vscodium.
 
 Edit the VSCodium **settings.json** file to establish syntax highlighting for Venice source files
 
-```json
+``` json
 {
     "files.associations": {
         "*.venice": "clojure"
@@ -214,7 +214,7 @@ Edit the VSCodium **settings.json** file to establish syntax highlighting for Ve
 
 If you use VSCode to edit Venice files, this VSCode **settings.json** file will establish syntax highlighting for Venice source files
 
-```json
+``` json
 {
     "files.associations": {
         "*.venice": "clojure"

@@ -157,7 +157,7 @@ Sets the "Content-Type" header to "multipart/form-data".
 The upload support string parts, file parts, and generic parts. Any number of parts can be uploaded.
 
 
-```clojure
+``` clojure
 { ;; a string part 
   "Part-1" "xxxxxxxxxxx"
 
@@ -282,7 +282,7 @@ stream as well.
 
 Server side events are passed as maps to the handler. E.g. :
 
-```clojure
+``` clojure
 { :id    "1"
   :event "score"
   :data  [ "GOAL Liverpool 1 - 1 Arsenal"
@@ -302,7 +302,7 @@ Server side events are passed as maps to the handler. E.g. :
 
 GET (get, JSON response converted to a pretty printed JSON string)
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
@@ -315,7 +315,7 @@ GET (get, JSON response converted to a pretty printed JSON string)
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 ```
 
-```json
+``` json
 [{
   "role": "secretary",
   "name": "susan",
@@ -334,7 +334,7 @@ GET (get, JSON response converted to a pretty printed JSON string)
 
 GET (get, JSON response converted to Venice data)
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
@@ -347,7 +347,7 @@ GET (get, JSON response converted to Venice data)
     (prn (hc/slurp-response response :json-parse-mode :data :json-key-fn keyword))))
 ```
 
-```clojure
+``` clojure
 ({:name "mary"
   :role "team-lead"
   :id "1002"}
@@ -362,7 +362,7 @@ GET (get, JSON response converted to Venice data)
 
 POST (create)
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   
@@ -378,7 +378,7 @@ POST (create)
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 ```
 
-```json
+``` json
 {
   "role": "secretary",
   "name": "hanna",
@@ -389,7 +389,7 @@ POST (create)
 
 PUT (update)
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   
@@ -406,7 +406,7 @@ PUT (update)
     (println (hc/slurp-response response :json-parse-mode :pretty-print))))
 ```
 
-```json
+``` json
 {
   "role": "clerk",
   "name": "john",
@@ -417,7 +417,7 @@ PUT (update)
 
 DELETE (delete)
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   
@@ -436,7 +436,7 @@ Employee with the id 1000 deleted!
 
 GET over SSL
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   (load-module :java ['java :as 'j])
@@ -474,7 +474,7 @@ GET over SSL
 
 OAuth blueprint
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
@@ -511,7 +511,7 @@ OAuth blueprint
 
 ### Uploading Files Examples
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   
@@ -527,7 +527,7 @@ OAuth blueprint
 
 ### Uploading Multipart Data Examples
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   
@@ -544,7 +544,7 @@ OAuth blueprint
 
 ### Processing server-side-events Examples
 
-```clojure       
+``` clojure       
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
@@ -594,7 +594,7 @@ Streaming closed
 
 ### Chat Completion
 
-```clojure
+``` clojure
 (do
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
   

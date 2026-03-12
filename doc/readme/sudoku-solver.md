@@ -62,7 +62,7 @@ initial board and the solved puzzle.
 
 The Sudoku solver:
 
-```clojure
+``` clojure
 (do
   (def board-1 [[7 8 0 4 0 0 1 2 0]
                 [6 0 0 0 7 5 0 0 9]

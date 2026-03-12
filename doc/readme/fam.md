@@ -26,7 +26,7 @@ For now you can think of a context as a box that you can put a value in:
 
 ### Values
 
-```clojure
+``` clojure
 2
 ;=> 2
 
@@ -40,7 +40,7 @@ Venice does not support automatic currying, therefore `(+ 3)` would result in ap
 resulting in the number `3` instead of a function that adds `3` as in Haskell. Venice 
 provides `partial` to get the equivalent behaviour.
 
-```clojure
+``` clojure
 (+ 3)  
 ;=> 3
 
@@ -59,7 +59,7 @@ kinds of "boxes" that contain other values. Haskell provides two simple boxes:
 In Venice we have `just` for having just a value and `nil` for representing 
 non-existence:
 
-```clojure
+``` clojure
 (just 2)
 ;=> (just 2)
 
@@ -89,7 +89,7 @@ When a value is wrapped in a context, you can't apply a normal function to it:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/no_fmap_ouch.png">
 
-```clojure
+``` clojure
 ((partial + 3) (just 2))
 ;=> throws VncException because operand two for the function '+' is not a number
 ```
@@ -98,7 +98,7 @@ This is where `fmap` comes in. `fmap` is from the street, `fmap` is hip to conte
 `fmap` knows how to apply functions to values that are wrapped in a context. For 
 example, suppose you want to apply `(+3)` to `Just 2`. Use `fmap`:
 
-```clojure
+``` clojure
 (fam/fmap (partial + 3) (just 2))
 ;=> (just 5)
 ```

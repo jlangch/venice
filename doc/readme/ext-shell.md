@@ -21,7 +21,7 @@ Opens a file or an URL with the associated platform specific application.
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -39,7 +39,7 @@ Opens a Mac OSX app.
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -57,7 +57,7 @@ Compare two files and print the differences.
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -140,7 +140,7 @@ The process info is a map with the keys:
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   (->> (shell/current-process)
@@ -161,7 +161,7 @@ Returns a list of :java.lang.ProcessHandle for the processes.
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -191,7 +191,7 @@ and :user
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -215,7 +215,7 @@ Returns the process handle of the current process.
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -237,7 +237,7 @@ represented by a PID or a process handle.
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -260,7 +260,7 @@ by a PID or a process handle.
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -285,7 +285,7 @@ process does not exist. Accepts a PID or a process handle
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   
@@ -313,7 +313,7 @@ process does not exist. Accepts a PID or a process handle
 
 Example:
 
-```clojure
+``` clojure
 (do
   (load-module :shell)
   

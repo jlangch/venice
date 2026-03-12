@@ -23,7 +23,7 @@ Basically Venice can handle any SQL database for which a JDBC driver is availabl
 ## Install the PostgreSQL JDBC driver
 
 
-```clojure
+``` clojure
 (do
   (load-module :postgresql-jdbc-install)
   
@@ -47,7 +47,7 @@ You need to have docker installed.
 
 To check if *Docker* is available run:
 
-```clojure
+``` clojure
 (do
   (load-module :docker)
   (println (docker/version :format :string)))
@@ -56,7 +56,7 @@ To check if *Docker* is available run:
 
 Download and start the PostgreSQL docker container:
 
-```clojure
+``` clojure
 (do
   (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
            
@@ -75,7 +75,7 @@ Download and start the PostgreSQL docker container:
 
 To stop the PostgreSQL docker container:
 
-```clojure
+``` clojure
 (do
   (load-module :cargo-postgresql ['cargo-postgresql :as 'pg])
            
@@ -93,7 +93,7 @@ Loads the Chinook data into the PostgreSQL database "chinook_auto_increment".
 If the database exists already it will be dropped, then recreated and the data 
 loaded.
 
-```clojure
+``` clojure
 (do
   (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
   
@@ -109,7 +109,7 @@ The Chinook data set is provided by [Luis Rocha](https://github.com/lerocha/chin
 
 **Show the database model (opens a browser):**
 
-```clojure
+``` clojure
 (do
   (load-module :chinook-postgresql ['chinook-postgresql :as 'chinook])
   
@@ -118,7 +118,7 @@ The Chinook data set is provided by [Luis Rocha](https://github.com/lerocha/chin
 
 **List all tables:**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -137,7 +137,7 @@ The Chinook data set is provided by [Luis Rocha](https://github.com/lerocha/chin
 
 **Describe the 'album' table:**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
    
@@ -158,7 +158,7 @@ title       character varying 160                      NO          <null>
 
 **List the foreign key constraints in the database:**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
            
@@ -190,7 +190,7 @@ track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFER
 
 **Show first 10 albums from the album table:**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -239,7 +239,7 @@ Albums: 356
 
 **List the Led Zeppelin albums:**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -288,7 +288,7 @@ Led Zeppelin The Song Remains The Same (Disc 2)
 
 **Top 5 artists by number of tracks:**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -324,7 +324,7 @@ Lost         92
  
 **Top 3 best selling artists:**
  
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -361,7 +361,7 @@ Metallica    110.88
 
 **Add new album for artist "Led Zeppelin":**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -391,7 +391,7 @@ Metallica    110.88
 Using: `(jdbc/execute-update stmt sql :gen-key ["album_id"])`
 
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -433,7 +433,7 @@ album_id
 Using: `(jdbc/execute-update stmt sql :gen-key true)`
 
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -476,7 +476,7 @@ album_id title                artist_id
 
 **Find albums by artist "Led Zeppelin":**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -517,7 +517,7 @@ Led Zeppelin The Song Remains The Same (Disc 2)
 
 **Add new album for artist "Led Zeppelin":**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -559,7 +559,7 @@ Led Zeppelin The Song Remains The Same (Disc 2)
 Using: `(jdbc/prepare-statement conn sql :gen-key ["album_id"])`
 
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -601,7 +601,7 @@ album_id
 Using: `(jdbc/prepare-statement conn sql :gen-key true)`
 
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -642,7 +642,7 @@ album_id title                artist_id
 
 **Create "Accounts" Table**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -665,7 +665,7 @@ album_id title                artist_id
 
 Add a new account:
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -690,7 +690,7 @@ Add a new account:
 
 **Drop**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -707,7 +707,7 @@ Add a new account:
 
 **Check TX isolation level:**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -725,7 +725,7 @@ TX isolation level: :tx-read-commited
 
 **Set TX isolation level to `:tx-repeatable-read`**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -745,7 +745,7 @@ TX isolation level: :tx-repeatable-read
        
 **Commit/Rollback (the hard way):**
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])
@@ -801,7 +801,7 @@ The work sequence of a TX template:
   * On rollback throws a :com.github.jlangch.venice.TransactionException
   
 
-```clojure
+``` clojure
 (do
   (load-module :jdbc-core ['jdbc-core :as 'jdbc])
   (load-module :jdbc-postgresql ['jdbc-postgresql :as 'jdbp])

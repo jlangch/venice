@@ -3,7 +3,7 @@
 
 ## Gradle
 
-```groovy
+``` groovy
 dependencies {
     compile 'com.github.jlangch:venice:1.12.25'
 }
@@ -11,7 +11,7 @@ dependencies {
 
 ## Maven
 
-```xml
+``` xml
 <dependencies>
     <dependency>
         <groupId>com.github.jlangch</groupId>

@@ -38,7 +38,7 @@
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -49,7 +49,7 @@
 
 Result:
 
-```clojure
+``` clojure
 { :data (
     { :created 1698785189 
       :owned_by "system" 
@@ -111,7 +111,7 @@ The ID of the model to use for this request
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -122,7 +122,7 @@ The ID of the model to use for this request
 
 Result:
 
-```clojure
+``` clojure
 { :created 1715367049 
   :owned_by "system" 
   :id "gpt-4o"
@@ -163,7 +163,7 @@ The ID of the model to use for this request
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 

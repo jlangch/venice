@@ -20,7 +20,7 @@
 
 ## Creating Functions
 
-```clojure
+``` clojure
 (do
    (defn add [x y] (+ x y))
    
@@ -41,7 +41,7 @@ A variadic function is a function of indefinite arity, accepting a
 variable number of arguments. A variadic function can have any number
 of fixed arguments.
 
-```clojure
+``` clojure
 (do
    ;; variadic sum with a single fixed arg
    (defn sum [x & xs]
@@ -57,7 +57,7 @@ of fixed arguments.
 
 ## Multi-Arity Functions
 
-```clojure
+``` clojure
 (do
    (defn arity
       ([] (println "arity 0"))
@@ -79,7 +79,7 @@ Values can be passed by name using a map literal.
 The function `foo` expects the named arguments `x` and `y`. The `:or` clause specifies 
 a default for `y`.
 
-```clojure
+``` clojure
 (do
    (defn foo [{:keys [x y] :or {y 10}}] 
       (list x y))
@@ -93,7 +93,7 @@ a default for `y`.
 
 ## Anonymous Functions
 
-```clojure
+``` clojure
 (do
    (map (fn [x] (* 2 x)) (range 0 5))   ; => (0 2 4 6 8)
    (map #(* 2 %) (range 0 5))           ; => (0 2 4 6 8)
@@ -104,7 +104,7 @@ a default for `y`.
 
 *multi-arity* anonymous functions
 
-```clojure
+``` clojure
 (do
   (def add (fn ([x] x) ([x y] (+ x y))))
   
@@ -121,7 +121,7 @@ The `apply` function invokes a function with 0 or more fixed arguments, and draw
 the rest of the needed arguments from a list or a vector. The last argument must
 be a list or a vector.
 
-```clojure
+``` clojure
 (do
   (apply max [1 5 2 8 3])   ;; same as (max 1 5 2 8 3)
   
@@ -142,7 +142,7 @@ be a list or a vector.
 new context for names, nested inside the surrounding context. Names defined 
 in a `let` take precedence over the names in the outer context.
 
-```clojure
+``` clojure
 (let [x 1
       y (* 2 3)]
   (+ x y))
@@ -159,7 +159,7 @@ be accessible.
 `defn` binds its function arguments in a new "lexical scope" as well. Unlike `let`
 the local bindings for `x` and `y` get their values from the caller.
 
-```clojure
+``` clojure
 (do
   (defn sum [x y]
      (+ x y))
@@ -177,7 +177,7 @@ A closure is a function that remembers the environment at which it was
 created.
 
 
-```clojure
+``` clojure
 (do
   (defn pow [n]
     (fn [x] (apply * (repeat n x))))  ; closes over n
@@ -193,7 +193,7 @@ created.
 
 Even global functions can remember the context they have been created:
 
-```clojure
+``` clojure
 (do
   (let [x 100]
     (defn test [] (str "x: " x)))
@@ -211,7 +211,7 @@ The precondition assertions are a vector predicates and must return true for
 the constrains to pass. If any of them evaluate to false an AssertionError 
 (a Java `RuntimeException`) with the specific constrain assertion will be thrown. 
 
-```clojure
+``` clojure
 (do
    (defn sum [x y] 
       { :pre [(number? x) (number? y)] } 
@@ -245,13 +245,13 @@ Exception in thread "main" AssertionException: precondition assert failed: (numb
 Venice supports function argument type hints through argument metadata. Type hints
 are available with Venice 1.11.x.
 
-```clojure
+``` clojure
 (do
   (defn sum [^:long x ^:long y] (+ x y))
   (sum 1 2))
 ```
 
-```clojure
+``` clojure
 (do
   (defn sum [^:number x ^:number y] (+ x y))
   
@@ -260,7 +260,7 @@ are available with Venice 1.11.x.
   (sum 1.1M 2.6M))
 ```
 
-```clojure
+``` clojure
 (do
   (ns foo)
   (deftype :complex [real      :long
@@ -275,7 +275,7 @@ are available with Venice 1.11.x.
 
 Type hints with multi-arity functions:
 
-```clojure
+``` clojure
 (do
    (defn foo
       ([] 0)
@@ -291,7 +291,7 @@ Type hints with multi-arity functions:
 
 Type hints with sequential destructuring:
 
-```clojure
+``` clojure
 (do
    (defn foo [[^:long x ^:long y]] (+ x y))
    (foo [1 2]))
@@ -300,7 +300,7 @@ Type hints with sequential destructuring:
 
 Type hints with associative destructuring:
 
-```clojure
+``` clojure
 (do
    (defn foo [{:keys [^:long x ^:long y]}] (+ x y))
    (foo {:x 1 :y 2}))
@@ -309,7 +309,7 @@ Type hints with associative destructuring:
                    
 For datatypes of the *core* namespace the namespace can be omitted.
 
-```clojure
+``` clojure
 ;; these two function definitions are equivalent
 (defn sum [^:long x ^:long y] (+ x y)))
 (defn sum [^:core/long x ^:core/long y] (+ x y)))
@@ -325,7 +325,7 @@ Vectors, maps, sets, and keywords are functions too.
 
 **Vectors**
 
-```clojure
+``` clojure
 (do
    ([1 2 3] 1) ; -> 2
    
@@ -335,7 +335,7 @@ Vectors, maps, sets, and keywords are functions too.
 
 **Maps**
 
-```clojure
+``` clojure
 (do
    ;; instead of (get {:a 1 :b 2} :b)
    ({:a 1 :b 2} :b)  ; -> 2
@@ -351,7 +351,7 @@ Vectors, maps, sets, and keywords are functions too.
 
 **Sets**
 
-```clojure
+``` clojure
 (do
    (#{:a :b} :b)  ; -> :b
    (#{:a :b} :c)  ; -> nil
@@ -362,7 +362,7 @@ Vectors, maps, sets, and keywords are functions too.
 
 **Keywords**
 
-```clojure
+``` clojure
 (do
    (:b {:a 1 :b 2})  ; -> 2
    (:c {:a 1 :b 2})  ; -> nil
@@ -379,7 +379,7 @@ Vectors, maps, sets, and keywords are functions too.
 
 ## Function resolved from a string
 
-```clojure
+``` clojure
 (let [add (resolve (symbol "+"))]
    (add 2 5))
 ```
@@ -392,7 +392,7 @@ Vectors, maps, sets, and keywords are functions too.
 _In computer science, partial application (or partial function application) refers to the process of fixing a number of arguments to a function, producing another function of smaller arity._
 
 
-```clojure
+``` clojure
 (do
   (defn add [x y] (+ x y))
   
@@ -410,7 +410,7 @@ If we did need to call `add` (adding two numbers) with fewer than the required
 arguments, for example if we are mapping `add` over a vector, then we can use 
 `partial` to help us call the `add` function with the right number of arguments:
 
-```clojure
+``` clojure
 (do
   (defn add [x y] (+ x y))
   (map (partial add 2) [1 2 3 4]))  ;; => (3 4 5 6)
@@ -419,7 +419,7 @@ arguments, for example if we are mapping `add` over a vector, then we can use
 In this case the _partial function_ prevents us from writing an explicit anonymous
 function like `#(+ 2 %)` in `(map #(+ 2 %) [1 2 3 4])`
 
-```clojure
+``` clojure
 (map (partial + 2) [1 2 3 4])  ;; => (3 4 5 6)
 ```
 
@@ -430,20 +430,20 @@ function like `#(+ 2 %)` in `(map #(+ 2 %) [1 2 3 4])`
 The `reduce` function can only work on a single collection as an argument (or a value 
 and a collection), so an error occurs if you wish to reduce over multiple collections.
 
-```clojure
+``` clojure
 (reduce + [1 2 3 4])  ;; => 10
 ```
 
 This returns an error due to invalid arguments:
 
-```clojure
+``` clojure
 (reduce + [1 2 3 4] [5 6 7 8])  ;; error
 ```
 
 However, by using `partial` we can take one collection at once and return the result
 of reduce on each of those collections:
 
-```clojure
+``` clojure
 (map (partial reduce +) [[1 2 3 4] [5 6 7 8]])  ;; => (10 26)
 ```
 
@@ -458,11 +458,11 @@ functions are executed from right to left.
 `(comp not zero?)` is equivalent to `(fn [x] (not (zero? x))`
 
 
-```clojure
+``` clojure
 (filter (comp not zero?) [0 1 0 2 0 3 0 4])  ;; => [1 2 3 4]
 ```
 
-```clojure
+``` clojure
 (do
   (def person
     {:name "Peter Meier"
@@ -473,7 +473,7 @@ functions are executed from right to left.
   ((comp :private :email) person)) ;; => nil
 ```
 
-```clojure
+``` clojure
 (do
   (def xform
     (comp 
@@ -514,7 +514,7 @@ expressions. Starting with the second form, the macro inserts the first value as
 its first argument and repeats inserting the result of the form to the first argument
 of the next form. 
 
-```clojure
+``` clojure
 (do
   (defn bigint [x] (. :java.math.BigInteger :new x))
   (-> (bigint "1000")
@@ -522,7 +522,7 @@ of the next form.
       (. :add (bigint "300"))))  ;; => 600300
 ```
 
-```clojure
+``` clojure
 (do
   (def person
     {:name "Peter Meier"
@@ -540,7 +540,7 @@ expressions. Starting with the second form, the macro inserts the first value as
 its last argument and repeats inserting the result of the form to the last argument
 of the next form. 
 
-```clojure
+``` clojure
 (->> (range 0 8)
      (filter odd?)
      (map #(+ 2 %)))  ;; => (3 5 7 9)
@@ -548,7 +548,7 @@ of the next form.
 
 **Thread any** `as->`, `-<>`
 
-```clojure
+``` clojure
 ; allows to use arbitrary positioning of the argument
 (as-> (range 0 8) v
       (filter odd? v)
@@ -556,7 +556,7 @@ of the next form.
       (* v 2))  ;; => 32
 ```
 
-```clojure
+``` clojure
 ; the chosen threading symbol may be used multiple times in a form
 ; thus allowing the use of complex forms like if expressions
 (as-> {:a 1 :b 2} m
@@ -566,7 +566,7 @@ of the next form.
          m))  ;; => {:a 11 :b 12}
 ```
 
-```clojure
+``` clojure
 ; allows to use arbitrary positioning of the argument using the placeholder '<>'
 ; note: the threading symbol <> may only be used once in a form
 (-<> (range 0 8)
@@ -587,7 +587,7 @@ Nevertheless alternately calling functions can cause stack overflows if the
 recursion is too deep. Use the `trampoline` function or convert to self-recursion
 to overcome the stack overflow problem.
 
-```clojure
+``` clojure
 (do
   (let [print-number (fn [n]
                          (println n)

@@ -18,7 +18,7 @@ This *shebang* demo uses the Venice interpreter from an installed Venice REPL, g
 
 **Example: shebang-demo.venice**
 
-```clojure
+``` clojure
 #!/bin/sh
 
 #_ """ 
@@ -64,7 +64,7 @@ available in the installation directory.
 
 **Example: shebang-demo.venice**
 
-```clojure
+``` clojure
 #!/bin/sh
 
 #_ """ 

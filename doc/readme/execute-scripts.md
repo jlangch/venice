@@ -12,7 +12,7 @@
 
 ## Run a script
 
-```text
+``` text
 foo> java -jar venice-1.12.84.jar -script "(+ 1 1)"
 => 2
 ```
@@ -24,7 +24,7 @@ foo> java -jar venice-1.12.84.jar -script "(+ 1 1)"
 
 File "script.venice":
 
-```clojure
+``` clojure
 (do
   (defn circle-area [radius]
     (* math/PI radius radius))
@@ -34,7 +34,7 @@ File "script.venice":
 
 run:
 
-```text
+``` text
 foo> java -jar venice-1.12.84.jar -file script.venice
 => 19.634954084936208
 ```
@@ -48,13 +48,13 @@ Venice passes the command line args as **ARGV** vector.
 
 File "script.venice":
 
-```clojure
+``` clojure
 (+ 1 (long (first *ARGV*)))
 ```
 
 run:
 
-```text
+``` text
 foo> java -jar venice-1.12.84.jar -file script.venice 3
 => 4
 ```
@@ -74,7 +74,7 @@ separated paths files are searched for.
 
 File "/users/foo/venice/test.venice":
 
-```clojure
+``` clojure
 (do
   (defn circle-area [radius]
     (* math/PI radius radius)))
@@ -82,7 +82,7 @@ File "/users/foo/venice/test.venice":
 
 File "/users/foo/venice/script.venice":
 
-```text
+``` text
 (do
   (load-file "test.venice")
 
@@ -91,7 +91,7 @@ File "/users/foo/venice/script.venice":
 
 Files:
 
-```text
+``` text
 /users/foo/venice
 ├── script.venice
 ├── libs
@@ -102,7 +102,7 @@ Files:
 
 Run:
 
-```text
+``` text
 foo> cd /users/foo/venice
 foo> java -jar libs/venice-1.12.84.jar -file script.venice -loadpath "/users/foo/venice/scripts"
 ```
@@ -126,7 +126,7 @@ Run these examples from a REPL:
 
 **Example 1**
 
-```clojure
+``` clojure
    ;; create the executable JAR
    (let [script         """(println "sum:" (+ 1 2))"""
          script-name    "example"
@@ -140,7 +140,7 @@ From a shell run: `java -jar {path-to-jar}/example.jar`
 
 **Example 2**
 
-```clojure
+``` clojure
    ;; create the executable JAR
    (let [script         """
                         (println "sum:" (+ (long (first *ARGV*)) 
@@ -157,7 +157,7 @@ From a shell run: `java -jar {path-to-jar}/example.jar 1 2`
 
 **Example 3**
 
-```clojure
+``` clojure
    ;; create the executable JAR from a Venice script file:
    ;; (io/spit "./example.venice" """(println "sum:" (+ 1 2))""" :encoding :utf-8)
    (let [script         (io/slurp "./example.venice" :encoding :utf-8) 

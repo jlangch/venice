@@ -20,7 +20,7 @@ All these preliminary tasks can be run from a Venice REPL.
 
 Then run the full example:
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)

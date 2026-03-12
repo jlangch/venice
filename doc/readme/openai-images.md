@@ -64,7 +64,7 @@ See:
 
 Return image as URL (response format `:url`) and print the full OpenAI response message
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -81,7 +81,7 @@ Return image as URL (response format `:url`) and print the full OpenAI response 
 
 Return image as URL (response format `:url`) JSON and save it to a file
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
@@ -107,7 +107,7 @@ Return image as URL (response format `:url`) JSON and save it to a file
 
 Return image as Base64 (response format `:b64_json`) JSON and save it to a file
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
@@ -182,7 +182,7 @@ See:
 
 #### Example: 
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])
@@ -286,7 +286,7 @@ See:
 
 #### Example: 
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :http-client-j8 ['http-client-j8 :as 'hc])

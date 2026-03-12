@@ -3,7 +3,7 @@
 
 To hexdump the full contents of a file to `*out*`:
 
-```clojure
+``` clojure
 (do
   (load-module :hexdump)
   (hexdump/hexdump "/path/to/my-file"))
@@ -11,7 +11,7 @@ To hexdump the full contents of a file to `*out*`:
 
 or use an `io/file`
 
-```clojure
+``` clojure
 (do
   (load-module :hexdump)
   (hexdump/hexdump (io/file "/path/to/my-file")))
@@ -19,7 +19,7 @@ or use an `io/file`
 
 You can also hexdump a collection of values directly:
 
-```clojure
+``` clojure
 (do
   (load-module :hexdump)
   (hexdump/hexdump [104 101 108 108 111 32 115 116 114 97 110 103 101 114]))
@@ -27,7 +27,7 @@ You can also hexdump a collection of values directly:
 
 You can limit the data to be hexdumped via named arguments:
 
-```clojure
+``` clojure
 (do
   (load-module :hexdump) 
   (hexdump/hexdump "/path/to/my-file" :offset 64 :size 128))
@@ -37,7 +37,7 @@ You can limit the data to be hexdumped via named arguments:
 
 The following code:
 
-```clojure
+``` clojure
 (do
   (load-module :hexdump) 
   (hexdump/hexdump (range 196))
@@ -45,7 +45,7 @@ The following code:
 
 prints the following to `*out*`:
 
-```text
+``` text
 00000000: 0001 0203 0405 0607 0809 0a0b 0c0d 0e0f  ................
 00000010: 1011 1213 1415 1617 1819 1a1b 1c1d 1e1f  ................
 00000020: 2021 2223 2425 2627 2829 2a2b 2c2d 2e2f   !"#$%&'()*+,-./

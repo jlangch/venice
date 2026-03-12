@@ -28,7 +28,7 @@ and loads a module only once and skips subsequent load attempts.
 
 Venice can be forced to reload an already loaded module
 
-```clojure
+``` clojure
 (load-module :maven)
 
 ; use the module

@@ -13,7 +13,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 
 ### Parse an integer number
 
-```clojure
+``` clojure
 (do
   (load-module :parsifal ['parsifal :as 'p])
   
@@ -31,14 +31,14 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
            expression)))
 ```
 
-```clojure
+``` clojure
 (evaluate "0")       ; => "0"
 (evaluate "12345")   ; => "12345"
 ```
 
 ### Parse a float number
 
-```clojure
+``` clojure
 (do
   (load-module :parsifal ['parsifal :as 'p])
 
@@ -62,7 +62,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
            expression)))
 ```
 
-```clojure
+``` clojure
 (evaluate "1.0")       ; => "1.0"
 (evaluate "120.468")   ; => "120.468"
 (evaluate "001.2")     ; => ParseError: Unexpected token '0' at line: 1 column: 2
@@ -72,7 +72,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 
 ### Parse a number in scientific notation
 
-```clojure
+``` clojure
 (do
   (load-module :parsifal ['parsifal :as 'p])
 
@@ -110,7 +110,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
            expression)))
 ```
 
-```clojure
+``` clojure
 (evaluate "1")            ; => "1"
 (evaluate "1.0")          ; => "1.0"
 (evaluate "-1.0")         ; => "-1.0"
@@ -124,7 +124,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 
 ### Parse a quoted string with escaped chars
 
-```clojure
+``` clojure
 (do
   (load-module :parsifal ['parsifal :as 'p])
 
@@ -148,7 +148,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
     (p/run (quoted-string) expression)))
 ```
 
-```clojure
+``` clojure
 (evaluate (apply str [#\" #\1 #\\ #\n #\2 #\"]))  ; => [#\1 #\newline #\2]
 (evaluate (apply str [#\" #\1 #\\ #\f #\2 #\"]))  ; => [#\1 #\formfeed #\2]
 (evaluate (apply str [#\" #\1 #\\ #\" #\2 #\"]))  ; => [#\1 #\" #\2]
@@ -169,7 +169,7 @@ The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports
 
 [2] Test the expression parser:
 
-```clojure
+``` clojure
 (evaluate "1")                    ; => 1
 (evaluate "1 + 2")                ; => 3
 (evaluate "1 + 2 * 3 + 4")        ; => 11
@@ -180,7 +180,7 @@ The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports
 
 **Expression Parser**
 
-```clojure
+``` clojure
 (do
   ;;; ----------------------------------------------------------------------------
   ;;; EBNF
@@ -275,13 +275,13 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
 
 [2] Test the tokenizer:
 
-```clojure
+``` clojure
 (tokenize "3 + 4.2")  ; => [[:int "3" (1,1)] [:op "+" (1,3)] [:float "4.2" (1,5)]]
 ```
 
 [3] Test the expression parser:
 
-```clojure
+``` clojure
 (evaluate "1")                    ; => 1
 (evaluate "1 + 2")                ; => 3
 (evaluate "1 + 2 * 3 + 4")        ; => 11
@@ -297,7 +297,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
 
 **Expression Parser**
 
-```clojure
+``` clojure
 (do
   ;;; ----------------------------------------------------------------------------
   ;;; EBNF

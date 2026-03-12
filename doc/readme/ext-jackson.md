@@ -10,7 +10,7 @@ Venice supports Jackson if the [Jackson](https://github.com/FasterXML/jackson) l
 The Jackson _jdk8_ module is loaded automatically if it is available
  
 
-```clojure
+``` clojure
 (do
    ;; load the Venice JSON extension module
    (load-module :jackson)
@@ -31,7 +31,7 @@ The Jackson _jdk8_ module is loaded automatically if it is available
 
 #### Download required 3rd party libs
 
-```clojure
+``` clojure
 (do
   (load-module :maven)
   

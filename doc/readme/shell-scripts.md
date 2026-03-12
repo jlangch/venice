@@ -55,7 +55,7 @@ A larger example that zips Tomcat log files on a monthly base:
  * manager.yyyy-mm-*.log  -> host-manager.yyyy-mm.zip
 
 
-```clojure
+``` clojure
 ;; -------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
@@ -167,7 +167,7 @@ See the details and examples [here](https://github.com/jlangch/venice/blob/maste
 The `sh` function is the swiss army knife to deal with the native processes of the 
 underlying operating system (see the Venice _cheatsheet_ for details).
 
-```clojure
+``` clojure
 (sh "kill" "-9" 56789 :throw-ex true)
 
 ;; printing 

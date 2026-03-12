@@ -20,7 +20,7 @@ Atoms provide uncoordinated, synchronous access to a single identity.
 The primary use of an atom is to hold Venice’s immutable data structures. 
 The value held by an atom is changed with the `swap!` method.
 
-```clojure
+``` clojure
 (do
    (def counter (atom 2))
    (swap! counter + 2)
@@ -29,7 +29,7 @@ The value held by an atom is changed with the `swap!` method.
 
 `@foo` is the dereference short form for `(deref foo)`
 
-```clojure
+``` clojure
 (do
    (def counter (atom 2))
    (swap! counter + 2)
@@ -54,7 +54,7 @@ if its computation has finished `(realized? f)`.
 
 Note: A Venice *future* implements the Java interface `java.util.concurrent.Future<V>`
 
-```clojure
+``` clojure
 (do
    (defn task [] (sleep 1000) 200)
    (deref (future task)))
@@ -63,7 +63,7 @@ Note: A Venice *future* implements the Java interface `java.util.concurrent.Futu
 Dereference with a timeout, and a default value. The default value that is returned 
 if the computation is not finished within the timeout time.
 
-```clojure
+``` clojure
 (do
    (defn task [] (sleep 1000) 200)
    (deref (future task) 100 :timeout))
@@ -84,7 +84,7 @@ combining asynchronous tasks.
 
 Note: A Venice *promise* implements the Java interface `java.util.concurrent.CompletableFuture<T>`
 
-```clojure
+``` clojure
 (do
    (def p (promise))
    (defn task [] (sleep 500) (deliver p 123))
@@ -98,7 +98,7 @@ Note: A Venice *promise* implements the Java interface `java.util.concurrent.Com
 
 Using a promise like a future:
 
-```clojure
+``` clojure
 (do
    (defn task [] (sleep 500) 123)
    (def p (promise task))
@@ -109,7 +109,7 @@ Using a promise like a future:
 
 Chaining asynchronous tasks:
 
-```clojure
+``` clojure
 (-> (promise (fn [] (sleep 50) 5))
     (then-apply (fn [x] (sleep 30) (+ x 2)))
     (then-apply (fn [x] (sleep 20) (* x 3)))
@@ -118,7 +118,7 @@ Chaining asynchronous tasks:
 
 Combining the result of two asynchronous tasks:
 
-```clojure
+``` clojure
 (-> (promise #(do (sleep 50) 1000))
     (then-apply #(do (sleep 20) (+ %1 50)))
     (then-combine (-> (promise #(do (sleep 30) "eur"))
@@ -129,7 +129,7 @@ Combining the result of two asynchronous tasks:
 
 Composing the result of two asynchronous tasks:
 
-```clojure
+``` clojure
 (-> (promise #(do (sleep 20) 1000))
     (then-apply #(do (sleep 20) (+ %1 50)))
     (then-compose (fn [o] (-> (promise #(do (sleep 20) "eur"))
@@ -167,7 +167,7 @@ Suppose we want to make coffee. This involves 4 steps:
 All these steps take varying time, so they run asynchronously and have to be 
 orchestrated. 
 
-```clojure
+``` clojure
 (do
   (def trace (let [mutex 0] 
                (fn [& xs] (locking mutex (println (apply str xs))))))
@@ -223,14 +223,14 @@ orchestrated.
 
 Timeouts:
 
-```clojure
+``` clojure
 (-> (promise (fn [] (sleep 100) "The quick brown fox..."))
     (or-timeout 300 :milliseconds)  ; throws a TimeoutException
     (then-apply str/upper-case)
     (deref))
 ```
 
-```clojure
+``` clojure
 (-> (promise (fn [] (sleep 500) "The quick brown fox..."))
     (complete-on-timeout "The fox did not jump" 300 :milliseconds)
     (deref))
@@ -245,14 +245,14 @@ The delay function takes a body of expressions and yields a Delay object that wi
 invoke the body only the first time it is forced (with `force` or `deref`/`@`), and
 will cache the result and return it on all subsequent `force` calls.
 
-```clojure
+``` clojure
 (do  
    (def x (delay (println "realizing...") 100))
    (sleep 1 :seconds)
    (deref x))
 ```
 
-```clojure
+``` clojure
 (do  
    (def x (delay (println "realizing...") 100))
    (sleep 1 :seconds)
@@ -268,7 +268,7 @@ Agents provide uncoordinated, asynchronous access to a single identity. Actions 
 functions that are asynchronously applied to an Agent's state and whose 
 return value becomes the Agent's new state.
 
-```clojure
+``` clojure
 (do
    (def x (agent 100))
    (send x + 5)
@@ -284,7 +284,7 @@ of the chain and relayed through it:
 
 *Note: The example has been taken from the Clojure Agent demo and uses a synchronous queue*
 
-```clojure
+``` clojure
 ;; Agent chain
 ;;
 ;; +-------+    +-------+    ........    +-------+    +--------+    +-------+
@@ -325,7 +325,7 @@ data to be processed by the Actor's function
 
 A simple Actors model can be implemented on top of Agents:
 
-```clojure
+``` clojure
 (do
    (def actors (atom {}))
 
@@ -365,7 +365,7 @@ are basically threads served from a _Java_ _ThreadPoolExecutor_.
 _Venice_ provides the functions `futures-fork` and `futures-wait` to rig the
 workers and wait for its termination.
 
-```clojure
+``` clojure
 (do
   ;; define a factory function that creates the workers
   (defn worker-factory [n]
@@ -391,7 +391,7 @@ Locking operates like the _synchronized_ keyword in _Java_.
 
 Example: coordinating multiple threads printing to stdout
 
-```clojure
+``` clojure
 (do
   (def monitor 0)
 
@@ -423,7 +423,7 @@ Example: coordinating multiple threads printing to stdout
 Executes a one-shot action that becomes enabled after the specified 
 time. 3 seconds in the example:
 						
-```clojure
+``` clojure
 (schedule-delay #(println 100) 3 :seconds)
 ```
 
@@ -431,7 +431,7 @@ time. 3 seconds in the example:
 scheduled function’s value or to cancel the waiting execution.
 `(deref s)` blocks the current thread until the result gets available. 
 						
-```clojure
+``` clojure
 (let [s (schedule-delay (fn [] 100) 3 :seconds)]
   (println "result: " (deref s)))
 ```
@@ -442,7 +442,7 @@ scheduled function’s value or to cancel the waiting execution.
 Executes a periodic action that becomes enabled first after the initial delay and
 then subsequently with the given period:
 
-```clojure
+``` clojure
 (schedule-at-fixed-rate #(println "test") 1 3 :seconds)
 ```
 
@@ -452,7 +452,7 @@ to cancel the scheduled task.
 Execute a periodic task with a 1s initial delay, a period 
 of 3s, and cancel it after 16s:
 
-```clojure
+``` clojure
 (let [s (schedule-at-fixed-rate (fn [] (println "test")) 1 3 :seconds)]
   (sleep 16000)
   (cancel s)
@@ -473,13 +473,13 @@ futures or promises that use an *ExecutorService* to deal efficiently with threa
 
 Simple Thread:
 
-```clojure
+``` clojure
 @(thread #(do (sleep 1000) 1))
 ```
 
 Producer/Consumer:
 
-```clojure
+``` clojure
 (do
   (defn produce [q n]
     (doseq [x (range n)] (sleep 1000) (put! q x))
@@ -501,7 +501,7 @@ Producer/Consumer:
 Dynamic variables start off as a global variable and can be bound with 'binding' 
 to a new value on the local thread. 
 
-```clojure
+``` clojure
 (do
   (def-dynamic x 100)
   (println x)         ; x level 1 => 100
@@ -514,7 +514,7 @@ to a new value on the local thread.
 
 Thread local var bindings can be nested
 
-```clojure
+``` clojure
 (do
   (binding [y 100]
      (println y)       ; x level 1 => 100
@@ -525,7 +525,7 @@ Thread local var bindings can be nested
 
 Thread local vars get inherited by child threads
 
-```clojure
+``` clojure
 (do
   ;; parent thread locals
   (binding [a 10 b 20]
@@ -549,7 +549,7 @@ See [PI Monte Carlo](https://www.geeksforgeeks.org/estimating-value-pi-using-mon
 
 #### Estimating PI single-threaded
 
-```clojure
+``` clojure
 (do  
   (defn circle? [x y]
     (<= (+ (* x x) (* y y)) 1.0))
@@ -570,7 +570,7 @@ See [PI Monte Carlo](https://www.geeksforgeeks.org/estimating-value-pi-using-mon
 
 #### Estimating PI multi-threaded
 
-```clojure
+``` clojure
 (do  
   (defn circle? [x y]
     (<= (+ (* x x) (* y y)) 1.0))
@@ -600,7 +600,7 @@ See [PI Monte Carlo](https://www.geeksforgeeks.org/estimating-value-pi-using-mon
 
 #### Dining Philosophers with Semaphores
 
-```clojure
+``` clojure
 (do
   (import :java.util.concurrent.Semaphore)
   
@@ -680,7 +680,7 @@ See [PI Monte Carlo](https://www.geeksforgeeks.org/estimating-value-pi-using-mon
 
 ### Dining Philosophers with Atoms
 
-```clojure
+``` clojure
 (do
   ;;              [P0]
   ;;         F0          F1

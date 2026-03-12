@@ -12,7 +12,7 @@ This is commonly used for control structures like loops or conditionals.
 
 For example:
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
 
@@ -26,7 +26,7 @@ This is used for inserting values into a template.
 
 For example:
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
 
@@ -39,7 +39,7 @@ For example:
 
 The delimiters can be customized:
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
 
@@ -55,7 +55,7 @@ The delimiters can be customized:
 
 ### kira/eval
 
-```clojure
+``` clojure
 (kira/eval source)
 (kira/eval source bindings)
 (kira/eval source delimiters bindings)
@@ -66,7 +66,7 @@ can be a string, or any I/O source understood by the standard slurp function.
 
 Example of use:
 
-```clojure
+``` clojure
 (kira/eval "Hello <%= name %>" {:name "Bob"})
 
 (kira/eval "Hello <%= name1 %> and <%= name2 %>" 
@@ -81,7 +81,7 @@ Example of use:
 
 ### kira/fn
 
-```clojure
+``` clojure
 (kira/fn args source)
 (kira/fn args source delimiters)
 ```
@@ -91,7 +91,7 @@ for repeated calls, as the template source is only parsed when the function is c
 
 Examples of use:
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -104,7 +104,7 @@ Examples of use:
 
 Defining a template with two scalar parameters:
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -118,7 +118,7 @@ Defining a template with two scalar parameters:
 
 Defining a template with parameters passed in a vector:
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -139,7 +139,7 @@ Defining a template with parameters passed in a vector:
 
 #### Kira has built-in support for escaping XML/HTML:
 
-```text
+``` text
 <%= (kira/escape-html "...") %>
 
 <%= (kira/escape-xml "...") %>
@@ -147,7 +147,7 @@ Defining a template with parameters passed in a vector:
 
 Example: 
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -163,14 +163,14 @@ Output:
 
 #### Data conversion/formatting prior to escape XML: 
 
-```text
+``` text
 <%= (kira/escape-xml text fmt-fn) %>
 ```
 
 Example: 
 
 
-```clojure
+``` clojure
 (do
   (ns test)
   
@@ -194,13 +194,13 @@ Output:
 
 Any Venice functions can be used to escape/convert/format output:
 
-```text
+``` text
 <%= (format x)) %>
 ```
 
 Example:
 
-```clojure
+``` clojure
 (do
   (ns test)
   
@@ -217,14 +217,14 @@ Example:
 
 Output:
 
-```text
+``` text
 timestamp: 2019-06-22 19:21:07
 ```
 
 
 ### Loops
 
-```text
+``` text
 <% (doseq [x xs] %>
    ...
 <% ) %>
@@ -232,7 +232,7 @@ timestamp: 2019-06-22 19:21:07
 
 Loop over a collection of items:
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -277,13 +277,13 @@ Output:
 
 #### when or when-not
 
-```text
+``` text
 <% (when predicate %>
    ...
 <% ) %>
 ```
 
-```text
+``` text
 <% (when-not predicate %>
    ...
 <% ) %>
@@ -291,7 +291,7 @@ Output:
 
 Example: 
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -335,13 +335,13 @@ Output:
 
 #### if - then - else with value
 
-```text
+``` text
 <%= (if (== font :large) 36 12)) %>
 ```
 
 Example: 
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -381,7 +381,7 @@ body {
 
 Simple if expression
 
-```text
+``` text
 <% (if predicate %>
    true
 <%  %>
@@ -391,7 +391,7 @@ Simple if expression
 
 Complex if expression
 
-```text
+``` text
 <% (if predicate (do %>
    line1 <%= x1 %>
    line2 <%= y1 %>
@@ -401,7 +401,7 @@ Complex if expression
 <% )) %>
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :kira)
   
@@ -457,7 +457,7 @@ The XML example demonstrates  _Kira_  loops, nested loops and conditionals.
 
 Template blueprint:
 
-```text
+``` text
 <users>
   ${for u in users}$
   <user>
@@ -483,7 +483,7 @@ Template blueprint:
 
 Venice template:
 
-```clojure
+``` clojure
 (do
   (ns test) 
   (load-module :kira)
@@ -583,6 +583,6 @@ The produced output:
 
 To analyze the parsed template just print it:
 
-```clojure
+``` clojure
 (println (kira/parse-string template))
 ```

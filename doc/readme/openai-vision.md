@@ -10,7 +10,7 @@ along with the prompt as an additional source of information.
 
 ### Example 1a
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -40,7 +40,7 @@ Message:
 ### Example 1b
 
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   
@@ -74,7 +74,7 @@ Message:
 
 ### Example 2
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -106,7 +106,7 @@ Message:
 
 Controlling the *detail* parameter ("low", "high", "auto")
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -137,7 +137,7 @@ Message:
 
 ### Example 4
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 

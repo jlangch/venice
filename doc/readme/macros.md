@@ -81,7 +81,7 @@ The form is only to be executed if the predicate evaluates to `true`.
 
 Let's first implement `when` with a function. 
 
-```clojure
+``` clojure
 (defn when [test form]
    (if test form nil))
 ```
@@ -98,7 +98,7 @@ to a function. Nevertheless the returned valued is in both cases correct.
 
 **when implemented as a macro:**
 
-```clojure
+``` clojure
 (defmacro when [test form]
    (list 'if test form nil))
 ```
@@ -121,7 +121,7 @@ or at runtime.
 
 This is a macro that is completely evaluated at expand time. 
 
-```clojure
+``` clojure
 (defmacro expand-time []
   (str (time/local-date-time)))
 ```
@@ -131,7 +131,7 @@ the REPL command `!macroexpand`.
 
 Start a REPL:
 
-```text
+``` text
 venice> !macroexpand
 Macro expansion enabled
 
@@ -179,30 +179,30 @@ They prevent the quoted form from being evaluated.
 
 Regular quotes work recursively with any kind of forms and types: strings, maps, lists, vectors…
 
-```clojure
+``` clojure
 '(a :a 1)  ; => (a :a 1)
 ```
 
-```clojure
+``` clojure
 (quote (a :a 1))  ; => (a :a 1)
 ```
 
-```clojure
+``` clojure
 '(+ 1 2)  ; => (+ 1 2)
 ```
 
-```clojure
+``` clojure
 '(a (b (c d (+ 1 2))))  ; => (a (b (c d (+ 1 2))))
 ```
 
-```clojure
+``` clojure
 '{:a (1 2 3) b (c d "x")}   ; => {:a (1 2 3) b (c d "x")}
 ```
 
 With *quotes* in our toolbox we can write our first macro. The `when` macro evaluates 
 a *test* predicate. If logical *true*, it evaluates the *body*.
 
-```clojure
+``` clojure
 (defmacro when [test form]
    (list 'if test form nil))
 ```
@@ -232,24 +232,24 @@ the *syntax quoted* expression.
 
 Without evaluation:
 
-```clojure
+``` clojure
 `(16 17 (inc 17))  ; => (16 17 (inc 17))
 ```
 
 With evaluation:
 
-```clojure
+``` clojure
 `(16 17 ~(inc 17))  ; => (16 17 18)
 ```
 
-```clojure
+``` clojure
 `(16 17 ~(map inc [16 17]))  ; => (16 17 (17 18))
 ```
 
 *Syntax quotes* allow writing macros in a more elegant way regarding evaluation 
 rules at macro expansion time:
 
-```clojure
+``` clojure
 (defmacro when [test form]
    `(if ~test ~form nil))
 ```
@@ -269,7 +269,7 @@ be evaluated. It acts similarly to variable replacement in templates.
 
 This is ok:
 
-```clojure
+``` clojure
 (defmacro sum [x y] 
    `(+ ~x ~y ~(inc 3)))
 ```
@@ -277,7 +277,7 @@ This is ok:
    
 Nested unquotes do not work:
 
-```clojure
+``` clojure
 (defmacro sum [x y] 
    `(+ ~x ~y ~(inc ~y)))
 ```
@@ -287,7 +287,7 @@ Throws a _SymbolNotFoundException_: Symbol 'unquote' not found.
    
 One might be tempted to write:
 
-```clojure
+``` clojure
 (defmacro sum [x y] 
   `(+ ~x ~y ~(inc y)))
   
@@ -302,7 +302,7 @@ argument.
 Trying to explicitly evaluate `y` does not work either. It fails while expanding 
 the macro. The macro arguments simply do not exist as local vars at this time:
 
-```clojure
+``` clojure
 (defmacro sum [x y] 
    `(+ ~x ~y ~(inc (eval y))))
    
@@ -314,7 +314,7 @@ the macro. The macro arguments simply do not exist as local vars at this time:
    
 Rewrite it to get it work:
 
-```clojure
+``` clojure
 (defmacro sum [x y] 
    `(+ ~x ~y (inc ~y)))
    
@@ -340,29 +340,29 @@ comes to rescue:
 
 Without splicing:
 
-```clojure
+``` clojure
 `(16 17 ~(map inc [16 17]))  ; => (16 17 (17 18))
 ```
 
 With splicing:
 
-```clojure
+``` clojure
 `(16 17 ~@(map inc [16 17]))  ; => (16 17 17 18)
 ```
 
 Other examples:
 
-```clojure
+``` clojure
 `(1 2 ~@#{1 2 3})  ; => (1 2 1 2 3)
 ```
 
-```clojure
+``` clojure
 `(1 2 ~@{:a 1 :b 2 :c 3})  ; => (1 2 [:a 1] [:b 2] [:c 3])
 ```
 
 Arbitrary `let` bindings:
 
-```clojure
+``` clojure
 `(let [~@(interleave ['a 'b 'c] [1 2 3])] (+ a b))
 
 ;; expands to:
@@ -379,20 +379,20 @@ to use a body with multiple forms?
 
 Using *syntax quote* and *unquote* we can write it as:
 
-```clojure
+``` clojure
 (defmacro when [test & body]
    `(if ~test (do ~body) nil))
 ```
 
 If we expand a macro call
 
-```clojure
+``` clojure
 (macroexpand '(when true (println 100) (println 200)))
 ```
 
 to see the transformed expressions, we get 
 
-```clojure 
+``` clojure 
 (if true (do ((println 100) (println 200))) nil)
 ```
 
@@ -408,20 +408,20 @@ Unquote-splicing is exactly doing that.
 
 Rewriting the macro to (see "core.venice")
 
-```clojure
+``` clojure
 (defmacro when [test & body]
    `(if ~test (do ~@body) nil))
 ```
 
 ... and expanding it
 
-```clojure
+``` clojure
 (macroexpand '(when true (println 100) (println 200)))
 ```
 
 ... we see that the issue is solved now
 
-```clojure 
+``` clojure 
 (if true (do (println 100) (println 200)) nil)
 ```
 
@@ -430,7 +430,7 @@ Rewriting the macro to (see "core.venice")
 
 Macros can be defined with multiple arities and can recursively call itself:
 
-```clojure
+``` clojure
 (defmacro and
   ([] true)
   ([x] x)
@@ -450,14 +450,14 @@ the macro expands to. Venice provides two functions for this:
 `macroexpand` expands a single macro form while `macroexpand-all` recursively 
 expands all macros in a form.
 
-```clojure
+``` clojure
 (macroexpand '(-> c (+ 3) (* 2)))
   
 ; expanded   
 (* (+ c 3) 2)
 ```
 
-```clojure
+``` clojure
 (macroexpand-all '(let [n 5] 
                     (cond 
                       (< n 0) -1 
@@ -487,7 +487,7 @@ expression.
 
 Let's rebuild the macro:
 
-```clojure
+``` clojure
 (defmacro time-1 [expr]
   `(let [start (nano-time)
          ret   ~expr
@@ -498,7 +498,7 @@ Let's rebuild the macro:
 
 and testing it
 
-```clojure
+``` clojure
 (time-1 (+ 1 2))
   
 ; Elapsed time: 32810
@@ -514,7 +514,7 @@ known as unhygienic macros.
 
 Let's see what happens when the macro interacts with vars outside of the macro:
 
-```clojure
+``` clojure
 (let [start 1 end 2] 
   (time-1 (+ start end)))
       
@@ -528,14 +528,14 @@ by the macro itself.
 
 Expanding the call with `macroexpand-all` shows what happens:
 
-```clojure
+``` clojure
 (macroexpand-all '(let [start 1 end 2] 
                     (time-1 (+ start end))))
 ```
 
 results to
 
-```clojure
+``` clojure
 (let [start 1 end 2] 
   (let [start (nano-time) ; 'start' is shadowing the outer 'start'
         ret   (+ start end)  
@@ -556,7 +556,7 @@ Venice provides two ways to create safe local var names for macros:
 
 The `(gensym)` function lets you  manually create safe symbol names:
 
-```clojure
+``` clojure
 (defmacro time-2 [expr]
   (let [start (gensym "start__")
         ret   (gensym "ret__")
@@ -574,17 +574,17 @@ The `(gensym)` function lets you  manually create safe symbol names:
 By suffixing a symbol with a `#` within a *syntax quote*, Venice will 
 create safe var names automatically while expanding the macro:
 
-```clojure
+``` clojure
 `(aa#)  ; => (aa__28__auto)
 ```
 
-```clojure
+``` clojure
 `{:a a# :b b# :c b#}  ; => {:a a__31__auto :b b__32__auto :c b__32__auto}
 ```
 
 Applied to our macro ...
 
-```clojure
+``` clojure
 (defmacro time-3 [expr]
   `(let [start# (nano-time)
          ret#   ~expr
@@ -596,14 +596,14 @@ Applied to our macro ...
 ... and expanding it with `macroexpand-all`
 
 
-```clojure
+``` clojure
 (macroexpand-all '(let [start 1 end 2] 
                     (time-3 (+ start end))))
 ```
 
 ... it results to
 
-```clojure
+``` clojure
 (let [start 1 end 2] 
    (let [start__89__auto (nano-time) 
          ret__90__auto   (+ start end) 
@@ -620,7 +620,7 @@ Applied to our macro ...
 
 Auto generated symbols are not working with nested *syntax quotes*:
 
-```clojure
+``` clojure
 `(let [x# 1]
    ~@(map
        (fn [n] `(+ x# ~n))
@@ -632,7 +632,7 @@ contexts.
 
 To work around this explicitly create a symbol name with `gensym`:
 
-```clojure
+``` clojure
 (let [x-sym (gensym "x")]
   `(let [~x-sym 1]
      ~@(map
@@ -642,7 +642,7 @@ To work around this explicitly create a symbol name with `gensym`:
 
 Beware of code like this:
 
-```clojure
+``` clojure
 `(let [a# 100] ~(dec a#))
 ```
 
@@ -665,12 +665,12 @@ It affects code evaluation in two unexpected ways:
 
 Consider the following:
 
-```clojure
+``` clojure
 (defmacro square [x] 
    `(* ~x ~x))
 ```
 
-```clojure
+``` clojure
 (macroexpand-all '(square (do (println "eval x..") 4)))
 ;; => (* (do (println "eval x..") 4) (do (println "eval x..") 4))
 
@@ -678,7 +678,7 @@ Consider the following:
 
 `(square (do (println "eval x..") 4))` results in:
 
-```text
+``` text
 eval x..
 eval x..
 => 16
@@ -686,13 +686,13 @@ eval x..
 
 The problem can be fixed by placing the argument evaluation in a `let` expression:
 
-```clojure
+``` clojure
 (defmacro square2 [x]
    `(let [x# ~x]
       (* x# x#)))
 ```
 
-```clojure
+``` clojure
 (macroexpand-all '(square2 (do (println "eval x..") 4)))
 
 ;; => (let [x__119__auto (do (println "eval x..") 4)] (* x__119__auto x__119__auto))
@@ -701,7 +701,7 @@ The problem can be fixed by placing the argument evaluation in a `let` expressio
 
 `(square2 (do (println "eval x..") 4))` results in:
 
-```text
+``` text
 eval x..
 => 16
 ```

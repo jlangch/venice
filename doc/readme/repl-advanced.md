@@ -8,7 +8,7 @@ a factor of 3 to 10.
 
 Upfront macro expansion can be activated in the REPL by the `!macroexpand` command:
 
-```text
+``` text
 venice> !macroexpand
 ```
 
@@ -18,14 +18,14 @@ filesystem or classpath.
 
 An example (on an MacBook Air M2):
 
-```text
+``` text
 venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
                              (range -10000 10001))))
 Elapsed time: 110.38ms
 => 0
 ```
      
-```text
+``` text
 venice> !macroexpand
 venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
                              (range -10000 10001))))
@@ -35,7 +35,7 @@ Elapsed time: 12.14ms
 
 Check if macro expansion is enabled:
 
-```text
+``` text
 venice> (macroexpand-on-load?)
 => true
 ```
@@ -45,7 +45,7 @@ venice> (macroexpand-on-load?)
 
 Drag and drop a Venice file into the REPL and press [RETURN] to execute it:
 
-```text
+``` text
 venice> /Users/foo/test.venice
 ```
 
@@ -56,7 +56,7 @@ This is identical to run `(load-file "/Users/foo/test.venice")`.
 
 Print the documentation for a Venice function
 
-```text
+``` text
 venice> (doc count)
 (count coll)
 
@@ -74,7 +74,7 @@ EXAMPLES:
 
 E.g.: Find the Venice cryptography PBKDF2 hash function and print the doc for it:
 
-```text
+``` text
 venice> (load-module :crypt)
 
 venice> (finder "crypt*")
@@ -108,7 +108,7 @@ The REPL supports code completion. Completion is triggered by the `TAB` key.
 
 ### Code completion for functions
 
-```text
+``` text
 venice> (regex<TAB>
 regex/find              regex/matcher           regex/find-group
 regex/find?             regex/matches           regex/groupcount
@@ -122,27 +122,27 @@ the candidates by typing more characters. `Ctrl-C` stops the completion.
 
 ### Code completion for loading a module
 
-```text
+``` text
 venice> (load-module <TAB>
 :kira     :math     :ring     :maven    :tomcat   :webdav   :xchart
 ```
 
 The namespace alias for a module can be completed with a single char default:
 
-```text
+``` text
 venice> (load-module :grep <TAB>
 ```
 
 auto completes to
 
-```text
+``` text
 venice> (load-module :grep ['grep :as 'g])
 ```
  
 
 ### Code completion for loading a Venice file
 
-```text
+``` text
 venice> (load-file "<TAB>
 chart.venice             exception.venice         perf-test-1.venice
 indent.venice            parsatron.venice         perf-test-2.venice
@@ -153,7 +153,7 @@ webdav.venice            demo-webapp.venice       vaadin-download.venice
 
 ### Code completion for doc function
 
-```text
+``` text
 venice> (doc li<TAB>
 list        list*       list?       list-comp
 ```
@@ -163,7 +163,7 @@ list        list*       list?       list-comp
 
 3rdParty JARs can be manually copied to the REPL's library path `libs`. 
 
-```text
+``` text
 REPL_HOME
 ├── libs
 │   ├── venice-1.12.84.jar
@@ -185,13 +185,13 @@ REPL_HOME
 Just restart the REPL after adding the libraries by running the REPL `!restart` 
 command:
 
-```text
+``` text
 venice> !restart
 ```
 
 To check the new REPL classpath run the REPL `!classpath` command:
 
-```text
+``` text
 venice> !classpath
 REPL classpath:
   libs
@@ -205,7 +205,7 @@ REPL classpath:
 
 Reload the Venice context without restarting the REPL
 
-```text
+``` text
 venice> !reload
 ```
 

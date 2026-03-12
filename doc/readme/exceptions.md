@@ -21,7 +21,7 @@ A few exception types are imported implicitly to simplify usage:
 
 Create exceptions using the function `ex` :
 
-```clojure
+``` clojure
 (do
    (import :java.io.IOException)
    (import :java.text.ParseException)
@@ -53,7 +53,7 @@ if sandboxing is activated.
 
 Create exceptions using Java Interop:
 
-```clojure
+``` clojure
 (do
    (import :java.text.ParseException)
 
@@ -86,7 +86,7 @@ selectors!
 
 The first catch clause that matches the thrown exception will execute.
 
-```clojure
+``` clojure
 (do
    (try
       (throw (ex :RuntimeException "a message"))
@@ -105,7 +105,7 @@ The *finally* block is just for side effects, like closing resources. It never r
 
 Throw, catch, and finally blocks may contain multiple expressions:
 
-```clojure
+``` clojure
 (do
    (import :java.io.IOException)
   
@@ -129,7 +129,7 @@ Throw, catch, and finally blocks may contain multiple expressions:
 Any Venice data value can be thrown resulting in a `:ValueException` with 
 the data as the exception's value:
 
-```clojure
+``` clojure
 (do
    (try
       (throw [1 2 3])  ; ValueException
@@ -151,7 +151,7 @@ ensures that each resource is closed at the end of the statement. Any
 object that implements `:java.lang.AutoCloseable` or `:java.io.Closeable`, 
 can be used as a resource. 
 
-```clojure
+``` clojure
 (do
    (import :java.io.FileInputStream)
    
@@ -187,7 +187,7 @@ A selector can be:
 
 Class selector:
 
-```clojure
+``` clojure
 (do
    (try
       (throw (ex :RuntimeException "a message"))
@@ -200,7 +200,7 @@ Class selector:
 
 key-value selector:
 
-```clojure
+``` clojure
 (do
    (try
       (throw {:a 100, :b 200})
@@ -213,7 +213,7 @@ key-value selector:
 
 key-value selector matching exception cause type:
 
-```clojure
+``` clojure
 (do
    (try
       ;; note: Venice wraps any checked exception with a :RuntimeException
@@ -227,7 +227,7 @@ key-value selector matching exception cause type:
 
 Predicate selector:
 
-```clojure
+``` clojure
 (do
    (try
       (throw {:a 100, :b 200})
@@ -248,7 +248,7 @@ of a custom type as a :ValueException and define a `catch` clause with a predica
 
 Example:
 
-```clojure
+``` clojure
 (do
    (deftype :my-exception1 [message :string, position :long]) 
    (deftype :my-exception2 [message :string]) 
@@ -267,7 +267,7 @@ Example:
 
 Venice generates user friendly stack traces
 
-```clojure
+``` clojure
 (do
    (defn fn1 [x] (fn2 x))
    (defn fn2 [x] (fn3 x))

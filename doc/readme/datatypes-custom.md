@@ -37,7 +37,7 @@ A custom "AND" type has a name for reference and at least one field. The type's 
 is defined as a keyword and the fields are tuples of name and type.
 
 
-```clojure
+``` clojure
 (deftype :complex [real      :long
                    imaginary :long])
  ```
@@ -45,19 +45,19 @@ is defined as a keyword and the fields are tuples of name and type.
 Venice implicitly creates a builder function suffixed with a dot
 character. Values of any subtype of the field's type may be passed.
   
-```clojure
+``` clojure
 (complex. 200 300)
 ```
 
 ... and a type check function 
 
-```clojure
+``` clojure
 (complex? (complex. 200 300))  ; => true
 ```
 
 Get the type 
 
-```clojure
+``` clojure
 (type (complex. 200 300))  ; => :user/complex
 ```
 
@@ -65,7 +65,7 @@ Get the type
 Custom "AND" types are implemented in terms of maps, so all map functions
 can be applied:
 
- ```clojure
+ ``` clojure
 (def x (complex. 200 300))
 
 (println (str/format "(re: %d, im: %d)" (:real x) (:imaginary x)))
@@ -74,7 +74,7 @@ can be applied:
 
 The field type :any is representing any type:
 
-```clojure
+``` clojure
 (do
   (deftype :named [name :string, value :any]) 
   
@@ -84,7 +84,7 @@ The field type :any is representing any type:
 
 Field types allow `nil` values if they are suffixed with a '?':
 
-```clojure
+``` clojure
 (do
   (deftype :complex [real      :long
                      imaginary :long?])
@@ -94,7 +94,7 @@ Field types allow `nil` values if they are suffixed with a '?':
 
 Modify fields with `assoc`:
 
-```clojure
+``` clojure
 (do
   (deftype :complex [real :long, imaginary :long])
   (def x (complex. 100 200))
@@ -103,7 +103,7 @@ Modify fields with `assoc`:
   y)
 ```
 
-```clojure
+``` clojure
 (do
   (deftype :complex [real :long, imaginary :long])
   (def x (atom (complex. 100 200)))
@@ -114,7 +114,7 @@ Modify fields with `assoc`:
 
 Remove fields with `dissoc`:
 
-```clojure
+``` clojure
 (do
   (deftype :complex [real :long, imaginary :long])
   (def x (complex. 100 200))
@@ -130,7 +130,7 @@ resulting value will not comply with the custom type's rules anymore.
 
 `deftype` already implements type and value-based equality.
 
-```clojure
+``` clojure
 (do
   (deftype :complex [real :long, imaginary :long])
   
@@ -149,7 +149,7 @@ resulting value will not comply with the custom type's rules anymore.
 
 All Custom types support out-of-the-box  _toString_  conversion:
 
- ```clojure
+ ``` clojure
 (do
   (deftype :complex [real      :long
                      imaginary :long?])
@@ -161,14 +161,14 @@ All Custom types support out-of-the-box  _toString_  conversion:
 
 The predefined core  _Object_  protocol
 
-```clojure
+``` clojure
 (defprotocol Object
   (toString [self] (. self :toString)))
 ```
 
 can be used to customize the  _toString_  conversion:
 
-```clojure
+``` clojure
 (do
   (deftype :complex [real :long, imaginary :long]
     Object
@@ -188,7 +188,7 @@ can be used to customize the  _toString_  conversion:
 
 The optional validator is a single arg function receiving the value as the argument and throwing an exception if the value is not valid.
 
-```clojure
+``` clojure
 (do
   (deftype :point
            [x :long, y :long]
@@ -211,7 +211,7 @@ type.
 
 ### Define a custom type 
 
-```clojure
+``` clojure
 
 ; individual keyword values 
 (deftype-or :color :red :green :blue)
@@ -232,7 +232,7 @@ type.
 
 Venice implicitly creates a builder function suffixed with a dot
   
-```clojure
+``` clojure
 (color. :blue)
 
 (fruit. "apple")
@@ -248,7 +248,7 @@ Venice implicitly creates a builder function suffixed with a dot
 
 ... and a type check function 
 
-```clojure
+``` clojure
 (color? (color. :blue))  ; => true
 
 (fruit? (fruit. "apple"))  ; => true
@@ -257,7 +257,7 @@ Venice implicitly creates a builder function suffixed with a dot
 
 Get the type 
 
-```clojure
+``` clojure
 (type (color. :blue))  ; => :user/color
 ```
 
@@ -265,7 +265,7 @@ Equality:
 
 `deftype-or` already implements type-and-value-based equality.
 
-```clojure
+``` clojure
 (do
   (deftype-or :color :red :green :blue)
   
@@ -290,7 +290,7 @@ a string and has well defined constraints.
 
 **Primitive types**
 
-```clojure
+``` clojure
 (do
   ; the type :first-name is a string (values cannot be nil)
   (deftype-of :first-name :string)
@@ -315,7 +315,7 @@ a string and has well defined constraints.
 **List and Vectors**
 
 
-```clojure
+``` clojure
 (do
   ; the type :colors1 is a vector with values of any type
   (deftype-of :colors1 :vector)
@@ -331,7 +331,7 @@ a string and has well defined constraints.
 **Sets and Maps**
 
 
-```clojure
+``` clojure
 (do
   ; the type :units1 is a hash-set with values of any type
   (deftype-of :units1 :hash-set)
@@ -347,7 +347,7 @@ a string and has well defined constraints.
 
 Venice implicitly creates a builder function suffixed with a dot
  
-```clojure
+``` clojure
 (do
   (deftype-of :email-address :string str/valid-email-addr?)
               
@@ -358,13 +358,13 @@ Venice implicitly creates a builder function suffixed with a dot
 
 ... and a type check function 
 
-```clojure
+``` clojure
 (email-address? (email-address. "foo@foo.org"))  ; => true
 ```
 
 Get the type 
 
-```clojure
+``` clojure
 (type (email-address. "foo@foo.org"))  ; => :user/email-address
 ```
 
@@ -372,7 +372,7 @@ Equality:
 
 `deftype-of` already implements type-and-value-based equality.
 
-```clojure
+``` clojure
 (do
   (deftype-of :email-address :string str/valid-email-addr?)
   
@@ -390,7 +390,7 @@ Equality:
 
 ## Sample 'Payment' Domain Model
 
-```clojure
+``` clojure
 (do
   (ns foo)
 

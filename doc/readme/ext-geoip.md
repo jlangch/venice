@@ -37,7 +37,7 @@ https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&lic
 Alternatively the databases can be downloaded using the Venice GeoIP module. You just 
 run this snippet from a REPL.
 
-```clojure
+``` clojure
 (do
   (load-module :geoip)
   
@@ -67,7 +67,7 @@ The **geoip** module returns location information for IPv4 or IPv6 addresses.
 
 E.g.:
 
-```text
+``` text
 IP address:     "41.216.186.131"
 
 Location info:  { :ip            "41.216.186.131" 
@@ -79,7 +79,7 @@ Location info:  { :ip            "41.216.186.131"
 
 IP lookup:
 
-```clojure
+``` clojure
 (do
   (load-module :geoip)
 
@@ -130,7 +130,7 @@ longitude) that are passed to the **mercator** module to draw corresponding
 markers on a world map.
 
 
-```clojure
+``` clojure
 (do
   (load-module :mercator)
   (load-module :geoip)
@@ -205,7 +205,7 @@ The script `tomcat-geoip.venice`
 
 Script  _tomcat-geoip.venice_ :
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat-util)
   (load-module :mercator)
@@ -368,7 +368,7 @@ Script  _tomcat-geoip.venice_ :
 
 Run the script from a REPL:
 
-```text
+``` text
 venice> !macroexpand
 venice> (load-file "tomcat-geoip.venice")
 venice> (lookup-ip "41.216.186.131")

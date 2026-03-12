@@ -54,7 +54,7 @@ on any argument or combination of arguments.
 `defmethod` creates a new method for a multimethod associated with a dispatch-value.
 
 
-```clojure
+``` clojure
 (do
   (ns foo)
   
@@ -79,7 +79,7 @@ on any argument or combination of arguments.
 )
 ```
 
-```clojure
+``` clojure
 (do
   (def pi (. :java.lang.Math :PI))
   
@@ -104,7 +104,7 @@ on any argument or combination of arguments.
 
 Keyword as dispatch function:
 
-```clojure
+``` clojure
 (do
   (def pi (. :java.lang.Math :PI))
 
@@ -138,7 +138,7 @@ of the function to use.
 Define a protocol 'XMath' with two polymorphic functions '+' and '-' and extend it 
 with `extend` for the types ':core/long' and ':foo/complex' :
 
-```clojure
+``` clojure
 (do
    (ns foo)
    
@@ -177,7 +177,7 @@ See: [Complex Number](https://en.wikipedia.org/wiki/Complex_number)
 Define a protocol with two polymorphic functions and extend it within 
 a *custom type* definition:
 
-```clojure
+``` clojure
 (do
    (ns foo)
    
@@ -200,7 +200,7 @@ a *custom type* definition:
 Using multiple protocols 'Add' and 'Sub' with default implementations:
 
 
-```clojure
+``` clojure
 (do
    (ns foo)
    

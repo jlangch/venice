@@ -76,7 +76,7 @@ start of the encrypted file and extracted before decrypting the file:
 
 **Encrypted binary buffers:**
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
  
@@ -95,7 +95,7 @@ start of the encrypted file and extracted before decrypting the file:
 
 **Encrypted files:**
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
  
@@ -122,7 +122,7 @@ start of the encrypted file and extracted before decrypting the file:
 
 **Encrypted string:**
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
  
@@ -148,7 +148,7 @@ start of the encrypted file and extracted before decrypting the file:
 
 **AES encrypted ZIP files:**
 
-```clojure
+``` clojure
 (do
   (load-module :zipvault)
   
@@ -173,12 +173,12 @@ and memory buffers.
 
 **AES256-GCM**
 
-```clojure
+``` clojure
 (crypt/encryptor-aes-256-gcm "your-passphrase"
 ```
 Passing an explicit salt and iteration count:
 
-```clojure
+``` clojure
 (crypt/encryptor-aes-256-gcm 
    "your-passphrase"
    :key-salt          (bytebuf [0x34 0x7F 0x45 0xAE  0x09 0xF0 0xE4 0x7B  
@@ -188,12 +188,12 @@ Passing an explicit salt and iteration count:
 
 **AES256-CBC**
 
-```clojure
+``` clojure
 (crypt/encryptor-aes-256-cbc "your-passphrase"
 ```
 Passing an explicit salt and iteration count:
 
-```clojure
+``` clojure
 (crypt/encryptor-aes-256-cbc 
    "your-passphrase"
    :key-salt              (bytebuf [0x34 0x7F 0x45 0xAE  0x09 0xF0 0xE4 0x7B  
@@ -206,12 +206,12 @@ Passing an explicit salt and iteration count:
 
 **ChaCha20**
 
-```clojure
+``` clojure
 (crypt/encryptor-chacha20 "your-passphrase"
 ```
 Passing an explicit salt and iteration count:
 
-```clojure
+``` clojure
 (crypt/encryptor-chacha20 
    "your-passphrase"
    :key-salt         (bytebuf [0x34 0x7F 0x45 0xAE  0x09 0xF0 0xE4 0x7B  
@@ -221,12 +221,12 @@ Passing an explicit salt and iteration count:
 
 **ChaCha20-BC**
 
-```clojure
+``` clojure
 (crypt/encryptor-chacha20-bouncycastle "your-passphrase"
 ```
 Passing an explicit salt and iteration count:
 
-```clojure
+``` clojure
 (crypt/encryptor-chacha20-bouncycastle
    "your-passphrase"
    :key-salt          (bytebuf [0x34 0x7F 0x45 0xAE  0x09 0xF0 0xE4 0x7B 
@@ -240,7 +240,7 @@ Passing an explicit salt and iteration count:
 
 Encrypt all "*.doc" and "*.docx" in a file tree:
 
-```clojure
+``` clojure
 (do 
   (load-module :crypt)
     
@@ -401,7 +401,7 @@ and they can be used for malicious purposes.
 
 **SHA-1**
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
   
@@ -417,7 +417,7 @@ and they can be used for malicious purposes.
 
 **SHA-256**
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
   
@@ -433,7 +433,7 @@ and they can be used for malicious purposes.
 
 **SHA-512**
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
   
@@ -512,7 +512,7 @@ PBKDF2 is the preferred hashing algorithm to hash passwords.
 
 Just using a salt:
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 
@@ -522,7 +522,7 @@ Just using a salt:
 
 Specifying a salt, the number of iterations, and key length:
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 
@@ -533,7 +533,7 @@ Specifying a salt, the number of iterations, and key length:
 
 ### SHA-512
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 
@@ -541,7 +541,7 @@ Specifying a salt, the number of iterations, and key length:
       (str/bytebuf-to-hex :upper)))
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 
@@ -552,7 +552,7 @@ Specifying a salt, the number of iterations, and key length:
 
 ### SHA-1
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 
@@ -560,7 +560,7 @@ Specifying a salt, the number of iterations, and key length:
       (str/bytebuf-to-hex :upper)))
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 
@@ -575,7 +575,7 @@ Warning: The MD5 hash function’s security is considered to be
 severely compromised. Collisions can be found within seconds, 
 and they can be used for malicious purposes. 
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 
@@ -583,7 +583,7 @@ and they can be used for malicious purposes.
       (str/bytebuf-to-hex :upper)))
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :crypt)
 

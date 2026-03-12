@@ -3,7 +3,7 @@
 See [Semantic Versioning](http://semver.org) on the WEB
 
 
-```clojure
+``` clojure
 (do
    (load-module :semver)
    

@@ -11,7 +11,7 @@ Note: Use Venice 1.10.35+ or newer to have all features demonstrated here availa
 
 Run this script from the REPL to download the PDF libraries and the demo fonts:
 
-```clojure
+``` clojure
 (do
   (load-module :pdf-install)
   
@@ -67,7 +67,7 @@ References:
 
 ## Introduction Example
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -151,7 +151,7 @@ References:
 
 ## Tables
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -357,7 +357,7 @@ on the Venice's classpath. Refer to the image via a classpath URI:
 
 Dynamically created images can be passed to the renderer as in-memory resources. 
 
-```clojure
+``` clojure
 ; compute the in-memory resources and give it a names as a reference
 (def images { "images/chart_2018.png" (create-chart  2018)
               "images/chart_2019.png" (create-chart  2019) } )
@@ -375,7 +375,7 @@ These images are then referred to as:
 
 #### Example
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -526,7 +526,7 @@ like:
 
 Run the example:
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -681,7 +681,7 @@ Run the example:
 
 ## Table of Content
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -847,7 +847,7 @@ Run the example:
 
 ## Page Footers
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -981,7 +981,7 @@ Run the example:
 
 ## Watermarks
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1087,7 +1087,7 @@ Run the example:
 
 Venice supports simplified text to PDF
 
-```clojure
+``` clojure
 (do 
   (ns test)
   
@@ -1143,7 +1143,7 @@ Venice supports simplified text to PDF
 
 With the [PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/tables-example.pdf) from the tables example above
 
-```clojure
+``` clojure
 (do
   (ns test)
 
@@ -1154,7 +1154,7 @@ With the [PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/tables-exa
 
 the text extraction tool produces:
 
-```text
+``` text
                                                                                                                                                     
                                                Venice               PDF           Tables                                                            
                                                                                                                                                     
@@ -1242,7 +1242,7 @@ the text extraction tool produces:
 
 Merge multiple PDFs into a single one
 
-```clojure
+``` clojure
 (do
   (load-module :pdf)
  
@@ -1265,7 +1265,7 @@ Merge multiple PDFs into a single one
 
 Copy pages from a PDF to a new PDF
 
-```clojure
+``` clojure
 (do 
   (load-module :pdf)
 

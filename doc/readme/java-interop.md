@@ -35,7 +35,7 @@ Java calls follow these patterns:
 
 
 
-```clojure
+``` clojure
 (do
    ;; constructor no args
    (. :java.awt.Point :new)
@@ -92,7 +92,7 @@ Java calls follow these patterns:
 Java types support hash codes, equals, and compare. Thereby sequences with Java types
 can be sorted and Java types can be used with sets and maps.
 
-```clojure
+``` clojure
 (do
    (import :java.math.BigInteger)
    
@@ -112,7 +112,7 @@ can be sorted and Java types can be used with sets and maps.
 
 Java *enum* values can be passed as simple or scoped keywords:
 
-```clojure
+``` clojure
 (. :java.time.LocalDate :of 1994 :JANUARY 21)  
 ;; => 1994-01-21
     
@@ -122,7 +122,7 @@ Java *enum* values can be passed as simple or scoped keywords:
 
 Get a Java *enum* value
 
-```clojure
+``` clojure
 (. :java.time.Month :JANUARY)
 ;; => JANUARY
 
@@ -132,14 +132,14 @@ Get a Java *enum* value
 
 Pass a Java *enum* value to a function
 
-```clojure
+``` clojure
 (let [jan (. :java.time.Month :JANUARY)]
   (. :java.time.LocalDate :of 1994 jan 21))
 ```
 
 Get all values of a Java *enum*
 
-```clojure
+``` clojure
 (. :java.time.Month :values)
 ;; => [JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER OCTOBER NOVEMBER DECEMBER]
 ```
@@ -158,13 +158,13 @@ Equality testing *enums*
 > `(== 1 1.0)` evaluates to `true` (only value must be equal)
 >
 
-```clojure
+``` clojure
 (let [e (. :java.time.Month :JANUARY)]
   (== e :JANUARY)   ;; true (value equality)
   (== :JANUARY e))  ;; true (value equality)
 ```
 
-```clojure
+``` clojure
 (let [e (. :java.time.Month :JANUARY)]
   (= e :JANUARY)   ;; false (different types)
   (= :JANUARY e))  ;; false (different types)
@@ -178,7 +178,7 @@ Equality testing *enums*
 
 *Venice*
 
-```clojure
+``` clojure
 (do
   (import :foo.OuterClass)
   (import :foo.OuterClass$NestedStaticClass)
@@ -192,7 +192,7 @@ Equality testing *enums*
 
 *Java*
 
-```java
+``` java
 package foo;
 
 public class OuterClass {
@@ -215,7 +215,7 @@ public class OuterClass {
 
 Java _Varargs_ are passed as list or vector:
 
-```clojure
+``` clojure
 ; Java signature: String String::format(String format, Object... args)
 (. :java.lang.String :format "%s: %d" ["abc" 100])  ;; => "abc: 100"
 
@@ -235,7 +235,7 @@ The Venice `proxify` function creates implementations for *Java Interfaces*
 at runtime time based on [Java Dynamic Proxies](https://www.baeldung.com/java-dynamic-proxies).
 It wraps multiple Venice functions to implement a Java Interface:
 
-```clojure
+``` clojure
 ;; File filter
 (do
    (import :java.io.FilenameFilter)
@@ -255,7 +255,7 @@ It wraps multiple Venice functions to implement a Java Interface:
 ```
 
 
-```clojure
+``` clojure
 ;; Swing GUI
 (do
    (import :java.lang.Runnable)
@@ -301,17 +301,17 @@ These functions are defined in the `:java` module.
 
 Instead of 
 
-```clojure
+``` clojure
 (proxify :java.lang.Runnable { :run #(sleep 10) })
 ```
 
 use
 
-```clojure
+``` clojure
 (java/as-runnable #(sleep 10))
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :java)
   (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
@@ -329,17 +329,17 @@ use
 
 Instead of 
 
-```clojure
+``` clojure
 (proxify :java.util.function.Function { :apply #(+ % 1) })
 ```
 
 use 
 
-```clojure
+``` clojure
 (java/as-function #(+ % 1))
 ```
 
-```clojure
+``` clojure
 (do
   (load-module :java)
   (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
@@ -358,7 +358,7 @@ use
 
 ## Mixing Venice functions with Java streams
 
-```clojure
+``` clojure
 (do
   (load-module :java)
 
@@ -375,7 +375,7 @@ _Note:_  this is not the fastest way to filter/map collections
 
 ## Filtering Java objects
 
-```clojure
+``` clojure
 (do
    (import :com.github.jlangch.venice.demo.Person)
    (import :java.time.LocalDate)
@@ -405,7 +405,7 @@ result in severe warnings.
 
 Code that runs fine with Java 8 but gets problems with Java 9+ (Venice version prior to 1.7.17):
 
-```clojure
+``` clojure
 (do
    (let [img (. :java.awt.image.BufferedImage :new 40 40 1) 
          g2d (. img :createGraphics)]
@@ -415,7 +415,7 @@ Code that runs fine with Java 8 but gets problems with Java 9+ (Venice version p
 
 With plain reflection one gets these warnings with Java 9+:
 
-```text
+``` text
 WARNING: An illegal reflective access operation has occurred
 WARNING: Illegal reflective access by com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor (file:/.../classes/java/main/) to method sun.java2d.SunGraphics2D.fillOval(int,int,int,int)
 WARNING: Please consider reporting this to the maintainers of com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor
@@ -444,7 +444,7 @@ Java 8 and Java 9+.
 
 It's possible to do a cast explicitly, but it is not necessary:
 
-```clojure
+``` clojure
 (do
    (import :java.awt.image.BufferedImage)
    (import :java.awt.Graphics)

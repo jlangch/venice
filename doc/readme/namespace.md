@@ -7,7 +7,7 @@ A namespace is a set of symbols that are used to organize vars, so that these va
 
 ### Namespaces are defined using the `ns` function
 
-```clojure
+``` clojure
 (do
    (ns A)
 
@@ -27,7 +27,7 @@ A namespace is a set of symbols that are used to organize vars, so that these va
 
 ### Namespaces can be reopened
 
-```clojure
+``` clojure
 (do
    (ns A)
    (def s1 100)
@@ -47,7 +47,7 @@ A namespace is a set of symbols that are used to organize vars, so that these va
 
 ### Java imports are relative to a namespace
 
-```clojure
+``` clojure
 (do
   (ns A)
   (import :java.lang.Math)
@@ -63,7 +63,7 @@ A namespace is a set of symbols that are used to organize vars, so that these va
 
 ### Namespace aliases
 
-```clojure
+``` clojure
 (do
   (ns AAAAAAAAAAAAAA)
   (def x 100)
@@ -72,7 +72,7 @@ A namespace is a set of symbols that are used to organize vars, so that these va
   (println a/x))
 ```
 
-```clojure
+``` clojure
 (do
   (ns AAAAAAAAAAAAAA)
   (def x 100)

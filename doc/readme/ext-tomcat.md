@@ -22,7 +22,7 @@ To simplify things there is a
 
 Start a REPL:
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat ['tomcat :as 'tc])
 
@@ -43,7 +43,7 @@ Start a REPL:
 
 ## Define a servlet
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat ['tomcat :as 'tc])
 
@@ -81,7 +81,7 @@ Start a REPL:
 
 Java 8:
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat)
   (tomcat/download-libs-10.0.x :dir (repl/libs-dir) :silent false))
@@ -89,7 +89,7 @@ Java 8:
 
 Java 11+:
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat)
   (tomcat/download-libs-10.1.x :dir (repl/libs-dir) :silent false))
@@ -110,7 +110,7 @@ Wait until the project has been checked out, compiled and the REPL started.
 
 Run this script from the REPL:
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat-install)
     
@@ -129,7 +129,7 @@ Run this script from the REPL:
 
 The changed classpath (after the REPL restart) can be checked with
 
-```text
+``` text
 venice> !classpath
 REPL classpath:
   libs
@@ -144,7 +144,7 @@ REPL classpath:
 
 Run this script from the REPL:
 
-```clojure
+``` clojure
 (do
   (load-module :tomcat ['tomcat :as 'tc])
 

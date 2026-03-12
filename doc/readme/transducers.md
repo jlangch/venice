@@ -4,7 +4,7 @@ Transducers isolate transforming reducing functions (like `map` or `filter` in t
 
 Traditional `map` or `filter` functions operate sequentially on input and output collections:
 
-```clojure
+``` clojure
 (->> (range 0 1000)
      (filter odd?)      
      (map #(* 100 %))
@@ -17,7 +17,7 @@ Transducers overcome this problem and decouple the transforming completely from 
 
 Transducer example:
 
-```clojure
+``` clojure
 (do
   (def xform
     (comp
@@ -37,7 +37,7 @@ Transducer example:
 
 The `transduce` function acts as the processor that applies the transforming and reducing transducer functions to the collection elements.
 
-```clojure
+``` clojure
 (transduce xform f coll)
 (transduce xform f init coll)
 ```
@@ -56,7 +56,7 @@ Beside the standard reducing functions like `conj`, `+`, `-`, `max`, and `min` V
 
 ### Examples:
 
-```clojure
+``` clojure
 (do
   (def xform
     (comp
@@ -69,14 +69,14 @@ Beside the standard reducing functions like `conj`, `+`, `-`, `max`, and `min` V
   ; => [110 310 510 710 910 ....  99910]
 ```
 
-```clojure
+``` clojure
 (do
   (def xform (comp (drop 2) (take 3)))
   
   (transduce xform conj [1 2 3 4 5 6]))  ; => [3 4 5]
 ```
 
-```clojure
+``` clojure
 (do
   (def xform (map #(+ % 1)))
   

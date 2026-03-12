@@ -22,7 +22,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <tr>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -38,7 +38,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -54,7 +54,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -138,7 +138,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <tr>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print
@@ -163,7 +163,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -188,7 +188,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -279,7 +279,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <tr>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -337,7 +337,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <tr>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -363,7 +363,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -389,7 +389,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -472,7 +472,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ## Borders
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   
@@ -796,7 +796,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 ## Cell overflow
 
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -847,7 +847,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <tr>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
@@ -864,7 +864,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 <td>
 
-```clojure
+``` clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 

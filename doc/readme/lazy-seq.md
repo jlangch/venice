@@ -20,14 +20,14 @@ can be infinite. The evaluation of sequence elements is called realization.
 
 (theoretically) infinite lazy sequence with random numbers
 
-```clojure
+``` clojure
 (lazy-seq rand-long) ; => (...)
  ```
  
  
 (theoretically) infinite lazy sequence with positive numbers
 
-```clojure
+``` clojure
 ; 1, 2, 3, 4, ...
 (lazy-seq 1 inc) ; => (...)
  ```
@@ -35,7 +35,7 @@ can be infinite. The evaluation of sequence elements is called realization.
 
 (theoretically) infinite lazy sequence with cons'ing a value
 
-```clojure
+``` clojure
 ; -1, 0, 1, 2, 3, 4, ...
 (cons -1 (lazy-seq 0 inc)) ; => (...)
  ```
@@ -45,7 +45,7 @@ can be infinite. The evaluation of sequence elements is called realization.
 
 Empty lazy sequence
 
-```clojure
+``` clojure
 (lazy-seq) ; => (...)
 
 (empty? (lazy-seq)) ; => true
@@ -53,19 +53,19 @@ Empty lazy sequence
 
 Finite lazy sequence from lists and vectors
 
-```clojure
+``` clojure
 ; 1, 2, 3, 4
 (lazy-seq '(1 2 3 4)) ; => (...)
  ```
 
-```clojure
+``` clojure
 ; 1, 2, 3, 4
 (lazy-seq [1 2 3 4]) ; => (...)
  ```
 
 Finite lazy sequence created from an item producing function returning `nil` to end the sequence
 
-```clojure
+``` clojure
 ; 1, 2, 3, 4, 5
 (lazy-seq 1 #(if (< % 5) (inc %) nil)) ; => (...)
 ```
@@ -81,7 +81,7 @@ computed.
 Single elements of a lazy sequence can be realized with one of the functions 
 `first`, `second`, `third`, `fourth`, or `nth`
 
-```clojure
+``` clojure
 (first (lazy-seq 1 inc)) ; => 1
 
 (second (lazy-seq 1 inc)) ; => 2
@@ -96,7 +96,7 @@ Realizing a lazy sequence to a list is done by applying the `doall` function.
 
 **Be aware that your runtime system will not survive realizing an infinite lazy sequence.**
 
-```clojure
+``` clojure
 ;;; !!! DO NOT RUN THIS !!!
 (doall (lazy-seq 1 inc)) ; continues realizing elements until the memory is exhausted
  ```
@@ -104,7 +104,7 @@ Realizing a lazy sequence to a list is done by applying the `doall` function.
 
 Implicitly realizing elements of an infinite lazy sequence
 
-```clojure
+``` clojure
 (interleave [:a :b :c] (lazy-seq 1 inc))  ; => (:a 1 :b 2 :c 3)
 ```
 
@@ -113,21 +113,21 @@ Implicitly realizing elements of an infinite lazy sequence
 
 Finite lazy sequences are built from lists and vectors or from element producing functions (eg.: `#(if (< % 5) (inc %) nil)`) returning `nil` to end the sequence. 
 
-```clojure
+``` clojure
 (doall (lazy-seq [1 2 3 4]))
 ; => (1 2 3 4)
 ```
 
 The `(take n)` turns the infinite lazy sequence to a finite lazy sequence with n items
 
-```clojure
+``` clojure
 (->> (lazy-seq (time/local-date 2023 7 1) #(time/plus % :days 1))
      (take 3)
      (doall))  
 ; => (2023-07-01 2023-07-02 2023-07-03)
 ```
 
-```clojure
+``` clojure
 (->> (lazy-seq 1 inc)      ; infinite lazy seq of positive numbers
      (map #(* 10 %))       ; map elements, no elements realized yet
      (drop 2)              ; drop the first 2 elements producing a new infinite lazy seq
@@ -139,7 +139,7 @@ The `(take n)` turns the infinite lazy sequence to a finite lazy sequence with n
 
 Lazy sequences show its power to generate the Fibonacci sequence
 
-```clojure
+``` clojure
 (do 
   (def fib (map first (lazy-seq [0N 1N] (fn [[a b]] [b (+ a b)]))))
   
@@ -149,7 +149,7 @@ Lazy sequences show its power to generate the Fibonacci sequence
 Approximate Pi to the 1/n decimal with the [Leibniz](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) formula 
 `π/4 = 1 - 1/3 + 1/5 - 1/7 + 1/9 - ...`
 
-```clojure
+``` clojure
 ;; Leibniz's formula converges extremely slowly.
 ;; Do no forget to enable upfront macro expansion in the REPL
 (do
@@ -164,12 +164,12 @@ Approximate Pi to the 1/n decimal with the [Leibniz](https://en.wikipedia.org/wi
 
 An item producing function returning `nil` to make the lazy sequence finite
 
-```clojure
+``` clojure
 (doall (lazy-seq 1 #(if (< % 5) (inc %) nil)))
 ; => (1 2 3 4 5)
 ```
 
-```clojure
+``` clojure
 (->> (lazy-seq 1 #(if (< % 5) (inc %) nil))
      (drop 2)
      (take 6)
@@ -188,7 +188,7 @@ Note: The producing function receives the last element as input to produce the n
 
 Realizes all the elements of the finite lazy sequences upfront
 
-```clojure
+``` clojure
 (let [q (conj! (queue) 1 2 3 nil)]  
   (defn f [] 
     (let [v (poll! q)]
@@ -211,7 +211,7 @@ Collecting 3
 
 Realizes all the elements of the finite lazy sequences element by element
 
-```clojure
+``` clojure
 (let [q (conj! (queue) 1 2 3 nil)]  
   (defn f [] 
      (let [v (poll! q)]
@@ -239,7 +239,7 @@ Remember that elements are just realized once and then memorized for further acc
 
 Example 1:
 
-```clojure
+``` clojure
 (do
   (def ls (lazy-seq 0 (fn [x] (let [n (+ x 1)]
                                 (println "realized" n)
@@ -260,7 +260,7 @@ Example 1:
 
 Example 2:
 
-```clojure
+``` clojure
 (do
   (def ls (lazy-seq 0 (fn [x] (let [n (+ x 1)]
                                 (println "  realized" n)
@@ -302,7 +302,7 @@ returns a lazy sequence.
 
 Lazy sequence with all positive numbers:
 
-```clojure
+``` clojure
 (do
   (defn positive-numbers
     ([]  (positive-numbers 1))
@@ -315,7 +315,7 @@ Lazy sequence with all positive numbers:
 
 Lazy Fibonacci number sequence computed by a recursive function:
 
-```clojure
+``` clojure
 (do
   (defn fib
     ([]    (fib 0 1))
@@ -332,7 +332,7 @@ Lazy Fibonacci number sequence computed by a recursive function:
 
 Finite recursive lazy sequence producing a sequence of decremented numbers:
 
-```clojure
+``` clojure
 (do
   (defn number-seq [x]
     (when (> x 0)
@@ -351,7 +351,7 @@ Finite recursive lazy sequence producing a sequence of decremented numbers:
 
 Finite recursive lazy sequence (reading text lines from a Reader)
 
-```clojure
+``` clojure
 (do
   (defn line-seq [rdr]
     (when-let [line (. rdr :readLine)]
@@ -370,7 +370,7 @@ Finite recursive lazy sequence (reading text lines from a Reader)
 
 Alternative finite recursive lazy sequence (reading text lines from a Reader)
 
-```clojure
+``` clojure
 (do
   (defn line-seq [rdr]
     (if-let [line (. rdr :readLine)]

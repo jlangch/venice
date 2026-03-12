@@ -19,7 +19,7 @@ Example:
 
 Print the `grep` matches in a human readable form, one line per match in the format "{{filename}}\:{{lineno}}\:{{line}}":
 
-```clojure
+``` clojure
 (do
   (load-module :grep ['grep :as 'g])
   
@@ -28,7 +28,7 @@ Print the `grep` matches in a human readable form, one line per match in the for
 
 Print the `grep` matches in a machine readable form. It returns a list of tuples holding _filename_, _lineno_, and _line_:
 
-```clojure
+``` clojure
 (do
   (load-module :grep ['grep :as 'g])
   
@@ -52,7 +52,7 @@ Example:
 Print the `grep` matches in a human readable form, one line per match in the format "{{zipname}}!{{filename}}:{{lineno}}:{{line}}":
 
 
-```clojure
+``` clojure
 (do
   (load-module :grep ['grep :as 'g])
   
@@ -62,7 +62,7 @@ Print the `grep` matches in a human readable form, one line per match in the for
 Print the `grep` matches in a machine readable form. It returns a list of tuples holding _zipname_, _filename_, _lineno_, and _line_:
 
 
-```clojure
+``` clojure
 (do
   (load-module :grep ['grep :as 'g])
   

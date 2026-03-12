@@ -20,7 +20,7 @@ These looping constructs are based on mutable data.
 
 In this *Java* example the mutable variable *isDone* is used to exit the loop:
 
-```java
+``` java
 void doSomething() {
   boolean isDone = false;
   while (!isDone) {
@@ -34,7 +34,7 @@ testing is immutable and functions are pure?
 
 The answer is: recursion!
 
-```java
+``` java
 void doSomething() {
   doSomething(false);
 }
@@ -70,7 +70,7 @@ The computation of factorial numbers is defined as
 - factorial 1 -> 1
 - factorial n -> n * factorial (n - 1)
 
-```clojure
+``` clojure
 (do
   (defn factorial [n] 
     (if (<= n 1) 
@@ -86,7 +86,7 @@ The computation of factorial numbers is defined as
 
 Simple recursion with [multimethods](multi-methods-and-protocols.md#multimethods):
 
-```clojure
+``` clojure
 (do
   (defmulti factorial identity)
   (defmethod factorial 0N [_] 1N)
@@ -147,7 +147,7 @@ number of arguments to prevent you from writing loops.
 3.	Use recur to continue the loop: Jump back to the loop with new values or exit the loop if a condition is met.
 
 
-```clojure
+``` clojure
 (do
   (defn sum-to-n [n]
     (loop [i 1            ;; Initialize loop variables: i starts at 1
@@ -165,7 +165,7 @@ number of arguments to prevent you from writing loops.
 
 **Example 2: Recursively compute the factorial of a number:**
 
-```clojure
+``` clojure
 ;; Definition:
 ;;   factorial 1 -> 1
 ;;   factorial n -> n * factorial (n - 1)
@@ -184,7 +184,7 @@ number of arguments to prevent you from writing loops.
 
 **Example 3: Recursively compute the Fibobacci numbers (0 1 1 2 3 5 8 ...):**
 
-```clojure
+``` clojure
 ;; Definition:
 ;;   fib 0 -> 0
 ;;   fib 1 -> 1
@@ -208,7 +208,7 @@ number of arguments to prevent you from writing loops.
 
 Example 1: Lazy Fibonacci number sequence computed by a recursive function:
 
-```clojure
+``` clojure
 (do
    (defn fib
      ([]    (fib 0N 1N))
@@ -221,7 +221,7 @@ Example 1: Lazy Fibonacci number sequence computed by a recursive function:
 
 Example 2: Factorial numbers:
 
-```clojure
+``` clojure
 (do
    (defn factorial
       ([]      (factorial 1 1N))
@@ -245,7 +245,7 @@ non-function value.
 
 The function `trampoline` is defined simplified as
 
-```clojure
+``` clojure
 (defn trampoline [f] 
    (loop [f f]
       (let [ret (f)]
@@ -255,7 +255,7 @@ The function `trampoline` is defined simplified as
 
 Examples:
 
-```clojure
+``` clojure
 (do
    (defn is-odd? [n]
       (if (zero? n)
@@ -270,7 +270,7 @@ Examples:
    (trampoline (is-odd? 10000)))
 ```
 
-```clojure
+``` clojure
 (do
    (defn factorial
       ([n] #(factorial n 1N))
@@ -290,7 +290,7 @@ Venice has support for automatic *tail call optimization*. The recursive call mu
 position.
 
 
-```clojure
+``` clojure
 (do
   (defn factorial
     ([n]     (factorial n 1N))
@@ -310,7 +310,7 @@ position.
 Tail call recursive functions, can always be written in terms of a reducing (folding) 
 function. E.g.:
 
-```clojure
+``` clojure
 (do
   (defn factorial [n]
     ;; reducing factorial
@@ -331,7 +331,7 @@ is such an example of a non [primitive recursive function](https://en.wikipedia.
 
 For some recursive algorithms *memoization* can speed up computation impressively:
 
-```clojure
+``` clojure
 (do
   (def fibonacci
     (memoize
@@ -347,7 +347,7 @@ For some recursive algorithms *memoization* can speed up computation impressivel
 Please note that this standard approach is dramatically slower (1.3s vs 3.8ms on a MacBook Air M2)
 than the one with memoization:
 
-```clojure
+``` clojure
 (do
   (defn fib-simple [n]
     (if (< n 2)
@@ -383,7 +383,7 @@ simple recursion with self recursion applied to computing Fibobacci numbers.
 
 _Note: all examples run with upfront macro expansion enabled._
 
-```clojure
+``` clojure
 (do
   (defn fib-simple [n]
     (if (< n 2)

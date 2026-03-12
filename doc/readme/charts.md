@@ -5,7 +5,7 @@ The Venice chart is based on the [XChart](https://knowm.org/open-source/xchart/)
 
 Run this script from the REPL to download the XChart libraries:
 
-```clojure
+``` clojure
 (do
   (load-module :xchart-install)
   
@@ -35,7 +35,7 @@ Examples:
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart.png" width="300">
 
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -58,7 +58,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-2.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -93,7 +93,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-3.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -131,7 +131,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-4.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
      
@@ -152,7 +152,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-5.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
      
@@ -177,7 +177,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/area-chart.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -205,7 +205,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/scatter-chart.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -232,7 +232,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/bubble-chart.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -269,7 +269,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/bar-chart.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -290,7 +290,7 @@ Examples:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/pie-chart.png" width="300">
 
-```clojure
+``` clojure
 (do
    (load-module :xchart)
 
@@ -311,7 +311,7 @@ Examples:
 
 ## Install the required 3rd party libs
 
-```clojure
+``` clojure
 (do
   (load-module :xchart-install)
   

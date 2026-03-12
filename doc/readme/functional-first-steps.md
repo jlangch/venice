@@ -21,7 +21,7 @@ Venice is a Lisp dialect and recognizes two kinds of structures:
 
 **1. Literal representations of data**
 
-```clojure
+``` clojure
 10                  ; a number of type long (64bit)
 1.45                ; a number of type double (64bit float)
 1.45M               ; a arbitrary precision decimal number 
@@ -41,19 +41,19 @@ always a value.
 
 For example, if you want to add numbers 
 
-```clojure
+``` clojure
 (+ 1 2 3 4 5)
 ```
 
 or concatenate strings:
 
-```clojure
+``` clojure
 (str "Hello" ", " "user") 
 ```
 
 Operations can be nested:
 
-```clojure
+``` clojure
 (+ 1 2 (* 3 4) (/ 20 4) 6)
 ```
 
@@ -87,13 +87,13 @@ returns the value of the evaluated branch. The else expression is optional.
 
 Example:
 
-```clojure
+``` clojure
 (if (< 10 100) 
   "lower than 100" 
   "equal or larger than 100")
 ```
 
-```clojure
+``` clojure
 (if (< 10 100) 
   "lower than 100")
 ```
@@ -103,7 +103,7 @@ Example:
 `do` blocks sequentially execute multiple expressions. The value of the last expression 
 is returned.
 
-```clojure
+``` clojure
 (do
   (println 100) 
   (println 200) 
@@ -114,7 +114,7 @@ is returned.
 `if` only takes a single expression for the "then" and "else" parts. Use `do` to build 
 larger blocks that are a single expression.
 
-```clojure
+``` clojure
 (if (even? 10) 
   (do  
     (println "10 is even")
@@ -130,7 +130,7 @@ Venice offers the ’case’ statement which is similar to the ‘switch’ stat
 in the Java programming language. 
 
 
-```clojure
+``` clojure
 (case (+ 1 9)
   10  "ten"
   20  "twenty"
@@ -157,7 +157,7 @@ to the variable.
 
 *Examples:*
 
-```clojure
+``` clojure
 (do
   (def x 100)
   (def name "hello")
@@ -195,7 +195,7 @@ Syntax:
 
 Create a function with the name 'increment' and the argument 'x':
 
-```clojure
+``` clojure
 (do
   (defn increment [x] (+ x 1))
 
@@ -206,7 +206,7 @@ Create a function with the name 'increment' and the argument 'x':
 
 #### Functions with Multiple Arguments
 
-```clojure
+``` clojure
 (do
   (defn add [x y] (+ x y))
 
@@ -226,7 +226,7 @@ Functions accept often other functions as arguments.
 collection. Defining our own increment function for mapping the values is 
 cumbersome for small functions:
 
-```clojure
+``` clojure
 (do
   (defn increment [x] (+ x 1))
   
@@ -235,7 +235,7 @@ cumbersome for small functions:
 
 Anonymous functions like `#(+ %1 1)` simplify the use of small ad-hoc functions:
 
-```clojure
+``` clojure
 (map #(+ %1 1) [1 2 3 4])  ;; => [2 3 4 5]
 ```
 
@@ -274,13 +274,13 @@ print it.
 
 Without `->`:
 
-```clojure
+``` clojure
 (println (str (get {:a 1 :b 2} :a)))
 ```
 
 With `->`:
 
-```clojure
+``` clojure
 (-> {:a 1 :b 2}   ; Start with the map
     (get :a)      ; Get the value for key :a
     str           ; Convert the value to a string
@@ -301,13 +301,13 @@ Let’s filter a list of numbers, square each number, and then sum them.
 
 Without `->>`:
 
-```clojure
+``` clojure
 (reduce + (map square (filter odd? [1 2 3 4 5])))
 ```
 
 With `->>`:
 
-```clojure
+``` clojure
 (->> [1 2 3 4 5]        ; Start with the list
      (filter odd?)      ; Filter odd numbers
      (map square)       ; Square each number
@@ -327,7 +327,7 @@ a new updated structure.
 
 *Example:*
 
-```clojure
+``` clojure
 (do
   (def digits-1 [1 2 3 4 5 6])
   
@@ -351,7 +351,7 @@ a new updated structure.
 When you want some lexically-scoped named values to use in a section of your code, 
 you can use the *let* expression:
 
-```clojure
+``` clojure
 (let [width   10
       height  20]
   (println "Area: " (* width height)))
@@ -362,7 +362,7 @@ These local names are symbols that refer directly to the values you set them to.
 You can re-set the symbols in the binding vector multiple times (building it up into 
 the value you need), if you find it useful:
 
-```clojure
+``` clojure
 (let [x 2
       x (* x x)
       x (+ x 1)]
@@ -386,7 +386,7 @@ The filter operation processes a collection to produce a new collection containi
 only the elements that satisfy a given predicate (a function that returns a boolean 
 value).
 
-```clojure
+``` clojure
 (filter even? [1, 2, 3, 4, 5, 6])
 ```
 
@@ -398,14 +398,14 @@ output: `(2, 4, 6)`
 The map operation transforms a collection by applying a function to each element, 
 producing a new collection of the transformed elements.
 
-```clojure
+``` clojure
 (map square [1, 2, 3, 4, 5, 6])
 ```
 output: `(1, 4, 9, 16, 25, 36)`
 
 or using a anonymous function
 
-```clojure
+``` clojure
 (map #(* % %) [1, 2, 3, 4, 5, 6])
 ```
 
@@ -421,7 +421,7 @@ value.
 
 *Adding numbers*
 
-```clojure
+``` clojure
 (reduce + [1, 2, 3, 4, 5, 6])
 ```
 
@@ -429,7 +429,7 @@ output: `21`
 
 *Using an initial value*
 
-```clojure
+``` clojure
 (reduce * 1 [1, 2, 3, 4, 5, 6])
 ```
 
@@ -437,7 +437,7 @@ output: `720`
 
 *Using an anonymous reducing function*
 
-```clojure
+``` clojure
 (reduce #(+ %1 (inc %2)) [1, 2, 3, 4, 5, 6])
 ```
 
@@ -449,7 +449,7 @@ output: `26`
 These operations can be combined to perform complex data processing tasks in a concise 
 and readable manner. Here’s an example that uses all three operations together:
 
-```clojure
+``` clojure
 (->> (filter even? [1, 2, 3, 4, 5, 6])
      (map square)
      (reduce +))    
@@ -468,7 +468,7 @@ much less than imperative languages.
 The standard functions mostly accept an arbitrary numbers of arguments and 
 thus prevent the need for looping constructs like *for*, *while*, ...
 
-```clojure
+``` clojure
 (do
   (+ 1 2 3 4)                 ;; => 10
   
@@ -489,7 +489,7 @@ thus prevent the need for looping constructs like *for*, *while*, ...
 
 `doseq` repeatedly executes the body function (presumably for side-effects) with the bindings.
 
-```clojure
+``` clojure
 (doseq [x [0 1 2 3 4 5]] (print x))
 ```
 
@@ -520,7 +520,7 @@ Basics:
 
 *Code Example:*
 
-```clojure
+``` clojure
 (do
   (defn sum-to-n [n]
     (loop [i 1            ; Initialize loop variables: i starts at 1
@@ -538,7 +538,7 @@ output: `55`
 
 **Note:** This is just an example to demonstrate loop-recur. In real world you would use:
 
-```clojure
+``` clojure
 (reduce + (range 1 11))  ; sum numbers from 1 to 10
 ```
 
@@ -575,7 +575,7 @@ static method: `(. :class :method arg1 arg2 ...)`
 static field: `(. :class :field)`
 
 
-```clojure
+``` clojure
 (do
    ;; constructor no args
    (. :java.awt.Point :new)

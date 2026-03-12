@@ -53,7 +53,7 @@ Upload a file that can be used across various endpoints. Individual files can be
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -68,7 +68,7 @@ Upload a file that can be used across various endpoints. Individual files can be
 
 Result:
 
-```clojure
+``` clojure
 { :filename "example.pdf" 
   :created_at 1716390396 
   :bytes 35213 
@@ -113,7 +113,7 @@ Result:
 
 ### Example 1
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -124,7 +124,7 @@ Result:
 
 Result:
 
-```clojure
+``` clojure
 { :data ( 
     { :filename "example.pdf" 
       :created_at 1716390396 
@@ -149,7 +149,7 @@ Result:
 
 ### Example 2
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -195,7 +195,7 @@ The ID of the file to use for this request.
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -206,7 +206,7 @@ The ID of the file to use for this request.
 
 Result:
 
-```clojure
+``` clojure
 { :filename "example.pdf" 
   :created_at 1716390396 
   :bytes 35213 
@@ -254,7 +254,7 @@ The ID of the file to use for this request.
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 
@@ -265,7 +265,7 @@ The ID of the file to use for this request.
 
 Result:
 
-```clojure
+``` clojure
 { :deleted true 
   :id "file-qvrjsmEk7yPElJzMOegsf0xf"
   :object "file" }
@@ -307,7 +307,7 @@ The ID of the file to use for this request.
 
 ### Example
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
 

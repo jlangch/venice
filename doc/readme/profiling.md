@@ -17,7 +17,7 @@ the gathered profile metrics.
 
 ### perf
 
-```clojure
+``` clojure
 (perf expr warmup-iterations test-iterations)
 ```
 
@@ -31,7 +31,7 @@ Runs the profiling in three phases:
 
 ### prof
 
-```clojure
+``` clojure
 (prof opts)
 ```
 
@@ -51,7 +51,7 @@ Controls the code profiling.
 
 The profiler runs the sum function 100 times as warm-up followed by 100 times to profile it. 
 
-```clojure
+``` clojure
 (do
    (defn sum [n]
       (loop [i 0 acc 0]
@@ -69,7 +69,7 @@ _Note: a faster way to sum integers is using a reduction:_ `(reduce + (range 100
 The metrics table shows four columns with the function name, the number of calls, the 
 total and average time for the function's calls:
 
-```text
+``` text
 -----------------------------------------------
 Metrics: loop
 -----------------------------------------------
@@ -93,7 +93,7 @@ Analysis loop-recur performance:
 
 To compare what the profiler costs
 
-```text
+``` text
 (time (dorun 100 (sum 100000)))
 
 ;; Elapsed time: 5.21 s
@@ -107,7 +107,7 @@ The profiler adds an overhead of 50% to collect the profile data.
 
 The profiler runs the sum function 5000 times as warm-up followed by 100 times to profile it. 
 
-```clojure
+``` clojure
 (do
    (defn fib [x]
      (loop [n x, a 0N, b 1N]
@@ -123,7 +123,7 @@ The profiler runs the sum function 5000 times as warm-up followed by 100 times t
 
 Metrics:
 
-```text
+``` text
 ----------------------------------------------
 Metrics: fibonacci
 ----------------------------------------------
@@ -155,7 +155,7 @@ dec          [  4900]:   492.42 us      100 ns
 
 Metrics with upfront macro expansion:
 
-```text
+``` text
 --------------------------------------------
 Metrics: fibonacci
 --------------------------------------------
@@ -172,7 +172,7 @@ dec         [ 4900]:   434.54 us       88 ns
 
 The profiler runs the sum function 5000 times as warm-up followed by 100 times to profile it. 
 
-```clojure
+``` clojure
 (do
    (defn fib [x]
       (loop [n x, a 0N, b 1N]
@@ -188,7 +188,7 @@ The profiler runs the sum function 5000 times as warm-up followed by 100 times t
 
 Metrics:
 
-```text
+``` text
 -------------------------------------------
 Metrics: fib
 -------------------------------------------

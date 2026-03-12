@@ -48,7 +48,7 @@ pluggable handler function computes the response from the request.
 
 **Synchronous send / receive**
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing to console
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -70,7 +70,7 @@ pluggable handler function computes the response from the request.
          (println "RESPONSE:"))))
 ```
 
-```clojure
+``` clojure
 ;; processing Venice message data with a handler that adds two numbers 
 ;; request:  {:x 100, :y 200}
 ;; response: {:z 300}
@@ -97,7 +97,7 @@ pluggable handler function computes the response from the request.
 
 **Asynchronous send / receive**
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing to console
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -122,7 +122,7 @@ pluggable handler function computes the response from the request.
 
 **Oneway send (no response)**
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing to console
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -156,7 +156,7 @@ Transient queues and its messages live only as long as the servers lives.
 
 **Synchronous offer / poll**
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -186,7 +186,7 @@ Transient queues and its messages live only as long as the servers lives.
 
 **Asynchronous offer / poll**
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -224,7 +224,7 @@ Temporary queues live only as long as the client, that created it, lives.
 
 Coffee order example:
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -291,7 +291,7 @@ Venice supports durable queues if the Write-Ahead-Log option is activated on
 the server. 
  
 
-```clojure
+``` clojure
 (let [wal-dir (io/file (io/temp-dir "wal-"))]
   (try
     ;; start client/server with Write-Ahead-Log and offer a few messages
@@ -367,7 +367,7 @@ close the IPC client.
 
 **Synchronous publish**
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -399,7 +399,7 @@ close the IPC client.
 
 **Asynchronous publish**
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -522,7 +522,7 @@ Venice IPC supports messages with various payload types:
 
 #### 1. Plain Text Messages
 
-```clojure
+``` clojure
 ;; plain-text-message: request-id="1" subject="test" data="hello"
 (->> (ipc/plain-text-message "1" "test" "hello")
      (ipc/message->json true)
@@ -538,14 +538,14 @@ Text message payloads are defined by
   * a charset. E.g.:  `:UTF-8`
   * the textual data
 
-```clojure
+``` clojure
 ;; message: request-id="1" subject=:test mimetype="text/plain" charset=:UTF-8 data="hello"
 (->> (ipc/text-message "1" :test "text/plain" :UTF-8 "hello")
      (ipc/message->json true)
      (println))
 ```
 
-```clojure
+``` clojure
 (->> """{"item": "espresso", "count": 2}"""
      (ipc/text-message "1" :order "application/json" :UTF-8)
      (ipc/message->json true)
@@ -560,7 +560,7 @@ Text message payloads are defined by
   * a mimetype. E.g.:  `application/octet-stream`, `application/pdf`, ...
   * the binary data
 
-```clojure
+``` clojure
 ;; message: request-id="1" subject=:test mimetype="application/octet-stream" data=(bytebuf [0 1 2 3 4 5 6 7])
 (->> (bytebuf [0 1 2 3 4 5 6 7])
      (ipc/binary-message "1" :test "application/octet-stream")
@@ -569,7 +569,7 @@ Text message payloads are defined by
 ```
 
 
-```clojure
+``` clojure
 (->> (io/slurp "test.pdf" :binary true)
      (ipc/binary-message "1" "test" "application/pdf")
      (ipc/message->json true)
@@ -579,7 +579,7 @@ Text message payloads are defined by
 
 #### 4. Venice Data Messages
 
-```clojure
+``` clojure
 ;; message: request-id="1" subject=:order data={:item "espresso", :count 2}
 (->> (ipc/venice-message "1" :order {:item "espresso", :count 2})
      (ipc/message->json true)
@@ -594,13 +594,13 @@ By default messages are limited to 20 MB size (not encrypted, not compressed).
 
 The message size limit can be configured on the server in the range of 2KB ... 250MB.
 
-```clojure
+``` clojure
 (try-with [server (ipc/server 33333 :max-message-size :100MB)]
   ;;
   )
 ```
 
-```clojure
+``` clojure
 (try-with [server (ipc/server 33333 :max-message-size :200KB)]
   ;;
   )
@@ -635,7 +635,7 @@ The message size limit can be configured on the server in the range of 2KB ... 2
 
 **Text Message**
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -677,7 +677,7 @@ Hello!
 
 **Binary Message**
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -717,7 +717,7 @@ nil
 
 **Venice Data Message**
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -757,7 +757,7 @@ application/json
 
 #### Convert Message to JSON
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
@@ -774,7 +774,7 @@ application/json
 
 #### Convert Message to Venice Map
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
@@ -791,7 +791,7 @@ application/json
 
 #### Check Message Response Status OK
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
@@ -808,7 +808,7 @@ application/json
 
 #### Check Message Response Status Error
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
@@ -826,7 +826,7 @@ application/json
 
 #### Check Message Expiration
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -864,7 +864,7 @@ application/json
 
 Create through 'server'
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -882,7 +882,7 @@ Create through 'server'
 
 Create through 'client' (requires 'admin' user)
 
-```clojure
+``` clojure
 (do
   (let [auth (ipc/authenticator)]
     (ipc/add-credentials auth "max" "756")         ;; normal user
@@ -913,7 +913,7 @@ Create through 'client' (requires 'admin' user)
 > bounded, circular, and temporary
 
 
-```clojure
+``` clojure
 (let [wal-dir (io/file (io/temp-dir "wal-"))]
   (try-with [server (ipc/server 33333
                                 :write-ahead-log-dir wal-dir    ;; enable WAL
@@ -932,7 +932,7 @@ Create through 'client' (requires 'admin' user)
 Temporary queues can only be created on behalf of a client. They only live 
 as long as the client lives!
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -947,7 +947,7 @@ as long as the client lives!
 > [!NOTE]
 > If the queue is durable, its Write-Ahead-Log will be removed as well!
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -960,7 +960,7 @@ as long as the client lives!
 
 #### Check if a Queue exists
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -975,7 +975,7 @@ as long as the client lives!
 
 for bounded or circular queues
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -996,7 +996,7 @@ for bounded or circular queues
 
 Create through 'server'
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -1010,7 +1010,7 @@ Create through 'server'
 
 Create through 'client' (requires 'admin' user)
 
-```clojure
+``` clojure
 (do
   (let [auth (ipc/authenticator)]
     (ipc/add-credentials auth "max" "756")         ;; normal user
@@ -1027,7 +1027,7 @@ Create through 'client' (requires 'admin' user)
 
 #### Remove Topics
 
-```clojure
+``` clojure
 (do
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
@@ -1046,7 +1046,7 @@ Create through 'client' (requires 'admin' user)
 
 #### Create Functions
 
-```clojure
+``` clojure
 (do
   (defn echo-handler [m] m)
   
@@ -1065,7 +1065,7 @@ Create through 'client' (requires 'admin' user)
 
 #### Remove Functions
 
-```clojure
+``` clojure
 (do
   (defn echo-handler [m] m)
   
@@ -1092,7 +1092,7 @@ authorized users/applications can access the messaging infrastructure.
 >
 > Passwords are stored as salted PBKDF2 hashes on the server!
 
-```clojure
+``` clojure
 (do
   (defn echo-handler [m]
     (println "REQUEST:  " (ipc/message->map m))
@@ -1118,7 +1118,7 @@ authorized users/applications can access the messaging infrastructure.
 
 **Server authenticators can be stored/loaded from a file**
 
-```clojure
+``` clojure
 (do
   (def auth-file (io/file "./ipc.cred"));
   
@@ -1211,7 +1211,7 @@ for each destination:
 
 This custom default ACL setup can be achieved with:
 
-```clojure
+``` clojure
 (let [auth (ipc/authenticator)]
   (ipc/add-credentials auth "max" "zu*67")          ;; user 'max'
   (ipc/add-credentials auth "tom" "3-kio")          ;; user 'tom'
@@ -1245,7 +1245,7 @@ Grant specific principals (users) to:
 
 *Any number of access control items can be assigned to a principal (user)*
 
-```clojure
+``` clojure
 (do
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
@@ -1291,7 +1291,7 @@ Grant specific principals (users) to:
 
 *Any number of access control items can be assigned to a principal (user)*
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -1342,7 +1342,7 @@ Grant specific principals (users) to:
 
 *Any number of access control items can be assigned to a principal (user)*
 
-```clojure
+``` clojure
 (do
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
@@ -1381,7 +1381,7 @@ By default compression is turned off (cutoff size = -1)
 The cutoff size can be specified as a number like `1000` or a number with a unit like `:1KB` or `:2MB`
 
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -1415,7 +1415,7 @@ The data is AES-256-GCM encrypted using a secret that is created and
 exchanged using the Diffie-Hellman key exchange algorithm.
 
 
-```clojure
+``` clojure
 (do
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
@@ -1553,7 +1553,7 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread each, 
 *The client sends messages with a defined payload size, and the server responds with a simple acknowledge message. Throughput measurements consider only the client-sent messages.*
 
 
-```clojure
+``` clojure
 ;; tcp/ip socket
 (ipc/benchmark "af-inet://localhost:33333"
                :5KB                         ;; 5KB payload size

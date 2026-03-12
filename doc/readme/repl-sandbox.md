@@ -91,7 +91,7 @@ venice> !sandbox reject-all
 
 Test #1
 
-```clojure
+``` clojure
 ; all Venice I/O functions are rejected
 (io/exists-dir? (io/file "/tmp"))
 
@@ -104,7 +104,7 @@ Test #1
 
 Test #2
 
-```clojure
+``` clojure
 ; all Java calls are rejected
 (. :java.lang.Math :min 2 3)
 
@@ -127,7 +127,7 @@ venice> !sandbox customized
 
 Test #1
 
-```clojure
+``` clojure
 ; Venice I/O functions are accepted
 (io/exists-dir? (io/file "/tmp"))
 
@@ -136,7 +136,7 @@ Test #1
 
 Test #2
 
-```clojure
+``` clojure
 ; Java calls matching the default rules are accepted
 (. :java.util.Date :new)
 
@@ -145,7 +145,7 @@ Test #2
 
 Test #3
 
-```clojure
+``` clojure
 ; Java calls not matching the default rules are rejected
 (. :java.lang.Math :min 2 3)
 
@@ -203,42 +203,42 @@ venice> !sandbox add-rule blacklist:venice:func:count
 
 Test #1 (accepted by rule `class:java.lang.Math:*`)
 
-```clojure
+``` clojure
 ; Java calls to java.lang.Math are accepted
 (. :java.lang.Math :min 2 3)
 ```
 
 Test #2 (accepted by rule `system.property:venice.repl.home`)
 
-```clojure
+``` clojure
 ; Accessing system property 'venice.repl.home'
 (system-prop :venice.repl.home)
 ```
 
 Test #3 (accepted by rule `system.env:REPL_HOME`)
 
-```clojure
+``` clojure
 ; Accessing environment variable 'REPL_HOME'
 (system-env :REPL_HOME)
 ```
 
 Test #4 (rejected by rule `blacklist:venice:func:*io*`)
 
-```clojure
+``` clojure
 ; all Venice I/O functions are rejected (except the whitelisted printing functions)
 (io/exists-dir? (io/file "/tmp"))
 ```
 
 Test #5 (accepted by rule `whitelist:venice:func:*print*`)
 
-```clojure
+``` clojure
 ; the Venice I/O function 'println' is allowed
 (println 1000)
 ```
 
 Test #6 (rejected by rule `blacklist:venice:func:count`)
 
-```clojure
+``` clojure
 ; the Venice function 'count' is rejected
 (count [1 2 3])
 ```

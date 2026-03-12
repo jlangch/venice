@@ -19,7 +19,7 @@ each sub-form, uses f's return value in place of the original.
 
 *Example:*
 
-```clojure
+``` clojure
 (postwalk (fn [x] (println "Walked:" (pr-str x)) x)
          '(1 2 {:a 1 :b [5 6]}))
 ```
@@ -51,7 +51,7 @@ each sub-form, uses f's return value in place of the original.
 
 *Example:*
 
-```clojure
+``` clojure
 (prewalk (fn [x] (println "Walked:" (pr-str x)) x)
          '(1 2 {:a 1 :b [5 6]}))
 ```
@@ -84,7 +84,7 @@ Walked: 6
 
 Recursively transforms all map keys from strings to keywords.
 
-```clojure
+``` clojure
 (do
   (defn keywordize-keys [form]
     (let [f (fn [[k v]] (if (string? k) [(keyword k) v] [k v]))]
@@ -102,7 +102,7 @@ Recursively transforms all map keys from strings to keywords.
 
 Recursively transforms all map keys from keywords to strings.
 
-```clojure
+``` clojure
 (do
   (defn stringify-keys [form]
     (let [f (fn [[k v]] (if (keyword? k) [(name k) v] [k v]))]
@@ -122,7 +122,7 @@ Recursively transforms all map keys from keywords to strings.
 Recursively transforms form by replacing keys in key-map with
 their values. Does replacement at the root of the tree first.
 
-```clojure
+``` clojure
 (do
   (defn prewalk-replace [key-map form]
      (prewalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))
@@ -141,7 +141,7 @@ their values. Does replacement at the root of the tree first.
 Recursively transforms form by replacing keys in key-map with
 their values. Does replacement at the leaves of the tree first.
 
-```clojure
+``` clojure
 (do
   (defn postwalk-replace [key-map form]
      (postwalk (fn [x] (if (contains? key-map x) (key-map x) x)) form))

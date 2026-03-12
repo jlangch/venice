@@ -40,7 +40,7 @@ The OpenAI shall answer questions about the current weather at a given location.
 
    Function arguments (a Venice map):
    
-   ```clojure
+   ``` clojure
    { 
      "location" "Glasgow",
      "format"   "celsius"
@@ -49,7 +49,7 @@ The OpenAI shall answer questions about the current weather at a given location.
    
    Function return value (JSON):
    
-   ```json
+   ``` json
    { 
      "location":    "Glasgow",
      "format":      "celsius",
@@ -60,7 +60,7 @@ The OpenAI shall answer questions about the current weather at a given location.
    
    Note: The function responds with an error in JSON if there is no data for a location:
    
-   ```json
+   ``` json
    { 
      "location": "London",
      "error":    "No weather data available for London!"
@@ -77,14 +77,14 @@ The OpenAI shall answer questions about the current weather at a given location.
 
 The weather function map maps the OpenAI function names to the Venice functions:
 
-```clojure
+``` clojure
 (defn weather-function-map []
   { "get_current_weather"   get-current-weather } )
 ```
 
 The simplified weather data function is defined as:
 
-```clojure
+``` clojure
 (defn get-current-weather 
   ([dictionary] 
     ;; dispatches a dictionary of arguments to a two-arg function call
@@ -111,7 +111,7 @@ The simplified weather data function is defined as:
 
 Run this code in a REPL:
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   
@@ -350,7 +350,7 @@ Final answer: "Das aktuelle Wetter in Glasgow ist sonnig und die Temperatur betr
 
 To debug requests and responses enable the debug option at the `openai/chat-completion` call:
 
-```clojure
+``` clojure
 (do
   (load-module :openai)
   (load-module :openai-demo)
