@@ -78,7 +78,7 @@ Venice requires Java 8 or newer.
 Grab the Venice JAR from Maven:
  
 ```shell
-curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.83/venice-1.12.84.jar" --output ./venice-1.12.84.jar
+curl "https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.84/venice-1.12.84.jar" --output ./venice-1.12.84.jar
 ```
 
  
