@@ -31,7 +31,7 @@ Example:
 
 ## open-macos-app
 
-Opens a Mac OSX app.
+Opens a MacOS app.
 
 ```
 (shell/open-macos-app name)

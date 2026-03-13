@@ -14,7 +14,7 @@ compared against compiled *Clojure* and *Java* code.
 
 ## Hardware and Software used
 
-**Hardware**: 2017 MacBook Pro, Mac OSX 11.6.7, Core i7 2.8 GHz
+**Hardware**: 2017 MacBook Pro, MacOS 11.6.7, Core i7 2.8 GHz
 
 **Java**: OpenJDK 64-Bit Server VM 1.8.0_275-b01
 

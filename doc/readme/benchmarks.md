@@ -4,7 +4,7 @@
 * [Benchmarks with JMH](#benchmarks-with-jmh)
 
 
-All benchmarks did run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
+All benchmarks did run on a 2017 MacBook Pro (Core i7 2.8 GHz) 
 with a Java 11 server VM.
 
 
