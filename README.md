@@ -93,9 +93,9 @@ java -jar venice-1.12.84.jar -setup -colors -dir ./repl
 
 Start the REPL from a terminal:
 
-| MacOSX ¹⁾             | Linux                 |  Windows ²⁾              |
-| :-                    | :-                    | :-                       |
-| `/path-to-repl/repl.sh` | `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
+| Linux, MacOSX ¹⁾      |  Windows ²⁾              |
+| :-                    | :-                       |
+| `/path-to-repl/repl.sh` | `C:\path-to-repl\repl.bat` |
 
 ¹⁾ Alternatively double-click on `/path-to-repl/repl.command` in the *MacOSX Finder*
 
