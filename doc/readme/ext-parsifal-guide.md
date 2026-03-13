@@ -4,14 +4,14 @@ A Guide to Parsifal
 
 The original Clojure Parsatron guide can be found at [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
 
-This guide is adapted to the  _Parsifal_  Venice port of  _Parsatron_ .
+This guide is adapted to the *Parsifal* Venice port of *Parsatron*.
 
 
-_Parsifal_  is a library for building parsers for languages. For an overview of
+*Parsifal* is a library for building parsers for languages. For an overview of
 how it works internally you can watch [this talk][talk] from Nate Young on his 
 Clojure Parsatron implementation.
 
-This document will show you the basics of how to use _Parsifal_ as an end user.
+This document will show you the basics of how to use *Parsifal* as an end user.
 
 [talk]: http://www.infoq.com/presentations/Parser-Combinators
 
@@ -36,7 +36,7 @@ You can grab all the things you'll need by loading the `parsifal` module:
 Running
 -------
 
-Let's see how to run a basic parser.  It won't do much, but it will get
+Let's see how to run a basic parser. It won't do much, but it will get
 something on the screen so we can try things as we go.  Assuming you've got
 everything imported:
 
@@ -46,12 +46,12 @@ everything imported:
 The `run` function takes a parser and some input, runs the parser on that
 input, and returns the result.
 
-The parser we passed here was `(p/char #\H)`.  We'll talk more about parsers in a
+The parser we passed here was `(p/char #\H)`. We'll talk more about parsers in a
 second, but for now just know that it's a parser that will parse a single "H"
 character.
 
 Notice that it only parsed the first character, and even though there was more
-left it still successfully returned.  We'll talk about how to make sure that
+left it still successfully returned. We'll talk about how to make sure that
 there's no remaining input later.
 
 Input
@@ -134,8 +134,8 @@ single, specific character.
 
 ### any-char
 
-`any-char` creates parsers that will parse and return any character.  Remember
-that we can use _Parsifal_ to parse more than just strings:
+`any-char` creates parsers that will parse and return any character. Remember
+that we can use *Parsifal* to parse more than just strings:
 
     (p/run (p/any-char) "Cats")
     ; #\C
@@ -157,7 +157,7 @@ that we can use _Parsifal_ to parse more than just strings:
     (p/run (p/digit) "100")
     ; #\1
 
-Note that digit works with *character* objects.  It won't work with actual
+Note that digit works with *character* objects. It won't work with actual
 integers:
 
     (p/run (p/digit) [10 20 30])
@@ -196,7 +196,7 @@ parsers.
 Combining Parsers
 -----------------
 
-_Parsifal_ wouldn't be very useful if we could only ever parse one thing at
+*Parsifal* wouldn't be very useful if we could only ever parse one thing at
 a time.  There are a number of ways you can combine parsers to build up complex
 ones from basic parts.
 
@@ -361,7 +361,7 @@ set.  But usually the goal of parsing something is to do things with it, so
 let's look at how that works now.
 
 We've been using the word "returns" in a fast-and-loose fashion so far, but now
-it's time to look a bit more closely at what it means in _Parsifal_.
+it's time to look a bit more closely at what it means in *Parsifal*.
 
 ### defparser and always
 
@@ -370,7 +370,7 @@ these parsers *returned* that character they parsed.  That's not quite true.
 They actually return a specially-wrapped value.
 
 If you want to know exactly what that special wrapping is, watch the [talk][].
-But you don't really need to understand the guts to use _Parsifal_.  You just
+But you don't really need to understand the guts to use *Parsifal*.  You just
 need to know how to create them.
 
 This is the first time we're going to be creating parsers that are more than
@@ -538,7 +538,7 @@ Before you go, here's a few tips and tricks that you might find helpful.
 
 ### You can parse more than just strings
 
-Remember that _Parsifal_ operates on sequences of input.  These don't
+Remember that *Parsifal* operates on sequences of input.  These don't
 necessarily have to be strings.
 
 

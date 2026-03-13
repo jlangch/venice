@@ -26,7 +26,8 @@ Print the `grep` matches in a human readable form, one line per match in the for
   (g/grep "/Users/foo/logs" "**/*.log" ".*Shutdown.*"))
 ```
 
-Print the `grep` matches in a machine readable form. It returns a list of tuples holding _filename_, _lineno_, and _line_:
+Print the `grep` matches in a machine readable form. It returns a list of tuples holding *filename*, 
+*lineno*, and *line*:
 
 ``` clojure
 (do
@@ -59,7 +60,8 @@ Print the `grep` matches in a human readable form, one line per match in the for
   (g/grep-zip "/Users/foo/logs/" "logs*.zip" "**/*.log" ".*Shutdown.*"))
 ```
 
-Print the `grep` matches in a machine readable form. It returns a list of tuples holding _zipname_, _filename_, _lineno_, and _line_:
+Print the `grep` matches in a machine readable form. It returns a list of tuples holding *zipname*, 
+*filename*, *lineno*, and *line*:
 
 
 ``` clojure

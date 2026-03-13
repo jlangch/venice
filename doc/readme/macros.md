@@ -282,7 +282,7 @@ Nested unquotes do not work:
    `(+ ~x ~y ~(inc ~y)))
 ```
 
-Throws a _SymbolNotFoundException_: Symbol 'unquote' not found.
+Throws a *SymbolNotFoundException*: Symbol 'unquote' not found.
    
    
 One might be tempted to write:

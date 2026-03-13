@@ -4,7 +4,7 @@ CIDR [(Classless Inter-Domain Routing)](https://en.wikipedia.org/wiki/Classless_
 
 Venice's CIDR module parses CIDR IP notations to IP address ranges. It supports both IPv4 and IPv6.
 
-GEO IP database provider like _MaxMind_ publish their data with CIDR IP notations.
+GEO IP database provider like *MaxMind* publish their data with CIDR IP notations.
 
 
 ``` clojure

@@ -7,7 +7,7 @@ Venice supports Jackson if the [Jackson](https://github.com/FasterXML/jackson) l
  - com.fasterxml.jackson.core:jackson-core:2.9.10
  - com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.10 (optional Jdk8 module)
  
-The Jackson _jdk8_ module is loaded automatically if it is available
+The Jackson *jdk8* module is loaded automatically if it is available
  
 
 ``` clojure

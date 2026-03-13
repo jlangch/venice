@@ -122,7 +122,7 @@ Remove fields with `dissoc`:
   y)
 ```
 
-_Note:_ `dissoc` on custom types will turn the custom type back into a standard map because the 
+*Note:* `dissoc` on custom types will turn the custom type back into a standard map because the 
 resulting value will not comply with the custom type's rules anymore.
 
 
@@ -147,7 +147,7 @@ resulting value will not comply with the custom type's rules anymore.
 
 **ToString conversion:**
 
-All Custom types support out-of-the-box  _toString_  conversion:
+All Custom types support out-of-the-box *toString* conversion:
 
  ``` clojure
 (do
@@ -159,14 +159,14 @@ All Custom types support out-of-the-box  _toString_  conversion:
   ; => {:custom-type* :user/complex :real 2 :imaginary 3}
 ```
 
-The predefined core  _Object_  protocol
+The predefined core *Object* protocol
 
 ``` clojure
 (defprotocol Object
   (toString [self] (. self :toString)))
 ```
 
-can be used to customize the  _toString_  conversion:
+can be used to customize the *toString* conversion:
 
 ``` clojure
 (do
@@ -186,7 +186,8 @@ can be used to customize the  _toString_  conversion:
 
 **Validation:**
 
-The optional validator is a single arg function receiving the value as the argument and throwing an exception if the value is not valid.
+The optional validator is a single arg function receiving the value as the argument and 
+throwing an exception if the value is not valid.
 
 ``` clojure
 (do

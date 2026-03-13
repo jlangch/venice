@@ -453,7 +453,7 @@ Output:
 
 ### XML
 
-The XML example demonstrates  _Kira_  loops, nested loops and conditionals.
+The XML example demonstrates *Kira* loops, nested loops and conditionals.
 
 Template blueprint:
 

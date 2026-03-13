@@ -389,7 +389,7 @@ Vectors, maps, sets, and keywords are functions too.
 
 ## Partial Functions
 
-_In computer science, partial application (or partial function application) refers to the process of fixing a number of arguments to a function, producing another function of smaller arity._
+*In computer science, partial application (or partial function application) refers to the process of fixing a number of arguments to a function, producing another function of smaller arity.*
 
 
 ``` clojure
@@ -416,7 +416,7 @@ arguments, for example if we are mapping `add` over a vector, then we can use
   (map (partial add 2) [1 2 3 4]))  ;; => (3 4 5 6)
 ```
 
-In this case the _partial function_ prevents us from writing an explicit anonymous
+In this case the *partial function* prevents us from writing an explicit anonymous
 function like `#(+ 2 %)` in `(map #(+ 2 %) [1 2 3 4])`
 
 ``` clojure
@@ -581,7 +581,7 @@ of the next form.
 ## Functions calling each other
 
 Venice supports functions calling each other without needing to declare them 
-or bind them with `letfn` as required with _Clojure_.
+or bind them with `letfn` as required with *Clojure*.
 
 Nevertheless alternately calling functions can cause stack overflows if the 
 recursion is too deep. Use the `trampoline` function or convert to self-recursion

@@ -64,7 +64,7 @@ The profiler runs the sum function 100 times as warm-up followed by 100 times to
    (println (prof :data-formatted "Metrics: loop")))
 ```
 
-_Note: a faster way to sum integers is using a reduction:_ `(reduce + (range 100000))`
+*Note: a faster way to sum integers is using a reduction:* `(reduce + (range 100000))`
 
 The metrics table shows four columns with the function name, the number of calls, the 
 total and average time for the function's calls:

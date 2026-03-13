@@ -381,7 +381,7 @@ where memoization has to raise its arms.
 To see how efficient tail call optimization for recursion is we compare 
 simple recursion with self recursion applied to computing Fibobacci numbers. 
 
-_Note: all examples run with upfront macro expansion enabled._
+*Note: all examples run with upfront macro expansion enabled.*
 
 ``` clojure
 (do

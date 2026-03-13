@@ -16,5 +16,5 @@ Uncoordinated, synchronous: for situations where a single value is required that
 Provides global and thread-local state
 
 
-_Note:_
+*Note:*
 Venice does not support Clojure's *Ref*s that provide coordinated, synchronous, and retriable access to multiple refs.

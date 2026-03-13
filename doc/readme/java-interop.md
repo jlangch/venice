@@ -217,7 +217,7 @@ public class OuterClass {
 
 ## Java Varargs
 
-Java _Varargs_ are passed as list or vector:
+Java *Varargs* are passed as list or vector:
 
 ``` clojure
 ; Java signature: String String::format(String format, Object... args)

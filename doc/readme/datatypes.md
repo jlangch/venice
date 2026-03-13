@@ -28,9 +28,9 @@ Types supported in Venice:
 
 ## nil
 
-In Venice _nil_ is a value and has a meaning of void. _nil_ can be used for any 
-data type. _nil_ has the same value as _null_ in Java but compared to 
-Java _nil_ is a first class value and has a type (:core/nil).
+In Venice *nil* is a value and has a meaning of void. *nil* can be used for any 
+data type. *nil* has the same value as *null* in Java but compared to 
+Java *nil* is a first class value and has a type (:core/nil).
 
 ``` clojure
 (def x nil)
@@ -41,7 +41,7 @@ Java _nil_ is a first class value and has a type (:core/nil).
 
 ## Boolean
 
-Booleans are defined by the constants _true_ and _false_.
+Booleans are defined by the constants *true* and *false*.
 
 ``` clojure
 (and true (== 1 1))
@@ -85,7 +85,7 @@ Booleans are defined by the constants _true_ and _false_.
 
 ### long
 
-Based on the Java type _Long_. long is Venice's standard integer type.
+Based on the Java type *Long*. long is Venice's standard integer type.
 
 ``` clojure
 (+ 1 2)
@@ -93,7 +93,7 @@ Based on the Java type _Long_. long is Venice's standard integer type.
 
 ### int
 
-Based on the Java type _Integer_.
+Based on the Java type *Integer*.
 
 ``` clojure
 (+ 2I 3I)
@@ -101,7 +101,7 @@ Based on the Java type _Integer_.
 
 ### double
 
-Based on the Java type _Double_.
+Based on the Java type *Double*.
 
 ``` clojure
 (+ 1.0 2.0)
@@ -109,7 +109,7 @@ Based on the Java type _Double_.
 
 ### decimal
 
-Based on the Java type _BigDecimal_.
+Based on the Java type *BigDecimal*.
 
 ``` clojure
 (+ 1.0M 2.0M)
@@ -117,7 +117,7 @@ Based on the Java type _BigDecimal_.
 
 ### big integer
 
-Based on the Java type _BigInteger_.
+Based on the Java type *BigInteger*.
 
 ``` clojure
 (+ 1N 2N)
@@ -255,7 +255,7 @@ Immutable persistent sorted map.
 
 ### stack
 
-Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
+Threadsafe mutable stack based on the Java type *ConcurrentLinkedDeque*.
 
 
 ```
@@ -281,7 +281,7 @@ Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
 
 ### queue
 
-Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
+Threadsafe mutable queue based on the Java type *LinkedBlockingQueue*.
 
 ```
      head                          tail
@@ -340,7 +340,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
 
 ### deque
 
-Threadsafe mutable deque based on the Java type _LinkedBlockingDeque_.
+Threadsafe mutable deque based on the Java type *LinkedBlockingDeque*.
 
 While queues add elements at the tail of the queue and remove elements from
 the head of the queue, deques are double-ended-queues that allow to add and remove

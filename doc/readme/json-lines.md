@@ -103,7 +103,7 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
 For memory efficient reading of large *JSON Lines* datasets use a transducer with 
 filter-map-reduce functionality:
 
-_Note: make sure that Venice' up-front macro expansion is activated when processing large datasets to get best performance!_
+*Note: make sure that Venice' up-front macro expansion is activated when processing large datasets to get best performance!*
 
 ``` clojure
 (do
@@ -261,7 +261,7 @@ function:
 
 #### Binary data
 
-Venice binary data is converted to a _Base64_ encoded string:
+Venice binary data is converted to a *Base64* encoded string:
 
 ``` clojure
 (do

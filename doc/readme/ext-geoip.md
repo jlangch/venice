@@ -203,7 +203,7 @@ The script `tomcat-geoip.venice`
   - visualizes them on a world map.
 
 
-Script  _tomcat-geoip.venice_ :
+Script *tomcat-geoip.venice*:
 
 ``` clojure
 (do

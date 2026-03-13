@@ -249,7 +249,7 @@ result:
 ```
 
 
-#### Example 2: has _:cover_ attribute
+#### Example 2: has *:cover* attribute
 
 ``` clojure
 (let [path [(xml/tag= "book")
