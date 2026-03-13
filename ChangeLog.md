@@ -38,8 +38,8 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed Venice launcher edge case with the `-file` option that was accidentally passed to the
-  the downstream script
+- Fixed Venice launcher edge case with the `-file` option that was accidentally passed down to the
+  the script
 
 
 
