@@ -27,9 +27,11 @@ All notable changes to this project will be documented in this file.
 - Improved Java interoperability regarding equality checking with Java enums. The `==` function 
   (non strict equal) supports now comparing Java enums with keywords.
     ```clojure
-    (let [java-enum (. :java.time.Month :JANUARY)]
-      (== java-enum :JANUARY)
-      (== :JANUARY java-enum))
+    (let [date  (. :java.time.LocalDate :of 2026 1 1)
+          month (. date :getMonth)]
+      (enum? (class-of month))  ;; true (month is a java enum)
+      (== month :JANUARY)       ;; true (value equality)
+      (== :JANUARY month))      ;; true (value equality)
     ```
 
 - Added CIDR based IP address ACLs to the IPC server.

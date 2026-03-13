@@ -159,15 +159,19 @@ Equality testing *enums*
 >
 
 ``` clojure
-(let [e (. :java.time.Month :JANUARY)]
-  (== e :JANUARY)   ;; true (value equality)
-  (== :JANUARY e))  ;; true (value equality)
+(let [date  (. :java.time.LocalDate :of 2026 1 1)
+      month (. date :getMonth)]
+  (enum? (class-of month))  ;; true (month is a java enum)
+  (== month :JANUARY)       ;; true (value equality)
+  (== :JANUARY month))      ;; true (value equality)
 ```
 
 ``` clojure
-(let [e (. :java.time.Month :JANUARY)]
-  (= e :JANUARY)   ;; false (different types)
-  (= :JANUARY e))  ;; false (different types)
+(let [date  (. :java.time.LocalDate :of 2026 1 1)
+      month (. date :getMonth)]
+  (enum? (class-of month))  ;; true (month is a java enum)
+  (= month :JANUARY)        ;; false (different types)
+  (= :JANUARY month))       ;; false (different types)
 ```
 
 
