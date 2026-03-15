@@ -36,6 +36,7 @@ import java.security.SecureRandom;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.Objects;
 
 import javax.crypto.Cipher;
 
@@ -52,6 +53,9 @@ public class RSA {
     }
 
     public static void storePrivateKey_X509DER(final PrivateKey key, final OutputStream os) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(os);
+
         final byte[] privateKeyBytes = key.getEncoded();
         final PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
 
@@ -60,6 +64,9 @@ public class RSA {
     }
 
     public static void storePublicKey_X509DER(final PublicKey key, final OutputStream os) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(os);
+
         final byte[] privateKeyBytes = key.getEncoded();
         final X509EncodedKeySpec pkcs8EncodedKeySpec = new X509EncodedKeySpec(privateKeyBytes);
 
@@ -70,6 +77,8 @@ public class RSA {
     public static PrivateKey loadPrivateKey_X509DER(final InputStream is)
             throws IOException, GeneralSecurityException
     {
+        Objects.requireNonNull(is);
+
         final byte[] privateKeyBytes = IOStreamUtil.copyIStoByteArray(is);
         final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -79,6 +88,8 @@ public class RSA {
     public static PublicKey loadPublicKey_X509DER(final InputStream is)
             throws IOException, GeneralSecurityException
     {
+        Objects.requireNonNull(is);
+
         final byte[] publicKeyBytes = IOStreamUtil.copyIStoByteArray(is);
         final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
         KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -88,6 +99,9 @@ public class RSA {
     public static String encrypt(final String message, final PublicKey publicKey)
             throws GeneralSecurityException
     {
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(publicKey);
+
         final Cipher cipher = getCipher();
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         final byte[] encryptedBytes = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
@@ -97,6 +111,9 @@ public class RSA {
     public static String decrypt(final String message, final PrivateKey privateKey)
             throws GeneralSecurityException
     {
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(privateKey);
+
         final byte[] encryptedBytes = Base64.getDecoder().decode(message);
 
         final Cipher cipher = getCipher();
@@ -105,21 +122,11 @@ public class RSA {
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
 
-    public String convertDerToPem(final byte[] derBytes) {
-        final String base64Encoded = Base64.getEncoder().encodeToString(derBytes);
-
-        // PEM formatting (linefeed every 64 characters)
-        final String pem = "-----BEGIN CERTIFICATE-----\n" +
-                           base64Encoded.replaceAll("(.{64})", "$1\n") +
-                           "\n-----END CERTIFICATE-----";
-
-        return pem;
-    }
-
 
     private static Cipher getCipher() throws GeneralSecurityException {
         return Cipher.getInstance("RSA/ECB/OAEPPadding");
     }
+
 
 
     private static int KEY_SIZE = 2048;  // key size in bits
