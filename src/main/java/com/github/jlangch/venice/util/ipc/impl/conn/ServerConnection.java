@@ -144,9 +144,7 @@ public class ServerConnection implements IPublisher, Runnable {
         this.statistics = context.statistics;
         this.serverThreadPoolStatistics = context.serverThreadPoolStatistics;
 
-        this.publisherThread = new Thread(
-                                    () -> worker(),
-                                    "venice-ipc-server-worker-" + connectionId);
+        this.publisherThread = new Thread(this::worker, "venice-ipc-conn-" + connectionId);
 
         setupHandlers();
     }

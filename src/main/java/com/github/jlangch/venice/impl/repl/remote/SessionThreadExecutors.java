@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
+
 
 public class SessionThreadExecutors {
 
@@ -33,8 +35,9 @@ public class SessionThreadExecutors {
         this.timeoutMillils = TimeUnit.MINUTES.toMillis(timeoutMinutes);
 
         // Garbage collect timeouted sessions
-        this.gcThread = new Thread(() -> { while (!stop) { gc(); sleep(INTERVAL); } },
-                                   "venice-repl-server-gc");
+        this.gcThread = GlobalThreadFactory.newThread(
+                           "venice-repl-server-gc",
+                            () -> { while (!stop) { gc(); sleep(INTERVAL); }});
         this.gcThread.setDaemon(true);
         this.gcThread.start();
     }

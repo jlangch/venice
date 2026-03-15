@@ -27,12 +27,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
+
 
 public class SessionThreadExecutor {
 
     public SessionThreadExecutor(final Runnable onInit) {
         this.lastUsedTime = System.currentTimeMillis();
-        this.worker = new Thread(() -> worker(onInit), "venice-repl-server-worker");
+        this.worker = GlobalThreadFactory.newThread(
+                        "venice-repl-server",
+                        () -> worker(onInit));
         this.worker.setDaemon(true);
         this.worker.start();
     }
