@@ -983,10 +983,10 @@
           """
      :examples '(
           """
-          (cond-> 1        ; we start with 1
-            true inc       ; the condition is true so (inc 1) => 2
-            false (* 42)   ; the condition is false so the operation is skipped
-            (= 2 2) (* 3)) ; (= 2 2) is true so (* 2 3) => 6
+          (let [a 5]
+            (cond-> []
+              (odd? a)  (conj (* a 2))   ;; => [10]
+              (even? a) (conj (* a 3))))
           """ )
      :see-also '("cond->>") }
 
@@ -1013,10 +1013,10 @@
           """
      :examples '(
           """
-          (cond->> 1       ; we start with 1
-            true inc       ; the condition is true so (inc 1) => 2
-            false (* 42)   ; the condition is false so the operation is skipped
-            (= 2 2) (* 3)) ; (= 2 2) is true so (* 3 2) => 6
+          (let [a 12]
+            (cond->> 3
+              (odd? a)  (/ a) 
+              (even? a) (/ a))))  ;; => 4
           """ )
      :see-also '("cond->") }
 
