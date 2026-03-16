@@ -124,7 +124,6 @@ public class RSAModuleTest {
             final Object key = venice.eval(script, Parameters.of("dir", dir));
 
             assertTrue(key instanceof PublicKey);
-
         }
         catch(Exception ex) {
             throw ex;
@@ -153,7 +152,6 @@ public class RSAModuleTest {
             final Object key = venice.eval(script, Parameters.of("dir", dir));
 
             assertTrue(key instanceof PrivateKey);
-
         }
         catch(Exception ex) {
             throw ex;
