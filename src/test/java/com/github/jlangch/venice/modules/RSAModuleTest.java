@@ -22,14 +22,19 @@
 package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 
 
 public class RSAModuleTest {
@@ -74,10 +79,90 @@ public class RSAModuleTest {
     }
 
     @Test
-    public void test_save_load() {
-        final Venice venice = new Venice();
+    public void test_save() throws Exception {
+        final File dir = Files.createTempDirectory("test").toFile();
 
-        // TODO: implement
+        try {
+            final Venice venice = new Venice();
+
+            final String script =
+                    "(do                                              \n" +
+                    "  (load-module :rsa)                             \n" +
+                    "  (let [key-pair (rsa/generate-key-pair)]        \n" +
+                    "    (rsa/save-key-pair key-pair dir \"demo\")))  ";
+
+            venice.eval(script, Parameters.of("dir", dir));
+
+            assertTrue(new File(dir, "demo-public.pem").isFile());
+            assertTrue(new File(dir, "demo-private.pem").isFile());
+
+        }
+        catch(Exception ex) {
+            throw ex;
+        }
+        finally {
+            FileUtil.rmdir(dir);
+        }
+
+        assertFalse(dir.exists());
+    }
+
+    @Test
+    public void test_load_public_key() throws Exception {
+        final File dir = Files.createTempDirectory("test").toFile();
+
+        try {
+            final Venice venice = new Venice();
+
+            final String script =
+                    "(do                                                     \n" +
+                    "  (load-module :rsa)                                    \n" +
+                    "  (let [key-pair (rsa/generate-key-pair)]               \n" +
+                    "    (rsa/save-key-pair key-pair dir \"demo\")           \n" +
+                    "    (rsa/load-key (io/file dir \"demo-public.pem\"))))  ";
+
+            final Object key = venice.eval(script, Parameters.of("dir", dir));
+
+            assertTrue(key instanceof PublicKey);
+
+        }
+        catch(Exception ex) {
+            throw ex;
+        }
+        finally {
+            FileUtil.rmdir(dir);
+        }
+
+        assertFalse(dir.exists());
+    }
+
+    @Test
+    public void test_load_private_key() throws Exception {
+        final File dir = Files.createTempDirectory("test").toFile();
+
+        try {
+            final Venice venice = new Venice();
+
+            final String script =
+                    "(do                                                     \n" +
+                    "  (load-module :rsa)                                    \n" +
+                    "  (let [key-pair (rsa/generate-key-pair)]               \n" +
+                    "    (rsa/save-key-pair key-pair dir \"demo\")           \n" +
+                    "    (rsa/load-key (io/file dir \"demo-private.pem\"))))  ";
+
+            final Object key = venice.eval(script, Parameters.of("dir", dir));
+
+            assertTrue(key instanceof PrivateKey);
+
+        }
+        catch(Exception ex) {
+            throw ex;
+        }
+        finally {
+            FileUtil.rmdir(dir);
+        }
+
+        assertFalse(dir.exists());
     }
 
     @Test

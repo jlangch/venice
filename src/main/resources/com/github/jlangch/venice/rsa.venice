@@ -160,14 +160,17 @@
 
   { :pre [(io/file? pem-file)] }
 
-  (let [key   (io/slurp pem-file)
-        bytes (bytebuf-to-string k :UTF-8)]
+  (let [key (io/slurp pem-file)]
     (cond
       (str/starts-with? key "-----BEGIN PUBLIC KEY-----")
-         (. :RSA :loadPublicKey_X509DER bytes)
+         (->> (bytebuf-from-string key :UTF-8)
+              (. :PemConverter :convertPemToDer)
+              (. :RSA :loadPublicKey_X509DER))
           
       (str/starts-with? key "-----BEGIN PRIVATE KEY-----")
-         (. :RSA :loadPrivateKey_X509DER bytes)
+         (->> (bytebuf-from-string key :UTF-8)
+              (. :PemConverter :convertPemToDer)
+              (. :RSA :loadPrivateKey_X509DER))
 
       :else
          (throw (ex :VncException "Not a public or private key PEM file")))))
