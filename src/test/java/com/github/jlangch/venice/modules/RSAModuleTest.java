@@ -22,6 +22,10 @@
 package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +33,52 @@ import com.github.jlangch.venice.Venice;
 
 
 public class RSAModuleTest {
+
+    @Test
+    public void test_generate_key_pair() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                               \n" +
+                "  (load-module :rsa)                                              \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]                         \n" +
+                "    (instance-of? :java.security.KeyPair key-pair)))              ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_generate_public_key() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                          \n" +
+                "  (load-module :rsa)                         \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]    \n" +
+                "    (rsa/public-key key-pair)))              ";
+
+        assertTrue(venice.eval(script) instanceof PublicKey);
+    }
+
+    @Test
+    public void test_generate_private_key() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                          \n" +
+                "  (load-module :rsa)                         \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]    \n" +
+                "    (rsa/private-key key-pair)))             ";
+
+        assertTrue(venice.eval(script) instanceof PrivateKey);
+    }
+
+    @Test
+    public void test_save_load() {
+        final Venice venice = new Venice();
+
+        // TODO: implement
+    }
 
     @Test
     public void test_encrypt_decrypt() {
