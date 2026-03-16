@@ -26,9 +26,9 @@ import java.util.Base64;
 import java.util.Objects;
 
 
-public class PemToDerConverter {
+public class PemConverter {
 
-    public String convertDerToPem(final byte[] derBytes, final TYPE type) {
+    public static String convertDerToPem(final byte[] derBytes, final TYPE type) {
         Objects.requireNonNull(derBytes);
         Objects.requireNonNull(type);
 
@@ -44,7 +44,7 @@ public class PemToDerConverter {
         return pem;
     }
 
-    public byte[] convertPemToDer(final byte[] pemBytes) {
+    public static byte[] convertPemToDer(final byte[] pemBytes) {
         // This works for common PEM types like:
         //   • -----BEGIN CERTIFICATE-----
         //   • -----BEGIN PUBLIC KEY-----
