@@ -182,11 +182,11 @@ public class RSAModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                  \n" +
-                "  (load-module :rsa)                                                 \n" +
-                "  (let [key-pair (rsa/generate-key-pair)]                            \n" +
-                "      (-> (rsa/sign \"Hello World\" (rsa/private-key key-pair))      \n" +
-                "          (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
+                "(do                                                                \n" +
+                "  (load-module :rsa)                                               \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]                          \n" +
+                "    (-> (rsa/sign \"Hello World\" (rsa/private-key key-pair))      \n" +
+                "         (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -196,11 +196,11 @@ public class RSAModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                  \n" +
-                "  (load-module :rsa)                                                 \n" +
-                "  (let [key-pair (rsa/generate-key-pair)]                            \n" +
-                "      (-> (rsa/sign \"Hello World-\" (rsa/private-key key-pair))     \n" +
-                "          (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
+                "(do                                                                \n" +
+                "  (load-module :rsa)                                               \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]                          \n" +
+                "    (-> (rsa/sign \"Hello World-\" (rsa/private-key key-pair))     \n" +
+                "        (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
 
         assertFalse((Boolean)venice.eval(script));
     }
