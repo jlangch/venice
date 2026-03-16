@@ -19,13 +19,15 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Docker generic testcontainer
+;;;; RSA (asymmetric public/private key encryption)
 
 (ns rsa)
 
 (import :com.github.jlangch.venice.util.crypt.RSA)
 (import :com.github.jlangch.venice.util.crypt.PemConverter)
 (import :java.security.KeyPair)
+(import :java.security.PrivateKey)
+(import :java.security.PublicKey)
 
 
 (defn
@@ -38,8 +40,13 @@
           (rsa/generate-key-pair)
           """)
      :see-also '(
-          "rsa/private-key", 
-          "rsa/public-key") }
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt") }
 
   generate-key-pair []
 
@@ -56,8 +63,12 @@
           (rsa/private-key key-pair)
           """)
      :see-also '(
-          "rsa/generate-key-pair", 
-          "rsa/public-key") }
+          "rsa/generate-key-pair"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt") }
 
   private-key [key-pair]
 
@@ -76,8 +87,12 @@
           (rsa/public-key key-pair)
           """)
      :see-also '(
-          "rsa/generate-key-pair", 
-          "rsa/private-key") }
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt") }
 
   public-key [key-pair]
 
@@ -98,9 +113,12 @@
               (save-key-pair "." "demo"))
           """)
      :see-also '(
-          "rsa/generate-key-pair", 
-          "rsa/private-key", 
-          "rsa/public-key") }
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt") }
 
   save-key-pair [key-pair dir name]
 
@@ -118,4 +136,99 @@
        (. :RSA :toBytes <>)
        (. :PemConverter :convertDerToPem <> :PublicKey)
        (io/spit (io/file dir (str name "-public.pem")) <>)))
+
+
+(defn
+  ^{ :arglists '("(rsa/load-key pem-file)")
+     :doc """
+          Loads a key from a PEM file
+          """
+     :examples '(
+          """
+          (rsa/load-key "demo-public.pem")
+          (rsa/load-key "demo-private.pem")
+          """)
+     :see-also '(
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/encrypt"
+          "rsa/decrypt") }
+
+  load-key [pem-file]
+
+  { :pre [(io/file? pem-file)] }
+
+  (let [key   (io/slurp pem-file)
+        bytes (bytebuf-to-string k :UTF-8)]
+    (cond
+      (str/starts-with? key "-----BEGIN PUBLIC KEY-----")
+         (. :RSA :loadPublicKey_X509DER bytes)
+          
+      (str/starts-with? key "-----BEGIN PRIVATE KEY-----")
+         (. :RSA :loadPrivateKey_X509DER bytes)
+
+      :else
+         (throw (ex :VncException "Not a public or private key PEM file")))))
+
+
+(defn
+  ^{ :arglists '("(rsa/encrypt data key)")
+     :doc """
+          Encrypts the data with a public key. The data may be a `string` or 
+          a `bytebuf`.
+
+          Returns a Base64 encoded string if data is a `string` else a
+          `bytebuf`.
+          """
+     :examples '(
+          """
+          (let [key-pair (rsa/generate-key-pair)]
+            (-> (rsa/encrypt "Hello World" (rsa/public-key key-pair))
+                (rsa/decrypt (rsa/private-key key-pair))))
+          """)
+     :see-also '(
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/decrypt") }
+
+  encrypt [data key]
+
+  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PublicKey)] }
+
+  (. :RSA :encrypt data key))
+
+
+(defn
+  ^{ :arglists '("(rsa/decrypt data key)")
+     :doc """
+          Decrypts the data with a private key. The data may be a Base64 
+          encoded `string` or a `bytebuf`
+
+          Returns a string if data is a Base64 encoded `string` else a
+          `bytebuf`.
+          """
+     :examples '(
+          """
+          (let [key-pair (rsa/generate-key-pair)]
+            (-> (rsa/encrypt "Hello World" (rsa/public-key key-pair))
+                (rsa/decrypt (rsa/private-key key-pair))))
+          """)
+     :see-also '(
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt") }
+
+  decrypt [data key]
+
+  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PrivateKey)] }
+
+  (. :RSA :decrypt data key))
 
