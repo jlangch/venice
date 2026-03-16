@@ -53,6 +53,34 @@ public class RSAModuleTest {
     }
 
     @Test
+    public void test_key_pair() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                               \n" +
+                "  (load-module :rsa)                                              \n" +
+                "  (let [[pub priv] (rsa/keys (rsa/generate-key-pair))             \n" +
+                "        key-pair   (rsa/key-pair pub priv)]                       \n" +
+                "    (instance-of? :java.security.KeyPair key-pair)))              ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_keys() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                               \n" +
+                "  (load-module :rsa)                                              \n" +
+                "  (let [[pub priv] (rsa/keys (rsa/generate-key-pair))]            \n" +
+                "    (and (instance-of? :java.security.PrivateKey priv)            \n" +
+                "         (instance-of? :java.security.PublicKey pub))))           ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
     public void test_generate_public_key() {
         final Venice venice = new Venice();
 

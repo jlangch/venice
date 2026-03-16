@@ -33,13 +33,14 @@
 (defn
   ^{ :arglists '("(rsa/generate-key-pair)")
      :doc """
-          Generates an RSA public/private key pair with a key size of 2048 bits
+          Generates a RSA public/private key pair with a key size of 2048 bits
           """
      :examples '(
           """
           (rsa/generate-key-pair)
           """)
      :see-also '(
+          "rsa/keys"
           "rsa/private-key"
           "rsa/public-key"
           "rsa/save-key-pair"
@@ -55,6 +56,64 @@
 
 
 (defn
+  ^{ :arglists '("(rsa/key-pair private-key public-key)")
+     :doc """
+          Creates a RSA key pair from a private and a public key
+          """
+     :examples '(
+          """
+          (let [[pub priv] (rsa/key (rsa/generate-key-pair))]
+            (rsa/key-pair pub priv))
+          """)
+     :see-also '(
+          "rsa/keys"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
+
+  key-pair [public-key private-key ]
+
+  { :pre [ (instance-of? :PublicKey public-key)
+           (instance-of? :PrivateKey private-key)] }
+
+  (. :KeyPair :new public-key private-key ))
+
+
+(defn
+  ^{ :arglists '("(rsa/keys key-pair)")
+     :doc """
+          Returns a vector with the private and public key of a key pair
+          """
+     :examples '(
+          """
+          (let [[pub priv] (rsa/key (rsa/generate-key-pair))]
+            ;; ...
+            )
+          """)
+     :see-also '(
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
+
+  keys [key-pair]
+
+  { :pre [(instance-of? :KeyPair key-pair)] }
+
+  [(. key-pair :getPublic) (. key-pair :getPrivate) ])
+
+
+(defn
   ^{ :arglists '("(rsa/private-key key-pair)")
      :doc """
           Returns the private key of a key pair
@@ -65,6 +124,7 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
+          "rsa/keys"
           "rsa/public-key"
           "rsa/save-key-pair"
           "rsa/load-key"
@@ -91,6 +151,7 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
+          "rsa/keys"
           "rsa/private-key"
           "rsa/save-key-pair"
           "rsa/load-key"
