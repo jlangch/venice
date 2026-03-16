@@ -128,6 +128,7 @@ public class Modules {
                         "qrbill",
                         "qrref",
                         "qrcode",
+                        "rsa",
                         "repl-setup",
                         "ring",
                         "ring-mw",

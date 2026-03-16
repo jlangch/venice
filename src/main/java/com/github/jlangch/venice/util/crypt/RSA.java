@@ -52,26 +52,40 @@ public class RSA {
         return keyPairGenerator.generateKeyPair();
     }
 
-    public static void storePrivateKey_X509DER(final PrivateKey key, final OutputStream os) throws IOException {
+    public static byte[] toBytes(final PrivateKey key) throws IOException {
         Objects.requireNonNull(key);
-        Objects.requireNonNull(os);
 
         final byte[] privateKeyBytes = key.getEncoded();
         final PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
 
         // "private_key.der"
-        os.write(pkcs8EncodedKeySpec.getEncoded());
+        return pkcs8EncodedKeySpec.getEncoded();
+    }
+
+    public static byte[] toBytes(final PublicKey key) throws IOException {
+        Objects.requireNonNull(key);
+
+        final byte[] privateKeyBytes = key.getEncoded();
+        final X509EncodedKeySpec pkcs8EncodedKeySpec = new X509EncodedKeySpec(privateKeyBytes);
+
+        // "public_key.der"
+        return pkcs8EncodedKeySpec.getEncoded();
+    }
+
+    public static void storePrivateKey_X509DER(final PrivateKey key, final OutputStream os) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(os);
+
+        // "private_key.der"
+        os.write(toBytes(key));
     }
 
     public static void storePublicKey_X509DER(final PublicKey key, final OutputStream os) throws IOException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(os);
 
-        final byte[] privateKeyBytes = key.getEncoded();
-        final X509EncodedKeySpec pkcs8EncodedKeySpec = new X509EncodedKeySpec(privateKeyBytes);
-
         // "public_key.der"
-        os.write(pkcs8EncodedKeySpec.getEncoded());
+        os.write(toBytes(key));
     }
 
     public static PrivateKey loadPrivateKey_X509DER(final InputStream is)
