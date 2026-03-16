@@ -35,13 +35,56 @@ import com.github.jlangch.venice.util.crypt.PemConverter.TYPE;
 public class PemConverter_Test {
 
     @Test
-    public void test_convert_small() throws Exception {
+    public void test_convert_small_certificate() throws Exception {
+        final byte[] b = new byte[6];
+        new Random().nextBytes(b);
+
+        final String pem = PemConverter.convertDerToPem(b, TYPE.Certificate);
+
+        assertTrue(pem.startsWith("-----BEGIN CERTIFICATE-----"));
+
+        final byte[] data = PemConverter.convertPemToDer(pem.getBytes(StandardCharsets.US_ASCII));
+
+        assertArrayEquals(b, data);
+    }
+
+
+    @Test
+    public void test_convert_small_publicKey() throws Exception {
         final byte[] b = new byte[6];
         new Random().nextBytes(b);
 
         final String pem = PemConverter.convertDerToPem(b, TYPE.PublicKey);
 
         assertTrue(pem.startsWith("-----BEGIN PUBLIC KEY-----"));
+
+        final byte[] data = PemConverter.convertPemToDer(pem.getBytes(StandardCharsets.US_ASCII));
+
+        assertArrayEquals(b, data);
+    }
+
+    @Test
+    public void test_convert_small_privateKey() throws Exception {
+        final byte[] b = new byte[6];
+        new Random().nextBytes(b);
+
+        final String pem = PemConverter.convertDerToPem(b, TYPE.PrivateKey);
+
+        assertTrue(pem.startsWith("-----BEGIN PRIVATE KEY-----"));
+
+        final byte[] data = PemConverter.convertPemToDer(pem.getBytes(StandardCharsets.US_ASCII));
+
+        assertArrayEquals(b, data);
+    }
+
+    @Test
+    public void test_convert_small_X509() throws Exception {
+        final byte[] b = new byte[6];
+        new Random().nextBytes(b);
+
+        final String pem = PemConverter.convertDerToPem(b, TYPE.X509);
+
+        assertTrue(pem.startsWith("-----BEGIN X509 CRL-----"));
 
         final byte[] data = PemConverter.convertPemToDer(pem.getBytes(StandardCharsets.US_ASCII));
 
