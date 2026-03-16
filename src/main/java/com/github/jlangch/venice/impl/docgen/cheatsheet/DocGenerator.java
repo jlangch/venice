@@ -82,6 +82,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSe
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrBillSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrCodeSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRSASection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
@@ -169,7 +170,7 @@ public class DocGenerator {
                         "jdbc-core",     "jdbc-postgresql",     "chinook-postgresql",
                         "ring",          "ring-multipart",      "ring-session",       "ring-mw",
                         "ring-util",     "server-side-events",  "pretty-print",
-                        "qrcode",        "qrref",               "qrbill",
+                        "qrcode",        "qrref",               "qrbill",             "rsa",
                         "ascii-canvas",  "ascii-charts",        "ascii-table",
                         "aviron",        "aviron-queue",        "aviron-cycler",      "aviron-limiter"));
 
@@ -404,6 +405,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("ZipVault", "modules.zipvault"));
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
+        extmod.addSection(new DocSection("RSA", "modules.rsa"));
         extmod.addSection(new DocSection("Keystores", "modules.keystores"));
         extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
         extmod.addSection(new DocSection("Matrix", "modules.matrix"));
@@ -567,6 +569,7 @@ public class DocGenerator {
         return Arrays.asList(
                 new ModuleKiraSection(diBuilder).section(),
                 new ModuleCryptographySection(diBuilder).section(),
+                new ModuleRSASection(diBuilder).section(),
                 new ModuleKeystoresSection(diBuilder).section(),
                 new ModuleJsonlSection(diBuilder).section(),
                 new ModuleZipVaultSection(diBuilder).section(),

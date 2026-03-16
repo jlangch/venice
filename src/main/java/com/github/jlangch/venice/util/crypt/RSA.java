@@ -33,6 +33,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -52,7 +53,9 @@ public class RSA {
         return keyPairGenerator.generateKeyPair();
     }
 
-    public static byte[] toBytes(final PrivateKey key) throws IOException {
+    public static byte[] toBytes(
+            final PrivateKey key
+    ) throws IOException {
         Objects.requireNonNull(key);
 
         final byte[] privateKeyBytes = key.getEncoded();
@@ -62,7 +65,9 @@ public class RSA {
         return pkcs8EncodedKeySpec.getEncoded();
     }
 
-    public static byte[] toBytes(final PublicKey key) throws IOException {
+    public static byte[] toBytes(
+            final PublicKey key
+    ) throws IOException {
         Objects.requireNonNull(key);
 
         final byte[] privateKeyBytes = key.getEncoded();
@@ -72,7 +77,10 @@ public class RSA {
         return pkcs8EncodedKeySpec.getEncoded();
     }
 
-    public static void storePrivateKey_X509DER(final PrivateKey key, final OutputStream os) throws IOException {
+    public static void storePrivateKey_X509DER(
+            final PrivateKey key,
+            final OutputStream os
+    ) throws IOException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(os);
 
@@ -80,7 +88,10 @@ public class RSA {
         os.write(toBytes(key));
     }
 
-    public static void storePublicKey_X509DER(final PublicKey key, final OutputStream os) throws IOException {
+    public static void storePublicKey_X509DER(
+            final PublicKey key,
+            final OutputStream os
+    ) throws IOException {
         Objects.requireNonNull(key);
         Objects.requireNonNull(os);
 
@@ -88,9 +99,9 @@ public class RSA {
         os.write(toBytes(key));
     }
 
-    public static PrivateKey loadPrivateKey_X509DER(final byte[] privateKeyBytes)
-            throws IOException, GeneralSecurityException
-    {
+    public static PrivateKey loadPrivateKey_X509DER(
+            final byte[] privateKeyBytes
+    ) throws IOException, GeneralSecurityException {
         Objects.requireNonNull(privateKeyBytes);
 
         final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
@@ -98,15 +109,15 @@ public class RSA {
         return kf.generatePrivate(keySpec);
     }
 
-    public static PrivateKey loadPrivateKey_X509DER(final InputStream is)
-            throws IOException, GeneralSecurityException
-    {
+    public static PrivateKey loadPrivateKey_X509DER(
+            final InputStream is
+    ) throws IOException, GeneralSecurityException {
         return loadPrivateKey_X509DER(IOStreamUtil.copyIStoByteArray(is));
     }
 
-    public static PublicKey loadPublicKey_X509DER(final byte[] publicKeyBytes)
-            throws IOException, GeneralSecurityException
-    {
+    public static PublicKey loadPublicKey_X509DER(
+            final byte[] publicKeyBytes
+    )  throws IOException, GeneralSecurityException {
         Objects.requireNonNull(publicKeyBytes);
 
         final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
@@ -114,15 +125,16 @@ public class RSA {
         return kf.generatePublic(keySpec);
     }
 
-    public static PublicKey loadPublicKey_X509DER(final InputStream is)
-            throws IOException, GeneralSecurityException
-    {
+    public static PublicKey loadPublicKey_X509DER(
+            final InputStream is
+    ) throws IOException, GeneralSecurityException {
         return loadPublicKey_X509DER(IOStreamUtil.copyIStoByteArray(is));
     }
 
-    public static byte[] encrypt(final byte[] uncryptedBytes, final PublicKey publicKey)
-            throws GeneralSecurityException
-    {
+    public static byte[] encrypt(
+            final byte[] uncryptedBytes,
+            final PublicKey publicKey
+    ) throws GeneralSecurityException {
         Objects.requireNonNull(uncryptedBytes);
         Objects.requireNonNull(publicKey);
 
@@ -131,9 +143,10 @@ public class RSA {
         return cipher.doFinal(uncryptedBytes);
      }
 
-    public static String encrypt(final String message, final PublicKey publicKey)
-            throws GeneralSecurityException
-    {
+    public static String encrypt(
+            final String message,
+            final PublicKey publicKey
+    ) throws GeneralSecurityException {
         Objects.requireNonNull(message);
         Objects.requireNonNull(publicKey);
 
@@ -143,9 +156,10 @@ public class RSA {
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
-    public static byte[] decrypt(final byte[] encryptedBytes, final PrivateKey privateKey)
-            throws GeneralSecurityException
-    {
+    public static byte[] decrypt(
+            final byte[] encryptedBytes,
+            final PrivateKey privateKey
+    ) throws GeneralSecurityException {
         Objects.requireNonNull(encryptedBytes);
         Objects.requireNonNull(privateKey);
 
@@ -155,17 +169,74 @@ public class RSA {
         return decryptedBytes;
     }
 
-    public static String decrypt(final String message, final PrivateKey privateKey)
-            throws GeneralSecurityException
-    {
-        Objects.requireNonNull(message);
+    public static String decrypt(
+            final String messageBase64,
+            final PrivateKey privateKey
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(messageBase64);
         Objects.requireNonNull(privateKey);
 
-        final byte[] encryptedBytes = Base64.getDecoder().decode(message);
+        final byte[] encryptedBytes = Base64.getDecoder().decode(messageBase64);
         final Cipher cipher = getCipher();
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         final byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
         return new String(decryptedBytes, StandardCharsets.UTF_8);
+    }
+
+    public static String sign(
+            final byte[] message,
+            final PrivateKey privateKey
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(privateKey);
+
+        final Signature privateSignature = Signature.getInstance("SHA256withRSA");
+        privateSignature.initSign(privateKey);
+        privateSignature.update(message);
+
+        final byte[] signature = privateSignature.sign();
+
+        return Base64.getEncoder().encodeToString(signature);
+    }
+
+    public static String sign(
+            final String message,
+            final PrivateKey privateKey
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(privateKey);
+
+        return sign(message.getBytes(StandardCharsets.UTF_8), privateKey);
+    }
+
+    public static boolean verify(
+            final String signature,
+            final byte[] message,
+            final PublicKey publicKey
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(signature);
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(publicKey);
+
+        final Signature publicSignature = Signature.getInstance("SHA256withRSA");
+        publicSignature.initVerify(publicKey);
+        publicSignature.update(message);
+
+        final byte[] signatureRaw = Base64.getDecoder().decode(signature);
+
+        return publicSignature.verify(signatureRaw);
+    }
+
+    public static boolean verify(
+            final String signature,
+            final String message,
+            final PublicKey publicKey
+    ) throws GeneralSecurityException {
+        Objects.requireNonNull(signature);
+        Objects.requireNonNull(message);
+        Objects.requireNonNull(publicKey);
+
+        return verify(signature, message.getBytes(StandardCharsets.UTF_8), publicKey);
     }
 
 

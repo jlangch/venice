@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.crypt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -78,6 +79,15 @@ public class RSA_Test {
         final PublicKey key = RSA.loadPublicKey_X509DER(is);
 
         assertNotNull(key);
+    }
+
+    @Test
+    public void test_sign() throws Exception {
+        final KeyPair keyPair = RSA.generateKeyPair();
+
+        final String signature = RSA.sign("Hello World", keyPair.getPrivate());
+
+        assertTrue(RSA.verify(signature, "Hello World", keyPair.getPublic()));
     }
 
 }

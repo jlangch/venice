@@ -177,4 +177,32 @@ public class RSAModuleTest {
         assertEquals("Hello World", venice.eval(script));
     }
 
+    @Test
+    public void test_sign_verify() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                  \n" +
+                "  (load-module :rsa)                                                 \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]                            \n" +
+                "      (-> (rsa/sign \"Hello World\" (rsa/private-key key-pair))      \n" +
+                "          (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_sign_verify_tampered() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                  \n" +
+                "  (load-module :rsa)                                                 \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]                            \n" +
+                "      (-> (rsa/sign \"Hello World-\" (rsa/private-key key-pair))     \n" +
+                "          (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
+
+        assertFalse((Boolean)venice.eval(script));
+    }
+
 }

@@ -40,13 +40,14 @@
           (rsa/generate-key-pair)
           """)
      :see-also '(
-          "rsa/generate-key-pair"
           "rsa/private-key"
           "rsa/public-key"
           "rsa/save-key-pair"
           "rsa/load-key"
           "rsa/encrypt"
-          "rsa/decrypt") }
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
 
   generate-key-pair []
 
@@ -68,7 +69,9 @@
           "rsa/save-key-pair"
           "rsa/load-key"
           "rsa/encrypt"
-          "rsa/decrypt") }
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
 
   private-key [key-pair]
 
@@ -92,7 +95,9 @@
           "rsa/save-key-pair"
           "rsa/load-key"
           "rsa/encrypt"
-          "rsa/decrypt") }
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
 
   public-key [key-pair]
 
@@ -118,7 +123,9 @@
           "rsa/public-key"
           "rsa/load-key"
           "rsa/encrypt"
-          "rsa/decrypt") }
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
 
   save-key-pair [key-pair dir name]
 
@@ -154,7 +161,9 @@
           "rsa/public-key"
           "rsa/save-key-pair"
           "rsa/encrypt"
-          "rsa/decrypt") }
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
 
   load-key [pem-file]
 
@@ -177,7 +186,7 @@
 
 
 (defn
-  ^{ :arglists '("(rsa/encrypt data key)")
+  ^{ :arglists '("(rsa/encrypt data public-key)")
      :doc """
           Encrypts the data with a public key. The data may be a `string` or 
           a `bytebuf`.
@@ -197,17 +206,19 @@
           "rsa/public-key"
           "rsa/save-key-pair"
           "rsa/load-key"
-          "rsa/decrypt") }
+          "rsa/decrypt"
+          "rsa/sign"
+          "rsa/verify") }
 
-  encrypt [data key]
+  encrypt [data public-key]
 
-  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PublicKey key)] }
+  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PublicKey public-key)] }
 
-  (. :RSA :encrypt data key))
+  (. :RSA :encrypt data public-key))
 
 
 (defn
-  ^{ :arglists '("(rsa/decrypt data key)")
+  ^{ :arglists '("(rsa/decrypt data private-key)")
      :doc """
           Decrypts the data with a private key. The data may be a Base64 
           encoded `string` or a `bytebuf`
@@ -227,11 +238,76 @@
           "rsa/public-key"
           "rsa/save-key-pair"
           "rsa/load-key"
-          "rsa/encrypt") }
+          "rsa/encrypt"
+          "rsa/sign"
+          "rsa/verify") }
 
-  decrypt [data key]
+  decrypt [data private-key]
 
-  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PrivateKey key)] }
+  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PrivateKey private-key)] }
 
-  (. :RSA :decrypt data key))
+  (. :RSA :decrypt data private-key))
 
+
+(defn
+  ^{ :arglists '("(rsa/sign data private-key)")
+     :doc """
+          Signs the data with a private key. The data may be a `string` or 
+          a `bytebuf`
+
+          Returns the signature.
+          """
+     :examples '(
+          """
+          (let [key-pair (rsa/generate-key-pair)]
+            (-> (rsa/sign "Hello World" (rsa/private--key key-pair))
+                (rsa/verify "Hello World" (rsa/public-key key-pair))))
+          """)
+     :see-also '(
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt"
+          "rsa/verify") }
+
+  sign [data private-key]
+
+  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PrivateKey private-key)] }
+
+  (. :RSA :sign data private-key))
+
+
+(defn
+  ^{ :arglists '("(rsa/verify data signature public-key)")
+     :doc """
+          Verifies the integrity of a signature. The data may be a `string` or 
+          a `bytebuf`
+
+          Returns `true`if the signature is valid else `false`.
+          """
+     :examples '(
+          """
+          (let [key-pair (rsa/generate-key-pair)]
+            (-> (rsa/sign "Hello World" (rsa/private--key key-pair))
+                (rsa/verify "Hello World" (rsa/public-key key-pair))))
+          """)
+     :see-also '(
+          "rsa/generate-key-pair"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key"
+          "rsa/encrypt"
+          "rsa/decrypt"
+          "rsa/sign") }
+
+  verify [signature data public-key]
+
+  { :pre [ (string? signature) 
+           (or (bytebuf? data) (string? data)) 
+           (instance-of? :PublicKey public-key)] }
+
+  (. :RSA :verify signature data public-key))
