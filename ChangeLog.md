@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Added RSA module (asymmetric or public-key cryptography algorithm)
+- Added RSA module (asymmetric public-key cryptography algorithm)
     * Generate key pairs
     * store/load keys as PEM files
     * encrypt/decrypt
