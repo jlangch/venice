@@ -48,8 +48,12 @@ public class ModuleRSASection implements ISectionBuilder {
         keys.addItem(diBuilder.getDocItem("rsa/keys", false));
         keys.addItem(diBuilder.getDocItem("rsa/private-key", false));
         keys.addItem(diBuilder.getDocItem("rsa/public-key", false));
-        keys.addItem(diBuilder.getDocItem("rsa/save-key-pair", false));
-        keys.addItem(diBuilder.getDocItem("rsa/load-key", false));
+
+        final DocSection keyIO = new DocSection("Key I/O", id());
+        all.addSection(keyIO);
+        keyIO.addItem(diBuilder.getDocItem("rsa/save-key-pair", false));
+        keyIO.addItem(diBuilder.getDocItem("rsa/load-key-pair", false));
+        keyIO.addItem(diBuilder.getDocItem("rsa/load-key", false));
 
         final DocSection crypt = new DocSection("Encryption", id());
         all.addSection(crypt);

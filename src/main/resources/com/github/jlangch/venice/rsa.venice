@@ -47,9 +47,11 @@
           """)
      :see-also '(
           "rsa/keys"
+          "rsa/key-pair"
           "rsa/private-key"
           "rsa/public-key"
           "rsa/save-key-pair"
+          "rsa/load-key-pair"
           "rsa/load-key"
           "rsa/encrypt"
           "rsa/decrypt"
@@ -75,15 +77,13 @@
             (rsa/key-pair pub priv))
           """)
      :see-also '(
+          "rsa/generate-key-pair"
           "rsa/keys"
           "rsa/private-key"
           "rsa/public-key"
           "rsa/save-key-pair"
-          "rsa/load-key"
-          "rsa/encrypt"
-          "rsa/decrypt"
-          "rsa/sign"
-          "rsa/verify") }
+          "rsa/load-key-pair"
+          "rsa/load-key") }
 
   key-pair [public-key private-key ]
 
@@ -107,14 +107,12 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
+          "rsa/key-pair"
           "rsa/private-key"
           "rsa/public-key"
           "rsa/save-key-pair"
-          "rsa/load-key"
-          "rsa/encrypt"
-          "rsa/decrypt"
-          "rsa/sign"
-          "rsa/verify") }
+          "rsa/load-key-pair"
+          "rsa/load-key") }
 
   keys [key-pair]
 
@@ -134,14 +132,12 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
+          "rsa/key-pair"
           "rsa/keys"
           "rsa/public-key"
           "rsa/save-key-pair"
-          "rsa/load-key"
-          "rsa/encrypt"
-          "rsa/decrypt"
-          "rsa/sign"
-          "rsa/verify") }
+          "rsa/load-key-pair"
+          "rsa/load-key") }
 
   private-key [key-pair]
 
@@ -161,14 +157,13 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
+          "rsa/key-pair"
           "rsa/keys"
           "rsa/private-key"
           "rsa/save-key-pair"
+          "rsa/load-key-pair"
           "rsa/load-key"
-          "rsa/encrypt"
-          "rsa/decrypt"
-          "rsa/sign"
-          "rsa/verify") }
+          "rsa/encrypt") }
 
   public-key [key-pair]
 
@@ -191,17 +186,17 @@
           """
           ;; creates two files: "./demo-public.pem" and "./demo-private.pem"
           (-> (rsa/generate-key-pair)
-              (save-key-pair "." "demo"))
+              (rsa/save-key-pair "." "demo"))
           """)
      :see-also '(
           "rsa/generate-key-pair"
+          "rsa/key-pair"
+          "rsa/keys"
+          "rsa/load-key-pair"
           "rsa/private-key"
           "rsa/public-key"
           "rsa/load-key"
-          "rsa/encrypt"
-          "rsa/decrypt"
-          "rsa/sign"
-          "rsa/verify") }
+          "rsa/encrypt") }
 
   save-key-pair [key-pair dir name]
 
@@ -222,6 +217,44 @@
 
 
 (defn
+  ^{ :arglists '("(rsa/load-key-pair dir name)")
+     :doc """
+          Loads a key-pair from public and private key  pem files.
+
+          Loads the files from:¶
+           • {dir}/{name}-public.pem¶
+           • {dir}/{name}-private.pem
+
+          Returns a `:java.security.KeyPair`
+          """
+     :examples '(
+          """
+          ;; PEM files: "./demo-public.pem" and "./demo-private.pem"
+          (do
+            (-> (rsa/generate-key-pair)
+                (rsa/save-key-pair "." "demo"))
+            (rsa/load-key-pair "." "demo"))
+          """)
+     :see-also '(
+          "rsa/generate-key-pair"
+          "rsa/key-pair"
+          "rsa/keys"
+          "rsa/private-key"
+          "rsa/public-key"
+          "rsa/save-key-pair"
+          "rsa/load-key") }
+
+  load-key-pair [dir name]
+
+  { :pre [(some? dir)
+          (io/exists-dir? dir)
+          (string? name)] }
+
+  (rsa/key-pair (rsa/load-key (io/file dir (str name "-public.pem")))
+                (rsa/load-key (io/file dir (str name "-private.pem")))))
+
+
+(defn
   ^{ :arglists '("(rsa/load-key pem-file)")
      :doc """
           Loads a key from a PEM file
@@ -233,13 +266,12 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
+          "rsa/key-pair"
+          "rsa/keys"
           "rsa/private-key"
           "rsa/public-key"
           "rsa/save-key-pair"
-          "rsa/encrypt"
-          "rsa/decrypt"
-          "rsa/sign"
-          "rsa/verify") }
+          "rsa/load-key-pair") }
 
   load-key [pem-file]
 
@@ -278,10 +310,7 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
-          "rsa/private-key"
           "rsa/public-key"
-          "rsa/save-key-pair"
-          "rsa/load-key"
           "rsa/decrypt"
           "rsa/sign"
           "rsa/verify") }
@@ -311,9 +340,6 @@
      :see-also '(
           "rsa/generate-key-pair"
           "rsa/private-key"
-          "rsa/public-key"
-          "rsa/save-key-pair"
-          "rsa/load-key"
           "rsa/encrypt"
           "rsa/sign"
           "rsa/verify") }
@@ -342,9 +368,6 @@
      :see-also '(
           "rsa/generate-key-pair"
           "rsa/private-key"
-          "rsa/public-key"
-          "rsa/save-key-pair"
-          "rsa/load-key"
           "rsa/encrypt"
           "rsa/decrypt"
           "rsa/verify") }
@@ -373,10 +396,7 @@
           """)
      :see-also '(
           "rsa/generate-key-pair"
-          "rsa/private-key"
           "rsa/public-key"
-          "rsa/save-key-pair"
-          "rsa/load-key"
           "rsa/encrypt"
           "rsa/decrypt"
           "rsa/sign") }

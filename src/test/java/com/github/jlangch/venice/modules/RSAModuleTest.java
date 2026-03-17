@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -136,6 +137,34 @@ public class RSAModuleTest {
     }
 
     @Test
+    public void test_load_key_pair() throws Exception {
+        final File dir = Files.createTempDirectory("test").toFile();
+
+        try {
+            final Venice venice = new Venice();
+
+            final String script =
+                    "(do                                                     \n" +
+                    "  (load-module :rsa)                                    \n" +
+                    "  (let [key-pair (rsa/generate-key-pair)]               \n" +
+                    "    (rsa/save-key-pair key-pair dir \"demo\")           \n" +
+                    "    (rsa/load-key-pair dir \"demo\")))                  ";
+
+            final Object key = venice.eval(script, Parameters.of("dir", dir));
+
+            assertTrue(key instanceof KeyPair);
+        }
+        catch(Exception ex) {
+            throw ex;
+        }
+        finally {
+            FileUtil.rmdir(dir);
+        }
+
+        assertFalse(dir.exists());
+    }
+
+    @Test
     public void test_load_public_key() throws Exception {
         final File dir = Files.createTempDirectory("test").toFile();
 
@@ -214,7 +243,7 @@ public class RSAModuleTest {
                 "  (load-module :rsa)                                               \n" +
                 "  (let [key-pair (rsa/generate-key-pair)]                          \n" +
                 "    (-> (rsa/sign \"Hello World\" (rsa/private-key key-pair))      \n" +
-                "         (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
+                "        (rsa/verify \"Hello World\" (rsa/public-key key-pair)))))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
