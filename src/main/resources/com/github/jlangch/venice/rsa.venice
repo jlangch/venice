@@ -31,15 +31,19 @@
 
 
 (defn
-  ^{ :arglists '("(rsa/generate-key-pair)")
+  ^{ :arglists '(
+          "(rsa/generate-key-pair)"
+          "(rsa/generate-key-pair key-size)")
      :doc """
-          Generates a RSA public/private key pair with a key size of 2048 bits
+          Generates a RSA public/private key pair with a default key size 
+          of 2048 bits
 
           Returns a `:java.security.KeyPair`
           """
      :examples '(
           """
           (rsa/generate-key-pair)
+          (rsa/generate-key-pair 3072)
           """)
      :see-also '(
           "rsa/keys"
@@ -52,9 +56,10 @@
           "rsa/sign"
           "rsa/verify") }
 
-  generate-key-pair []
-
-  (. :RSA :generateKeyPair))
+  generate-key-pair 
+  
+  ([]         (. :RSA :generateKeyPair))
+  ([key-size] (. :RSA :generateKeyPair key-size)))
 
 
 (defn
@@ -179,12 +184,12 @@
           pem files.
 
           Creates the files:¶
-           • {dir}/{name}-private.pem¶
-           • {dir}/{name}demo-public.pem
+           • {dir}/{name}-public.pem¶
+           • {dir}/{name}-private.pem
           """
      :examples '(
           """
-          ;; creates two files: "./demo-private.pem" and "./demo-public.pem"
+          ;; creates two files: "./demo-public.pem" and "./demo-private.pem"
           (-> (rsa/generate-key-pair)
               (save-key-pair "." "demo"))
           """)

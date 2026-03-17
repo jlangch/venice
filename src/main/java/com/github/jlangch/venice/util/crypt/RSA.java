@@ -47,8 +47,12 @@ import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 public class RSA {
 
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
+        return generateKeyPair(KEY_SIZE);
+    }
+
+    public static KeyPair generateKeyPair(final int keySize) throws NoSuchAlgorithmException {
         final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(KEY_SIZE, new SecureRandom());
+        keyPairGenerator.initialize(keySize, new SecureRandom());
 
         return keyPairGenerator.generateKeyPair();
     }
