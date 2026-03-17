@@ -103,6 +103,7 @@ public class ClientConnection implements AutoCloseable {
                 final long srv_cutoffSize     = getLong(cfg, "compress-cutoff-size", -1);
                 final long srv_maxMessageSize = getLong(cfg, "max-msg-size", Messages.MESSAGE_LIMIT_MAX);
                 final boolean srv_encryption  = getBoolean(cfg, "encrypt", false);
+                final boolean srv_dhRsaSign = getBoolean(cfg, "dh-rsa-sign", false);
                 final long srv_heartbeatInterval = getLong(cfg, "heartbeat-interval-seconds", 0);
                 final boolean srv_authentication = getBoolean(cfg, "authentication", false);
 
@@ -110,6 +111,7 @@ public class ClientConnection implements AutoCloseable {
                 heartbeatIntervalSeconds = srv_heartbeatInterval;
                 compressor = new Compressor(srv_cutoffSize);
                 encrypt = config.isEncrypting() || srv_encryption;
+                dhRsaSign = srv_dhRsaSign;
                 authentication = srv_authentication;
 
                 // Note: The server is enforcing the encryption if activated.
@@ -397,14 +399,16 @@ public class ClientConnection implements AutoCloseable {
             final SocketChannel ch,
             final DiffieHellmanKeys dhKeys
     ) {
-        final Message m = createDiffieHellmanRequestMessage(dhKeys.getPublicKeyBase64());
+        final String clientDHPublicKey = dhKeys.getPublicKeyBase64();
+        final Message m = createDiffieHellmanRequestMessage(clientDHPublicKey);
 
         // exchange the client's and the server's public key
         final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), DIFFIE_HELLMAN_TIMEOUT);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys, return the server's public key
-             return response.getText();
+            final String serverDHPublicKey = response.getText();
+            return serverDHPublicKey;
         }
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
@@ -602,6 +606,7 @@ public class ClientConnection implements AutoCloseable {
     // encryption
     private final DiffieHellmanKeys dhKeys;
     private final boolean encrypt;
+    private final boolean dhRsaSign; // sign Diffie-Hellman key exchange
     private final Encryptor encryptor;
 
     // statistics

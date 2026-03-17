@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.Objects;
 
 import com.github.jlangch.venice.util.ipc.impl.Messages;
@@ -35,6 +37,9 @@ public class ServerConfig {
     private ServerConfig(
             final URI connURI,
             final boolean encrypt,
+            final boolean dhRsaSign,
+            final KeyPair dhRsaSigningServerKeyPair,
+            final PublicKey dhRsaSigningClientPublicKey,
             final int compressCutoffSize,
             final long maxMessageSize,
             final int maxQueues,
@@ -54,6 +59,9 @@ public class ServerConfig {
     ) {
         this.connURI = connURI;
         this.encrypt = encrypt;
+        this.dhRsaSign = dhRsaSign;
+        this.dhRsaSigningServerKeyPair = dhRsaSigningServerKeyPair;
+        this.dhRsaSigningClientPublicKey = dhRsaSigningClientPublicKey;
         this.compressCutoffSize = compressCutoffSize;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
@@ -80,6 +88,18 @@ public class ServerConfig {
 
     public boolean isEncrypting() {
         return encrypt;
+    }
+
+    public boolean isDhRsaSign() {
+        return dhRsaSign;
+    }
+
+    public KeyPair getDhRsaSigningServerKeyPair() {
+        return dhRsaSigningServerKeyPair;
+    }
+
+    public PublicKey getDhRsaSigningClientPublicKey() {
+        return dhRsaSigningClientPublicKey;
     }
 
     public int getCompressCutoffSize() {
@@ -239,6 +259,40 @@ public class ServerConfig {
          */
         public Builder encrypt(final boolean encrypt) {
             this.encrypt = encrypt;
+            return this;
+        }
+
+        /**
+         * Set the Diffie-Hellman RSA signing mode (true or false).
+         *
+         * @param sign if <code>true</code> sign the Diffie-Hellman key exchange
+         *        messages to prevent man-in-the-middle attacks.
+         * @return this builder
+         */
+        public Builder dhRsaSign(final boolean sign) {
+            this.dhRsaSign = sign;
+            return this;
+        }
+
+        /**
+         * Set the Diffie-Hellman RSA signing server key pair.
+         *
+         * @param keyPair A RSA key pair
+         * @return this builder
+         */
+        public Builder dhRsaSigningServerKeyPair(final KeyPair keyPair) {
+            this.dhRsaSigningServerKeyPair = keyPair;
+            return this;
+        }
+
+        /**
+         * Set the Diffie-Hellman RSA signing client public key.
+         *
+         * @param key A RSA public key
+         * @return this builder
+         */
+        public Builder dhRsaSigningClientPublicKey(final PublicKey key) {
+            this.dhRsaSigningClientPublicKey = key;
             return this;
         }
 
@@ -488,6 +542,9 @@ public class ServerConfig {
             return new ServerConfig(
                     connURI,
                     encrypt,
+                    dhRsaSign,
+                    dhRsaSigningServerKeyPair,
+                    dhRsaSigningClientPublicKey,
                     compressCutoffSize,
                     maxMessageSize,
                     maxQueues,
@@ -509,6 +566,9 @@ public class ServerConfig {
 
         private URI connURI = null;
         private boolean encrypt = false;
+        private boolean dhRsaSign = false;
+        private KeyPair dhRsaSigningServerKeyPair = null;
+        private PublicKey dhRsaSigningClientPublicKey = null;
         private int compressCutoffSize = -1;
         private long maxMessageSize = Messages.MESSAGE_LIMIT_DEFAULT;
         private int maxQueues = Server.QUEUES_MAX_DEFAULT;
@@ -530,6 +590,9 @@ public class ServerConfig {
 
     private final URI connURI;
     private final boolean encrypt;
+    private final boolean dhRsaSign;
+    private final KeyPair dhRsaSigningServerKeyPair;
+    private final PublicKey dhRsaSigningClientPublicKey;
     private final int compressCutoffSize;
     private final long maxMessageSize;
     private final int maxQueues;

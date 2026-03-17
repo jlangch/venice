@@ -26,6 +26,8 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -237,6 +239,9 @@ public class IPCFunctions {
                 final VncVal maxMaxFunctionsVal = options.get(new VncKeyword("max-functions"), new VncLong(-1));
                 final VncVal compressCutoffSizeVal = options.get(new VncKeyword("compress-cutoff-size"));
                 final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                final VncVal dhRsaSignVal = options.get(new VncKeyword("dh-rsa-sign"), VncBoolean.False);
+                final VncVal dhRsaSigningServerKeyPairVal = options.get(new VncKeyword("dh-rsa-signing-server-key-pair"), Nil);
+                final VncVal dhRsaSigningClientPublicKeyVal = options.get(new VncKeyword("dh-rsa-signing-client-public-key"), Nil);
                 final VncVal serverLogDirVal = options.get(new VncKeyword("server-log-dir"));
                 final VncVal walDirVal = options.get(new VncKeyword("write-ahead-log-dir"));
                 final VncVal walCompressVal = options.get(new VncKeyword("write-ahead-log-compress"));
@@ -257,6 +262,9 @@ public class IPCFunctions {
                 final long maxFunctions = Coerce.toVncLong(maxMaxFunctionsVal).getValue();
                 final long compressCutoffSize = convertUnitValueToLong(compressCutoffSizeVal);
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+                final boolean dhRsaSign = Coerce.toVncBoolean(dhRsaSignVal).getValue();
+                final KeyPair dhRsaSigningServerKeyPair = Coerce.toVncJavaObjectOrNull(dhRsaSigningServerKeyPairVal, KeyPair.class);
+                final PublicKey dhRsaSigningClientPublicKey = Coerce.toVncJavaObjectOrNull(dhRsaSigningClientPublicKeyVal, PublicKey.class);
                 final long heartbeatInterval = Coerce.toVncLong(heartbeatIntervalVal).getValue();
                 final long deadLetterQueueSize = Coerce.toVncLong(deadLetterQueueSizeVal).getValue();
                 final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
@@ -318,6 +326,9 @@ public class IPCFunctions {
                     builder.deadLetterQueueSize((int)deadLetterQueueSize);
                 }
                 builder.encrypt(encrypt);
+                builder.dhRsaSign(dhRsaSign);
+                builder.dhRsaSigningServerKeyPair(dhRsaSigningServerKeyPair);
+                builder.dhRsaSigningClientPublicKey(dhRsaSigningClientPublicKey);
                 if (serverLogDir != null) {
                     builder.enableLogger(serverLogDir);
                 }
@@ -502,12 +513,16 @@ public class IPCFunctions {
 
                     // Options
                     final VncVal encryptVal = options.get(new VncKeyword("encrypt"), VncBoolean.False);
+                    final VncVal dhRsaSigningClientKeyPairVal = options.get(new VncKeyword("dh-rsa-signing-client-key-pair"), Nil);
+                    final VncVal dhRsaSigningServerPublicKeyVal = options.get(new VncKeyword("dh-rsa-signing-server-public-key"), Nil);
                     final VncVal userVal = options.get(new VncKeyword("user-name"));
                     final VncVal pwdVal = options.get(new VncKeyword("password"));
                     final VncVal sndBufSizeVal = options.get(new VncKeyword("socket-snd-buf-size"), new VncLong(-1));
                     final VncVal rcvBufSizeVal = options.get(new VncKeyword("socket-rcv-buf-size"), new VncLong(-1));
 
                     final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
+                    final KeyPair dhRsaSigningClientKeyPair = Coerce.toVncJavaObjectOrNull(dhRsaSigningClientKeyPairVal, KeyPair.class);
+                    final PublicKey dhRsaSigningServerPublicKey = Coerce.toVncJavaObjectOrNull(dhRsaSigningServerPublicKeyVal, PublicKey.class);
                     final String user = userVal == Nil ? null : Coerce.toVncString(userVal).getValue();
                     final String pwd = pwdVal == Nil ? null : Coerce.toVncString(pwdVal).getValue();
                     final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
@@ -516,6 +531,8 @@ public class IPCFunctions {
                     clientConfig.sendBufferSize(sndBufSize);
                     clientConfig.receiveBufferSize(rcvBufSize);
                     clientConfig.encrypt(encrypt);
+                    clientConfig.dhRsaSigningClientKeyPair(dhRsaSigningClientKeyPair);
+                    clientConfig.dhRsaSigningServerPublicKey(dhRsaSigningServerPublicKey);
 
                     return new VncJavaObject(
                                     Client

@@ -122,15 +122,11 @@ public class ServerConnection implements IPublisher, Runnable {
         this.server = server;
         this.ch = ch;
         this.connectionId = connectionId;
-        this.context = context;
         this.queueManager = queueManager;
         this.topicManager = topicManager;
         this.functionManager = functionManager;
 
-        this.maxMessageSize = config.getMaxMessageSize();
-        this.maxQueues = config.getMaxQueues();
-        this.maxTempQueuesPerConnection = config.getMaxTempQueuesPerConnection();
-        this.heartbeatIntervalSeconds = config.getHeartbeatIntervalSeconds();
+        this.config = config;
         this.enforceEncryption = config.isEncrypting();
 
         this.publishQueue = new BoundedQueue<Message>("publish", context.publishQueueCapacity, false);
@@ -166,9 +162,9 @@ public class ServerConnection implements IPublisher, Runnable {
             publisherThread.setDaemon(true);
             publisherThread.start();
 
-            logInfo(heartbeatIntervalSeconds <= 0L
+            logInfo(config.getHeartbeatIntervalSeconds() <= 0L
                       ? "Heartbeat is not active"
-                      : "Heartbeat (" + heartbeatIntervalSeconds + "s) is active");
+                      : "Heartbeat (" + config.getHeartbeatIntervalSeconds() + "s) is active");
 
             // enter message request processing loop
             while(!isStop()) {
@@ -270,7 +266,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private void sendResponse(final Message response) throws InterruptedException {
         if (sendSemaphore.tryAcquire(3, TimeUnit.SECONDS)) {
             try {
-                protocol.sendMessage(ch, response, compressor, encryptor.get(), maxMessageSize);
+                protocol.sendMessage(ch, response, compressor, encryptor.get(), config.getMaxMessageSize());
             }
             finally {
                 sendSemaphore.release();
@@ -343,7 +339,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
 
         // [2] Handle max message payload size
-        if (request.getData().length > maxMessageSize) {
+        if (request.getData().length > config.getMaxMessageSize()) {
             if (request.isOneway()) {
                 // oneway request -> cannot send and error message back
             }
@@ -353,7 +349,7 @@ public class ServerConnection implements IPublisher, Runnable {
                                             String.format(
                                                 "The message (%d bytes) is too large! The limit is at %d bytes.",
                                                 request.getData().length,
-                                                maxMessageSize));
+                                                config.getMaxMessageSize()));
                sendResponse(response);
             }
 
@@ -645,14 +641,14 @@ public class ServerConnection implements IPublisher, Runnable {
             return createNonJsonRequestResponse(request);
         }
 
-        if (tmpQueues.size() >= maxTempQueuesPerConnection) {
+        if (tmpQueues.size() >= config.getMaxTempQueuesPerConnection()) {
             return createBadRequestResponse(
                     request,
                     String.format(
                         "Request %s: Too many temporary queues! "
                         + "Reached the limit of %d temporary queues for this client.",
                         request.getType(),
-                        maxTempQueuesPerConnection));
+                        config.getMaxTempQueuesPerConnection()));
         }
 
         final VncMap payload = (VncMap)Json.readJson(request.getText(), false);
@@ -854,10 +850,11 @@ public class ServerConnection implements IPublisher, Runnable {
                     request,
                     OK,
                     new JsonBuilder()
-                            .add("max-msg-size", maxMessageSize)
+                            .add("max-msg-size", config.getMaxMessageSize())
                             .add("compress-cutoff-size", compressor.cutoffSize())
                             .add("encrypt", enforceEncryption)
-                            .add("heartbeat-interval-seconds", heartbeatIntervalSeconds)
+                            .add("dh-rsa-sign", config.isDhRsaSign())  // sign Diffie-Hellman key exchange
+                            .add("heartbeat-interval-seconds", config.getHeartbeatIntervalSeconds())
                             .add("authentication", authenticator.isActive())
                             .toJson(false));
     }
@@ -877,12 +874,12 @@ public class ServerConnection implements IPublisher, Runnable {
             try {
                 logInfo("Diffie-Hellman key exchange initiated!");
 
-                final String publicKey = request.getText();
-                clientPublicKey = publicKey;
+                // Diffie-Hellman public key from client
+                clientPublicKey = request.getText();
 
                 logInfo("Diffie-Hellman key exchange completed!");
 
-                encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(publicKey)));
+                encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(clientPublicKey)));
 
                 if (enforceEncryption) {
                     logInfo("Setup message encryptor! Encryption is mandatory.");
@@ -891,6 +888,9 @@ public class ServerConnection implements IPublisher, Runnable {
                     logInfo("Setup message encryptor! Encryption is optional.");
                 }
 
+                // Diffie-Hellman server public key
+                final String serverPublicKey = dhKeys.getPublicKeyBase64();
+
                 // send the server's public key back
                 return createPlainTextResponse(
                            request.getId(),
@@ -898,7 +898,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            null,  // no request id
                            null,  // no destination name
                            "",
-                           dhKeys.getPublicKeyBase64());
+                           serverPublicKey);
             }
             catch(Exception ex) {
                 logError("Diffie-Hellman key exchange error!", ex);
@@ -982,8 +982,8 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("running", server.isRunning())
                             // config
                            .add("encryption", encryptor.get().isActive())
-                           .add("max-queues", maxQueues)
-                           .add("message-size-max", maxMessageSize)
+                           .add("max-queues", config.getMaxQueues())
+                           .add("message-size-max", config.getMaxMessageSize())
                            .add("admin", adminAuthorization)
                            .add("compression-cutoff-size", compressor.cutoffSize())
                            .add("write-ahead-log-dir", wal.isEnabled()
@@ -992,7 +992,7 @@ public class ServerConnection implements IPublisher, Runnable {
                            .add("write-ahead-log-count", wal.isEnabled()
                                                             ? wal.countLogFiles()
                                                             : 0 )
-                           .add("hearbeat-interval-seconds", heartbeatIntervalSeconds)
+                           .add("hearbeat-interval-seconds", config.getHeartbeatIntervalSeconds())
                            .add("logger-enabled", logger.isEnabled())
                            .add("logger-file", logger.getLogFile() != null
                                                 ? logger.getLogFile().getAbsolutePath()
@@ -1164,13 +1164,13 @@ public class ServerConnection implements IPublisher, Runnable {
 	}
 
     private void checkHeartbeatTimeout() {
-        if (heartbeatIntervalSeconds > 0L) {
+        if (config.getHeartbeatIntervalSeconds() > 0L) {
             // timeout: after 2 missed heartbeats
             //
             // --+-----+-----o-----o-----o-----
             //          \_____________^
             //
-            final long timeout = (long)(2.5F * (heartbeatIntervalSeconds * 1000L));
+            final long timeout = (long)(2.5F * (config.getHeartbeatIntervalSeconds() * 1000L));
             if (System.currentTimeMillis() - lastHeartbeat > timeout) {
                 // Heartbeat timeout
                 logError("Heartbeat timeout -> closing connection");
@@ -1248,7 +1248,6 @@ public class ServerConnection implements IPublisher, Runnable {
     private final Server server;
     private final SocketChannel ch;
     private final long connectionId;
-    private final ServerContext context;
     private final ServerLogger logger;
 
     private final Subscriptions subscriptions;
@@ -1268,10 +1267,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private final Thread publisherThread;
 
     // configuration
-    private final long maxMessageSize;
-    private final long maxQueues;
-    private final long maxTempQueuesPerConnection;
-    private final long heartbeatIntervalSeconds;
+    private final ServerConfig config;
 
     private final ServerQueueManager queueManager;
     private final ServerTopicManager topicManager;

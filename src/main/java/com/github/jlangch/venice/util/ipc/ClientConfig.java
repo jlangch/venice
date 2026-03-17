@@ -23,6 +23,8 @@ package com.github.jlangch.venice.util.ipc;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.Objects;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -33,11 +35,15 @@ public class ClientConfig {
     private ClientConfig(
             final URI connURI,
             final boolean encrypt,
+            final KeyPair dhRsaSigningClientKeyPair,
+            final PublicKey dhRsaSigningServerPublicKey,
             final int sndBufSize,
             final int rcvBufSize
     ) {
         this.connURI = connURI;
         this.encrypt = encrypt;
+        this.dhRsaSigningClientKeyPair = dhRsaSigningClientKeyPair;
+        this.dhRsaSigningServerPublicKey = dhRsaSigningServerPublicKey;
         this.sndBufSize = sndBufSize;
         this.rcvBufSize = rcvBufSize;
 
@@ -52,6 +58,14 @@ public class ClientConfig {
 
     public boolean isEncrypting() {
         return encrypt;
+    }
+
+    public KeyPair getDhRsaSigningClientKeyPair() {
+        return dhRsaSigningClientKeyPair;
+    }
+
+    public PublicKey getDhRsaSigningServerPublicKey() {
+        return dhRsaSigningServerPublicKey;
     }
 
     public int getSndBufSize() {
@@ -199,6 +213,28 @@ public class ClientConfig {
         }
 
         /**
+         * Set the Diffie-Hellman RSA signing client key pair.
+         *
+         * @param keyPair A RSA key pair
+         * @return this builder
+         */
+        public Builder dhRsaSigningClientKeyPair(final KeyPair keyPair) {
+            this.dhRsaSigningClientKeyPair = keyPair;
+            return this;
+        }
+
+        /**
+         * Set the Diffie-Hellman RSA signing server public key.
+         *
+         * @param key A RSA public key
+         * @return this builder
+         */
+        public Builder dhRsaSigningServerPublicKey(final PublicKey key) {
+            this.dhRsaSigningServerPublicKey = key;
+            return this;
+        }
+
+        /**
          * Set the socket's send buffer size. -1 keeps the default.
          *
          * @param bufSize a send buffer size
@@ -228,6 +264,8 @@ public class ClientConfig {
             return new ClientConfig(
                     connURI,
                     encrypt,
+                    dhRsaSigningClientKeyPair,
+                    dhRsaSigningServerPublicKey,
                     sndBufSize,
                     rcvBufSize);
         }
@@ -235,6 +273,8 @@ public class ClientConfig {
 
         private URI connURI = null;
         private boolean encrypt = false;
+        private KeyPair dhRsaSigningClientKeyPair = null;
+        private PublicKey dhRsaSigningServerPublicKey = null;
         private int sndBufSize = -1;
         private int rcvBufSize = -1;
     }
@@ -242,6 +282,8 @@ public class ClientConfig {
 
     private final URI connURI;
     private final boolean encrypt;
+    private final KeyPair dhRsaSigningClientKeyPair;
+    private final PublicKey dhRsaSigningServerPublicKey;
     private final int sndBufSize;
     private final int rcvBufSize;
 
