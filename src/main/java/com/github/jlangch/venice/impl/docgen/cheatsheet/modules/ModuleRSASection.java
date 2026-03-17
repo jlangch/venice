@@ -44,6 +44,8 @@ public class ModuleRSASection implements ISectionBuilder {
         final DocSection keys = new DocSection("Keys", id());
         all.addSection(keys);
         keys.addItem(diBuilder.getDocItem("rsa/generate-key-pair", false));
+        keys.addItem(diBuilder.getDocItem("rsa/key-pair", false));
+        keys.addItem(diBuilder.getDocItem("rsa/keys", false));
         keys.addItem(diBuilder.getDocItem("rsa/private-key", false));
         keys.addItem(diBuilder.getDocItem("rsa/public-key", false));
         keys.addItem(diBuilder.getDocItem("rsa/save-key-pair", false));

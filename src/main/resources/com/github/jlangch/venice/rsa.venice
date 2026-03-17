@@ -34,6 +34,8 @@
   ^{ :arglists '("(rsa/generate-key-pair)")
      :doc """
           Generates a RSA public/private key pair with a key size of 2048 bits
+
+          Returns a `:java.security.KeyPair`
           """
      :examples '(
           """
@@ -58,11 +60,13 @@
 (defn
   ^{ :arglists '("(rsa/key-pair private-key public-key)")
      :doc """
-          Creates a RSA key pair from a private and a public key
+          Creates a RSA key pair from a public and a private key
+
+          Returns a `:java.security.KeyPair`
           """
      :examples '(
           """
-          (let [[pub priv] (rsa/key (rsa/generate-key-pair))]
+          (let [[pub priv] (rsa/keys (rsa/generate-key-pair))]
             (rsa/key-pair pub priv))
           """)
      :see-also '(
@@ -87,11 +91,12 @@
 (defn
   ^{ :arglists '("(rsa/keys key-pair)")
      :doc """
-          Returns a vector with the private and public key of a key pair
+          Returns a vector with the public and private key of a key pair
+          (:java.security.KeyPair)
           """
      :examples '(
           """
-          (let [[pub priv] (rsa/key (rsa/generate-key-pair))]
+          (let [[pub priv] (rsa/keys (rsa/generate-key-pair))]
             ;; ...
             )
           """)
@@ -116,7 +121,7 @@
 (defn
   ^{ :arglists '("(rsa/private-key key-pair)")
      :doc """
-          Returns the private key of a key pair
+          Returns the private key of a key pair (:java.security.KeyPair)
           """
      :examples '(
           """
@@ -143,7 +148,7 @@
 (defn
   ^{ :arglists '("(rsa/public-key key-pair)")
      :doc """
-          Returns the public key of a key pair
+          Returns the public key of a key pair (:java.security.KeyPair)
           """
      :examples '(
           """
@@ -170,7 +175,12 @@
 (defn
   ^{ :arglists '("(rsa/save-key-pair key-pair dir name)")
      :doc """
-          Saves the key-pair to public and private key pem files
+          Saves a key-pair (:java.security.KeyPair) to public and private key 
+          pem files.
+
+          Creates the files:¶
+           • {dir}/{name}-private.pem¶
+           • {dir}/{name}demo-public.pem
           """
      :examples '(
           """
@@ -336,13 +346,14 @@
 
   sign [data private-key]
 
-  { :pre [(or (bytebuf? data) (string? data)) (instance-of? :PrivateKey private-key)] }
+  { :pre [(or (bytebuf? data) (string? data)) 
+          (instance-of? :PrivateKey private-key)] }
 
   (. :RSA :sign data private-key))
 
 
 (defn
-  ^{ :arglists '("(rsa/verify data signature public-key)")
+  ^{ :arglists '("(rsa/verify signature data public-key)")
      :doc """
           Verifies the integrity of a signature. The data may be a `string` or 
           a `bytebuf`
