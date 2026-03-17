@@ -78,6 +78,11 @@ public class ServerConfig {
         this.walCompress = walCompress;
         this.walCompactAtStart = walCompactAtStart;
         this.logDir = logDir;
+
+        validateDhRsaSigning(
+                dhRsaSign,
+                dhRsaSigningServerKeyPair,
+                dhRsaSigningClientPublicKey);
     }
 
 
@@ -166,6 +171,21 @@ public class ServerConfig {
         return logDir;
     }
 
+
+    private void validateDhRsaSigning(
+            final boolean dhRsaSign,
+            final KeyPair dhRsaSigningServerKeyPair,
+            final PublicKey dhRsaSigningClientPublicKey
+    ) {
+        if (dhRsaSign) {
+            if (dhRsaSigningServerKeyPair == null || dhRsaSigningClientPublicKey == null) {
+                throw new IpcException(
+                        "If Diffie-Hellman RSA signing is activated the RSA signing server " +
+                        "key pair as well as the RSA signing client public key must be " +
+                        "supplied!");
+            }
+        }
+    }
 
 
     public static ServerConfig of(final int port) {
