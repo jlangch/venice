@@ -413,7 +413,8 @@ public class Server implements AutoCloseable {
                                     ? "Unix domain socket"
                                     : "address " + remoteAddress;
 
-        if (!authenticator.isAccepted(remoteInetAddress)) {
+        // No IP address ACL check for Unix domain sockets
+        if (remoteAddress != null && !authenticator.isAccepted(remoteInetAddress)) {
             logger.error(
                     "server", "connection",
                     "New connection from " + addrInfo + " rejected by CIDR ACL!");
