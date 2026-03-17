@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
+
 import java.nio.charset.Charset;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -30,7 +33,6 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.crypt.RSA;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
@@ -42,14 +44,24 @@ import com.github.jlangch.venice.util.ipc.impl.util.JsonBuilder;
 
 public abstract class DiffieHellmanUtil {
 
-    public static String getExchangeKey(final Message m) {
-        return StringUtil.trimToNull(
-                getString((VncMap)m.getVeniceData(), "key"));
+    public static String getExchangeKey(final Message msg) {
+        return trimToNull(
+                getString((VncMap)msg.getVeniceData(), "key"));
     }
 
-    public static String getSignature(final Message m) {
-        return StringUtil.trimToNull(
-                getString((VncMap)m.getVeniceData(), "signature"));
+    public static String getSignature(final Message msg) {
+        return trimToNull(
+                getString((VncMap)msg.getVeniceData(), "signature"));
+    }
+
+    public static void verifySignedKey(
+            final Message msg,
+            final PublicKey rsaSigningKey
+    ) {
+        verifySignedKey(
+            getExchangeKey(msg),
+            getSignature(msg),
+            rsaSigningKey);
     }
 
     public static void verifySignedKey(
@@ -59,7 +71,7 @@ public abstract class DiffieHellmanUtil {
     ) {
         if (rsaSigningKey != null) {
             try {
-                final boolean ok = RSA.verify(key, signature, rsaSigningKey);
+                final boolean ok = RSA.verify(key, trimToEmpty(signature), rsaSigningKey);
                 if (!ok) {
                     throw new IpcException(
                             "The Diffie-Hellman key has been mutually changed! "
