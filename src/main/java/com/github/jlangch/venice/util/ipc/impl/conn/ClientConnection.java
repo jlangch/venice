@@ -398,9 +398,10 @@ public class ClientConnection implements AutoCloseable {
     private String diffieHellmanKeyExchange(
             final SocketChannel ch,
             final DiffieHellmanKeys dhKeys
-    ) {
-        final String dhEncryptionClientKey = dhKeys.getPublicKeyBase64();
-        final Message m = DiffieHellmanUtil.createDiffieHellmanRequestMessage(dhEncryptionClientKey);
+    ) throws Exception {
+        final Message m = DiffieHellmanUtil.createDiffieHellmanRequestMessage(
+                                                dhKeys.getPublicKeyBase64(),
+                                                null);
 
         // exchange the client's and the server's public key
         final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), DIFFIE_HELLMAN_TIMEOUT);

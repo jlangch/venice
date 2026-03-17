@@ -890,7 +890,10 @@ public class ServerConnection implements IPublisher, Runnable {
                 logInfo("Diffie-Hellman encryption key exchange completed!");
 
                 // send the server's public encryption key back
-                return DiffieHellmanUtil.createDiffieHellmanResponseMessage(request, serverPublicKey);
+                return DiffieHellmanUtil.createDiffieHellmanResponseMessage(
+                                            request,
+                                            serverPublicKey,
+                                            null);
             }
             catch(Exception ex) {
                 logError("Diffie-Hellman key exchange error!", ex);
@@ -1149,7 +1152,7 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         catch (InterruptedException ex) { throw ex; }
         catch (Exception ignore) { }
-	}
+    }
 
     private void checkHeartbeatTimeout() {
         if (config.getHeartbeatIntervalSeconds() > 0L) {

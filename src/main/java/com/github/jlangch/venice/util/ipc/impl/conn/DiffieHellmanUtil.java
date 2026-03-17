@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.ipc.impl.conn;
 
 import java.nio.charset.Charset;
+import java.security.PrivateKey;
 
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -29,6 +30,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.crypt.RSA;
+import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
 import com.github.jlangch.venice.util.ipc.impl.Message;
@@ -48,10 +51,13 @@ public abstract class DiffieHellmanUtil {
                 getString((VncMap)m.getVeniceData(), "signature"));
     }
 
-    public static Message createDiffieHellmanRequestMessage(final String key) {
+    public static Message createDiffieHellmanRequestMessage(
+            final String key,
+            final PrivateKey rsaSigningKey
+    ) throws Exception {
         final String payload = new JsonBuilder()
                                     .add("key", key)
-                                    .add("signature", "")
+                                    .add("signature", sign(key, rsaSigningKey))
                                     .toJson(false);
 
         return new Message(
@@ -70,10 +76,12 @@ public abstract class DiffieHellmanUtil {
 
     public static Message createDiffieHellmanResponseMessage(
             final Message request,
-            final String key
-    ) {
+            final String key,
+            final PrivateKey rsaSigningKey
+    ) throws Exception {
         final String payload = new JsonBuilder()
                                     .add("key", key)
+                                    .add("signature", sign(key, rsaSigningKey))
                                     .toJson(false);
 
         return new Message(
@@ -108,6 +116,23 @@ public abstract class DiffieHellmanUtil {
                 toBytes(errMsg, "UTF-8"));
     }
 
+
+    private static String sign(
+            final String key,
+            final PrivateKey rsaSigningKey
+    ) {
+        if (rsaSigningKey == null) {
+            return "";
+        }
+        else {
+            try {
+                return RSA.sign(key, rsaSigningKey);
+            }
+            catch(Exception ex) {
+                throw new IpcException("Failed to sign Diffie-Hellman key", ex);
+            }
+        }
+    }
 
     private static String getString(final VncMap map, final String entryName) {
         final VncVal v =  map.get(new VncKeyword(entryName));
