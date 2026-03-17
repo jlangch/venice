@@ -455,7 +455,7 @@ public class IpcFunctionsTest {
                 "(do                                                                             \n" +
                 "  (def counter (atom 0))                                                        \n" +
                 "                                                                                \n" +
-                "  (def conn-uri \"af-unix:///Users/juerg/Desktop/venice/tmp/test.sock\")        \n" +
+                "  (def conn-uri \"af-unix:///tmp/test.sock\")                                   \n" +
                 "                                                                                \n" +
                 "  (defn echo-handler [m] (swap! counter inc) m)                                 \n" +
                 "                                                                                \n" +
