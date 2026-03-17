@@ -860,26 +860,22 @@ public class ServerConnection implements IPublisher, Runnable {
     }
 
     private Message handleDiffieHellmanKeyExchange(final Message request) {
-        if (clientPublicKey != null) {
+        if (dhEncryptionClientKey != null) {
             logWarn("Diffie-Hellman key already exchanged!");
-            return createPlainTextResponse(
-                       request.getId(),
-                       DIFFIE_HELLMAN_NAK,
-                       null,  // no request id
-                       null,  // no destination name
-                       "",
-                       "Error: Diffie-Hellman key already exchanged!");
+            return DiffieHellmanUtil.createDiffieHellmanResponseErrorMessage(
+                    request,
+                    "Error: Diffie-Hellman key already exchanged!");
         }
         else {
             try {
                 logInfo("Diffie-Hellman key exchange initiated!");
 
-                // Diffie-Hellman public key from client
-                clientPublicKey = request.getText();
+                // Diffie-Hellman encryption key from client
+                dhEncryptionClientKey = DiffieHellmanUtil.getExchangeKey(request);
 
-                logInfo("Diffie-Hellman key exchange completed!");
+                logInfo("Diffie-Hellman client encryption key received!");
 
-                encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(clientPublicKey)));
+                encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(dhEncryptionClientKey)));
 
                 if (enforceEncryption) {
                     logInfo("Setup message encryptor! Encryption is mandatory.");
@@ -891,25 +887,17 @@ public class ServerConnection implements IPublisher, Runnable {
                 // Diffie-Hellman server public key
                 final String serverPublicKey = dhKeys.getPublicKeyBase64();
 
-                // send the server's public key back
-                return createPlainTextResponse(
-                           request.getId(),
-                           DIFFIE_HELLMAN_ACK,
-                           null,  // no request id
-                           null,  // no destination name
-                           "",
-                           serverPublicKey);
+                logInfo("Diffie-Hellman encryption key exchange completed!");
+
+                // send the server's public encryption key back
+                return DiffieHellmanUtil.createDiffieHellmanResponseMessage(request, serverPublicKey);
             }
             catch(Exception ex) {
                 logError("Diffie-Hellman key exchange error!", ex);
 
-                return createPlainTextResponse(
-                           request.getId(),
-                           DIFFIE_HELLMAN_NAK,
-                           null,  // no request id
-                           null,  // no destination name
-                           "",
-                           "Failed to exchange Diffie-Hellman key! Reason: " + ex.getMessage());
+                return DiffieHellmanUtil.createDiffieHellmanResponseErrorMessage(
+                        request,
+                        "Failed to exchange Diffie-Hellman key! Reason: " + ex.getMessage());
             }
         }
     }
@@ -1238,7 +1226,7 @@ public class ServerConnection implements IPublisher, Runnable {
     private volatile long lastHeartbeat = System.currentTimeMillis();  // Millis since epoch
 
     private AcknowledgeMode msgAcknowledgeMode = AcknowledgeMode.NO_ACKNOWLEDGE;
-    private String clientPublicKey = null;
+    private String dhEncryptionClientKey = null;
 
     // authentication
     private String principal = "anon";

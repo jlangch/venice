@@ -125,8 +125,8 @@ public class ClientConnection implements AutoCloseable {
             // [4] Establish encryption through Diffie-Hellman key exchange
             if (encrypt) {
                 try {
-                    final String serverPublicKey = diffieHellmanKeyExchange(channel, dhKeys);
-                    encryptor = Encryptor.aes(dhKeys.generateSharedSecret(serverPublicKey));
+                    final String dhEncryptionServerKey = diffieHellmanKeyExchange(channel, dhKeys);
+                    encryptor = Encryptor.aes(dhKeys.generateSharedSecret(dhEncryptionServerKey));
                 }
                 catch(Exception ex) {
                     throw new IpcException("Failed on Diffie-Hellman key exchange!", ex);
@@ -399,16 +399,15 @@ public class ClientConnection implements AutoCloseable {
             final SocketChannel ch,
             final DiffieHellmanKeys dhKeys
     ) {
-        final String clientDHPublicKey = dhKeys.getPublicKeyBase64();
-        final Message m = createDiffieHellmanRequestMessage(clientDHPublicKey);
+        final String dhEncryptionClientKey = dhKeys.getPublicKeyBase64();
+        final Message m = DiffieHellmanUtil.createDiffieHellmanRequestMessage(dhEncryptionClientKey);
 
         // exchange the client's and the server's public key
         final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), DIFFIE_HELLMAN_TIMEOUT);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
             // successfully exchanged keys, return the server's public key
-            final String serverDHPublicKey = response.getText();
-            return serverDHPublicKey;
+            return DiffieHellmanUtil.getExchangeKey(response);
         }
         else if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_NAK) {
             // server rejects key exchange
@@ -453,21 +452,6 @@ public class ClientConnection implements AutoCloseable {
         if (t != null) {
             t.cancel();
         }
-    }
-
-    private static Message createDiffieHellmanRequestMessage(final String clientPublicKey) {
-        return new Message(
-                null,
-                MessageType.DIFFIE_HELLMAN_KEY_REQUEST,
-                ResponseStatus.NULL,
-                false,
-                false,
-                false,
-                Messages.EXPIRES_NEVER,
-                "",
-                "text/plain",
-                "UTF-8",
-                toBytes(clientPublicKey, "UTF-8"));
     }
 
     private static Message createConfigRequestMessage(final AcknowledgeMode ackMode) {
@@ -555,6 +539,7 @@ public class ClientConnection implements AutoCloseable {
     private static byte[] toBytes(final String s, final String charset) {
         return s.getBytes(Charset.forName(charset));
     }
+
 
     private static long getLong(final VncMap map, final String entryName, final long defaulValue) {
         return Coerce.toVncLong(
