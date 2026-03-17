@@ -55,11 +55,6 @@ public abstract class DiffieHellmanUtil {
             final String key,
             final PrivateKey rsaSigningKey
     ) throws Exception {
-        final String payload = new JsonBuilder()
-                                    .add("key", key)
-                                    .add("signature", sign(key, rsaSigningKey))
-                                    .toJson(false);
-
         return new Message(
                 null,
                 MessageType.DIFFIE_HELLMAN_KEY_REQUEST,
@@ -71,7 +66,7 @@ public abstract class DiffieHellmanUtil {
                 "",
                 "application/json",
                 "UTF-8",
-                toBytes(payload, "UTF-8"));
+                toBytes(buildSignedKeyJsonPayload(key, rsaSigningKey), "UTF-8"));
     }
 
     public static Message createDiffieHellmanResponseMessage(
@@ -79,11 +74,6 @@ public abstract class DiffieHellmanUtil {
             final String key,
             final PrivateKey rsaSigningKey
     ) throws Exception {
-        final String payload = new JsonBuilder()
-                                    .add("key", key)
-                                    .add("signature", sign(key, rsaSigningKey))
-                                    .toJson(false);
-
         return new Message(
                 request.getRequestId(),
                 MessageType.DIFFIE_HELLMAN_KEY_REQUEST,
@@ -95,7 +85,7 @@ public abstract class DiffieHellmanUtil {
                 "",
                 "application/json",
                 "UTF-8",
-                toBytes(payload, "UTF-8"));
+                toBytes(buildSignedKeyJsonPayload(key, rsaSigningKey), "UTF-8"));
     }
 
     public static Message createDiffieHellmanResponseErrorMessage(
@@ -116,6 +106,15 @@ public abstract class DiffieHellmanUtil {
                 toBytes(errMsg, "UTF-8"));
     }
 
+    private static String buildSignedKeyJsonPayload(
+            final String key,
+            final PrivateKey rsaSigningKey
+    ) {
+        return new JsonBuilder()
+                .add("key", key)
+                .add("signature", sign(key, rsaSigningKey))
+                .toJson(false);
+    }
 
     private static String sign(
             final String key,
