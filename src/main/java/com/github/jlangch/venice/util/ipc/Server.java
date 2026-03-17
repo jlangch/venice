@@ -409,10 +409,14 @@ public class Server implements AutoCloseable {
         final SocketAddress remoteAddress = IO.getRemoteAddress(channel);
         final InetAddress remoteInetAddress = IO.getInetAddress(remoteAddress);
 
+        final String addrInfo = remoteAddress == null
+                                    ? "Unix domain socket"
+                                    : "address " + remoteAddress;
+
         if (!authenticator.isAccepted(remoteInetAddress)) {
             logger.error(
                     "server", "connection",
-                    "New connection from address " + remoteAddress + " rejected by CIDR ACL!");
+                    "New connection from " + addrInfo + " rejected by CIDR ACL!");
             try { channel.close(); } catch(Exception ignore) {}
             return;
         }
@@ -436,20 +440,20 @@ public class Server implements AutoCloseable {
 
         try {
             mngdExecutor.getExecutor().execute(conn);
+
+            logger.info(
+                    "server", "connection",
+                    String.format(
+                        "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
+                        connId,
+                        addrInfo,
+                        threadPoolSize,
+                        maxThreadPoolSize));
         }
         catch(RejectedExecutionException ex) {
             logger.error("server", "connection", "New connection rejected by thread pool!", ex);
             try { channel.close(); } catch(Exception ignore) {}
         }
-
-        logger.info(
-                "server", "connection",
-                String.format(
-                    "Server accepted new connection (%s) from %s. Thread pool: %d / %d",
-                    connId,
-                    remoteAddress.toString(),
-                    threadPoolSize,
-                    maxThreadPoolSize));
     }
 
     private void safeClose(final ServerSocketChannel ch) {
