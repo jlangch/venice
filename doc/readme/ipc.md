@@ -1595,6 +1595,7 @@ authentication between the two parties that exchange keys.
 > [!TIP]
 > With multiple clients just pass a vector of the client's public keys
 > to the server
+>
 > `:dh-rsa-client-public-key [client1-public-key client2-public-key]`
 >
 
