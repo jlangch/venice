@@ -28,7 +28,6 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -44,14 +43,14 @@ public class Sandbox_JavaSystemProperty_Test {
 
     @Test
     public void test_all_RejectAllInterceptor() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(system-prop)");
         });
     }
 
     @Test
     public void test_RejectAccessToAllSystemProperties_RejectAllInterceptor() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
         });
     }
@@ -60,7 +59,7 @@ public class Sandbox_JavaSystemProperty_Test {
     public void test_RejectAccessToAllSystemProperties_EmptySandbox() {
         final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(system-prop \"db.password\")");
         });
     }
@@ -70,7 +69,7 @@ public class Sandbox_JavaSystemProperty_Test {
         final Interceptor interceptor = new SandboxInterceptor(
                                                 new SandboxRules().withStandardSystemProperties());
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(system-prop \"db.password\")");
         });
     }
@@ -80,7 +79,7 @@ public class Sandbox_JavaSystemProperty_Test {
         final Interceptor interceptor = new SandboxInterceptor(
                                                 new SandboxRules().withSystemProperties("user.home"));
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(system-prop \"db.password\")");
         });
     }

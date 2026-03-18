@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.docgen.cheatsheet.snippets;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -50,7 +49,7 @@ public class Snippet_06_Sandbox {
         try {
             venice.eval("(read-line)");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (read-line)");
         }
     }

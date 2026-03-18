@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -67,30 +66,30 @@ public class Sandbox_Readme_Test {
             "     (. <> :getMaxValue 0))                             ");
 
         // => FAIL (invoking non whitelisted static method)
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
             venice.eval("(. :java.lang.System :exit 0)"));
 
         // => FAIL (invoking blacklisted Venice I/O function)
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
             venice.eval("(io/slurp \"/tmp/file\")"));
 
         // => OK (invoking whitelisted Venice I/O function 'println')
         venice.eval("(println 100)");
 
         // => FAIL exceeded max exec time of 3s
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
             venice.eval("(sleep 10_000)"));
 
         // => FAIL (accessing non whitelisted system property)
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
             venice.eval("(system-prop \"db.password\")"));
 
         // => FAIL (accessing non whitelisted system environment variable)
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
             venice.eval("(system-env \"USER\")"));
 
         // => FAIL (accessing non whitelisted classpath resources)
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
             venice.eval("(io/load-classpath-resource \"resources/images/img.tiff\")"));
     }
 

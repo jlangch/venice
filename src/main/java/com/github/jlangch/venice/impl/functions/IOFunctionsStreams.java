@@ -52,7 +52,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.InflaterInputStream;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -284,7 +283,7 @@ public class IOFunctionsStreams {
                                         ". The file does not exists!");
                             }
                             else {
-                                throw new SecurityException(
+                                throw new com.github.jlangch.venice.SecurityException(
                                         "Failed to slurp data from the file " + file.getPath() +
                                         ". The load paths configuration prevented this action!");
                             }
@@ -355,7 +354,7 @@ public class IOFunctionsStreams {
                             return new VncJavaObject(outStream);
                         }
                         else {
-                            throw new SecurityException(
+                            throw new com.github.jlangch.venice.SecurityException(
                                     String.format(
                                             "Failed to spit data to the file %s. " +
                                             "The load paths configuration prevented this action!",
@@ -956,7 +955,7 @@ public class IOFunctionsStreams {
                                             new OutputStreamWriter(os, charset)));
                         }
                         else {
-                            throw new SecurityException(
+                            throw new com.github.jlangch.venice.SecurityException(
                                     String.format(
                                             "Failed to create writer to the file %s. " +
                                             "The load paths configuration prevented this action!\n" +
@@ -1110,7 +1109,7 @@ public class IOFunctionsStreams {
                                         ". The file does not exists!");
                             }
                             else {
-                                throw new SecurityException(
+                                throw new com.github.jlangch.venice.SecurityException(
                                         "Failed to create reader from the file " + file.getPath() +
                                         ". The load paths configuration prevented this action!");
                             }

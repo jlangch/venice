@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
@@ -41,7 +40,7 @@ public abstract class Interceptor implements IInterceptor {
             final Class<?> receiverFormalType,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return invoker.callInstanceMethod(receiver, receiverFormalType, method, args);
     }
 
@@ -51,7 +50,7 @@ public abstract class Interceptor implements IInterceptor {
             final Class<?> receiver,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return invoker.callStaticMethod(receiver, method, args);
     }
 
@@ -60,7 +59,7 @@ public abstract class Interceptor implements IInterceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return invoker.callConstructor(receiver, args);
     }
 
@@ -69,7 +68,7 @@ public abstract class Interceptor implements IInterceptor {
             final IInvoker invoker,
             final Object receiver,
             final String property
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return invoker.getBeanProperty(receiver, property);
     }
 
@@ -79,7 +78,7 @@ public abstract class Interceptor implements IInterceptor {
             final Object receiver,
             final String property,
             final Object value
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         invoker.setBeanProperty(receiver, property, value);
     }
 
@@ -88,7 +87,7 @@ public abstract class Interceptor implements IInterceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return invoker.getStaticField(receiver, fieldName);
     }
 
@@ -98,14 +97,14 @@ public abstract class Interceptor implements IInterceptor {
             final Object receiver,
             final Class<?> receiverFormalType,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return invoker.getInstanceField(receiver, receiverFormalType, fieldName);
     }
 
     @Override
     public byte[] onLoadClassPathResource(
             final String resourceName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return StringUtil.isBlank(resourceName)
                     ? null
                     : new ClassPathResource(resourceName).getResourceAsBinary();
@@ -114,7 +113,7 @@ public abstract class Interceptor implements IInterceptor {
     @Override
     public String onReadSystemProperty(
             final String propertyName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return StringUtil.isBlank(propertyName)
                 ? null
                 : System.getProperty(propertyName);
@@ -123,7 +122,7 @@ public abstract class Interceptor implements IInterceptor {
     @Override
     public String onReadSystemEnv(
             final String name
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return StringUtil.isBlank(name)
                 ? null
                 : System.getenv(name);
@@ -132,7 +131,7 @@ public abstract class Interceptor implements IInterceptor {
     @Override
     public IInterceptor validateVeniceFunction(
             final String funcName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         // ok, no black listed Venice functions
         return this;
     }
@@ -141,13 +140,13 @@ public abstract class Interceptor implements IInterceptor {
     @Override
     public IInterceptor validateLoadModule(
             final String moduleName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         // ok, no black listed Venice module
         return this;
     }
 
     @Override
-    public IInterceptor validateMaxExecutionTime() throws SecurityException {
+    public IInterceptor validateMaxExecutionTime() throws com.github.jlangch.venice.SecurityException {
         //ok
         return this;
     }

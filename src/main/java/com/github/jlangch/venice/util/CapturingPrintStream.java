@@ -23,8 +23,6 @@ package com.github.jlangch.venice.util;
 
 import java.io.PrintStream;
 
-import com.github.jlangch.venice.SecurityException;
-
 
 /**
  * Captures the output written to this {@link java.io.PrintStream}.
@@ -35,7 +33,7 @@ public class CapturingPrintStream extends PrintStream {
      * Creates a new {@link CapturingPrintStream} and a default capturing limit
      * of 10MB.
      *
-     * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
+     * <p>The {@link CapturingPrintStream} throws a {@link com.github.jlangch.venice.SecurityException}
      * if the bytes written to the stream exceed the specified limit.
      */
     public CapturingPrintStream() {
@@ -45,7 +43,7 @@ public class CapturingPrintStream extends PrintStream {
     /**
      * Creates a new {@link CapturingPrintStream} with the given capturing limit.
      *
-     * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
+     * <p>The {@link CapturingPrintStream} throws a {@link com.github.jlangch.venice.SecurityException}
      * if the bytes written to the stream exceed the specified limit.
      *
      * @param limit A capturing limit
@@ -215,7 +213,7 @@ public class CapturingPrintStream extends PrintStream {
             final int left = limit - sb.length();
 
             if (left <= 0) {
-                throw new SecurityException(String.format(
+                throw new com.github.jlangch.venice.SecurityException(String.format(
                         "CapturingPrintStream exceeded the limit of %d chars",
                         limit));
             }
@@ -225,7 +223,7 @@ public class CapturingPrintStream extends PrintStream {
             else {
                 sb.append(s.substring(0, left));
 
-                throw new SecurityException(String.format(
+                throw new com.github.jlangch.venice.SecurityException(String.format(
                         "CapturingPrintStream exceeded the limit of %d chars",
                         limit));
             }

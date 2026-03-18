@@ -40,7 +40,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -124,7 +123,7 @@ public class IOFunctionsSpitSlurp {
                                         ". The file does not exists!");
                             }
                             else {
-                                throw new SecurityException(
+                                throw new com.github.jlangch.venice.SecurityException(
                                         "Failed to slurp text lines from the file " + file.getPath() +
                                         ". The load paths configuration prevented this action!");
                             }
@@ -191,7 +190,7 @@ public class IOFunctionsSpitSlurp {
                         }
                     }
                     else {
-                        throw new SecurityException(
+                        throw new com.github.jlangch.venice.SecurityException(
                                 "Rejected to slurp text lines from a :java.net.URL. " +
                                 "The load paths configuration (unlimited access is disabled) prevented this action!");
                     }
@@ -211,7 +210,7 @@ public class IOFunctionsSpitSlurp {
                         }
                     }
                     else {
-                        throw new SecurityException(
+                        throw new com.github.jlangch.venice.SecurityException(
                                 "Rejected to slurp text lines from a :java.net.URI. " +
                                 "The load paths configuration (unlimited access is disabled) prevented this action!");
                     }
@@ -279,7 +278,7 @@ public class IOFunctionsSpitSlurp {
                                         ". The file does not exists!");
                             }
                             else {
-                                throw new SecurityException(
+                                throw new com.github.jlangch.venice.SecurityException(
                                         "Failed to slurp data from the file " + file.getPath() +
                                         ". The load paths configuration prevented this action!");
                             }
@@ -344,7 +343,7 @@ public class IOFunctionsSpitSlurp {
                         }
                     }
                     else {
-                        throw new SecurityException(
+                        throw new com.github.jlangch.venice.SecurityException(
                                 "Rejected to slurp data from a :java.net.URL. " +
                                 "The load paths configuration (unlimited access is disabled) " +
                                 "prevented this action! You can use 'io/download' instead, " +
@@ -365,7 +364,7 @@ public class IOFunctionsSpitSlurp {
                         }
                     }
                     else {
-                        throw new SecurityException(
+                        throw new com.github.jlangch.venice.SecurityException(
                                 "Rejected to slurp data from a :java.net.URI. " +
                                 "The load paths configuration (unlimited access is disabled) " +
                                 "prevented this action! You can use 'io/download' instead, " +
@@ -449,7 +448,7 @@ public class IOFunctionsSpitSlurp {
                             }
                         }
                         else {
-                            throw new SecurityException(
+                            throw new com.github.jlangch.venice.SecurityException(
                                     String.format(
                                             "Failed to spit data to the file %s. " +
                                             "The load paths configuration prevented this action!\n" +

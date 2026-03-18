@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.IPreCompiled;
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -41,7 +40,7 @@ public class Sandbox_PreCompiledScript_Test {
         final IPreCompiled pre = new Venice(new AcceptAllInterceptor())
                                     .precompile("test","(gc)");
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // RejectAllInterceptor -> gc is blacklisted
             new Venice(new RejectAllInterceptor()).eval(pre);
         });
@@ -52,7 +51,7 @@ public class Sandbox_PreCompiledScript_Test {
         final IPreCompiled pre = new Venice(new RejectAllInterceptor())
                                     .precompile("test","(gc)");
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // RejectAllInterceptor -> gc is blacklisted
             new Venice(new RejectAllInterceptor()).eval(pre);
         });
@@ -91,7 +90,7 @@ public class Sandbox_PreCompiledScript_Test {
                                         .rejectVeniceFunctions("*io*")
                                         .rejectVeniceFunctions("*system*");
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // SandboxInterceptor with I/O functions rejected -> gc is blacklisted
             new Venice(new SandboxInterceptor(rules)).eval(pre);
         });
@@ -114,7 +113,7 @@ public class Sandbox_PreCompiledScript_Test {
                                         .rejectVeniceFunctions("*io*")
                                         .rejectVeniceFunctions("*system*");
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // SandboxInterceptor with I/O functions rejected -> gc is blacklisted
             new Venice(new SandboxInterceptor(rules)).eval(pre);
         });

@@ -35,7 +35,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
@@ -412,8 +411,8 @@ public class CoreConcurrencyFunctions {
                         catch(ExecutionException | CompletionException ex) {
                             if (ex.getCause() != null) {
                                 // just unwrap SecurityException and VncException
-                                if (ex.getCause() instanceof SecurityException) {
-                                    throw (SecurityException)ex.getCause();
+                                if (ex.getCause() instanceof com.github.jlangch.venice.SecurityException) {
+                                    throw (com.github.jlangch.venice.SecurityException)ex.getCause();
                                 }
                                 else if (ex.getCause() instanceof TimeoutException) {
                                     if (args.size() == 3) {

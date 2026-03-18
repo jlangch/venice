@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
@@ -67,7 +66,7 @@ public class Sandbox_VeniceAgent_Test {
                 "   (sleep 200)                                  \n" +
                 "   (agent-error x))                               ";
 
-        final SecurityException ex = (SecurityException)venice.eval(script);
+        final com.github.jlangch.venice.SecurityException ex = (com.github.jlangch.venice.SecurityException)venice.eval(script);
         assertEquals("Venice Sandbox: Access denied to function io/file", ex.getMessage());
     }
 

@@ -42,7 +42,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.github.jlangch.venice.IServiceRegistry;
 import com.github.jlangch.venice.NotInTailPositionException;
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
@@ -130,7 +129,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final IServiceRegistry serviceRegistry
     ) {
         if (interceptor == null) {
-            throw new SecurityException("VeniceInterpreter can not run without an interceptor");
+            throw new com.github.jlangch.venice.SecurityException("VeniceInterpreter can not run without an interceptor");
         }
 
         final MeterRegistry mr = meterRegistry == null

@@ -30,7 +30,6 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
@@ -91,7 +90,7 @@ public class Sandbox_VeniceFuture_Test {
                 "        (deref f))                         " +
                 ") ";
 
-        assertThrows(SecurityException.class, () -> venice.eval(script));
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval(script));
     }
 
     @Test

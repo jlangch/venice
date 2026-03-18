@@ -312,7 +312,7 @@ public class ThreadContext {
         final ThreadContext ctx = ThreadContext.get();
 
         if (inUse && ctx.inUse) {
-            throw new SecurityException(
+            throw new com.github.jlangch.venice.SecurityException(
                     "Rejected to start a second VeniceInterpreter within the same thread!");
         }
 

@@ -3464,7 +3464,7 @@ public class IOFunctions {
                         return Nil;
                     }
                 }
-                catch (SecurityException ex) {
+                catch (com.github.jlangch.venice.SecurityException ex) {
                     throw ex;
                 }
                 catch (Exception ex) {

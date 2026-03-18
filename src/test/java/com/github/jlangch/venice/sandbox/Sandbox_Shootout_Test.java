@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -90,14 +89,14 @@ public class Sandbox_Shootout_Test {
 
         // all denied
         for(String e : expr) {
-            assertThrows(SecurityException.class, () -> venice.eval(e));
+            assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval(e));
         }
 
         // macro expansion
         venice.eval("test", "(defmacro plus [x y] (+ 1 2))", false, null);
         venice.eval("test", "(defmacro plus [x y] (+ 1 2))", true, null);  // just defined, nothing to expand yet
 
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
                         venice.eval(
                             "test",
                             "(do                                 \n" +
@@ -105,7 +104,7 @@ public class Sandbox_Shootout_Test {
                             "  (plus 4 5))                       ",  // expands 'plus' at runtime
                             false, null));
 
-        assertThrows(SecurityException.class, () ->
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () ->
                         venice.eval(
                             "test",
                             "(do                                 \n" +
@@ -123,7 +122,7 @@ public class Sandbox_Shootout_Test {
         final Venice venice = new Venice(interceptor);
 
         // denied
-        assertThrows(SecurityException.class, () -> venice.eval("(+ 1 1)"));
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval("(+ 1 1)"));
     }
 
 
@@ -383,7 +382,7 @@ public class Sandbox_Shootout_Test {
 
         // all denied
         for(String e : expr) {
-            assertThrows(SecurityException.class, () -> venice.eval(e));
+            assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval(e));
         }
     }
 
@@ -409,7 +408,7 @@ public class Sandbox_Shootout_Test {
                 "                      pred-fn-proxy                              \n" +
                 "                      \"abc\" )))                                 ";
 
-        assertThrows(SecurityException.class, () -> venice.eval(script));
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval(script));
     }
 
     @Test
@@ -480,7 +479,7 @@ public class Sandbox_Shootout_Test {
 
         // all denied
         for(String e : expr) {
-            assertThrows(SecurityException.class, () -> venice.eval(e));
+            assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval(e));
         }
     }
 
@@ -512,8 +511,8 @@ public class Sandbox_Shootout_Test {
                "      (. :map (j/as-function (fn [x] (do (+ 1 2) (* % 10)))))    \n" +
                "      (. :collect (. :Collectors :toList))))                     ";
 
-        assertThrows(SecurityException.class, () -> venice.eval(script1));
-        assertThrows(SecurityException.class, () -> venice.eval(script2));
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval(script1));
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> venice.eval(script2));
     }
 
 }

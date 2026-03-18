@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.javainterop;
 
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.sandbox.CompiledSandboxRules;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -58,7 +57,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
             final Class<?> receiverFormalType,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateClassAccessor(receiverFormalType, method);
         validateObjAccessor(receiver, method);
 
@@ -71,7 +70,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
             final Class<?> receiver,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateClassAccessor(receiver, method);
 
         return super.onInvokeStaticMethod(invoker, receiver, method, args);
@@ -82,7 +81,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onInvokeConstructor(invoker, receiver, args);
     }
 
@@ -91,7 +90,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
             final IInvoker invoker,
             final Object receiver,
             final String property
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateObjAccessor(receiver, property);
 
         return super.onGetBeanProperty(invoker, receiver, property);
@@ -103,7 +102,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
             final Object receiver,
             final String property,
             final Object value
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateObjAccessor(receiver, property);
 
         super.onSetBeanProperty(invoker, receiver, property, value);
@@ -114,7 +113,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateClassAccessor(receiver, fieldName);
 
         return super.onGetStaticField(invoker, receiver, fieldName);
@@ -126,7 +125,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
             final Object receiver,
             final Class<?> receiverFormalType,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateObjAccessor(receiver, fieldName);
 
         return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
@@ -135,7 +134,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     @Override
     public byte[] onLoadClassPathResource(
             final String resourceName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateClasspathResource(resourceName);
 
         return super.onLoadClassPathResource(resourceName);
@@ -144,7 +143,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     @Override
     public String onReadSystemProperty(
             final String propertyName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateSystemProperty(propertyName);
 
         return super.onReadSystemProperty(propertyName);
@@ -153,7 +152,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     @Override
     public String onReadSystemEnv(
             final String name
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         validateSystemEnv(name);
 
         return super.onReadSystemEnv(name);
@@ -162,9 +161,9 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     @Override
     public IInterceptor validateVeniceFunction(
             final String funcName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (sandboxRules.isBlackListedVeniceFunction(funcName)) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access denied to function %s",
                     PREFIX,
                     funcName));
@@ -175,9 +174,9 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     @Override
     public IInterceptor validateLoadModule(
             final String moduleName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (!sandboxRules.isWhiteListedVeniceModule(moduleName)) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access denied to module %s",
                     PREFIX,
                     moduleName));
@@ -186,9 +185,9 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     }
 
     @Override
-    public IInterceptor validateMaxExecutionTime() throws SecurityException {
+    public IInterceptor validateMaxExecutionTime() throws com.github.jlangch.venice.SecurityException {
         if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
-            throw new SecurityException(
+            throw new com.github.jlangch.venice.SecurityException(
                     "Venice Sandbox: The sandbox exceeded the max execution time of " +
                     getMaxExecutionTimeSeconds() + "s");
         }
@@ -228,7 +227,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     private void validateClass(final Class<?> clazz) {
         if (clazz != null) {
             if (!sandboxRules.isWhiteListed(clazz)) {
-                throw new SecurityException(String.format(
+                throw new com.github.jlangch.venice.SecurityException(String.format(
                         "%s: Access denied to class %s",
                         PREFIX,
                         clazz.getName()));
@@ -245,7 +244,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     private void validateClassAccessor(final Class<?> clazz, final String accessor) {
         if (clazz != null) {
             if (!sandboxRules.isWhiteListed(clazz, accessor)) {
-                throw new SecurityException(String.format(
+                throw new com.github.jlangch.venice.SecurityException(String.format(
                         "%s: Access denied to accessor %s::%s",
                         PREFIX,
                         clazz.getName(),
@@ -263,7 +262,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     private void validateClasspathResource(final String resourceName) {
         if (!StringUtil.isBlank(resourceName)) {
             if (!sandboxRules.isWhiteListedClasspathResource(resourceName)) {
-                throw new SecurityException(String.format(
+                throw new com.github.jlangch.venice.SecurityException(String.format(
                         "%s: Access denied to classpath resource '%s'",
                         PREFIX,
                         resourceName));
@@ -274,7 +273,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     private void validateSystemProperty(final String propertyName) {
         if (!StringUtil.isBlank(propertyName)) {
             if (!sandboxRules.isWhiteListedSystemProperty(propertyName)) {
-                throw new SecurityException(String.format(
+                throw new com.github.jlangch.venice.SecurityException(String.format(
                         "%s: Access denied to system property '%s'",
                         PREFIX,
                         propertyName));
@@ -285,7 +284,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     private void validateSystemEnv(final String name) {
         if (!StringUtil.isBlank(name)) {
             if (!sandboxRules.isWhiteListedSystemEnv(name)) {
-                throw new SecurityException(String.format(
+                throw new com.github.jlangch.venice.SecurityException(String.format(
                         "%s: Access denied to system environment variable '%s'",
                         PREFIX,
                         name));

@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.examples;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
@@ -83,7 +82,7 @@ public class Embed_11_CustomSandbox {
         try {
             venice.eval("(. :java.lang.System :exit 0)");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (. :java.lang.System :exit 0)");
         }
 
@@ -91,7 +90,7 @@ public class Embed_11_CustomSandbox {
         try {
             venice.eval("(io/slurp \"/tmp/file\")");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (io/slurp ...)");
         }
 
@@ -103,7 +102,7 @@ public class Embed_11_CustomSandbox {
         try {
             venice.eval("(sleep 10_000)");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("EXCEEDED: max exec time on (sleep ...)");
         }
 
@@ -111,7 +110,7 @@ public class Embed_11_CustomSandbox {
         try {
             venice.eval("(system-prop \"db.password\")");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (system-prop ...)");
         }
 
@@ -119,7 +118,7 @@ public class Embed_11_CustomSandbox {
         try {
             venice.eval("(system-env \"USER\")");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (system-env ...)");
         }
 
@@ -127,7 +126,7 @@ public class Embed_11_CustomSandbox {
         try {
              venice.eval("(io/load-classpath-resource \"resources/images/img.tiff\")");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (io/load-classpath-resource ...)");
         }
     }

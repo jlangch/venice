@@ -26,7 +26,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -78,7 +77,7 @@ public class ModuleLoader {
                     file,
                     k -> loadClasspathVeniceFile(file, interceptor));
         }
-        catch (SecurityException ex) {
+        catch (com.github.jlangch.venice.SecurityException ex) {
             throw ex;
         }
         catch(Exception ex) {

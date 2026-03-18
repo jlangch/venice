@@ -33,7 +33,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -52,7 +51,7 @@ public class Sandbox_VeniceFunction_Test {
 
     @Test
     public void test_RejectAllInterceptor_slurp() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // RejectAllInterceptor -> all Venice IO functions blacklisted
             new Venice(new RejectAllInterceptor()).eval("(io/slurp \"/tmp/test\")");
         });
@@ -64,7 +63,7 @@ public class Sandbox_VeniceFunction_Test {
                                                 new SandboxRules()
                                                         .rejectAllIoFunctions());
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
         });
     }
@@ -75,7 +74,7 @@ public class Sandbox_VeniceFunction_Test {
         final Interceptor interceptor =
                 new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*io*"));
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
         });
     }
@@ -86,14 +85,14 @@ public class Sandbox_VeniceFunction_Test {
         final Interceptor interceptor =
                 new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/slurp"));
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
         });
     }
 
     @Test
     public void test_RejectAllInterceptor_gc_1() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // RejectAllInterceptor -> gc is blacklisted
             new Venice(new RejectAllInterceptor()).eval("(gc)");
         });
@@ -101,7 +100,7 @@ public class Sandbox_VeniceFunction_Test {
 
     @Test
     public void test_RejectAllInterceptor_gc_2() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // RejectAllInterceptor -> gc is blacklisted
             new Venice(new RejectAllInterceptor()).eval("(docoll (fn [x] (gc)) [1])");
         });
@@ -109,7 +108,7 @@ public class Sandbox_VeniceFunction_Test {
 
     @Test
     public void test_RejectAllInterceptor_gc_3() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             // RejectAllInterceptor -> gc is blacklisted
             new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (gc)) [1])");
         });
@@ -159,7 +158,7 @@ public class Sandbox_VeniceFunction_Test {
                                 .rejectVeniceFunctions("*io*"));
 
         // denied
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
         });
     }
@@ -185,7 +184,7 @@ public class Sandbox_VeniceFunction_Test {
                                 .rejectVeniceFunctions("*io*"));
 
         // denied
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
         });
     }

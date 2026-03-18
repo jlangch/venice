@@ -28,7 +28,6 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -44,14 +43,14 @@ public class Sandbox_JavaSystemEnvVars_Test {
 
     @Test
     public void test_all_RejectAllInterceptor() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(system-env)");
         });
     }
 
     @Test
     public void test_RejectAccessToAllSystemEnvs_RejectAllInterceptor() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(system-env \"test\")");
         });
     }
@@ -60,7 +59,7 @@ public class Sandbox_JavaSystemEnvVars_Test {
     public void test_RejectAccessToAllSystemEnvs_EmptySandbox() {
         final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(system-env \"test\")");
         });
     }
@@ -70,7 +69,7 @@ public class Sandbox_JavaSystemEnvVars_Test {
         final Interceptor interceptor = new SandboxInterceptor(
                                                 new SandboxRules().withStandardSystemEnvs());
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(system-env \"test\")");
         });
     }
@@ -80,7 +79,7 @@ public class Sandbox_JavaSystemEnvVars_Test {
         final Interceptor interceptor = new SandboxInterceptor(
                                                 new SandboxRules().withSystemEnvs("user"));
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(system-env \"test\")");
         });
     }

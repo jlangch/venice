@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -201,8 +200,8 @@ public class JavaInteropUtil {
         catch(JavaMethodInvocationException ex) {
             Throwable cause = ex.getCause();
             if (cause != null) {
-                if (cause instanceof SecurityException) {
-                    throw new SecurityException(String.format(
+                if (cause instanceof com.github.jlangch.venice.SecurityException) {
+                    throw new com.github.jlangch.venice.SecurityException(String.format(
                             "%s. %s",
                             cause.getMessage(),
                             ErrorMessage.buildErrLocation(args)));
@@ -210,8 +209,8 @@ public class JavaInteropUtil {
                 else if (cause instanceof InvocationTargetException) {
                     cause = cause.getCause();
                     if (cause != null) {
-                        if (cause instanceof SecurityException) {
-                            throw new SecurityException(String.format(
+                        if (cause instanceof com.github.jlangch.venice.SecurityException) {
+                            throw new com.github.jlangch.venice.SecurityException(String.format(
                                     "%s. %s",
                                     cause.getMessage(),
                                     ErrorMessage.buildErrLocation(args)));
@@ -230,8 +229,8 @@ public class JavaInteropUtil {
             throw new JavaMethodInvocationException(
                     String.format("%s.", ex.getMessage()), ex);
         }
-        catch(SecurityException ex) {
-            throw new SecurityException(String.format(
+        catch(com.github.jlangch.venice.SecurityException ex) {
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s. %s",
                     ex.getMessage(),
                     ErrorMessage.buildErrLocation(args)));

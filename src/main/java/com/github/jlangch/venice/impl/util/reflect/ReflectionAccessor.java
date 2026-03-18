@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.impl.util.Tuple4;
 import com.github.jlangch.venice.javainterop.ReturnValue;
@@ -533,7 +532,7 @@ public class ReflectionAccessor {
                             method.getGenericReturnType());
             }
         }
-        catch (SecurityException ex) {
+        catch (com.github.jlangch.venice.SecurityException ex) {
             throw ex;
         }
         catch (Exception ex) {

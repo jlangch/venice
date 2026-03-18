@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -42,7 +41,7 @@ public class Sandbox_SpecialForms_Test {
 
     @Test
     public void test_RejectAllInterceptor_set_BANG() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(set! x 100)");
         });
     }
@@ -52,7 +51,7 @@ public class Sandbox_SpecialForms_Test {
         final Interceptor interceptor =
                 new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("set!"));
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(set! x 100)");
         });
     }
@@ -63,7 +62,7 @@ public class Sandbox_SpecialForms_Test {
         final Interceptor interceptor =
                 new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*special-forms*"));
 
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(interceptor).eval("(set! x 100)");
         });
     }

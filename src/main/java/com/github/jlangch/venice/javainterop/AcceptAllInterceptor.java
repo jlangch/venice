@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.SecurityException;
-
-
 /**
  * Defines a Venice sandbox without any restrictions.
  */
@@ -45,7 +42,7 @@ public class AcceptAllInterceptor extends Interceptor {
             final Class<?> receiverFormalType,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
     }
 
@@ -55,7 +52,7 @@ public class AcceptAllInterceptor extends Interceptor {
             final Class<?> receiver,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onInvokeStaticMethod(invoker, receiver, method, args);
     }
 
@@ -64,7 +61,7 @@ public class AcceptAllInterceptor extends Interceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onInvokeConstructor(invoker, receiver, args);
     }
 
@@ -73,7 +70,7 @@ public class AcceptAllInterceptor extends Interceptor {
             final IInvoker invoker,
             final Object receiver,
             final String property
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onGetBeanProperty(invoker, receiver, property);
     }
 
@@ -83,7 +80,7 @@ public class AcceptAllInterceptor extends Interceptor {
             final Object receiver,
             final String property,
             final Object value
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         super.onSetBeanProperty(invoker, receiver, property, value);
     }
 
@@ -92,7 +89,7 @@ public class AcceptAllInterceptor extends Interceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onGetStaticField(invoker, receiver, fieldName);
     }
 
@@ -102,35 +99,35 @@ public class AcceptAllInterceptor extends Interceptor {
             final Object receiver,
             final Class<?> receiverFormalType,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
     }
 
     @Override
     public byte[] onLoadClassPathResource(
             final String resourceName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onLoadClassPathResource(resourceName);
     }
 
     @Override
     public String onReadSystemProperty(
             final String propertyName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onReadSystemProperty(propertyName);
     }
 
     @Override
     public String onReadSystemEnv(
             final String name
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         return super.onReadSystemEnv(name);
     }
 
     @Override
     public IInterceptor validateVeniceFunction(
             final String funcName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         // ok
         return this;
     }
@@ -138,7 +135,7 @@ public class AcceptAllInterceptor extends Interceptor {
     @Override
     public IInterceptor validateLoadModule(
             final String moduleName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         // ok
         return this;
     }

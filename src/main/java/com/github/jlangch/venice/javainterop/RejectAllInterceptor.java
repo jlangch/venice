@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.sandbox.SandboxDefaultRules;
 import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 
@@ -48,14 +47,14 @@ public class RejectAllInterceptor extends Interceptor {
             final Class<?> receiverFormalType,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (receiver == null) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access to any java object denied",
                     PREFIX));
         }
         else {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                         "%s: Access denied to target %s",
                         PREFIX,
                         receiver.getClass().getName()));
@@ -68,8 +67,8 @@ public class RejectAllInterceptor extends Interceptor {
             final Class<?> receiver,
             final String method,
             final Object... args
-    ) throws SecurityException {
-        throw new SecurityException(String.format(
+    ) throws com.github.jlangch.venice.SecurityException {
+        throw new com.github.jlangch.venice.SecurityException(String.format(
                 "%s: Access denied to target %s",
                 PREFIX,
                 receiver.getName()));
@@ -80,8 +79,8 @@ public class RejectAllInterceptor extends Interceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final Object... args
-    ) throws SecurityException {
-        throw new SecurityException(String.format(
+    ) throws com.github.jlangch.venice.SecurityException {
+        throw new com.github.jlangch.venice.SecurityException(String.format(
                 "%s: Access denied to target %s",
                 PREFIX,
                 receiver.getName()));
@@ -92,14 +91,14 @@ public class RejectAllInterceptor extends Interceptor {
             final IInvoker invoker,
             final Object receiver,
             final String property
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (receiver == null) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access to any java object denied",
                     PREFIX));
         }
         else {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access denied to target %s",
                     PREFIX,
                     receiver.getClass().getName()));
@@ -112,14 +111,14 @@ public class RejectAllInterceptor extends Interceptor {
             final Object receiver,
             final String property,
             final Object value
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (receiver == null) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access to any java object denied",
                     PREFIX));
         }
         else {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access denied to target %s",
                     PREFIX,
                     receiver.getClass().getName()));
@@ -131,8 +130,8 @@ public class RejectAllInterceptor extends Interceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final String fieldName
-    ) throws SecurityException {
-        throw new SecurityException(String.format(
+    ) throws com.github.jlangch.venice.SecurityException {
+        throw new com.github.jlangch.venice.SecurityException(String.format(
                 "%s: Access denied to target %s",
                 PREFIX,
                 receiver.getName()));
@@ -144,14 +143,14 @@ public class RejectAllInterceptor extends Interceptor {
             final Object receiver,
             final Class<?> receiverFormalType,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (receiver == null) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access to any java object denied",
                     PREFIX));
         }
         else {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access denied to target %s",
                     PREFIX,
                     receiver.getClass().getName()));
@@ -161,8 +160,8 @@ public class RejectAllInterceptor extends Interceptor {
     @Override
     public byte[] onLoadClassPathResource(
             final String resourceName
-    ) throws SecurityException {
-        throw new SecurityException(String.format(
+    ) throws com.github.jlangch.venice.SecurityException {
+        throw new com.github.jlangch.venice.SecurityException(String.format(
                 "%s: Access denied to classpath resource '%s'",
                 PREFIX,
                 resourceName));
@@ -171,8 +170,8 @@ public class RejectAllInterceptor extends Interceptor {
     @Override
     public String onReadSystemProperty(
             final String propertyName
-    ) throws SecurityException {
-        throw new SecurityException(String.format(
+    ) throws com.github.jlangch.venice.SecurityException {
+        throw new com.github.jlangch.venice.SecurityException(String.format(
                 "%s: Access denied to system property '%s'",
                 PREFIX,
                 propertyName));
@@ -181,8 +180,8 @@ public class RejectAllInterceptor extends Interceptor {
     @Override
     public String onReadSystemEnv(
             final String name
-    ) throws SecurityException {
-        throw new SecurityException(String.format(
+    ) throws com.github.jlangch.venice.SecurityException {
+        throw new com.github.jlangch.venice.SecurityException(String.format(
                 "%s: Access denied to system environment variable '%s'",
                 PREFIX,
                 name));
@@ -191,9 +190,9 @@ public class RejectAllInterceptor extends Interceptor {
     @Override
     public IInterceptor validateVeniceFunction(
             final String funcName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (SandboxFunctionGroups.groupFunctions("*unsafe*").contains(funcName)) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access denied to Venice function '%s'!",
                     PREFIX,
                     funcName));
@@ -204,9 +203,9 @@ public class RejectAllInterceptor extends Interceptor {
     @Override
     public IInterceptor validateLoadModule(
             final String moduleName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         if (!SandboxDefaultRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
-            throw new SecurityException(String.format(
+            throw new com.github.jlangch.venice.SecurityException(String.format(
                     "%s: Access denied to Venice module :%s!",
                     PREFIX,
                     moduleName));
@@ -215,9 +214,9 @@ public class RejectAllInterceptor extends Interceptor {
     }
 
     @Override
-    public IInterceptor validateMaxExecutionTime() throws SecurityException {
+    public IInterceptor validateMaxExecutionTime() throws com.github.jlangch.venice.SecurityException {
         if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
-            throw new SecurityException(
+            throw new com.github.jlangch.venice.SecurityException(
                     "Venice Sandbox: The sandbox exceeded the max execution time");
         }
         return this;

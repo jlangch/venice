@@ -27,8 +27,6 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.SecurityException;
-
 
 public class SandboxRecorder extends Interceptor {
 
@@ -67,7 +65,7 @@ public class SandboxRecorder extends Interceptor {
             final Class<?> receiverFormalType,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("%s:%s(%s)", type(receiver), method, arguments(args));
         return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
     }
@@ -78,7 +76,7 @@ public class SandboxRecorder extends Interceptor {
             final Class<?> receiver,
             final String method,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("%s:%s(%s)", type(receiver), method, arguments(args));
         return super.onInvokeStaticMethod(invoker, receiver, method, args);
     }
@@ -88,7 +86,7 @@ public class SandboxRecorder extends Interceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final Object... args
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("new %s(%s)", type(receiver), arguments(args));
         return super.onInvokeConstructor(invoker, receiver, args);
     }
@@ -98,7 +96,7 @@ public class SandboxRecorder extends Interceptor {
             final IInvoker invoker,
             final Object receiver,
             final String property
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("%s.!%s", type(receiver), property);
         return super.onGetBeanProperty(invoker, receiver,property);
     }
@@ -109,7 +107,7 @@ public class SandboxRecorder extends Interceptor {
             final Object receiver,
             final String property,
             final Object value
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("%s.!%s=%s", type(receiver), property, type(value));
         super.onSetBeanProperty(invoker, receiver, property, value);
     }
@@ -119,7 +117,7 @@ public class SandboxRecorder extends Interceptor {
             final IInvoker invoker,
             final Class<?> receiver,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("%s.@%s", type(receiver), fieldName);
         return super.onGetStaticField(invoker, receiver, fieldName);
     }
@@ -130,7 +128,7 @@ public class SandboxRecorder extends Interceptor {
             final Object receiver,
             final Class<?> receiverFormalType,
             final String fieldName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("%s.%s", type(receiver), fieldName);
         return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
     }
@@ -138,7 +136,7 @@ public class SandboxRecorder extends Interceptor {
     @Override
     public byte[] onLoadClassPathResource(
             final String resourceName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("classpath:%s", resourceName);
         return super.onLoadClassPathResource(resourceName);
     }
@@ -146,7 +144,7 @@ public class SandboxRecorder extends Interceptor {
     @Override
     public String onReadSystemProperty(
             final String propertyName
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("system.property:%s", propertyName);
         return super.onReadSystemProperty(propertyName);
     }
@@ -154,7 +152,7 @@ public class SandboxRecorder extends Interceptor {
     @Override
     public String onReadSystemEnv(
             final String name
-    ) throws SecurityException {
+    ) throws com.github.jlangch.venice.SecurityException {
         trace("system.env:%s", name);
         return super.onReadSystemEnv(name);
     }

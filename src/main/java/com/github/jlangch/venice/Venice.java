@@ -531,7 +531,7 @@ public class Venice {
             throw new ValueException(
                     value instanceof VncVal ? ((VncVal)value).convertToJavaObject() : value);
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             throw ex;
         }
         catch(ExecutionException ex) {
@@ -566,7 +566,7 @@ public class Venice {
         }
         catch (TimeoutException ex) {
             future.cancel(true);
-            throw new SecurityException(
+            throw new com.github.jlangch.venice.SecurityException(
                     "Venice Sandbox: The sandbox exceeded the max execution time. "
                         + "Requested cancellation!");
         }

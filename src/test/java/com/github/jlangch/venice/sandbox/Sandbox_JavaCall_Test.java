@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -63,21 +62,21 @@ public class Sandbox_JavaCall_Test {
 
     @Test
     public void test_system_exit_1() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
         });
     }
 
     @Test
     public void test_system_exit_2() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(docoll (fn [x] (. :java.lang.System :exit 0)) [1])");
         });
     }
 
     @Test
     public void test_system_exit_3() {
-        assertThrows(SecurityException.class, () -> {
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
             new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (do (. :java.lang.System :exit 0) x)) [1])");
         });
     }

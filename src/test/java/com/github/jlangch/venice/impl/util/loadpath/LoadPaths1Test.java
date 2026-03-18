@@ -34,7 +34,6 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -388,7 +387,7 @@ public class LoadPaths1Test {
                     Parameters.of("file", new File(root, "div.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
-            catch (SecurityException ex) { // Access denied to 'load-file'
+            catch (com.github.jlangch.venice.SecurityException ex) { // Access denied to 'load-file'
                 assertTrue(true);
             }
             try {
@@ -397,21 +396,21 @@ public class LoadPaths1Test {
                         Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
-            catch (SecurityException ex) { // Access denied to 'load-file'
+            catch (com.github.jlangch.venice.SecurityException ex) { // Access denied to 'load-file'
                 assertTrue(true);
             }
             try {
                 venice1.eval("(load-file :sum)");
                 fail("Expected VncException");
             }
-            catch (SecurityException ex) { // Access denied to 'load-file'
+            catch (com.github.jlangch.venice.SecurityException ex) { // Access denied to 'load-file'
                 assertTrue(true);
             }
             try {
                 venice1.eval("(load-file :not-existing)");
                 fail("Expected VncException");
             }
-            catch (SecurityException ex) { // Access denied to 'load-file'
+            catch (com.github.jlangch.venice.SecurityException ex) { // Access denied to 'load-file'
                 assertTrue(true);
             }
         });

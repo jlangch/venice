@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
@@ -109,7 +108,7 @@ public class Sandbox_JavaDynProxy_Test {
                                         "java.util.stream.*:*"));
 
         // (. :java.lang.System :currentTimeMillis) causes a Security exception
-        assertThrows(SecurityException.class, () -> new Venice(interceptor).eval(script));
+        assertThrows(com.github.jlangch.venice.SecurityException.class, () -> new Venice(interceptor).eval(script));
     }
 
     @Test

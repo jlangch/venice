@@ -257,7 +257,7 @@ public class VeniceTest {
         try(CapturingPrintStream ps = new CapturingPrintStream(10000)) {
             final Venice venice = new Venice();
 
-            assertThrows(SecurityException.class, () -> {
+            assertThrows(com.github.jlangch.venice.SecurityException.class, () -> {
                 venice.eval("(map print (range 1 10000))", Parameters.of("*out*", ps));
             });
         }

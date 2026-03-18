@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.examples;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -54,7 +53,7 @@ public class Embed_09_StrictSandbox {
         try {
            venice.eval("(println 100)");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (println 100)");
         }
     }

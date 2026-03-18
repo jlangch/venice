@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.examples;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -51,7 +50,7 @@ public class Embed_10_CustomMinimalSandbox {
         try {
             venice.eval("(read-line)");
         }
-        catch(SecurityException ex) {
+        catch(com.github.jlangch.venice.SecurityException ex) {
             System.out.println("REJECTED: (read-line)");
         }
     }
