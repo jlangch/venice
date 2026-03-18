@@ -262,4 +262,18 @@ public class RSAModuleTest {
         assertFalse((Boolean)venice.eval(script));
     }
 
+    @Test
+    public void test_sign_verify_binary() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                      \n" +
+                "  (load-module :rsa)                                                     \n" +
+                "  (let [key-pair (rsa/generate-key-pair)]                                \n" +
+                "    (-> (rsa/sign (bytebuf [1 2 3 4 5]) (rsa/private-key key-pair))      \n" +
+                "        (rsa/verify (bytebuf [1 2 3 4 5]) (rsa/public-key key-pair)))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
 }

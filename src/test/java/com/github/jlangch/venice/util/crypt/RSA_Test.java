@@ -82,12 +82,21 @@ public class RSA_Test {
     }
 
     @Test
-    public void test_sign() throws Exception {
+    public void test_sign_1() throws Exception {
         final KeyPair keyPair = RSA.generateKeyPair();
 
         final String signature = RSA.sign("Hello World", keyPair.getPrivate());
 
         assertTrue(RSA.verify(signature, "Hello World", keyPair.getPublic()));
+    }
+
+    @Test
+    public void test_sign_2() throws Exception {
+        final KeyPair keyPair = RSA.generateKeyPair();
+
+        final String signature = RSA.sign(new byte[] {1,2,3,4,5,6,7,8}, keyPair.getPrivate());
+
+        assertTrue(RSA.verify(signature, new byte[] {1,2,3,4,5,6,7,8}, keyPair.getPublic()));
     }
 
 }
