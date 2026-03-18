@@ -126,8 +126,8 @@ public class RsaPartyAuthenticationTest {
                 "                              :dh-rsa-server-public-key server-public-key)]           \n" +
                 "        (ipc/create-function server :echo echo-handler)                               \n" +
                 "                                                                                      \n" +
-                "        (ipc/send clientA :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))  \n" +
-                "        (ipc/send clientB :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))  \n" +
+                "        (ipc/send clientA :echo (ipc/plain-text-message \"A1\" \"test\" \"hello A\")) \n" +
+                "        (ipc/send clientB :echo (ipc/plain-text-message \"B1\" \"test\" \"hello B\")) \n" +
                 "                                                                                      \n" +
                 "        (sleep 100)))                                                                 \n" +
                 "                                                                                      \n" +
