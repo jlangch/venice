@@ -22,69 +22,55 @@
 package com.github.jlangch.venice.util.ipc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.io.File;
-import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.io.FileUtil;
 
 
 public class RsaPartyAuthenticationTest {
 
     @Test
     public void test_rsa_party_authentication() throws Exception {
-        final File dir = Files.createTempDirectory("test").toFile();
+        final Venice venice = new Venice();
 
-        try {
-            final Venice venice = new Venice();
+        final String script =
+                "(do                                                                                 \n" +
+                "  (load-module :rsa)                                                                \n" +
+                "  (load-module :ipc)                                                                \n" +
+                "                                                                                    \n" +
+                "  (with-tmp-dir \"test\"                                                            \n" +
+                "    ;; create RSA key pairs for the client and the server                           \n" +
+                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"client\")                \n" +
+                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"server\")                \n" +
+                "                                                                                    \n" +
+                "    ;; key pairs                                                                    \n" +
+                "    (def client-key-pair (rsa/load-key-pair *tmp-dir* \"client\"))                  \n" +
+                "    (def server-key-pair (rsa/load-key-pair *tmp-dir* \"server\"))                  \n" +
+                "                                                                                    \n" +
+                "    ;; public keys                                                                  \n" +
+                "    (def client-public-key (rsa/public-key client-key-pair))                        \n" +
+                "    (def server-public-key (rsa/public-key server-key-pair))                        \n" +
+                "                                                                                    \n" +
+                "    (def counter (atom 0))                                                          \n" +
+                "    (defn echo-handler [m] (swap! counter inc) m)                                   \n" +
+                "                                                                                    \n" +
+                "    (try-with [server (ipc/server 33333                                             \n" +
+                "                            :encrypt true                                           \n" +
+                "                            :dh-rsa-sign true                                       \n" +
+                "                            :dh-rsa-server-key-pair server-key-pair                 \n" +
+                "                            :dh-rsa-client-public-key client-public-key             \n" +
+                "                            :server-log-dir *tmp-dir*)                              \n" +
+                "               client (ipc/client 33333                                             \n" +
+                "                            :dh-rsa-client-key-pair client-key-pair                 \n" +
+                "                            :dh-rsa-server-public-key server-public-key)]           \n" +
+                "      (ipc/create-function server :echo echo-handler)                               \n" +
+                "      (ipc/send client :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))   \n" +
+                "      (sleep 100))                                                                  \n" +
+                "                                                                                    \n" +
+                "    (deref counter)))                                                                ";
 
-            final String script =
-                    "(do                                                                               \n" +
-                    "  (load-module :rsa)                                                              \n" +
-                    "  (load-module :ipc)                                                              \n" +
-                    "                                                                                  \n" +
-                    "  ;; create RSA key pairs for the client and the server                           \n" +
-                    "  (rsa/save-key-pair (rsa/generate-key-pair) dir \"client\")                      \n" +
-                    "  (rsa/save-key-pair (rsa/generate-key-pair) dir \"server\")                      \n" +
-                    "                                                                                  \n" +
-                    "  ;; on the client side the client key pair and the server public key is required \n" +
-                    "  (def client-key-pair (rsa/load-key-pair dir \"client\"))                        \n" +
-                    "  (def server-public-key (rsa/public-key server-key-pair))                        \n" +
-                    "                                                                                  \n" +
-                    "  ;; on the server side the server key pair and the client public key is required \n" +
-                    "  (def server-key-pair (rsa/load-key-pair dir \"server\"))                        \n" +
-                    "  (def client-public-key (rsa/public-key client-key-pair))                        \n" +
-                    "                                                                                  \n" +
-                    "  (def counter (atom 0))                                                          \n" +
-                    "  (defn echo-handler [m] (swap! counter inc) m)                                   \n" +
-                    "                                                                                  \n" +
-                    "  (try-with [server (ipc/server 33333                                             \n" +
-                    "                          :encrypt true                                           \n" +
-                    "                          :dh-rsa-sign true                                       \n" +
-                    "                          :dh-rsa-server-key-pair server-key-pair                 \n" +
-                    "                          :dh-rsa-client-public-key client-public-key             \n" +
-                    "                          :server-log-dir dir)                                    \n" +
-                    "             client (ipc/client 33333                                             \n" +
-                    "                          :dh-rsa-client-key-pair client-key-pair                 \n" +
-                    "                          :dh-rsa-server-public-key server-public-key)]           \n" +
-                    "    (ipc/create-function server :echo echo-handler)                               \n" +
-                    "    (ipc/send client :echo (ipc/plain-text-message \"1\" \"test\" \"hello 1\"))   \n" +
-                    "    (sleep 100))                                                                  \n" +
-                    "                                                                                  \n" +
-                    "  (deref counter))                                                                ";
-
-            assertEquals(1L, venice.eval(script, Parameters.of("dir", dir)));
-        }
-        finally {
-            FileUtil.rmdir(dir);
-        }
-
-        assertFalse(dir.exists());
+        assertEquals(1L, venice.eval(script));
     }
 
 }

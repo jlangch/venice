@@ -1357,6 +1357,31 @@
 
 
 (defmacro
+  ^{ :arglists '("(with-tmp-dir subdir & forms)")
+     :doc """
+          Creates the sub directory 'subdir' in the tmp dir and runs the forms.
+          After running the forms removes the created sub directory recursively.
+
+          Binds the created directory to `*tmp-dir*`
+          """
+     :examples '(
+          """
+          (with-tmp-dir "test" 
+             (io/spit (io/file *tmp-dir* "hello-1.txt") "Hello Wold")
+             (io/spit (io/file *tmp-dir* "hello-2.txt") "Hello Wold"))
+          """)
+    :see-also '("io/temp-dir") }
+
+  with-tmp-dir [subdir & forms]
+
+  `(binding [*tmp-dir* (io/temp-dir ~subdir)] 
+     (try 
+       (do ~@forms)
+       (finally 
+         (io/delete-file-tree *tmp-dir*)))))
+
+
+(defmacro
   ^{ :arglists '("(with-out-str & forms)")
      :doc """
           Evaluates exprs in a context in which `*out*` is bound to a capturing

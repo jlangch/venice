@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.macros;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -791,5 +792,32 @@ public class MacroTest {
         assertEquals(Long.valueOf(1L), venice.eval("(coalesce nil 1 2)"));
         assertEquals(Long.valueOf(2L), venice.eval("(coalesce nil nil 2)"));
         assertEquals(null, venice.eval("(coalesce nil nil nil)"));
+    }
+
+    @Test
+    public void test_with_tmp_dir() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                               \n" +
+                "  (def dir (atom nil))                                            \n" +
+                "                                                                  \n" +
+                "  (with-tmp-dir \"test\"                                          \n" +
+                "    (reset! dir *tmp-dir*)                                        \n" +
+                "                                                                  \n" +
+                "    ;; use globals within macro (discourage, just for tests)      \n" +
+                "    (def text \"Hello Wold\")                                     \n" +
+                "    (defn upper[t] (str/upper-case t))                            \n" +
+                "                                                                  \n" +
+                "    (io/spit (io/file *tmp-dir* \"hello-1.txt\") text)            \n" +
+                "    (io/spit (io/file *tmp-dir* \"hello-2.txt\") text)            \n" +
+                "                                                                  \n" +
+                "    (let [d (io/file *tmp-dir* \"xxx\")]                          \n" +
+                "      (io/mkdir d)                                                \n" +
+                "      (io/spit (io/file d \"hello-3.txt\") (upper text))))        \n" +
+                "                                                                  \n" +
+                "  (io/exists-dir? @dir))                                          ";
+
+        assertFalse((Boolean)venice.eval(script));
     }
 }

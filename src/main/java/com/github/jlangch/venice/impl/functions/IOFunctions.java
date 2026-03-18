@@ -70,7 +70,6 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -3324,7 +3323,7 @@ public class IOFunctions {
                     .arglists("(io/temp-dir prefix)")
                     .doc("Creates a new temp directory with prefix. Returns a :java.io.File.")
                     .examples("(io/temp-dir \"test-\")")
-                    .seeAlso("io/tmp-dir", "io/temp-file")
+                    .seeAlso("with-tmp-dir", "io/tmp-dir", "io/temp-file")
                     .build()
         ) {
             @Override

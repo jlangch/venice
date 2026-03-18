@@ -120,6 +120,7 @@ public class MacrosSection implements ISectionBuilder {
         util.addItem(diBuilder.getDocItem("comment"));
         util.addItem(diBuilder.getDocItem("gensym"));
         util.addItem(diBuilder.getDocItem("time"));
+        util.addItem(diBuilder.getDocItem("with-tmp-dir"));
         util.addItem(diBuilder.getDocItem("with-out-str"));
         util.addItem(diBuilder.getDocItem("with-err-str"));
 

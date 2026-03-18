@@ -19,6 +19,8 @@ All notable changes to this project will be documented in this file.
   keys to detect *Man-in-the-Middle* (MITM) attacks. The RSA signed key exchange is
   authenticating the two parties (IPC client and server) involved in the key exchange.
 
+- Added macro `with-tmp-dir`
+
 
 
 ## [1.12.84] - 2026-03-12
