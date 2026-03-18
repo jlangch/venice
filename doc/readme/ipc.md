@@ -1531,7 +1531,7 @@ a variety of authenticated protocols like Transport Layer Security (TLS).
 
 ## Hybrid Encryption
 
-The hybrid encryption model takes the symmetric encryption to a higher level by 
+The hybrid encryption model takes the symmetric encryption to the next level by 
 using asymmetric encryption to securely establish symmetric keys. Thus providing 
 authentication between the two parties that exchange keys.
 
@@ -1540,7 +1540,7 @@ authentication between the two parties that exchange keys.
 >  * Use asymmetric encryption to securely establish symmetric keys
 >  * Symmetric keys can then be used with symmetric encryption to protect bulk data
 >  * Protects against *Man-in-the-Middle* attacks
->  * Used in TLS ans SSH protocols
+>  * Hybrid Encryption is used in protocols like TLS and SSH 
 >
 > Signature:
 >  * Signs the symmetric keys exchanged through the *Diffie–Hellman* key exchange
