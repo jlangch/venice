@@ -1566,7 +1566,7 @@ authentication between the two parties that exchange keys.
     (defn echo-handler [m]
       (println "REQUEST:" (ipc/message->json true m)) 
       m)
-      
+
     ;; load key pairs at client/server start
     (let [client-key-pair (rsa/load-key-pair *tmp-dir* "client")
           server-key-pair (rsa/load-key-pair *tmp-dir* "server")
@@ -1579,7 +1579,7 @@ authentication between the two parties that exchange keys.
                               :encrypt true
                               :dh-rsa-sign true  ;; enable hybrid encryption
                               :dh-rsa-server-key-pair server-key-pair
-                              :dh-rsa-client-public-key client-public-key
+                              :dh-rsa-client-public-key [client-public-key]
                               :server-log-dir *tmp-dir*)
                  client (ipc/client 33333
                               :dh-rsa-client-key-pair client-key-pair
@@ -1591,6 +1591,12 @@ authentication between the two parties that exchange keys.
 
         (sleep 100)))))
 ```
+
+> [!TIP]
+> With multiple clients just pass a vector of the client's public keys
+> to the server
+> `:dh-rsa-client-public-key [client1-public-key client2-public-key]`
+>
 
  
  
