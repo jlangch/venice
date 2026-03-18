@@ -29,7 +29,9 @@ import java.io.OutputStream;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -54,6 +56,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -264,7 +267,14 @@ public class IPCFunctions {
                 final boolean encrypt = Coerce.toVncBoolean(encryptVal).getValue();
                 final boolean dhRsaSign = Coerce.toVncBoolean(dhRsaSignVal).getValue();
                 final KeyPair dhRsaServerKeyPair = Coerce.toVncJavaObjectOrNull(dhRsaServerKeyPairVal, KeyPair.class);
-                final PublicKey dhRsaClientPublicKey = Coerce.toVncJavaObjectOrNull(dhRsaClientPublicKeyVal, PublicKey.class);
+                final List<PublicKey> dhRsaClientPublicKeys = new ArrayList<>();
+                if (dhRsaClientPublicKeyVal instanceof VncSequence) {
+                    ((VncSequence)dhRsaClientPublicKeyVal).forEach(p ->
+                      dhRsaClientPublicKeys.add(Coerce.toVncJavaObjectOrNull(p, PublicKey.class)));
+                }
+                else {
+                    dhRsaClientPublicKeys.add(Coerce.toVncJavaObjectOrNull(dhRsaClientPublicKeyVal, PublicKey.class));
+                }
                 final long heartbeatInterval = Coerce.toVncLong(heartbeatIntervalVal).getValue();
                 final long deadLetterQueueSize = Coerce.toVncLong(deadLetterQueueSizeVal).getValue();
                 final int sndBufSize = (int)convertUnitValueToLong(sndBufSizeVal);
@@ -328,7 +338,7 @@ public class IPCFunctions {
                 builder.encrypt(encrypt);
                 builder.dhRsaSign(dhRsaSign);
                 builder.dhRsaSigningServerKeyPair(dhRsaServerKeyPair);
-                builder.dhRsaSigningClientPublicKey(dhRsaClientPublicKey);
+                builder.dhRsaSigningClientPublicKey(dhRsaClientPublicKeys);
                 if (serverLogDir != null) {
                     builder.enableLogger(serverLogDir);
                 }

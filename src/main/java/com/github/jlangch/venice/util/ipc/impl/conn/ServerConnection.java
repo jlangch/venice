@@ -60,6 +60,7 @@ import java.nio.charset.Charset;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -873,9 +874,9 @@ public class ServerConnection implements IPublisher, Runnable {
                 logInfo("Diffie-Hellman key exchange initiated! "
                         + "Signing:" + (config.isDhRsaSign() ? "on" : "off"));
 
-                final PublicKey dhRsaSigningClientPublicKey =
-                        config.isDhRsaSign() ? config.getDhRsaSigningClientPublicKey()
-                                             : null;
+                final List<PublicKey> dhRsaSigningClientPublicKeys =
+                        config.isDhRsaSign() ? config.getDhRsaSigningClientPublicKeys()
+                                             : new ArrayList<>();
 
                 final PrivateKey dhRsaSigningServerPrivateKey =
                         config.isDhRsaSign() ? config.getDhRsaSigningServerKeyPair().getPrivate()
@@ -883,7 +884,7 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 // Diffie-Hellman encryption key from client (verify signature it if required)
                 dhEncryptionClientKey = DiffieHellmanUtil.getExchangeKey(request);
-                DiffieHellmanUtil.verifySignedKey(request, dhRsaSigningClientPublicKey);
+                DiffieHellmanUtil.verifySignedKey(request, dhRsaSigningClientPublicKeys);
 
                 logInfo("Diffie-Hellman client encryption key received!"
                         + (config.isDhRsaSign() ? "Signature verification ok!" : ""));

@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 import java.nio.charset.Charset;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.List;
 
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -52,6 +53,30 @@ public abstract class DiffieHellmanUtil {
     public static String getSignature(final Message msg) {
         return trimToNull(
                 getString((VncMap)msg.getVeniceData(), "signature"));
+    }
+
+    public static void verifySignedKey(
+            final Message msg,
+            final List<PublicKey> dhRsaSigningClientPublicKeys
+    ) {
+        if (dhRsaSigningClientPublicKeys.isEmpty()) {
+            return;
+        }
+
+        final String signature = trimToEmpty(getSignature(msg));
+        final String key = getExchangeKey(msg);
+
+        for(PublicKey pk : dhRsaSigningClientPublicKeys) {
+            try {
+                final boolean ok = RSA.verify(signature, key, pk);
+                if (ok) return;
+            }
+            catch(Exception ignore) {}
+         }
+
+        throw new IpcException(
+                "The Diffie-Hellman key has been mutually changed! "
+                + "Signature verification failed!");
     }
 
     public static void verifySignedKey(

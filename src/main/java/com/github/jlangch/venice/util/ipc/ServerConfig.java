@@ -26,6 +26,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.github.jlangch.venice.util.ipc.impl.Messages;
@@ -39,7 +41,7 @@ public class ServerConfig {
             final boolean encrypt,
             final boolean dhRsaSign,
             final KeyPair dhRsaSigningServerKeyPair,
-            final PublicKey dhRsaSigningClientPublicKey,
+            final List<PublicKey> dhRsaSigningClientPublicKeys,
             final int compressCutoffSize,
             final long maxMessageSize,
             final int maxQueues,
@@ -61,7 +63,7 @@ public class ServerConfig {
         this.encrypt = encrypt;
         this.dhRsaSign = dhRsaSign;
         this.dhRsaSigningServerKeyPair = dhRsaSigningServerKeyPair;
-        this.dhRsaSigningClientPublicKey = dhRsaSigningClientPublicKey;
+        this.dhRsaSigningClientPublicKeys.addAll(dhRsaSigningClientPublicKeys);
         this.compressCutoffSize = compressCutoffSize;
         this.maxMessageSize = maxMessageSize;
         this.maxQueues = maxQueues;
@@ -83,7 +85,7 @@ public class ServerConfig {
                 encrypt,
                 dhRsaSign,
                 dhRsaSigningServerKeyPair,
-                dhRsaSigningClientPublicKey);
+                dhRsaSigningClientPublicKeys);
     }
 
 
@@ -104,8 +106,8 @@ public class ServerConfig {
         return dhRsaSigningServerKeyPair;
     }
 
-    public PublicKey getDhRsaSigningClientPublicKey() {
-        return dhRsaSigningClientPublicKey;
+    public List<PublicKey> getDhRsaSigningClientPublicKeys() {
+        return dhRsaSigningClientPublicKeys;
     }
 
     public int getCompressCutoffSize() {
@@ -187,7 +189,7 @@ public class ServerConfig {
             final boolean encrypt,
             final boolean dhRsaSign,
             final KeyPair dhRsaSigningServerKeyPair,
-            final PublicKey dhRsaSigningClientPublicKey
+            final List<PublicKey> dhRsaSigningClientPublicKeys
     ) {
         if (dhRsaSign) {
             if (!encrypt) {
@@ -197,7 +199,7 @@ public class ServerConfig {
             }
 
             if (dhRsaSigningServerKeyPair == null
-                || dhRsaSigningClientPublicKey == null
+                || dhRsaSigningClientPublicKeys.isEmpty()
             ) {
                 throw new IpcException(
                         "If Diffie-Hellman signed key exchange is activated the " +
@@ -317,13 +319,29 @@ public class ServerConfig {
         }
 
         /**
-         * Set the Diffie-Hellman RSA signing client public key.
+         * Set a the Diffie-Hellman RSA signing client public key.
          *
          * @param key A RSA public key
          * @return this builder
          */
         public Builder dhRsaSigningClientPublicKey(final PublicKey key) {
-            this.dhRsaSigningClientPublicKey = key;
+            if (key != null) {
+                this.dhRsaSigningClientPublicKeys.add(key);
+            }
+            return this;
+        }
+
+        /**
+         * Set a the Diffie-Hellman RSA signing client public keys.
+         *
+         * @param keys A list of RSA public keys
+         * @return this builder
+         */
+        public Builder dhRsaSigningClientPublicKey(final List<PublicKey> keys) {
+            if (keys != null) {
+                keys.forEach(k -> {
+                   if (k != null) this.dhRsaSigningClientPublicKeys.addAll(keys);});
+            }
             return this;
         }
 
@@ -575,7 +593,7 @@ public class ServerConfig {
                     encrypt,
                     dhRsaSign,
                     dhRsaSigningServerKeyPair,
-                    dhRsaSigningClientPublicKey,
+                    dhRsaSigningClientPublicKeys,
                     compressCutoffSize,
                     maxMessageSize,
                     maxQueues,
@@ -599,7 +617,7 @@ public class ServerConfig {
         private boolean encrypt = false;
         private boolean dhRsaSign = false;
         private KeyPair dhRsaSigningServerKeyPair = null;
-        private PublicKey dhRsaSigningClientPublicKey = null;
+        private List<PublicKey> dhRsaSigningClientPublicKeys = new ArrayList<>();
         private int compressCutoffSize = -1;
         private long maxMessageSize = Messages.MESSAGE_LIMIT_DEFAULT;
         private int maxQueues = Server.QUEUES_MAX_DEFAULT;
@@ -623,7 +641,7 @@ public class ServerConfig {
     private final boolean encrypt;
     private final boolean dhRsaSign;
     private final KeyPair dhRsaSigningServerKeyPair;
-    private final PublicKey dhRsaSigningClientPublicKey;
+    private final List<PublicKey> dhRsaSigningClientPublicKeys = new ArrayList<>();
     private final int compressCutoffSize;
     private final long maxMessageSize;
     private final int maxQueues;
