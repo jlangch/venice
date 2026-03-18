@@ -46,15 +46,19 @@ public class RsaPartyAuthenticationTest {
             final String script =
                     "(do                                                                               \n" +
                     "  (load-module :rsa)                                                              \n" +
+                    "  (load-module :ipc)                                                              \n" +
                     "                                                                                  \n" +
+                    "  ;; create RSA key pairs for the client and the server                           \n" +
                     "  (rsa/save-key-pair (rsa/generate-key-pair) dir \"client\")                      \n" +
                     "  (rsa/save-key-pair (rsa/generate-key-pair) dir \"server\")                      \n" +
                     "                                                                                  \n" +
+                    "  ;; on the client side the client key pair and the server public key is required \n" +
                     "  (def client-key-pair (rsa/load-key-pair dir \"client\"))                        \n" +
-                    "  (def server-key-pair (rsa/load-key-pair dir \"server\"))                        \n" +
-                    "                                                                                  \n" +
-                    "  (def client-public-key (rsa/public-key client-key-pair))                        \n" +
                     "  (def server-public-key (rsa/public-key server-key-pair))                        \n" +
+                    "                                                                                  \n" +
+                    "  ;; on the server side the server key pair and the client public key is required \n" +
+                    "  (def server-key-pair (rsa/load-key-pair dir \"server\"))                        \n" +
+                    "  (def client-public-key (rsa/public-key client-key-pair))                        \n" +
                     "                                                                                  \n" +
                     "  (def counter (atom 0))                                                          \n" +
                     "  (defn echo-handler [m] (swap! counter inc) m)                                   \n" +

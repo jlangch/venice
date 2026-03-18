@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
     * encrypt/decrypt
     * sign/verify
 
+- IPC Diffie-Hellman key exchange can now optionally be signed by RSA public/private
+  keys to detect *Man-in-the-Middle* (MITM) attacks. The RSA signed key exchange is
+  authenticating the two parties (IPC client and server) involved in the key exchange.
+
 
 
 ## [1.12.84] - 2026-03-12
