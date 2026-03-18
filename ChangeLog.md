@@ -12,8 +12,8 @@ All notable changes to this project will be documented in this file.
 - Added RSA module (asymmetric public-key cryptography algorithm)
     * generate key pairs
     * store/load keys as PEM files
-    * encrypt/decrypt
-    * sign/verify
+    * encrypt/decrypt messages
+    * sign/verify messages
 
 - IPC Diffie-Hellman key exchange can now optionally be signed by RSA public/private
   keys to detect *Man-in-the-Middle* (MITM) attacks. The RSA signed key exchange is
