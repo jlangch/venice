@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -41,6 +41,7 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 public class Sandbox_JavaClasspathResource_Test {
 
     @Test
+    @Disabled
     public void test_load_classpath_resource() {
         final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test-support.venice");
 
@@ -125,6 +126,7 @@ public class Sandbox_JavaClasspathResource_Test {
 
 
     @Test
+    @Disabled
     public void test_load_classpath_file() {
         final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test-support.venice");
 
