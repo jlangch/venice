@@ -22,7 +22,8 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
 * [Authentication](#authentication)
 * [ACL (Access Control Lists)](#acl-access-control-lists)
 * [Compression](#compression)
-* [Encryption](#encryption)
+* [Symmetric Encryption](#symmetric-encryption)
+* [Hybrid Encryption](#hybrid-encryption)
 * [Benchmark](#benchmark)
 * [Timeouts, Retries, and Idempotency in Distributed Systems](#timeouts-retries-and-idempotency-in-distributed-systems)
 
@@ -50,6 +51,8 @@ pluggable handler function computes the response from the request.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing to console
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -75,6 +78,8 @@ pluggable handler function computes the response from the request.
 ;; request:  {:x 100, :y 200}
 ;; response: {:z 300}
 (do
+  (load-module :ipc)
+
   (defn add-handler [m]
     (let [subject    (ipc/message-field m :subject)
           _          (assert (== :add subject))
@@ -99,6 +104,8 @@ pluggable handler function computes the response from the request.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing to console
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -124,6 +131,8 @@ pluggable handler function computes the response from the request.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing to console
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -158,6 +167,8 @@ Transient queues and its messages live only as long as the servers lives.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -188,6 +199,8 @@ Transient queues and its messages live only as long as the servers lives.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -226,6 +239,8 @@ Coffee order example:
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -292,67 +307,70 @@ the server.
  
 
 ``` clojure
-(let [wal-dir (io/file (io/temp-dir "wal-"))]
-  (try
-    ;; start client/server with Write-Ahead-Log and offer a few messages
-    (println "Starting server/client ...")
-    (try-with [server (ipc/server 33333
-                                  :write-ahead-log-dir wal-dir    ;; enable WAL
-                                  :write-ahead-log-compress true  ;; compress WAL entries
-                                  :write-ahead-log-compact true)  ;; compact WAL at startup
-               client (ipc/client 33333)]
+(do
+  (load-module :ipc)
 
-      ;; create the durable queue :testq (capacity=100)
-      (ipc/create-queue server :testq 100 :bounded :durable)
+  (let [wal-dir (io/file (io/temp-dir "wal-"))]
+    (try
+      ;; start client/server with Write-Ahead-Log and offer a few messages
+      (println "Starting server/client ...")
+      (try-with [server (ipc/server 33333
+                                    :write-ahead-log-dir wal-dir    ;; enable WAL
+                                    :write-ahead-log-compress true  ;; compress WAL entries
+                                    :write-ahead-log-compact true)  ;; compact WAL at startup
+                 client (ipc/client 33333)]
 
-      ;; offer 3 durable and 1 nondurable messages
-      (ipc/offer client :testq 300 (ipc/plain-text-message "1" :test "hello 1" true))
-      (ipc/offer client :testq 300 (ipc/plain-text-message "2" :test "hello 2" true))
-      (ipc/offer client :testq 300 (ipc/plain-text-message "3" :test "hello 3" false))
-      (ipc/offer client :testq 300 (ipc/plain-text-message "4" :test "hello 4" true))
+        ;; create the durable queue :testq (capacity=100)
+        (ipc/create-queue server :testq 100 :bounded :durable)
 
-      ;; poll message #1
-      (let [m (ipc/poll client :testq 300)]
-        (assert (ipc/response-ok? m))
-        (assert (== "hello 1" (ipc/message-field m :payload-text)))))
-    (println "Shutdown server/client")
+        ;; offer 3 durable and 1 nondurable messages
+        (ipc/offer client :testq 300 (ipc/plain-text-message "1" :test "hello 1" true))
+        (ipc/offer client :testq 300 (ipc/plain-text-message "2" :test "hello 2" true))
+        (ipc/offer client :testq 300 (ipc/plain-text-message "3" :test "hello 3" false))
+        (ipc/offer client :testq 300 (ipc/plain-text-message "4" :test "hello 4" true))
+
+        ;; poll message #1
+        (let [m (ipc/poll client :testq 300)]
+          (assert (ipc/response-ok? m))
+          (assert (== "hello 1" (ipc/message-field m :payload-text)))))
+      (println "Shutdown server/client")
     
-    (sleep 100)
+      (sleep 100)
 
-    ;; restart client/server to test Write-Ahead-Logs 
-    ;; the new server will read the Write-Ahead-Logs and populate the queue :testq
-    (println "Restarting server/client ...")
-    (try-with [server (ipc/server 33333
-                                  :write-ahead-log-dir wal-dir
-                                  :write-ahead-log-compress true
-                                  :write-ahead-log-compact true)
-               client (ipc/client 33333)]
+      ;; restart client/server to test Write-Ahead-Logs 
+      ;; the new server will read the Write-Ahead-Logs and populate the queue :testq
+      (println "Restarting server/client ...")
+      (try-with [server (ipc/server 33333
+                                    :write-ahead-log-dir wal-dir
+                                    :write-ahead-log-compress true
+                                    :write-ahead-log-compact true)
+                 client (ipc/client 33333)]
 
-      ;; create a bounded, durable queue :testq (capacity=100)
-      ;; if the queue already exists due to the WAL recovery process, this
-      ;; queue create request will just be skipped!
-      (ipc/create-queue server :testq 100 :bounded :durable)
+        ;; create a bounded, durable queue :testq (capacity=100)
+        ;; if the queue already exists due to the WAL recovery process, this
+        ;; queue create request will just be skipped!
+        (ipc/create-queue server :testq 100 :bounded :durable)
 
-      ;; poll message #2
-      (let [m (ipc/poll client :testq 300)]
-        (assert (ipc/response-ok? m))
-        (assert (== "hello 2" (ipc/message-field m :payload-text))))
+        ;; poll message #2
+        (let [m (ipc/poll client :testq 300)]
+          (assert (ipc/response-ok? m))
+          (assert (== "hello 2" (ipc/message-field m :payload-text))))
 
-      ;; message #3 is nondurable and therefore lost at server shutdown
+        ;; message #3 is nondurable and therefore lost at server shutdown
 
-      ;; poll message #4
-      (let [m (ipc/poll client :testq 300)]
-        (assert (ipc/response-ok? m))
-        (assert (== "hello 4" (ipc/message-field m :payload-text)))))
-    (println "Shutdown server/client")
+        ;; poll message #4
+        (let [m (ipc/poll client :testq 300)]
+          (assert (ipc/response-ok? m))
+          (assert (== "hello 4" (ipc/message-field m :payload-text)))))
+      (println "Shutdown server/client")
     
-    (sleep 100)
+      (sleep 100)
 
-    (finally 
-      (io/delete-file-tree wal-dir)
-      (println "WAL dir cleaned and removed")))
+      (finally 
+        (io/delete-file-tree wal-dir)
+        (println "WAL dir cleaned and removed")))
     
-  (println "Done."))
+    (println "Done.")))
 ```
 
 
@@ -369,6 +387,8 @@ close the IPC client.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -401,6 +421,8 @@ close the IPC client.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -679,6 +701,8 @@ Hello!
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
 
@@ -719,6 +743,8 @@ nil
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
 
@@ -759,6 +785,8 @@ application/json
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
 
@@ -776,6 +804,8 @@ application/json
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
 
@@ -793,6 +823,8 @@ application/json
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
 
@@ -810,6 +842,8 @@ application/json
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client "localhost" 33333)]
 
@@ -828,6 +862,8 @@ application/json
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -866,6 +902,8 @@ Create through 'server'
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
 
@@ -884,6 +922,8 @@ Create through 'client' (requires 'admin' user)
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (let [auth (ipc/authenticator)]
     (ipc/add-credentials auth "max" "756")         ;; normal user
     (ipc/add-credentials auth "tom" "123" :admin)  ;; admin user
@@ -914,16 +954,19 @@ Create through 'client' (requires 'admin' user)
 
 
 ``` clojure
-(let [wal-dir (io/file (io/temp-dir "wal-"))]
-  (try-with [server (ipc/server 33333
-                                :write-ahead-log-dir wal-dir    ;; enable WAL
-                                :write-ahead-log-compress true  ;; compress WAL entries
-                                :write-ahead-log-compact true)  ;; compact WAL at startup
-             client (ipc/client 33333)]
-    (ipc/create-queue server :queue/1 100 :bounded :durable)
-    (ipc/offer client :queue/1 300 
-               (ipc/plain-text-message "1" :test "hello"))
-    (finally (io/delete-file-tree wal-dir))))
+(do
+  (load-module :ipc)
+
+  (let [wal-dir (io/file (io/temp-dir "wal-"))]
+    (try-with [server (ipc/server 33333
+                                  :write-ahead-log-dir wal-dir    ;; enable WAL
+                                  :write-ahead-log-compress true  ;; compress WAL entries
+                                  :write-ahead-log-compact true)  ;; compact WAL at startup
+               client (ipc/client 33333)]
+      (ipc/create-queue server :queue/1 100 :bounded :durable)
+      (ipc/offer client :queue/1 300 
+                 (ipc/plain-text-message "1" :test "hello"))
+      (finally (io/delete-file-tree wal-dir)))))
 ```
 
 
@@ -934,6 +977,8 @@ as long as the client lives!
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
     (let [queue-name (ipc/create-temporary-queue client 100)]
@@ -949,6 +994,8 @@ as long as the client lives!
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
     
@@ -962,6 +1009,8 @@ as long as the client lives!
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
     
@@ -977,6 +1026,8 @@ for bounded or circular queues
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
     
@@ -998,6 +1049,8 @@ Create through 'server'
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
 
@@ -1012,6 +1065,8 @@ Create through 'client' (requires 'admin' user)
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (let [auth (ipc/authenticator)]
     (ipc/add-credentials auth "max" "756")         ;; normal user
     (ipc/add-credentials auth "tom" "123" :admin)  ;; admin user
@@ -1029,6 +1084,8 @@ Create through 'client' (requires 'admin' user)
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
     
@@ -1048,6 +1105,8 @@ Create through 'client' (requires 'admin' user)
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (defn echo-handler [m] m)
   
   (try-with [server (ipc/server 33333)
@@ -1067,6 +1126,8 @@ Create through 'client' (requires 'admin' user)
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (defn echo-handler [m] m)
   
   (try-with [server (ipc/server 33333)
@@ -1094,6 +1155,8 @@ authorized users/applications can access the messaging infrastructure.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (defn echo-handler [m]
     (println "REQUEST:  " (ipc/message->map m))
     m)
@@ -1120,6 +1183,8 @@ authorized users/applications can access the messaging infrastructure.
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (def auth-file (io/file "./ipc.cred"));
   
   ;; Create an authenticator and store it to "./ipc.cred"
@@ -1212,19 +1277,22 @@ for each destination:
 This custom default ACL setup can be achieved with:
 
 ``` clojure
-(let [auth (ipc/authenticator)]
-  (ipc/add-credentials auth "max" "zu*67")          ;; user 'max'
-  (ipc/add-credentials auth "tom" "3-kio")          ;; user 'tom'
+(do
+  (load-module :ipc)
+
+  (let [auth (ipc/authenticator)]
+    (ipc/add-credentials auth "max" "zu*67")          ;; user 'max'
+    (ipc/add-credentials auth "tom" "3-kio")          ;; user 'tom'
   
-  ;; custom default ACLs
-  (ipc/default-acl auth :queue    :deny)            ;; prevent all users from accessing queues
-  (ipc/default-acl auth :topic    :deny)            ;; prevent all users from accessing topics
-  (ipc/default-acl auth :function :deny)            ;; prevent all users from accessing functions
+    ;; custom default ACLs
+    (ipc/default-acl auth :queue    :deny)            ;; prevent all users from accessing queues
+    (ipc/default-acl auth :topic    :deny)            ;; prevent all users from accessing topics
+    (ipc/default-acl auth :function :deny)            ;; prevent all users from accessing functions
   
-  ;; Overrides for specific users
-  (ipc/add-acl auth :queue :queue/1 :poll  "tom")   ;; allow user 'tom' to poll messages from :queue/1
-  (ipc/add-acl auth :queue :queue/1 :offer "max")   ;; allow user 'max' to offer messages to :queue/1
-)
+    ;; Overrides for specific users
+    (ipc/add-acl auth :queue :queue/1 :poll  "tom")   ;; allow user 'tom' to poll messages from :queue/1
+    (ipc/add-acl auth :queue :queue/1 :offer "max")   ;; allow user 'max' to offer messages to :queue/1
+   ))
 ```
 
 
@@ -1247,6 +1315,8 @@ Grant specific principals (users) to:
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
     (ipc/add-credentials auth "jak" "io-96")              ;; user 'jak'
@@ -1293,6 +1363,8 @@ Grant specific principals (users) to:
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -1344,6 +1416,8 @@ Grant specific principals (users) to:
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; Create an authenticator with ACLs
   (let [auth (ipc/authenticator)]
     (ipc/add-credentials auth "jak" "io-96")            ;; user 'jak'
@@ -1383,6 +1457,8 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -1406,17 +1482,30 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
  
  
 
-## Encryption
+## Symmetric Encryption
 
 If encryption is enabled the payload data of all messages exchanged
 between a client and its associated server is encrypted.
 
-The data is AES-256-GCM encrypted using a secret that is created and 
-exchanged using the Diffie-Hellman key exchange algorithm.
+The data is AES-256-GCM encrypted using a secret key that is created and 
+exchanged using the *Diffie-Hellman* key exchange algorithm.
+
+*Diffie–Hellman* key exchange itself is a non-authenticated key-agreement protocol
+and thus it can not prevent *Man-in-the-Middle* attacks. It provides the basis for 
+a variety of authenticated protocols like Transport Layer Security (TLS).
+
+> [!NOTE]
+> Symmetric Encryption
+>  * Provides *Confidentiality*
+>  * High Efficiency
+>  * Suitable for Bulk Data
+>
 
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   ;; thread-safe printing
   (defn println [& msg] (locking println (apply core/println msg)))
 
@@ -1435,6 +1524,72 @@ exchanged using the Diffie-Hellman key exchange algorithm.
          (ipc/send client :echo)
          (ipc/message->json true)
          (println "RESPONSE:"))))
+```
+
+ 
+ 
+
+## Hybrid Encryption
+
+The hybrid encryption model takes the symmetric encryption to a higher level by 
+using asymmetric encryption to securely establish symmetric keys. Thus providing 
+authentication between the two parties that exchange keys.
+
+> [!NOTE]
+> Hybrid Encryption:
+>  * Use asymmetric encryption to securely establish symmetric keys
+>  * Symmetric keys can then be used with symmetric encryption to protect bulk data
+>  * Protects against *Man-in-the-Middle* attacks
+>  * Used in TLS ans SSH protocols
+>
+> Signature:
+>  * Signs the symmetric keys exchanged through the *Diffie–Hellman* key exchange
+>  * Provides Integrity and Authentication for the exchanged symmetric keys
+>
+
+``` clojure
+(do
+  (load-module :rsa)
+  (load-module :ipc)
+
+  (with-tmp-dir "test"
+    ;; create RSA key pairs for the client and the server, manually created
+    ;; once and deployed to client and server
+    ;;   - client-public.pem, client-private.pem
+    ;;   - server-public.pem, server-private.pem
+    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* "client")
+    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* "server")
+
+    ;; thread-safe printing
+    (defn println [& msg] (locking println (apply core/println msg)))
+
+    (defn echo-handler [m]
+      (println "REQUEST:" (ipc/message->json true m)) 
+      m)
+      
+    ;; load key pairs at client/server start
+    (let [client-key-pair (rsa/load-key-pair *tmp-dir* "client")
+          server-key-pair (rsa/load-key-pair *tmp-dir* "server")
+
+          ;; share public keys between client and server
+          client-public-key (rsa/public-key client-key-pair)
+          server-public-key (rsa/public-key server-key-pair)]
+
+      (try-with [server (ipc/server 33333
+                              :encrypt true
+                              :dh-rsa-sign true
+                              :dh-rsa-server-key-pair server-key-pair
+                              :dh-rsa-client-public-key client-public-key
+                              :server-log-dir *tmp-dir*)
+                 client (ipc/client 33333
+                              :dh-rsa-client-key-pair client-key-pair
+                              :dh-rsa-server-public-key server-public-key)]
+
+        (ipc/create-function server :echo echo-handler)
+
+        (ipc/send client :echo (ipc/plain-text-message "1" "test" "hello 1"))
+
+        (sleep 100)))))
 ```
 
  
@@ -1560,7 +1715,9 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread each, 
                5                            ;; 5s duration
                :print true                  ;; print results
                :ramp-up 1)                  ;; ramp-up phase 1s
+```
 
+``` clojure
 ;; Unix domain socket
 (ipc/benchmark "af-unix:///path/to/test.sock"
                :5KB                         ;; 5KB payload size
