@@ -80,6 +80,7 @@ public class ServerConfig {
         this.logDir = logDir;
 
         validateDhRsaSigning(
+                encrypt,
                 dhRsaSign,
                 dhRsaSigningServerKeyPair,
                 dhRsaSigningClientPublicKey);
@@ -172,28 +173,38 @@ public class ServerConfig {
     }
 
 
-    private void validateDhRsaSigning(
-            final boolean dhRsaSign,
-            final KeyPair dhRsaSigningServerKeyPair,
-            final PublicKey dhRsaSigningClientPublicKey
-    ) {
-        if (dhRsaSign) {
-            if (dhRsaSigningServerKeyPair == null || dhRsaSigningClientPublicKey == null) {
-                throw new IpcException(
-                        "If Diffie-Hellman RSA signing is activated the RSA signing server " +
-                        "key pair as well as the RSA signing client public key must be " +
-                        "supplied!");
-            }
-        }
-    }
-
-
     public static ServerConfig of(final int port) {
         return new Builder().conn(port).build();
     }
 
     public static Builder builder() {
         return new Builder();
+    }
+
+
+
+    private void validateDhRsaSigning(
+            final boolean encrypt,
+            final boolean dhRsaSign,
+            final KeyPair dhRsaSigningServerKeyPair,
+            final PublicKey dhRsaSigningClientPublicKey
+    ) {
+        if (dhRsaSign) {
+            if (!encrypt) {
+                throw new IpcException(
+                        "If Diffie-Hellman signed key exchange is activated "
+                        + "encryption must be activated too!");
+            }
+
+            if (dhRsaSigningServerKeyPair == null
+                || dhRsaSigningClientPublicKey == null
+            ) {
+                throw new IpcException(
+                        "If Diffie-Hellman signed key exchange is activated the " +
+                        "RSA signing server key pair as well as the RSA signing " +
+                        "client public key must be supplied!");
+            }
+        }
     }
 
 

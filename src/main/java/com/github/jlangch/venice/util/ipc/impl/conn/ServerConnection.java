@@ -57,6 +57,8 @@ import static com.github.jlangch.venice.util.ipc.ResponseStatus.TOPIC_NOT_FOUND;
 
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -868,12 +870,23 @@ public class ServerConnection implements IPublisher, Runnable {
         }
         else {
             try {
-                logInfo("Diffie-Hellman key exchange initiated!");
+                logInfo("Diffie-Hellman key exchange initiated! "
+                        + "Signing:" + (config.isDhRsaSign() ? "on" : "off"));
 
-                // Diffie-Hellman encryption key from client
+                final PublicKey dhRsaSigningClientPublicKey =
+                        config.isDhRsaSign() ? config.getDhRsaSigningClientPublicKey()
+                                             : null;
+
+                final PrivateKey dhRsaSigningServerPrivateKey =
+                        config.isDhRsaSign() ? config.getDhRsaSigningServerKeyPair().getPrivate()
+                                             : null;
+
+                // Diffie-Hellman encryption key from client (verify signature it if required)
                 dhEncryptionClientKey = DiffieHellmanUtil.getExchangeKey(request);
+                DiffieHellmanUtil.verifySignedKey(request, dhRsaSigningClientPublicKey);
 
-                logInfo("Diffie-Hellman client encryption key received!");
+                logInfo("Diffie-Hellman client encryption key received!"
+                        + (config.isDhRsaSign() ? "Signature verification ok!" : ""));
 
                 encryptor.set(Encryptor.aes(dhKeys.generateSharedSecret(dhEncryptionClientKey)));
 
@@ -889,11 +902,11 @@ public class ServerConnection implements IPublisher, Runnable {
 
                 logInfo("Diffie-Hellman encryption key exchange completed!");
 
-                // send the server's public encryption key back
+                // send the server's public encryption key back (sign it if required)
                 return DiffieHellmanUtil.createDiffieHellmanResponseMessage(
-                                            request,
-                                            serverPublicKey,
-                                            null);
+                                request,
+                                serverPublicKey,
+                                dhRsaSigningServerPrivateKey);
             }
             catch(Exception ex) {
                 logError("Diffie-Hellman key exchange error!", ex);

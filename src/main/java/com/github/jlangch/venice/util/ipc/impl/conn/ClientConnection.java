@@ -24,6 +24,8 @@ package com.github.jlangch.venice.util.ipc.impl.conn;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -125,7 +127,7 @@ public class ClientConnection implements AutoCloseable {
             // [4] Establish encryption through Diffie-Hellman key exchange
             if (encrypt) {
                 try {
-                    final String dhEncryptionServerKey = diffieHellmanKeyExchange(channel, dhKeys);
+                    final String dhEncryptionServerKey = diffieHellmanKeyExchange(channel, dhKeys, config);
                     encryptor = Encryptor.aes(dhKeys.generateSharedSecret(dhEncryptionServerKey));
                 }
                 catch(Exception ex) {
@@ -133,6 +135,11 @@ public class ClientConnection implements AutoCloseable {
                 }
             }
             else {
+                if (dhRsaSign) {
+                    throw new IpcException(
+                            "The server requires Diffie-Hellman signed key exchange "
+                            + "but encryption is not enabled!");
+                }
                 encryptor = Encryptor.off();
             }
 
@@ -397,16 +404,40 @@ public class ClientConnection implements AutoCloseable {
 
     private String diffieHellmanKeyExchange(
             final SocketChannel ch,
-            final DiffieHellmanKeys dhKeys
+            final DiffieHellmanKeys dhKeys,
+            final ClientConfig config
     ) throws Exception {
+        if (dhRsaSign && config.getDhRsaSigningClientKeyPair() == null) {
+            throw new IpcException(
+                    "The server requests Diffie-Hellman signed key exchange but "
+                    + "theres is no supplied Diffie-Hellman RSA signing client key pair!");
+        }
+        if (dhRsaSign && config.getDhRsaSigningServerPublicKey() == null) {
+            throw new IpcException(
+                    "The server requests Diffie-Hellman signed key exchange but "
+                    + "theres is no supplied Diffie-Hellman RSA signing server public key!");
+        }
+
+        final PublicKey dhRsaSigningServerPublicKey =
+                dhRsaSign ? config.getDhRsaSigningServerPublicKey()
+                          : null;
+
+        final PrivateKey dhRsaSigningClientPrivateKey =
+                dhRsaSign ? config.getDhRsaSigningClientKeyPair().getPrivate()
+                          : null;
+
+        // send the client's public encryption key (sign it if required)
         final Message m = DiffieHellmanUtil.createDiffieHellmanRequestMessage(
                                                 dhKeys.getPublicKeyBase64(),
-                                                null);
+                                                dhRsaSigningClientPrivateKey);
 
         // exchange the client's and the server's public key
         final Message response = sendDirect(m, ch, Compressor.off(), Encryptor.off(), DIFFIE_HELLMAN_TIMEOUT);
 
         if (response.getResponseStatus() == ResponseStatus.DIFFIE_HELLMAN_ACK) {
+            // verify signed key returned by the server (if required)
+            DiffieHellmanUtil.verifySignedKey(response, dhRsaSigningServerPublicKey);
+
             // successfully exchanged keys, return the server's public key
             return DiffieHellmanUtil.getExchangeKey(response);
         }

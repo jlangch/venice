@@ -59,19 +59,19 @@ public abstract class DiffieHellmanUtil {
             final PublicKey rsaSigningKey
     ) {
         verifySignedKey(
-            getExchangeKey(msg),
             getSignature(msg),
+            getExchangeKey(msg),
             rsaSigningKey);
     }
 
     public static void verifySignedKey(
-            final String key,
             final String signature,
+            final String key,
             final PublicKey rsaSigningKey
     ) {
         if (rsaSigningKey != null) {
             try {
-                final boolean ok = RSA.verify(key, trimToEmpty(signature), rsaSigningKey);
+                final boolean ok = RSA.verify(trimToEmpty(signature), key, rsaSigningKey);
                 if (!ok) {
                     throw new IpcException(
                             "The Diffie-Hellman key has been mutually changed! "
