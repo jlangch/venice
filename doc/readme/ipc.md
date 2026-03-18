@@ -1577,7 +1577,7 @@ authentication between the two parties that exchange keys.
 
       (try-with [server (ipc/server 33333
                               :encrypt true
-                              :dh-rsa-sign true
+                              :dh-rsa-sign true  ;; enable hybrid encryption
                               :dh-rsa-server-key-pair server-key-pair
                               :dh-rsa-client-public-key client-public-key
                               :server-log-dir *tmp-dir*)
