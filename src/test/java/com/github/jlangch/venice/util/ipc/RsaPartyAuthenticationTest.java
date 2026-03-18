@@ -54,7 +54,7 @@ public class RsaPartyAuthenticationTest {
                 "    (let [client-key-pair (rsa/load-key-pair *tmp-dir* \"client\")                    \n" +
                 "          server-key-pair (rsa/load-key-pair *tmp-dir* \"server\")                    \n" +
                 "                                                                                      \n" +
-                "          ;; extract public keys                                                      \n" +
+                "          ;; share public keys between client and server                              \n" +
                 "          client-public-key (rsa/public-key client-key-pair)                          \n" +
                 "          server-public-key (rsa/public-key server-key-pair)]                         \n" +
                 "                                                                                      \n" +
@@ -84,56 +84,60 @@ public class RsaPartyAuthenticationTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                                   \n" +
-                "  (load-module :rsa)                                                                  \n" +
-                "  (load-module :ipc)                                                                  \n" +
-                "                                                                                      \n" +
-                "  (with-tmp-dir \"test\"                                                              \n" +
-                "    ;; create RSA key pairs for the client and the server, manually created           \n" +
-                "    ;; once and deployed to client and server                                         \n" +
-                "    ;;   - clientA-public.pem, clientA-private.pem                                    \n" +
-                "    ;;   - clientB-public.pem, clientB-private.pem                                    \n" +
-                "    ;;   - server-public.pem, server-private.pem                                      \n" +
-                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"clientA\")                 \n" +
-                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"clientB\")                 \n" +
-                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"server\")                  \n" +
-                "                                                                                      \n" +
-                "    (def counter (atom 0))                                                            \n" +
-                "    (defn echo-handler [m] (swap! counter inc) m)                                     \n" +
-                "                                                                                      \n" +
-                "    ;; load key pairs at client/server start                                          \n" +
-                "    (let [clientA-key-pair (rsa/load-key-pair *tmp-dir* \"clientA\")                  \n" +
-                "          clientB-key-pair (rsa/load-key-pair *tmp-dir* \"clientB\")                  \n" +
-                "          server-key-pair  (rsa/load-key-pair *tmp-dir* \"server\")                   \n" +
-                "                                                                                      \n" +
-                "          ;; extract public keys                                                      \n" +
-                "          clientA-public-key (rsa/public-key clientA-key-pair)                        \n" +
-                "          clientB-public-key (rsa/public-key clientB-key-pair)                        \n" +
-                "          server-public-key  (rsa/public-key server-key-pair)]                        \n" +
-                "                                                                                      \n" +
-                "      (try-with [server (ipc/server 33333                                             \n" +
-                "                              :encrypt true                                           \n" +
-                "                              :dh-rsa-sign true                                       \n" +
-                "                              :dh-rsa-server-key-pair server-key-pair                 \n" +
-                "                              :dh-rsa-client-public-key [clientA-public-key           \n" +
-                "                                                         clientB-public-key]          \n" +
-                "                              :server-log-dir *tmp-dir*)                              \n" +
-                "                 clientA (ipc/client 33333                                            \n" +
-                "                              :dh-rsa-client-key-pair clientA-key-pair                \n" +
-                "                              :dh-rsa-server-public-key server-public-key)            \n" +
-                "                 clientB (ipc/client 33333                                            \n" +
-                "                              :dh-rsa-client-key-pair clientB-key-pair                \n" +
-                "                              :dh-rsa-server-public-key server-public-key)]           \n" +
-                "        (ipc/create-function server :echo echo-handler)                               \n" +
-                "                                                                                      \n" +
-                "        (ipc/send clientA :echo (ipc/plain-text-message \"A1\" \"test\" \"hello A\")) \n" +
-                "        (ipc/send clientB :echo (ipc/plain-text-message \"B1\" \"test\" \"hello B\")) \n" +
-                "                                                                                      \n" +
-                "        (sleep 100)))                                                                 \n" +
-                "                                                                                      \n" +
-                "    (deref counter)))                                                                 ";
+                "(do                                                                                      \n" +
+                "  (load-module :rsa)                                                                     \n" +
+                "  (load-module :ipc)                                                                     \n" +
+                "                                                                                         \n" +
+                "  (with-tmp-dir \"test\"                                                                 \n" +
+                "    ;; create RSA key pairs for the client and the server, manually created              \n" +
+                "    ;; once and deployed to client and server                                            \n" +
+                "    ;;   - clientA-public.pem, clientA-private.pem                                       \n" +
+                "    ;;   - clientB-public.pem, clientB-private.pem                                       \n" +
+                "    ;;   - server-public.pem, server-private.pem                                         \n" +
+                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"clientA\")                    \n" +
+                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"clientB\")                    \n" +
+                "    (rsa/save-key-pair (rsa/generate-key-pair) *tmp-dir* \"server\")                     \n" +
+                "                                                                                         \n" +
+                "    (def counter (atom 0))                                                               \n" +
+                "    (defn echo-handler [m] (swap! counter inc) m)                                        \n" +
+                "                                                                                         \n" +
+                "    ;; load key pairs at client/server start                                             \n" +
+                "    (let [clientA-key-pair (rsa/load-key-pair *tmp-dir* \"clientA\")                     \n" +
+                "          clientB-key-pair (rsa/load-key-pair *tmp-dir* \"clientB\")                     \n" +
+                "          server-key-pair  (rsa/load-key-pair *tmp-dir* \"server\")                      \n" +
+                "                                                                                         \n" +
+                "          ;; share public keys between client and server                                 \n" +
+                "          clientA-public-key (rsa/public-key clientA-key-pair)                           \n" +
+                "          clientB-public-key (rsa/public-key clientB-key-pair)                           \n" +
+                "          server-public-key  (rsa/public-key server-key-pair)]                           \n" +
+                "                                                                                         \n" +
+                "      (try-with [server (ipc/server 33333                                                \n" +
+                "                              :encrypt true                                              \n" +
+                "                              :dh-rsa-sign true                                          \n" +
+                "                              :dh-rsa-server-key-pair server-key-pair                    \n" +
+                "                              :dh-rsa-client-public-key [clientA-public-key              \n" +
+                "                                                         clientB-public-key]             \n" +
+                "                              :server-log-dir *tmp-dir*)                                 \n" +
+                "                 clientA1 (ipc/client 33333                                              \n" +
+                "                              :dh-rsa-client-key-pair clientA-key-pair                   \n" +
+                "                              :dh-rsa-server-public-key server-public-key)               \n" +
+                "                 clientA2 (ipc/client 33333                                              \n" +
+                "                              :dh-rsa-client-key-pair clientA-key-pair                   \n" +
+                "                              :dh-rsa-server-public-key server-public-key)               \n" +
+                "                 clientB (ipc/client 33333                                               \n" +
+                "                              :dh-rsa-client-key-pair clientB-key-pair                   \n" +
+                "                              :dh-rsa-server-public-key server-public-key)]              \n" +
+                "        (ipc/create-function server :echo echo-handler)                                  \n" +
+                "                                                                                         \n" +
+                "        (ipc/send clientA1 :echo (ipc/plain-text-message \"A1\" \"test\" \"hello A1\"))  \n" +
+                "        (ipc/send clientA2 :echo (ipc/plain-text-message \"A2\" \"test\" \"hello A2\"))  \n" +
+                "        (ipc/send clientB  :echo (ipc/plain-text-message \"B\"  \"test\" \"hello B\"))   \n" +
+                "                                                                                         \n" +
+                "        (sleep 100)))                                                                    \n" +
+                "                                                                                         \n" +
+                "    (deref counter)))                                                                    ";
 
-        assertEquals(2L, venice.eval(script));
+        assertEquals(3L, venice.eval(script));
     }
 
 }
