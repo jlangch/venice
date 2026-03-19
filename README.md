@@ -103,7 +103,7 @@ Start the REPL from a terminal:
 
  
 
-Run an expression like `(+ 1 1)`:
+In the REPL run an expression like `(+ 1 1)`:
 
 ```
 venice> (+ 1 1)
