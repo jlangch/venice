@@ -9987,6 +9987,7 @@ public class CoreFunctions {
                         "(seq [1 2 3])",
                         "(seq '(1 2 3))",
                         "(seq {:a 1 :b 2})",
+                        "(seq #{1 2})",
                         "(seq \"abcd\")",
                         "(flatten (seq {:a 1 :b 2}))")
                     .build()
@@ -10013,22 +10014,8 @@ public class CoreFunctions {
                                  .collect(Collectors.toList()));
                     }
                 }
-                else if (Types.isVncMap(val)) {
-                    if (((VncMap)val).isEmpty()) {
-                        return Nil;
-                    }
-                    return VncList.ofList(
-                            ((VncMap)val)
-                                .entries()
-                                .stream()
-                                .map(e -> VncVector.of(e.getKey(), e.getValue()))
-                                .collect(Collectors.toList()));
-                }
-                else if (Types.isVncLazySeq(val)) {
-                    return ((VncLazySeq)val).isEmpty() ? Nil : val;
-                }
-                else if (Types.isVncSequence(val)) {
-                    return ((VncSequence)val).isEmpty() ? Nil : ((VncSequence)val).toVncList();
+                else if (Types.isVncCollection(val)) {
+                    return ((VncCollection)val).isEmpty() ? Nil : ((VncCollection)val).toVncList();
                 }
                 else if (Types.isVncString(val)) {
                     final VncString s = (VncString)val;
@@ -10038,7 +10025,9 @@ public class CoreFunctions {
                     return Nil;
                 }
                 else {
-                    throw new VncException("seq: called on non-sequence");
+                    throw new VncException(String.format(
+                            "seq: a value of type %s is not sequable",
+                            val.getType()));
                 }
             }
 

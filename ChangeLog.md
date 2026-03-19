@@ -22,6 +22,13 @@ All notable changes to this project will be documented in this file.
 - Added macro `with-tmp-dir`
 
 
+### Bugs
+
+- [#9](https://github.com/jlangch/venice/issues/9): Fixed function `seq` to run on sets as well
+    * `(seq #{})` => nil
+    * `(sort (seq #{1 2 3}))` => (1 2 3)
+
+
 
 ## [1.12.84] - 2026-03-12
 
@@ -79,7 +86,8 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed the :ansi progress demos:  `(do (load-module :ansi) (ansi/demo))`
+- [#8](https://github.com/jlangch/venice/issues/8): Fixed the :ansi progress 
+  demos:  `(do (load-module :ansi) (ansi/demo))`
 
 ### Decommissioned
 
@@ -92,7 +100,8 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Added the setup option `-minimal` to setup a minimal REPL
+- [#7](https://github.com/jlangch/venice/issues/7): Added the setup option `-minimal` to setup 
+  a minimal REPL
 
 ```
 $ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
@@ -121,7 +130,8 @@ $ java -jar venice-1.12.81.jar -setup -minimal -colors -dir ./repl
 
 ### Bugs
 
-- Allow multiline single and triple quoted string literals in the REPL
+- [#6](https://github.com/jlangch/venice/issues/6): Allow multiline single and triple quoted 
+  string literals in the REPL
 
 ```
   venice> (def x """

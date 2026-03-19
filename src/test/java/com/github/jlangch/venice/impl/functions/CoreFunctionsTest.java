@@ -5040,7 +5040,6 @@ public class CoreFunctionsTest {
                 venice.eval("(pr-str (select-keys {:a 1 :b 2 :c 3} [:a :c]))"));
     }
 
-
     @Test
     public void test_seq() {
         final Venice venice = new Venice();
@@ -5050,6 +5049,18 @@ public class CoreFunctionsTest {
         assertEquals("(1 2)", venice.eval("(str (seq [1 2]))"));
         assertEquals("(a b c)", venice.eval("(str (seq \"abc\"))"));
         assertEquals("([:a 1] [:b 2])", venice.eval("(str (seq {:a 1 :b 2}))"));
+        assertEquals("(1 2)", venice.eval("(str (sort (seq #{1 2})))"));
+
+        // do not apply it to infinite lazy-seq!!
+        assertEquals("(1 2)", venice.eval("(str (seq (lazy-seq '(1 2))))"));
+
+        assertEquals("(2 1)", venice.eval("(str (seq (let [c (stack)] (push! c 1) (push! c 2) c)))"));
+        assertEquals("(1 2)", venice.eval("(str (seq (let [c (queue)] (offer! c 1) (offer! c 2) c)))"));
+        assertEquals("(1 2)", venice.eval("(str (seq (let [c (deque)] (offer! c 1) (offer! c 2) c)))"));
+        assertEquals("(1 2)", venice.eval("(str (seq (let [c (circular-buffer 3)] (put! c 1) (put! c 2) c)))"));
+        // delay queue toList always returns an empty list!!
+        assertEquals("()",    venice.eval("(str (seq (let [c (delay-queue)] (put! c 1 10) (put! c 1 1000) c)))"));
+
 
         // Corner cases
         assertEquals(null, venice.eval("(seq nil)"));
@@ -5057,6 +5068,13 @@ public class CoreFunctionsTest {
         assertEquals(null, venice.eval("(seq '())"));
         assertEquals(null, venice.eval("(seq [])"));
         assertEquals(null, venice.eval("(seq {})"));
+        assertEquals(null, venice.eval("(seq #{})"));
+
+        assertEquals(null, venice.eval("(seq (stack))"));
+        assertEquals(null, venice.eval("(seq (queue))"));
+        assertEquals(null, venice.eval("(seq (deque))"));
+        assertEquals(null, venice.eval("(seq (circular-buffer 3))"));
+        assertEquals(null, venice.eval("(seq (delay-queue))"));
     }
 
     @Test
