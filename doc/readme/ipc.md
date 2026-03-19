@@ -659,6 +659,8 @@ The message size limit can be configured on the server in the range of 2KB ... 2
 
 ``` clojure
 (do
+  (load-module :ipc)
+
   (try-with [server (ipc/server 33333)
              client (ipc/client 33333)]
 
