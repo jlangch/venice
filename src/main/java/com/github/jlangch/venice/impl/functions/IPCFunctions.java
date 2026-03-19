@@ -129,6 +129,14 @@ public class IPCFunctions {
                                                         " The data is AES-256-GCM encrypted using a secret that is" +
                                                         " created and exchanged using the Diffie-Hellman key exchange" +
                                                         " algorithm.|\n" +
+                        "| :dh-rsa-sign                 | If `true` sign and verify the secrets exchanged with Diffie-Hellman " +
+                                                        " key exchange with RSA private/public keys.¶" +
+                                                        " Defaults to `false`.|\n" +
+                        "| :dh-rsa-server-key-pair k    | The server RSA key pair for signing the Diffie-Hellman secret." +
+                                                        " Defaults to `nil`.|\n" +
+                        "| :dh-rsa-client-public-key k  | The client RSA public key for verifying the Diffie-Hellman secret." +
+                                                        " May be a vector of client RSA public keys." +
+                                                        " Defaults to `nil`.|\n" +
                         "| :server-log-dir f            | If the server-log-dir is specified writes a server log to this" +
                                                         " directory.¶" +
                                                         " Defaults to `nil`.|\n" +
@@ -379,30 +387,35 @@ public class IPCFunctions {
                     .doc(
                         "Create a new client connecting to a server on the specified " +
                         "host and port.\n\n" +
-                        "| *Arguments:*            | |\n" +
-                        "| port p                  | The server's TCP/IP port |\n" +
-                        "| host h                  | The server's TCP/IP host |\n" +
-                        "| conn-uri u              | A connection URI¶" +
-                                                   " \u00A0 • TCP/IP sockets¶" +
-                                                   " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
-                                                   " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
-                                                   " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
-                        "| \u00A0¶*Options:*       | |\n" +
-                        "| :encrypt b              | If `true` encrypt the payload data of all messages exchanged" +
-                                                   " between this client and its associated server.¶" +
-                                                   " The data is AES-256-GCM encrypted using a secret that is" +
-                                                   " created and exchanged using the Diffie-Hellman key exchange " +
-                                                   " algorithm.|\n" +
-                        "| :user-name s            | A user-name if the server requires authentication|\n" +
-                        "| :password s             | A password if the server requires authentication|\n" +
-                        "| :socket-snd-buf-size n  | The client socket's send buffer size.¶" +
-                                                   " Defaults to `-1` (use the sockets default buf size).¶" +
-                                                   " The size can be specified as a number like `64536`" +
-                                                   " or a number with a unit like `:64KB` or `:1MB`.|\n" +
-                        "| :socket-rcv-buf-size n  | The client socket's receive buffer size.¶" +
-                                                   " Defaults to `-1` (use the sockets default buf size).¶" +
-                                                   " The size can be specified as a number like `64536`" +
-                                                   " or a number with a unit like `:64KB` or `:1MB`.|\n\n" +
+                        "| [![text-align: left; width: 25%]] | [![text-align: left; width: 75%]] |\n" +
+                        "| *Arguments:*                | |\n" +
+                        "| port p                      | The server's TCP/IP port |\n" +
+                        "| host h                      | The server's TCP/IP host |\n" +
+                        "| conn-uri u                  | A connection URI¶" +
+                                                       " \u00A0 • TCP/IP sockets¶" +
+                                                       " \u00A0\u00A0\u00A0 `af-inet://localhost:33333`¶" +
+                                                       " \u00A0 • Unix domain sockets (requires junixsocket libraries!)¶" +
+                                                       " \u00A0\u00A0\u00A0 `af-unix:///data/ipc/test.sock`|\n" +
+                        "| \u00A0¶*Options:*           | |\n" +
+                        "| :encrypt b                  | If `true` encrypt the payload data of all messages exchanged" +
+                                                       " between this client and its associated server.¶" +
+                                                       " The data is AES-256-GCM encrypted using a secret that is" +
+                                                       " created and exchanged using the Diffie-Hellman key exchange " +
+                                                       " algorithm.|\n" +
+                        "| :dh-rsa-client-key-pair k   | The client RSA key pair for signing the Diffie-Hellman secret." +
+                                                       " Defaults to `nil`.|\n" +
+                        "| :dh-rsa-server-public-key k | The server RSA public key for verifying the Diffie-Hellman secret." +
+                                                       " Defaults to `nil`.|\n" +
+                        "| :user-name s                | A user-name if the server requires authentication|\n" +
+                        "| :password s                 | A password if the server requires authentication|\n" +
+                        "| :socket-snd-buf-size n      | The client socket's send buffer size.¶" +
+                                                       " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                       " The size can be specified as a number like `64536`" +
+                                                       " or a number with a unit like `:64KB` or `:1MB`.|\n" +
+                        "| :socket-rcv-buf-size n      | The client socket's receive buffer size.¶" +
+                                                       " Defaults to `-1` (use the sockets default buf size).¶" +
+                                                       " The size can be specified as a number like `64536`" +
+                                                       " or a number with a unit like `:64KB` or `:1MB`.|\n\n" +
                         "**The client is thread-safe!** \n\n" +
                         "**The client must be closed after use!**\n\n" +
                         "[See Inter-Process-Communication](https://github.com/jlangch/venice/blob/master/doc/readme/ipc.md)")

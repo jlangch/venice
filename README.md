@@ -78,7 +78,7 @@ Venice requires Java 8 or newer.
 Grab the Venice JAR from Maven:
  
 ``` shell
-curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.84/venice-1.12.84.jar
+curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.85/venice-1.12.85.jar
 ```
 
  
@@ -86,7 +86,7 @@ curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.12.84/venice-
 Setup a REPL in the directory `./repl`:
 
 ``` shell
-java -jar venice-1.12.84.jar -setup -colors -dir ./repl
+java -jar venice-1.12.85.jar -setup -colors -dir ./repl
 ```
 
  
@@ -190,7 +190,7 @@ You can can pull it from the central Maven repositories:
 <dependency>
   <groupId>com.github.jlangch</groupId>
   <artifactId>venice</artifactId>
-  <version>1.12.84</version>
+  <version>1.12.85</version>
 </dependency>
 ```
 
