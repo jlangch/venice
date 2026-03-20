@@ -22,11 +22,15 @@
 package com.github.jlangch.venice.impl.util.loadpath;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.OS;
+import com.github.jlangch.venice.util.OS.OsType;
 
 
 /**
@@ -88,11 +92,14 @@ public class LoadPathsFactory {
     }
 
     /**
-     * Creates a load path from semi-colon delimited list of
-     * paths. The file paths to load a file must
-     * be relative to a load path.
+     * Creates a load path from colon or semi-colon delimited list of
+     * paths. The file paths to load a file must be relative to a load path.
      *
-     * @param loadPaths a semi-colon delimited list of paths
+     * <p>On Windows the path separator <code>;</code> is supported only
+     *
+     * <p>Linux and MacOS support the path separators <code>:</code> and <code>;</code>
+     *
+     * @param loadPaths a colon or semi-colon delimited list of paths
      * @return an ILoadPaths
      */
     public static ILoadPaths parseDelimitedLoadPath(final String loadPaths) {
@@ -100,13 +107,16 @@ public class LoadPathsFactory {
     }
 
     /**
-     * Creates a load path from semi-colon delimited list of
-     * paths. The file paths to load a file must
-     * be relative to a load path.
+     * Creates a load path from colon or semi-colon delimited list of
+     * paths. The file paths to load a file must be relative to a load path.
      * If 'unlimitedAccess' is <code>true</code> files are allowed
      * to be loaded from outside the load paths.
      *
-     * @param loadPaths a semi-colon delimited list of paths
+     * <p>On Windows the path separator <code>;</code> is supported only
+     *
+     * <p>Linux and MacOS support the path separators <code>:</code> and <code>;</code>
+     *
+     * @param loadPaths a colon or semi-colon delimited list of paths
      * @param unlimitedAccess If <code>true</code> allow files to be
      *                        loaded from outside the load paths.
      * @return an ILoadPaths
@@ -115,17 +125,53 @@ public class LoadPathsFactory {
             final String loadPaths,
             final boolean unlimitedAccess
     ) {
+        return LoadPaths.of(
+                    parseDelimitedLoadPathRaw(loadPaths, OS.type()),
+                    unlimitedAccess);
+    }
+
+    /**
+     * Creates a load path from colon or semi-colon delimited list of
+     * paths. The file paths to load a file must
+     * be relative to a load path.
+     * If 'unlimitedAccess' is <code>true</code> files are allowed
+     * to be loaded from outside the load paths.
+     *
+     * @param loadPaths a colon or semi-colon delimited list of paths
+     * @param unlimitedAccess If <code>true</code> allow files to be
+     *                        loaded from outside the load paths.
+     * @return an ILoadPaths
+     */
+    public static List<File> parseDelimitedLoadPathRaw(
+            final String loadPaths,
+            final OsType osType
+    ) {
+        Objects.requireNonNull(osType);
+
         if (loadPaths == null) {
-            return of(null, unlimitedAccess);
+            return new ArrayList<>();
         }
         else {
-            return LoadPaths.of(
-                    Arrays.stream(StringUtil.trimToEmpty(loadPaths).split(";"))
+            final String delimiterRegex = getLoadPathDelimiterRegex(osType);
+
+            return Arrays.stream(StringUtil.trimToEmpty(loadPaths).split(delimiterRegex))
                           .map(p -> StringUtil.trimToNull(p))
                           .filter(p -> p != null)
                           .map(p -> new File(p))
-                          .collect(Collectors.toList()),
-                    unlimitedAccess);
+                          .collect(Collectors.toList());
+        }
+    }
+
+    private static String getLoadPathDelimiterRegex(final OsType osType) {
+        Objects.requireNonNull(osType);
+
+        switch(osType) {
+            case MacOSX:   return ":|;";
+            case Unix:     return ":|;";
+            case Linux:    return ":|;";
+            case Windows:  return ";";
+            case Unknown:  return ":|;";
+            default:       return ":|;";
         }
     }
 

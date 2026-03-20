@@ -9,7 +9,9 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- [#10](https://github.com/jlangch/venice/issues/10): Allow `:` and `;` as load path separator 
+  on *Linux* and *MacOS*. On *Windows* `;` is supported only due to Windows' convention for absolute
+  paths `C:\users\foo`.
 
 ### Bugs
 

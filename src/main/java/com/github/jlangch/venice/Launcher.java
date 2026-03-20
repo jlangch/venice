@@ -71,8 +71,12 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  *
  *  <p>Launcher command line options:
  *  <pre>
- *  -loadpath path     defines a load path, semi-colon delimited paths
- *                     E.g.: -loadpath "/users/foo/scripts;/users/foo/res"
+ *  -loadpath path     defines a load path, colon or semi-colon delimited paths
+ *                     On Windows the path separator <code>;</code> is supported
+ *                     only. Linux and MacOS support the path separators <code>:</code>
+ *                     and <code>;</code>
+ *                     E.g.: -loadpath "/users/foo/scripts:/users/foo/res"
+ *                           -loadpath "/users/foo/scripts;/users/foo/res"
  *
  *  -macroexpand true  turns up-front macro expansion on, resulting in a
  *                     much better performance.
@@ -325,9 +329,11 @@ public class Launcher {
              "       -colors \n" +
              "\n\n" +
              "Launcher command line options: \n" +
-             "  -loadpath path     defines a load path \n" +
-             "                     E.g.: -loadpath \"/users/foo/scripts;/users/foo/res\" \n" +
-             "\n" +
+             "  -loadpath path     defines a colon or semi-colon delimited load path.\n" +
+             "                     Linux and MacOS support the path separators \":\" and \";\"\n" +
+             "                     On Windows the path separator \";\" is supported only.\n" +
+             "                     E.g.: -loadpath \"/users/foo/scripts:/users/foo/res\"\n" +
+             "                           -loadpath \"/users/foo/scripts;/users/foo/res\"\n" +
              "  -macroexpand true  turns up-front macro expansion on, resulting in a \n" +
              "                     much better performance \n" +
              "\n" +
