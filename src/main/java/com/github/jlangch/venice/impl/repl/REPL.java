@@ -161,7 +161,7 @@ public class REPL implements IRepl {
             System.out.println("Venice REPL: " + Venice.getVersion());
             System.out.println("Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
-            System.out.println("Jansi: " + (jansiVersion == null ? "not detected" : jansiVersion));
+            System.out.println("Jansi: " + (jansiVersion == null ? "not detected! (no color support)" : jansiVersion));
             System.out.println("Macro expansion: " + (macroexpand ? "enabled" : "disabled"));
             System.out.println("Configuration: " + config.getConfigSource());
             if (loadpaths.active()) {

@@ -80,7 +80,19 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  *
  *  -macroexpand b     turns up-front macro expansion on or off by setting the value
  *                     to true or false. Turning macro expansion on results in a
- *                     much better performance. By default its turned on.
+ *                     much better performance.
+ *                     Enabled by default for launchers:  -file, -cp-file, -script, -app, or -app-rep
+ *                     Disabled by default for launchers: -repl
+ *
+ *  -colors            use light mode colors (requires jansi library on the classpath)
+ *
+ *  -colors-light      synonym for -colors
+ *
+ *  -colors-dark       use dark mode colors (requires jansi library on the classpath)
+ *
+ *  -minimal           setup a minimal REPL. Only use together with -setup
+ *
+ *  -dir directory     REPL setup directory. Only use together with -setup
  *
  *  -file script       loads the script to run from a file
  *                     E.g.:  -file ./test.venice
@@ -98,10 +110,10 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  *                     E.g.:  -repl
  *
  *  -setup             setup a REPL
- *                     E.g.:  java -jar venice-1.12.85.jar -setup -colors \n" +
- *                            java -jar venice-1.12.85.jar -setup -colors-light \n" +
- *                            java -jar venice-1.12.85.jar -setup -colors-dark \n" +
- *                            java -jar venice-1.12.85.jar -setup -colors -dir /Users/foo/repl \n" +
+ *                     E.g.:  java -jar venice-1.12.85.jar -setup -colors -dir ./repl \n" +
+ *                            java -jar venice-1.12.85.jar -setup -minimal -colors -dir ./repl \n" +
+ *                            java -jar venice-1.12.85.jar -setup -colors-light -dir ./repl \n" +
+ *                            java -jar venice-1.12.85.jar -setup -colors-dark -dir ./repl \n" +
  *
  *  -help              prints a help
  *  </pre>
@@ -331,41 +343,54 @@ public class Launcher {
              "       -colors \n" +
              "\n\n" +
              "Launcher command line options: \n" +
-             "  -loadpath path     defines a colon or semi-colon delimited load path.\n" +
-             "                     Linux and MacOS support the path separators \":\" and \";\"\n" +
-             "                     On Windows the path separator \";\" is supported only.\n" +
-             "                     E.g.: -loadpath \"/users/foo/scripts:/users/foo/res\"\n" +
-             "                           -loadpath \"/users/foo/scripts;/users/foo/res\"\n" +
+             "  -loadpath path  defines a colon or semi-colon delimited load path.\n" +
+             "                  Linux and MacOS support the path separators \":\" and \";\"\n" +
+             "                  On Windows the path separator \";\" is supported only.\n" +
+             "                  E.g.: -loadpath \"/users/foo/scripts:/users/foo/res\"\n" +
+             "                        -loadpath \"/users/foo/scripts;/users/foo/res\"\n" +
              "\n" +
-             "  -macroexpand b     turns up-front macro expansion on or off by setting the value \n" +
-             "                     to true or false. Turning macro expansion on results in a \n" +
-             "                     much better performance. By default its turned on. \n" +
+             "  -macroexpand b  turns up-front macro expansion on or off by setting the value \n" +
+             "                  to true or false. Turning macro expansion on results in a \n" +
+             "                  much better performance.\n" +
+             "                  Enabled by default for launchers:  -file, -cp-file, -script, \n" +
+             "                                                     -app, or -app-repl \n" +
+             "                  Disabled by default for launchers: -repl \n" +
              "\n" +
-             "  -file script       loads the script to run from a file \n" +
-             "                     E.g.:  -file ./test.venice \n" +
+             "  -colors         use light mode colors (requires jansi library on the classpath)\n" +
              "\n" +
-             "  -cp-file res       loads the script to run from the classpath \n" +
-             "                     E.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
+             "  -colors-light   synonym for -colors\n" +
              "\n" +
-             "  -script script     run a script \n" +
-             "                     E.g.:  -script \"(+ 1 10)\" \n" +
+             "  -colors-dark    use dark mode colors (requires jansi library on the classpath)\n" +
              "\n" +
-             "  -app app           run a Venice app  \n" +
-             "                     E.g.:  -app test-app.zip \n" +
+             "  -minimal        setup a minimal REPL. Only use together with -setup\n" +
              "\n" +
-             "  -repl              start a REPL \n" +
-             "                     E.g.:  -repl \n" +
+             "  -dir directory  REPL setup directory. Only use together with -setup\n" +
              "\n" +
-             "  -app-repl          start a custom REPL \n" +
-             "                     E.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
+             "  -file script    run a script that is loaded from a file \n" +
+             "                  E.g.:  -file ./test.venice \n" +
              "\n" +
-             "  -setup             setup a REPL \n" +
-             "                     E.g.:  java -jar venice-1.12.85.jar -setup -colors -dir ./repl \n" +
-             "                            java -jar venice-1.12.85.jar -setup -minimal -colors-dir ./repl \n" +
-             "                            java -jar venice-1.12.85.jar -setup -colors-light ./repl \n" +
-             "                            java -jar venice-1.12.85.jar -setup -colors-dark ./repl \n" +
+             "  -cp-file res    run a script that is loaded from a classpath resource file \n" +
+             "                  E.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
+             "\n" +
+             "  -script script  run a script \n" +
+             "                  E.g.:  -script \"(+ 1 10)\" \n" +
+             "\n" +
+             "  -app app        run a Venice app  \n" +
+             "                  E.g.:  -app test-app.zip \n" +
+             "\n" +
+             "  -repl           start a REPL \n" +
+             "                  E.g.:  -repl \n" +
+             "\n" +
+             "  -app-repl       start a custom REPL \n" +
+             "                  E.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
+             "\n" +
+             "  -setup          setup a REPL \n" +
+             "                  E.g.:  java -jar venice-1.12.85.jar -setup -colors -dir ./repl \n" +
+             "                         java -jar venice-1.12.85.jar -setup -minimal -colors -dir ./repl \n" +
+             "                         java -jar venice-1.12.85.jar -setup -colors-light -dir ./repl \n" +
+             "                         java -jar venice-1.12.85.jar -setup -colors-dark -dir ./repl \n" +
             "\n" +
-             "  -help              prints a help \n" +
+             "  -help           prints a help \n" +
              "\n" +
              "Note: \n" +
              "  The options '-file', '-cp-file', '-script', '-app', '-repl', '-app-repl', \n" +
