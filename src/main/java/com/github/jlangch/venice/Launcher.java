@@ -61,7 +61,7 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  * <pre>
  *    java \
  *       -server \
- *       -Xmx6G \
+ *       -Xmx2G \
  *       -XX:-OmitStackTraceInFastThrow \
  *       -cp "libs/*" \
  *       com.github.jlangch.venice.Launcher \
@@ -78,8 +78,9 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  *                     E.g.: -loadpath "/users/foo/scripts:/users/foo/res"
  *                           -loadpath "/users/foo/scripts;/users/foo/res"
  *
- *  -macroexpand true  turns up-front macro expansion on, resulting in a
- *                     much better performance.
+ *  -macroexpand b     turns up-front macro expansion on or off by setting the value
+ *                     to true or false. Turning macro expansion on results in a
+ *                     much better performance. By default its turned on.
  *
  *  -file script       loads the script to run from a file
  *                     E.g.:  -file ./test.venice
@@ -94,6 +95,7 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  *                     E.g.:  -app test-app.zip
  *
  *  -repl              start a REPL
+ *                     E.g.:  -repl
  *
  *  -setup             setup a REPL
  *                     E.g.:  java -jar venice-1.12.85.jar -setup -colors \n" +
@@ -321,7 +323,7 @@ public class Launcher {
              "Running a REPL:  \n" +
              "    java \\ \n" +
              "       -server \\ \n" +
-             "       -Xmx6G \\ \n" +
+             "       -Xmx2G \\ \n" +
              "       -XX:-OmitStackTraceInFastThrow \\ \n" +
              "       -cp \"libs/*\" \\ \n" +
              "       com.github.jlangch.venice.Launcher \\ \n" +
@@ -334,6 +336,7 @@ public class Launcher {
              "                     On Windows the path separator \";\" is supported only.\n" +
              "                     E.g.: -loadpath \"/users/foo/scripts:/users/foo/res\"\n" +
              "                           -loadpath \"/users/foo/scripts;/users/foo/res\"\n" +
+             "\n" +
              "  -macroexpand b     turns up-front macro expansion on or off by setting the value \n" +
              "                     to true or false. Turning macro expansion on results in a \n" +
              "                     much better performance. By default its turned on. \n" +
