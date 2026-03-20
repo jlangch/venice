@@ -98,8 +98,8 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
+import com.github.jlangch.venice.impl.util.loadpath.ILoadPaths;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.util.OS;
 import com.github.jlangch.venice.util.StopWatch;
 

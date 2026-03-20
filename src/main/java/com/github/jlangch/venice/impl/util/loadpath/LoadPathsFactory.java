@@ -27,13 +27,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 /**
  * Factory for creating <code>ILoadPaths</code> objects.
  *
- * @see com.github.jlangch.venice.javainterop.ILoadPaths
+ * @see com.github.jlangch.venice.impl.util.loadpath.ILoadPaths
  * @author juerg
  */
 public class LoadPathsFactory {

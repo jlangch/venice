@@ -71,8 +71,8 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.impl.util.loadpath.ILoadPaths;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 

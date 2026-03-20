@@ -43,10 +43,10 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
+import com.github.jlangch.venice.impl.util.loadpath.ILoadPaths;
 import com.github.jlangch.venice.impl.util.loadpath.LoadPathsFactory;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 /**

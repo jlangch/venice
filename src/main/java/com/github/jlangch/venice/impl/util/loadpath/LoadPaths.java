@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
-import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 public class LoadPaths implements ILoadPaths {

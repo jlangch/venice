@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.util.loadpath.ILoadPaths;
 import com.github.jlangch.venice.impl.util.loadpath.LoadPathsFactory;
 
 /**

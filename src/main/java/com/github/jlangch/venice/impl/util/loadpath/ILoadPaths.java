@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.javainterop;
+package com.github.jlangch.venice.impl.util.loadpath;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,9 +30,6 @@ import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-
-import com.github.jlangch.venice.impl.util.loadpath.Access;
-import com.github.jlangch.venice.impl.util.loadpath.LoadPathsFactory;
 
 
 /**
