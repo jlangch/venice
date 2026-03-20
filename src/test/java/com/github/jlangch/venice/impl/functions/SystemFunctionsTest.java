@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -134,6 +135,10 @@ public class SystemFunctionsTest {
         final Venice venice = new Venice();
 
         assertTrue((Boolean)venice.eval("(os-type? :windows)"));
+
+        assertFalse((Boolean)venice.eval("(os-type? :mac-osx)"));
+        assertFalse((Boolean)venice.eval("(os-type? :mac-os)"));
+        assertFalse((Boolean)venice.eval("(os-type? :linux)"));
     }
 
     @Test
@@ -142,6 +147,9 @@ public class SystemFunctionsTest {
         final Venice venice = new Venice();
 
         assertTrue((Boolean)venice.eval("(os-type? :mac-osx)"));
+
+        assertFalse((Boolean)venice.eval("(os-type? :windows)"));
+        assertFalse((Boolean)venice.eval("(os-type? :linux)"));
     }
 
     @Test
@@ -150,6 +158,9 @@ public class SystemFunctionsTest {
         final Venice venice = new Venice();
 
         assertTrue((Boolean)venice.eval("(os-type? :mac-os)"));
+
+        assertFalse((Boolean)venice.eval("(os-type? :windows)"));
+        assertFalse((Boolean)venice.eval("(os-type? :linux)"));
     }
 
     @Test
@@ -158,5 +169,9 @@ public class SystemFunctionsTest {
         final Venice venice = new Venice();
 
         assertTrue((Boolean)venice.eval("(os-type? :linux)"));
+
+        assertFalse((Boolean)venice.eval("(os-type? :mac-osx)"));
+        assertFalse((Boolean)venice.eval("(os-type? :mac-os)"));
+        assertFalse((Boolean)venice.eval("(os-type? :windows)"));
     }
 }

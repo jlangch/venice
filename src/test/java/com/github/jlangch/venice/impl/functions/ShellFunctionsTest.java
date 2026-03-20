@@ -121,7 +121,10 @@ public class ShellFunctionsTest {
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\"))";
 
-        assertEquals("Hello 1\nHello 2\nHello 3\n", venice.eval(script));
+        final String stdout = (String)venice.eval(script);
+        System.out.println("stdout: " + stdout);
+
+        assertEquals("Hello 1\nHello 2\nHello 3\n", stdout);
     }
 
     @Test
@@ -134,7 +137,10 @@ public class ShellFunctionsTest {
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\"))";
 
-        assertEquals("Hello 1\nHello 2\nHello 3\n", venice.eval(script));
+        final String stderr = (String)venice.eval(script);
+        System.out.println("stderr: " + stderr);
+
+        assertEquals("Hello 1\nHello 2\nHello 3\n", stderr);
     }
 
     @Test
