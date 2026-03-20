@@ -334,8 +334,9 @@ public class Launcher {
              "                     On Windows the path separator \";\" is supported only.\n" +
              "                     E.g.: -loadpath \"/users/foo/scripts:/users/foo/res\"\n" +
              "                           -loadpath \"/users/foo/scripts;/users/foo/res\"\n" +
-             "  -macroexpand true  turns up-front macro expansion on, resulting in a \n" +
-             "                     much better performance \n" +
+             "  -macroexpand b     turns up-front macro expansion on or off by setting the value \n" +
+             "                     to true or false. Turning macro expansion on results in a \n" +
+             "                     much better performance. By default its turned on. \n" +
              "\n" +
              "  -file script       loads the script to run from a file \n" +
              "                     E.g.:  -file ./test.venice \n" +

@@ -1489,8 +1489,8 @@ The cutoff size can be specified as a number like `1000` or a number with a unit
 If encryption is enabled the payload data of all messages exchanged
 between a client and its associated server is encrypted.
 
-The data is AES-256-GCM encrypted using a secret key that is created and 
-exchanged using the *Diffie-Hellman* key exchange algorithm.
+The data is AES-256-GCM encrypted using a secret key (session key) that is 
+created and exchanged using the *Diffie-Hellman* key exchange algorithm.
 
 *Diffie–Hellman* key exchange itself is a non-authenticated key-agreement protocol
 and thus it can not prevent *Man-in-the-Middle* attacks. It provides the basis for 
