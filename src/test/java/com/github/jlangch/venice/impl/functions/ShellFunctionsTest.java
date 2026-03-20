@@ -118,11 +118,13 @@ public class ShellFunctionsTest {
 
         final String script =
                 "(:out \n" +
-                "  (sh \"/bin/sh\" \n" +
+                "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\"))";
 
         final String stdout = (String)venice.eval(script);
         System.out.println("stdout: " + stdout);
+
+        // returns "Hello {1..3}"
 
         assertEquals("Hello 1\nHello 2\nHello 3\n", stdout);
     }
@@ -134,7 +136,7 @@ public class ShellFunctionsTest {
 
         final String script =
                 "(:err \n" +
-                "  (sh \"/bin/sh\" \n" +
+                "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\"))";
 
         final String stderr = (String)venice.eval(script);
