@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.nanojson.JsonObject;
 import com.github.jlangch.venice.nanojson.JsonParser;
+import com.github.jlangch.venice.util.OS;
 
 
 /**
@@ -285,7 +286,7 @@ public class ReplConfig {
     }
 
     public static String getLauncherScriptName() {
-        return System.getProperty("os.name").startsWith("Windows") ? "repl.bat" : "repl.sh";
+        return OS.isWindows() ? "repl.bat" : "repl.sh";
     }
 
     public static String getDefaultClasspathLauncherScript() {

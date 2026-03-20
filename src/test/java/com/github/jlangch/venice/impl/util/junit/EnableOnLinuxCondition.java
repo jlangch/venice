@@ -28,11 +28,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import com.github.jlangch.venice.util.OS;
 
 
-public class EnableOnMacOrLinuxCondition implements ExecutionCondition {
+public class EnableOnLinuxCondition implements ExecutionCondition {
 
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        if (OS.isMacOSX() || OS.isLinux()) {
+        if (OS.isLinux()) {
             return ConditionEvaluationResult.enabled("Test enabled");
         }
         else {

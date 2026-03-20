@@ -473,11 +473,11 @@ public class SystemFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 final String type = Coerce.toVncKeyword(args.first()).getValue();
-                final String osName = System.getProperty("os.name");
                 switch(type) {
-                    case "windows": return VncBoolean.of(osName.startsWith("Windows"));
-                    case "mac-osx": return VncBoolean.of(osName.startsWith("Mac OS X"));
-                    case "linux":   return VncBoolean.of(osName.startsWith("Linux"));
+                    case "windows": return VncBoolean.of(OS.isWindows());
+                    case "mac-osx": return VncBoolean.of(OS.isMacOSX());
+                    case "mac-os":  return VncBoolean.of(OS.isMacOSX());
+                    case "linux":   return VncBoolean.of(OS.isLinux());
                     default:        return False;
                 }
             }
@@ -521,7 +521,7 @@ public class SystemFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0);
 
-                return new VncString(System.getProperty("os.name"));
+                return new VncString(OS.osName());
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

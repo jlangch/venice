@@ -97,6 +97,7 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
+import com.github.jlangch.venice.util.OS;
 
 
 public class REPL implements IRepl {
@@ -1429,29 +1430,11 @@ public class REPL implements IRepl {
         // escaping these characters.
         // E.g.:  "test\ 1.venice", "test\?1.venice"
 
-        final String osType = osType();
-
-        if ("windows".equals(osType)) {
+        if (OS.isWindows()) {
             return fileName;
         }
         else {
             return fileName.replace("\\", "");
-        }
-    }
-
-    private static String osType() {
-        final String osName = System.getProperty("os.name");
-        if (osName.startsWith("Windows")) {
-            return "windows";
-        }
-        else if (osName.startsWith("Mac OS X")) {
-            return "mac-osx";
-        }
-        else if (osName.startsWith("Linux")) {
-            return "linux";
-        }
-        else {
-            return "unknown";
         }
     }
 

@@ -21,22 +21,18 @@
  */
 package com.github.jlangch.venice.impl.util.junit;
 
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ExecutionCondition;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.github.jlangch.venice.util.OS;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 
-public class EnableOnMacOrLinuxCondition implements ExecutionCondition {
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(EnableOnLinuxCondition.class)
+public @interface EnableOnLinux {
 
-    @Override
-    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        if (OS.isMacOSX() || OS.isLinux()) {
-            return ConditionEvaluationResult.enabled("Test enabled");
-        }
-        else {
-            return ConditionEvaluationResult.disabled("Test disabled on " + OS.osName());
-        }
-    }
 }
+

@@ -31,6 +31,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.junit.EnableOnLinux;
+import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
+import com.github.jlangch.venice.impl.util.junit.EnableOnWindows;
 
 
 public class SystemFunctionsTest {
@@ -123,5 +126,37 @@ public class SystemFunctionsTest {
         final List<String> callstack = (List<String>)venice.eval("test", s);
 
         assertEquals(6, callstack.size());
+    }
+
+    @Test
+    @EnableOnWindows
+    public void test_os_type_windows() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(os-type? :windows)"));
+    }
+
+    @Test
+    @EnableOnMac
+    public void test_os_type_mac_osx() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(os-type? :mac-osx)"));
+    }
+
+    @Test
+    @EnableOnMac
+    public void test_os_type_mac_os() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(os-type? :mac-os)"));
+    }
+
+    @Test
+    @EnableOnLinux
+    public void test_os_type_linux() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(os-type? :linux)"));
     }
 }

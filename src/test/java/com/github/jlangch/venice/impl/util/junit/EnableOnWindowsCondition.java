@@ -25,17 +25,18 @@ import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import com.github.jlangch.venice.util.OS;
+
 
 public class EnableOnWindowsCondition implements ExecutionCondition {
 
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        final String osName = System.getProperty("os.name");
-        if (osName.startsWith("Windows")) {
+        if (OS.isWindows()) {
             return ConditionEvaluationResult.enabled("Test enabled");
         }
         else {
-            return ConditionEvaluationResult.disabled("Test disabled on " + osName);
+            return ConditionEvaluationResult.disabled("Test disabled on " + OS.osName());
         }
     }
 }

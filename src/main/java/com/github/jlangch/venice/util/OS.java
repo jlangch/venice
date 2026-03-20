@@ -25,11 +25,12 @@ package com.github.jlangch.venice.util;
 public class OS {
 
     public static OsType type() {
-        final String osName = System.getProperty("os.name").toLowerCase();
+        final String osName = osName().toLowerCase();
+
         if (osName.startsWith("windows")) {
             return OsType.Windows;
         }
-        else if (osName.startsWith("mac os x")) {
+        else if (osName.startsWith("mac")) {
             return OsType.MacOSX;
         }
         else if (osName.startsWith("linux")) {
@@ -53,6 +54,10 @@ public class OS {
 
     public static boolean isWindows() {
         return OsType.Windows == type();
+    }
+
+    public static String osName() {
+        return System.getProperty("os.name");
     }
 
 
