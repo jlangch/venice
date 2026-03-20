@@ -262,7 +262,6 @@ public class ShellFunctionsTest {
         assertTrue(((String)path).startsWith("/"));
         assertTrue(((String)path).endsWith("/ps"));
 
-
         assertNull(new Venice().eval("(sh/which \"an_inexistent_program\")"));
     }
 }
