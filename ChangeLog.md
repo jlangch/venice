@@ -11,6 +11,13 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Bugs
+
+- Fixed a nasty Github CI unit test problem on the Ubuntu platform. Github CI Ubuntu
+  silently changed to a *Dash Shell* when using `/bin/sh`, causing some test scripts
+  with Bourne Shell syntax to fail. Using now `/bin/bash` explicitly in the affected 
+  unit tests.
+
 
 
 ## [1.12.85] - 2026-03-19
