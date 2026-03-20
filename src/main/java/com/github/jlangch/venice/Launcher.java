@@ -317,7 +317,10 @@ public class Launcher {
         // The app runner has 'macroexpand' implicitly enabled
         AppRunner.run(
             appFile,
-            cli.removeSwitches("-app", "-macroexpand", "-loadpath")
+            cli.removeSwitches("-app", "-macroexpand", "-loadpath",
+                               "-repl-port", "-repl-pwd",
+                               "-repl-encrypt", "-repl-compress",
+                               "-repl-session-timeout")
                .argsAsList(),
             loadPaths,
             new PrintStream(System.out, true),
@@ -341,7 +344,7 @@ public class Launcher {
 
     private static void printHelp() {
         System.out.println(
-             "The Launcher runs Venice scripts or apps and starts the REPL. \n" +
+             "The Launcher runs Venice scripts and apps or starts the REPL. \n" +
              "\n" +
              "The launcher is configured as the Venice JAR's main-class. \n" +
              "\n" +
@@ -386,8 +389,8 @@ public class Launcher {
              "  -file script      run a script that is loaded from a file \n" +
              "                    e.g.:  -file ./test.venice \n" +
              "\n" +
-             "                    run script start with a remote REPL enabled:\n" +
-             "                    e.g.:  -file ./test.venice  -repl-port 33334 -repl-pwd xcf6zu=UI\n" +
+             "                    run a script with a REPL server enabled:\n" +
+             "                    e.g.:  -file ./test.venice -repl-port 33334 -repl-pwd xcf6zu=UI\n" +
              "\n" +
              "  -cp-file res      run a script that is loaded from a classpath resource file \n" +
              "                    e.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
@@ -401,21 +404,21 @@ public class Launcher {
              "  -repl             start a REPL \n" +
              "                    e.g.:  -repl \n" +
              "\n" +
-             "  -repl-port port   REPL acts as server with communication port.\n" +
-             "                    Only use together with -file option\n" +
+             "  -repl-port port   acts as REPL server with communication port. No default.\n" +
+             "                    Only use together with -file or -cp-file option\n" +
              "                    e.g.:  -repl-port 33334 \n" +
              "\n" +
-             "  -repl-pwd pwd     REPL acts as server with password.\n" +
-             "                    Only use together with -file option\n" +
+             "  -repl-pwd pwd     acts as REPL server with password. No default.\n" +
+             "                    Only use together with -file or -cp-file option\n" +
              "                    e.g.:  -repl-pwd xcf6zu=UI \n" +
              "\n" +
-             "  -repl-encrypt b   REPL transport encryption\n" +
-             "                    Defaults to on. Only use together with -file option\n" +
+             "  -repl-encrypt b   REPL server transport encryption. Defaults to on. \n" +
+             "                    Only use together with -file or -cp-file option\n" +
              "                    e.g.:  -repl-encrypt on \n" +
              "                           -repl-encrypt off \n" +
              "\n" +
-             "  -repl-compress b  REPL transport compression.\n" +
-             "                    Defaults to off. Only use together with -file option\n" +
+             "  -repl-compress b  REPL server transport compression. Defaults to off. \n" +
+             "                    Only use together with -file or -cp-file option\n" +
              "                    e.g.:  -repl-compress on \n" +
              "                           -repl-compress off \n" +
              "\n" +
