@@ -198,7 +198,10 @@ public class Launcher {
 
         final String result = runScript(
                                 cli.removeSwitches("-file",
-                                                   "-macroexpand", "-loadpath",
+                                                   "-macroexpand",  "-loadpath",
+                                                   "-minimal",      "dir",
+                                                   "-colors",
+                                                   "-colors-light", "-colors-dark",
                                                    "-repl-port", "-repl-pwd",
                                                    "-repl-encrypt", "-repl-compress",
                                                    "-repl-session-timeout"),
@@ -236,7 +239,10 @@ public class Launcher {
 
         final String result = runScript(
                                 cli.removeSwitches("-cp-file",
-                                                   "-macroexpand", "-loadpath",
+                                                   "-macroexpand",  "-loadpath",
+                                                   "-minimal",      "dir",
+                                                   "-colors",
+                                                   "-colors-light", "-colors-dark",
                                                    "-repl-port", "-repl-pwd",
                                                    "-repl-encrypt", "-repl-compress",
                                                    "-repl-session-timeout"),
@@ -273,8 +279,11 @@ public class Launcher {
 
         final String result = runScript(
                                 cli.removeSwitches("-script",
-                                                   "-macroexpand", "-loadpath",
-                                                   "-repl-port", "-repl-pwd",
+                                                   "-macroexpand",  "-loadpath",
+                                                   "-minimal",      "dir",
+                                                   "-colors",
+                                                   "-colors-light", "-colors-dark",
+                                                   "-repl-port",    "-repl-pwd",
                                                    "-repl-encrypt", "-repl-compress",
                                                    "-repl-session-timeout"),
                                 macroexpand,
@@ -343,54 +352,74 @@ public class Launcher {
              "       -colors \n" +
              "\n\n" +
              "Launcher command line options: \n" +
-             "  -loadpath path  defines a colon or semi-colon delimited load path.\n" +
-             "                  Linux and MacOS support the path separators \":\" and \";\"\n" +
-             "                  On Windows the path separator \";\" is supported only.\n" +
-             "                  E.g.: -loadpath \"/users/foo/scripts:/users/foo/res\"\n" +
-             "                        -loadpath \"/users/foo/scripts;/users/foo/res\"\n" +
+             "  -loadpath path    defines a colon or semi-colon delimited load path.\n" +
+             "                    Linux and MacOS support the path separators \":\" and \";\"\n" +
+             "                    On Windows the path separator \";\" is supported only.\n" +
+             "                    E.g.: -loadpath \"/users/foo/scripts:/users/foo/res\"\n" +
+             "                          -loadpath \"/users/foo/scripts;/users/foo/res\"\n" +
              "\n" +
-             "  -macroexpand b  turns up-front macro expansion on or off by setting the value \n" +
-             "                  to true or false. Turning macro expansion on results in a \n" +
-             "                  much better performance.\n" +
-             "                  Enabled by default for launchers:  -file, -cp-file, -script, \n" +
-             "                                                     -app, or -app-repl \n" +
-             "                  Disabled by default for launchers: -repl \n" +
+             "  -macroexpand b    turns up-front macro expansion on or off by setting the value \n" +
+             "                    to true or false. Turning macro expansion on results in a \n" +
+             "                    much better performance. \n" +
+             "                    (The launcher also understands on/off values) \n"+
+             "                    Enabled by default for launchers:  -file, -cp-file, -script, \n" +
+             "                                                       -app, or -app-repl \n" +
+             "                    Disabled by default for launchers: -repl \n" +
              "\n" +
-             "  -colors         use light mode colors (requires jansi library on the classpath)\n" +
+             "  -colors           use light mode colors (requires jansi library on the classpath)\n" +
              "\n" +
-             "  -colors-light   synonym for -colors\n" +
+             "  -colors-light     synonym for -colors\n" +
              "\n" +
-             "  -colors-dark    use dark mode colors (requires jansi library on the classpath)\n" +
+             "  -colors-dark      use dark mode colors (requires jansi library on the classpath)\n" +
              "\n" +
-             "  -minimal        setup a minimal REPL. Only use together with -setup\n" +
+             "  -minimal          setup a minimal REPL. Only use together with -setup\n" +
              "\n" +
-             "  -dir directory  REPL setup directory. Only use together with -setup\n" +
+             "  -dir directory    REPL setup directory. Only use together with -setup\n" +
              "\n" +
-             "  -file script    run a script that is loaded from a file \n" +
-             "                  E.g.:  -file ./test.venice \n" +
+             "  -file script      run a script that is loaded from a file \n" +
+             "                    e.g.:  -file ./test.venice \n" +
              "\n" +
-             "  -cp-file res    run a script that is loaded from a classpath resource file \n" +
-             "                  E.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
+             "  -cp-file res      run a script that is loaded from a classpath resource file \n" +
+             "                    e.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
              "\n" +
-             "  -script script  run a script \n" +
-             "                  E.g.:  -script \"(+ 1 10)\" \n" +
+             "  -script script    run a script \n" +
+             "                    e.g.:  -script \"(+ 1 10)\" \n" +
              "\n" +
-             "  -app app        run a Venice app  \n" +
-             "                  E.g.:  -app test-app.zip \n" +
+             "  -app app          run a Venice app  \n" +
+             "                    e.g.:  -app test-app.zip \n" +
              "\n" +
-             "  -repl           start a REPL \n" +
-             "                  E.g.:  -repl \n" +
+             "  -repl             start a REPL \n" +
+             "                    e.g.:  -repl \n" +
              "\n" +
-             "  -app-repl       start a custom REPL \n" +
-             "                  E.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
+             "  -repl-port port   remote REPL communication port \n" +
+             "                    e.g.:  -repl-port 33334 \n" +
              "\n" +
-             "  -setup          setup a REPL \n" +
-             "                  E.g.:  java -jar venice-1.12.85.jar -setup -colors -dir ./repl \n" +
-             "                         java -jar venice-1.12.85.jar -setup -minimal -colors -dir ./repl \n" +
-             "                         java -jar venice-1.12.85.jar -setup -colors-light -dir ./repl \n" +
-             "                         java -jar venice-1.12.85.jar -setup -colors-dark -dir ./repl \n" +
-            "\n" +
-             "  -help           prints a help \n" +
+             "  -repl-pwd pwd     remote REPL password \n" +
+             "                    e.g.:  -repl-pwd xcf6zu=UI \n" +
+             "\n" +
+             "  -repl-encrypt b   remote REPL transport encryption. Defaults to on\n" +
+             "                    e.g.:  -repl-encrypt on \n" +
+             "                           -repl-encrypt off \n" +
+             "\n" +
+             "  -repl-compress b  remote REPL transport compression. Defaults to off\n" +
+             "                    e.g.:  -repl-compress on \n" +
+             "                           -repl-compress off \n" +
+             "\n" +
+             "  -repl-session-timeout t  \n" +
+             "                    remote REPL session timeout in minutes. Defaults to \n" +
+             "                    20 minutes\n" +
+             "                    e.g.: -repl-session-timeout 20 \n" +
+             "\n" +
+             "  -app-repl         start a custom REPL \n" +
+             "                    e.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
+             "\n" +
+             "  -setup            setup a REPL \n" +
+             "                    e.g.:  java -jar venice-1.12.85.jar -setup -colors -dir ./repl \n" +
+             "                           java -jar venice-1.12.85.jar -setup -minimal -colors -dir ./repl \n" +
+             "                           java -jar venice-1.12.85.jar -setup -colors-light -dir ./repl \n" +
+             "                           java -jar venice-1.12.85.jar -setup -colors-dark -dir ./repl \n" +
+             "\n" +
+             "  -help             prints a help \n" +
              "\n" +
              "Note: \n" +
              "  The options '-file', '-cp-file', '-script', '-app', '-repl', '-app-repl', \n" +
