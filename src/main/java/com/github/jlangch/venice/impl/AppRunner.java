@@ -42,10 +42,10 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
+import com.github.jlangch.venice.impl.util.loadpath.LoadPathsFactory;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
-import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
 

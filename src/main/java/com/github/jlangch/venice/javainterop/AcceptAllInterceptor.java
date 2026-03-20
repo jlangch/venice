@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.util.loadpath.LoadPathsFactory;
+
 /**
  * Defines a Venice sandbox without any restrictions.
  */

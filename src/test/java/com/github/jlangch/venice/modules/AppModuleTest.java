@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.AppRunner;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
-import com.github.jlangch.venice.javainterop.LoadPathsFactory;
+import com.github.jlangch.venice.impl.util.loadpath.LoadPathsFactory;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.github.jlangch.venice.util.NullInputStream;
 

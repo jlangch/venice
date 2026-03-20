@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.javainterop;
+package com.github.jlangch.venice.impl.util.loadpath;
 
 import java.io.File;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.loadpath.LoadPaths;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 /**

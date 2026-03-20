@@ -35,7 +35,6 @@ import java.util.function.BiConsumer;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.zip.Zipper;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
-import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 
 /**
  * Creates a set of files on the temp directory:
@@ -46,28 +45,29 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *  │
  *  ├─── res1.txt
  *  ├─── zip1.zip
+ *  │     ├─── res11.txt
+ *  │     └─── dir-z1/res12.txt
+ *  │
  *  ├─── div.venice
  *  │
  *  ├─── /dir1
- *  │     │
  *  │     ├─── res2.txt
  *  │     ├─── res3.txt
  *  │     ├─── zip2.zip
+ *  │     │     ├─── res21.txt
+ *  │     │     └─── dir-z2/res22.txt
  *  │     ├─── sub.venice
  *  │     ├─── sum.venice
- *  │     │
  *  │     └─── /11
- *  │           │
  *  │           └─── res4.txt
  *  │
  *  ├─── /dir2
- *  │     |
  *  │     ├─── res5.txt
  *  │     ├─── res6.txt
  *  │     ├─── zip3.zip
- *  │     │
+ *  │     │     ├─── res31.txt
+ *  │     │     └─── dir-z3/res32.txt
  *  │     └─── /22
- *  │           │
  *  │           └─── res7.txt
  *  │
  *  └─── /tmp

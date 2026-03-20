@@ -89,7 +89,7 @@ public abstract class LoadPath {
         throw new VncException(
                 String.format(
                         "The file '%s' is not a valid load path. It is neither " +
-                        "an existing regular file or directory!",
+                        "an existing regular file nor a directory!",
                         file.getPath()));
     }
 
