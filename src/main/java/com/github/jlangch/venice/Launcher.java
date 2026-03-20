@@ -162,7 +162,14 @@ public class Launcher {
             }
             else {
                 // run the Venice REPL
-                new REPL(new AcceptAllInterceptor(loadPaths)).run(args);
+                new REPL(new AcceptAllInterceptor(loadPaths))
+                    .run(cli.removeSwitches("setup",
+                                            "-file", "-cp-file", "-script",
+                                            "-app", "-app-repl",
+                                            "-loadpath", "-dir",
+                                            "-repl-port", "-repl-pwd",
+                                            "-repl-encrypt", "-repl-compress",
+                                            "-repl-session-timeout"));
             }
 
             return SystemFunctions.SYSTEM_EXIT_CODE.get();
@@ -379,6 +386,9 @@ public class Launcher {
              "  -file script      run a script that is loaded from a file \n" +
              "                    e.g.:  -file ./test.venice \n" +
              "\n" +
+             "                    run script start with a remote REPL enabled:\n" +
+             "                    e.g.:  -file ./test.venice  -repl-port 33334 -repl-pwd xcf6zu=UI\n" +
+             "\n" +
              "  -cp-file res      run a script that is loaded from a classpath resource file \n" +
              "                    e.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
              "\n" +
@@ -391,17 +401,21 @@ public class Launcher {
              "  -repl             start a REPL \n" +
              "                    e.g.:  -repl \n" +
              "\n" +
-             "  -repl-port port   remote REPL communication port \n" +
+             "  -repl-port port   REPL acts as server with communication port.\n" +
+             "                    Only use together with -file option\n" +
              "                    e.g.:  -repl-port 33334 \n" +
              "\n" +
-             "  -repl-pwd pwd     remote REPL password \n" +
+             "  -repl-pwd pwd     REPL acts as server with password.\n" +
+             "                    Only use together with -file option\n" +
              "                    e.g.:  -repl-pwd xcf6zu=UI \n" +
              "\n" +
-             "  -repl-encrypt b   remote REPL transport encryption. Defaults to on\n" +
+             "  -repl-encrypt b   REPL transport encryption\n" +
+             "                    Defaults to on. Only use together with -file option\n" +
              "                    e.g.:  -repl-encrypt on \n" +
              "                           -repl-encrypt off \n" +
              "\n" +
-             "  -repl-compress b  remote REPL transport compression. Defaults to off\n" +
+             "  -repl-compress b  REPL transport compression.\n" +
+             "                    Defaults to off. Only use together with -file option\n" +
              "                    e.g.:  -repl-compress on \n" +
              "                           -repl-compress off \n" +
              "\n" +
@@ -482,12 +496,7 @@ public class Launcher {
     }
 
     private static boolean isMacroexpand(final CommandLineArgs cli) {
-        if (cli.switchPresent("-macroexpand")) {
-            return CommandLineArgs.isTrue(cli.switchValue("-macroexpand", "on"), true);
-        }
-        else {
-            return true;  // defaults to true (macroexpand on)
-        }
+        return CommandLineArgs.isTrue(cli.switchValue("-macroexpand", "on"), true);
     }
 
     private static int getReplServerPort(final CommandLineArgs cli) {
@@ -519,15 +528,11 @@ public class Launcher {
     }
 
     private static boolean getReplEncrypt(final CommandLineArgs cli) {
-        return cli.switchPresent("-repl-encrypt")
-                ? CommandLineArgs.isTrue(cli.switchValue("-repl-encrypt", "on"), true)
-                : true;
+        return CommandLineArgs.isTrue(cli.switchValue("-repl-encrypt", "on"), true);
     }
 
     private static boolean getReplCompress(final CommandLineArgs cli) {
-       return cli.switchPresent("-repl-compress")
-                ? CommandLineArgs.isTrue(cli.switchValue("-repl-compress", "off"), false)
-                : false;
+       return CommandLineArgs.isTrue(cli.switchValue("-repl-compress", "off"), false);
     }
 
     private static int getReplSessionTimeoutMinutes(final CommandLineArgs cli) {

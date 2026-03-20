@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.logging.Handler;
@@ -106,7 +107,9 @@ public class REPL implements IRepl {
         this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
     }
 
-    public void run(final String[] args) {
+    public void run(final CommandLineArgs cli) {
+        Objects.requireNonNull(cli);
+
         if (!semaphore.tryAcquire()) {
             throw new VncException("The REPL is already running!");
         }
@@ -114,7 +117,6 @@ public class REPL implements IRepl {
         try {
             ThreadContext.setInterceptor(interceptor);
 
-            final CommandLineArgs cli = new CommandLineArgs(args);
             final ILoadPaths loadpaths = interceptor.getLoadPaths();
 
             boolean macroexpand = false;
