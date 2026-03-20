@@ -116,16 +116,14 @@ public class ShellFunctionsTest {
     public void test_shell_stdout() {
         final Venice venice = new Venice();
 
+        // Note: use /bin/bash instead of /bin/sh. /bin/sh links to
+        //       a dash shell on Ubuntu causing the script work differently
         final String script =
                 "(:out \n" +
                 "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\"))";
 
         final String stdout = (String)venice.eval(script);
-        System.out.println("stdout: " + stdout);
-
-        // returns "Hello {1..3}"
-
         assertEquals("Hello 1\nHello 2\nHello 3\n", stdout);
     }
 
@@ -134,14 +132,14 @@ public class ShellFunctionsTest {
     public void test_shell_stderr() {
         final Venice venice = new Venice();
 
+        // Note: use /bin/bash instead of /bin/sh. /bin/sh links to
+        //       a dash shell on Ubuntu causing the script work differently
         final String script =
                 "(:err \n" +
                 "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\"))";
 
         final String stderr = (String)venice.eval(script);
-        System.out.println("stderr: " + stderr);
-
         assertEquals("Hello 1\nHello 2\nHello 3\n", stderr);
     }
 
@@ -150,9 +148,11 @@ public class ShellFunctionsTest {
     public void test_shell_stdout_timeout() {
         final Venice venice = new Venice();
 
+        // Note: use /bin/bash instead of /bin/sh. /bin/sh links to
+        //       a dash shell on Ubuntu causing the script work differently
         final String script =
                 "(:out \n" +
-                "  (sh \"/bin/sh\" \n" +
+                "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
                 "      :timeout 1500))";
 
@@ -164,9 +164,11 @@ public class ShellFunctionsTest {
     public void test_shell_stdout_fn() {
         final Venice venice = new Venice();
 
+        // Note: use /bin/bash instead of /bin/sh. /bin/sh links to
+        //       a dash shell on Ubuntu causing the script work differently
         final String script =
                 "(with-out-str \n" +
-                "  (sh \"/bin/sh\" \n" +
+                "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
                 "      :out-fn println \n" +
                 "      :err-fn println))";
@@ -179,9 +181,11 @@ public class ShellFunctionsTest {
     public void test_shell_stderr_fn() {
         final Venice venice = new Venice();
 
+        // Note: use /bin/bash instead of /bin/sh. /bin/sh links to
+        //       a dash shell on Ubuntu causing the script work differently
         final String script =
                 "(with-out-str \n" +
-                "  (sh \"/bin/sh\" \n" +
+                "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\" \n" +
                 "      :out-fn println \n" +
                 "      :err-fn println))";
@@ -194,9 +198,11 @@ public class ShellFunctionsTest {
     public void test_shell_stdout_fn_timeout() {
         final Venice venice = new Venice();
 
+        // Note: use /bin/bash instead of /bin/sh. /bin/sh links to
+        //       a dash shell on Ubuntu causing the script work differently
         final String script =
                 "(with-out-str \n" +
-                "  (sh \"/bin/sh\" \n" +
+                "  (sh \"/bin/bash\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
                 "      :out-fn println \n" +
                 "      :err-fn println \n" +
