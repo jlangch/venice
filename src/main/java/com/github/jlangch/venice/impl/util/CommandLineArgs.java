@@ -179,6 +179,18 @@ public class CommandLineArgs {
         return args;
     }
 
+    public static boolean isTrue(final String s, final boolean defaultVal) {
+        if ("on".equalsIgnoreCase(s)) return true;
+        if ("off".equalsIgnoreCase(s)) return false;
+
+        if ("yes".equalsIgnoreCase(s)) return true;
+        if ("no".equalsIgnoreCase(s)) return false;
+
+        if ("true".equalsIgnoreCase(s)) return true;
+        if ("false".equalsIgnoreCase(s)) return false;
+
+        return defaultVal;
+    }
 
     private static Long parseOptionalLong(final String val) {
         return val == null ? null : Long.parseLong(val);

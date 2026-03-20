@@ -483,8 +483,7 @@ public class Launcher {
 
     private static boolean isMacroexpand(final CommandLineArgs cli) {
         if (cli.switchPresent("-macroexpand")) {
-             final String value = cli.switchValue("-macroexpand");
-             return "true".equals(value.toLowerCase());
+            return CommandLineArgs.isTrue(cli.switchValue("-macroexpand", "on"), true);
         }
         else {
             return true;  // defaults to true (macroexpand on)
@@ -521,13 +520,13 @@ public class Launcher {
 
     private static boolean getReplEncrypt(final CommandLineArgs cli) {
         return cli.switchPresent("-repl-encrypt")
-                ? isTrue(cli.switchValue("-repl-encrypt", "on"), true)
+                ? CommandLineArgs.isTrue(cli.switchValue("-repl-encrypt", "on"), true)
                 : true;
     }
 
     private static boolean getReplCompress(final CommandLineArgs cli) {
        return cli.switchPresent("-repl-compress")
-                ? isTrue(cli.switchValue("-repl-compress", "off"), false)
+                ? CommandLineArgs.isTrue(cli.switchValue("-repl-compress", "off"), false)
                 : false;
     }
 
@@ -541,19 +540,6 @@ public class Launcher {
         else {
             return (int)DEFAULT_REPL_SESSION_TIMEOUT;
         }
-    }
-
-    private static boolean isTrue(final String s, final boolean defaultVal) {
-        if ("on".equalsIgnoreCase(s)) return true;
-        if ("off".equalsIgnoreCase(s)) return false;
-
-        if ("yes".equalsIgnoreCase(s)) return true;
-        if ("no".equalsIgnoreCase(s)) return false;
-
-        if ("true".equalsIgnoreCase(s)) return true;
-        if ("false".equalsIgnoreCase(s)) return false;
-
-        return defaultVal;
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {

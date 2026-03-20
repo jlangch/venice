@@ -1371,7 +1371,7 @@ public class REPL implements IRepl {
     }
 
     private boolean isMacroexpand(final CommandLineArgs cli) {
-        return cli.switchPresent("-macroexpand");
+        return CommandLineArgs.isTrue(cli.switchValue("-macroexpand", "off"), false);
     }
 
     private void clearCommandHistoryIfRequired(final History history) {
@@ -1484,7 +1484,6 @@ public class REPL implements IRepl {
     private boolean isRemoteRepl() {
         return veniceAdapter instanceof RemoteVeniceAdapter;
     }
-
 
 
 
