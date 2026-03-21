@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.crypt;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,7 +42,9 @@ import java.util.Objects;
 
 import javax.crypto.Cipher;
 
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.util.crypt.PemConverter.TYPE;
 
 
 public class RSA {
@@ -79,60 +82,6 @@ public class RSA {
 
         // "public_key.der"
         return pkcs8EncodedKeySpec.getEncoded();
-    }
-
-    public static void storePrivateKey_X509DER(
-            final PrivateKey key,
-            final OutputStream os
-    ) throws IOException {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(os);
-
-        // "private_key.der"
-        os.write(toBytes(key));
-    }
-
-    public static void storePublicKey_X509DER(
-            final PublicKey key,
-            final OutputStream os
-    ) throws IOException {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(os);
-
-        // "public_key.der"
-        os.write(toBytes(key));
-    }
-
-    public static PrivateKey loadPrivateKey_X509DER(
-            final byte[] privateKeyBytes
-    ) throws IOException, GeneralSecurityException {
-        Objects.requireNonNull(privateKeyBytes);
-
-        final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return kf.generatePrivate(keySpec);
-    }
-
-    public static PrivateKey loadPrivateKey_X509DER(
-            final InputStream is
-    ) throws IOException, GeneralSecurityException {
-        return loadPrivateKey_X509DER(IOStreamUtil.copyIStoByteArray(is));
-    }
-
-    public static PublicKey loadPublicKey_X509DER(
-            final byte[] publicKeyBytes
-    )  throws IOException, GeneralSecurityException {
-        Objects.requireNonNull(publicKeyBytes);
-
-        final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        return kf.generatePublic(keySpec);
-    }
-
-    public static PublicKey loadPublicKey_X509DER(
-            final InputStream is
-    ) throws IOException, GeneralSecurityException {
-        return loadPublicKey_X509DER(IOStreamUtil.copyIStoByteArray(is));
     }
 
     public static byte[] encrypt(
@@ -244,10 +193,274 @@ public class RSA {
     }
 
 
+    // ------------------------------------------------------------------------
+    // File IO X509 DER
+    // ------------------------------------------------------------------------
+
+    public static void storePrivateKey_X509DER(
+            final PrivateKey key,
+            final OutputStream os
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(os);
+
+        // "private_key.der"
+        os.write(toBytes(key));
+    }
+
+    public static void storePrivateKey_X509DER(
+            final PrivateKey key,
+            final File f
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(f);
+        validateDerFileExtension(f);
+
+        // "private_key.der"
+        FileUtil.save(toBytes(key), f, true);
+    }
+
+    public static void storePublicKey_X509DER(
+            final PublicKey key,
+            final OutputStream os
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(os);
+
+        // "public_key.der"
+        os.write(toBytes(key));
+    }
+
+    public static void storePublicKey_X509DER(
+            final PublicKey key,
+            final File f
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(f);
+        validateDerFileExtension(f);
+
+        // "public_key.der"
+        FileUtil.save(toBytes(key), f, true);
+    }
+
+    public static PrivateKey loadPrivateKey_X509DER(
+            final byte[] privateKeyBytes
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(privateKeyBytes);
+
+        final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        final KeyFactory kf = KeyFactory.getInstance("RSA");
+        return kf.generatePrivate(keySpec);
+    }
+
+    public static PrivateKey loadPrivateKey_X509DER(
+            final InputStream is
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(is);
+
+        return loadPrivateKey_X509DER(IOStreamUtil.copyIStoByteArray(is));
+    }
+
+    public static PrivateKey loadPrivateKey_X509DER(
+            final File f
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(f);
+        validateDerFileExtension(f);
+
+        return loadPrivateKey_X509DER(FileUtil.load(f));
+    }
+
+    public static PublicKey loadPublicKey_X509DER(
+            final byte[] publicKeyBytes
+    )  throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(publicKeyBytes);
+
+        final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
+        final KeyFactory kf = KeyFactory.getInstance("RSA");
+        return kf.generatePublic(keySpec);
+    }
+
+    public static PublicKey loadPublicKey_X509DER(
+            final InputStream is
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(is);
+
+        return loadPublicKey_X509DER(IOStreamUtil.copyIStoByteArray(is));
+    }
+
+    public static PublicKey loadPublicKey_X509DER(
+            final File f
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(f);
+        validateDerFileExtension(f);
+
+        return loadPublicKey_X509DER(FileUtil.load(f));
+    }
+
+
+    // ------------------------------------------------------------------------
+    // File IO X509 PEM
+    // ------------------------------------------------------------------------
+
+    public static void storePrivateKey_X509PEM(
+            final PrivateKey key,
+            final OutputStream os
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(os);
+
+        // "private_key.der"
+        final String pem = PemConverter.convertDerToPem(
+                                toBytes(key),
+                                PemConverter.TYPE.PrivateKey);
+        os.write(pem.getBytes(StandardCharsets.US_ASCII));
+    }
+
+    public static void storePrivateKey_X509PEM(
+            final PrivateKey key,
+            final File f
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(f);
+        validatePemFileExtension(f);
+
+        // "private_key.der"
+        final String pem = PemConverter.convertDerToPem(
+                                toBytes(key),
+                                PemConverter.TYPE.PrivateKey);
+        FileUtil.save(pem.getBytes(StandardCharsets.US_ASCII), f, true);
+    }
+
+    public static void storePublicKey_X509PEM(
+            final PublicKey key,
+            final OutputStream os
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(os);
+
+        // "public_key.der"
+        final String pem = PemConverter.convertDerToPem(
+                                toBytes(key),
+                                PemConverter.TYPE.PublicKey);
+        os.write(pem.getBytes(StandardCharsets.US_ASCII));
+    }
+
+    public static void storePublicKey_X509PEM(
+            final PublicKey key,
+            final File f
+    ) throws IOException {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(f);
+        validatePemFileExtension(f);
+
+        // "public_key.der"
+        final String pem = PemConverter.convertDerToPem(
+                                toBytes(key),
+                                PemConverter.TYPE.PublicKey);
+
+        FileUtil.save(pem.getBytes(StandardCharsets.US_ASCII), f, true);
+    }
+
+    public static PrivateKey loadPrivateKey_X509PEM(
+            final String pem
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(pem);
+        validatePrivateKeyPem(pem);
+
+        final byte[] privateKeyBytes = PemConverter.convertPemToDer(pem.getBytes(StandardCharsets.US_ASCII));
+
+        final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        final KeyFactory kf = KeyFactory.getInstance("RSA");
+        return kf.generatePrivate(keySpec);
+    }
+
+    public static PrivateKey loadPrivateKey_X509PEM(
+            final InputStream is
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(is);
+
+        final String pem = new String(IOStreamUtil.copyIStoByteArray(is), StandardCharsets.US_ASCII);
+        return loadPrivateKey_X509PEM(pem);
+    }
+
+    public static PrivateKey loadPrivateKey_X509PEM(
+            final File f
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(f);
+        validatePemFileExtension(f);
+
+        final String pem = new String(FileUtil.load(f), StandardCharsets.US_ASCII);
+        return loadPrivateKey_X509PEM(pem);
+    }
+
+    public static PublicKey loadPublicKey_X509PEM(
+            final String pem
+    )  throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(pem);
+        validatePublicKeyPem(pem);
+
+        final byte[] publicKeyBytes = PemConverter.convertPemToDer(pem.getBytes(StandardCharsets.US_ASCII));
+
+        final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
+        final KeyFactory kf = KeyFactory.getInstance("RSA");
+        return kf.generatePublic(keySpec);
+    }
+
+    public static PublicKey loadPublicKey_X509PEM(
+            final InputStream is
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(is);
+
+        final String pem = new String(IOStreamUtil.copyIStoByteArray(is), StandardCharsets.US_ASCII);
+        return loadPublicKey_X509PEM(pem);
+   }
+
+    public static PublicKey loadPublicKey_X509PEM(
+            final File f
+    ) throws IOException, GeneralSecurityException {
+        Objects.requireNonNull(f);
+        validatePemFileExtension(f);
+
+        final String pem = new String(FileUtil.load(f), StandardCharsets.US_ASCII);
+        return loadPublicKey_X509PEM(pem);
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Utils
+    // ------------------------------------------------------------------------
+
     private static Cipher getCipher() throws GeneralSecurityException {
         return Cipher.getInstance("RSA/ECB/OAEPPadding");
     }
 
+    private static void validateDerFileExtension(final File file) {
+        Objects.requireNonNull(file);
+        if (!file.getName().endsWith(".der")) {
+            throw new IllegalArgumentException("A DER key file must have the file extension '.der'");
+        }
+    }
+
+    private static void validatePemFileExtension(final File file) {
+        Objects.requireNonNull(file);
+        if (!file.getName().endsWith(".pem")) {
+            throw new IllegalArgumentException("A PEM key file must have the file extension '.pem'");
+        }
+    }
+
+    private static void validatePublicKeyPem(final String pem) {
+        Objects.requireNonNull(pem);
+        if (!PemConverter.isPem(pem, TYPE.PublicKey)) {
+            throw new IllegalArgumentException("Not a public key in PEM format");
+        }
+    }
+
+    private static void validatePrivateKeyPem(final String pem) {
+        Objects.requireNonNull(pem);
+        if (!PemConverter.isPem(pem, TYPE.PrivateKey)) {
+            throw new IllegalArgumentException("Not a private key in PEM format");
+        }
+    }
 
 
     private static int KEY_SIZE = 2048;  // key size in bits

@@ -63,6 +63,19 @@ public class PemConverter {
         return Base64.getDecoder().decode(base64);
     }
 
+    public static boolean isPem(final String pem, final TYPE type) {
+        // This works for common PEM types like:
+        //   • -----BEGIN CERTIFICATE-----
+        //   • -----BEGIN PUBLIC KEY-----
+        //   • -----BEGIN PRIVATE KEY-----
+        //   • -----BEGIN X509 CRL-----
+
+        Objects.requireNonNull(pem);
+        Objects.requireNonNull(type);
+
+        return pem.startsWith("-----BEGIN " + getTypeString(type) + "-----\n")
+               && pem.endsWith("-----END " + getTypeString(type) + "-----");
+     }
 
     private static String getTypeString(final TYPE type) {
         switch(type) {
@@ -72,7 +85,6 @@ public class PemConverter {
             case X509:        return "X509 CRL";
             default: throw new RuntimeException("Invalid PEM type");
         }
-
     }
 
     public static enum TYPE {

@@ -205,15 +205,10 @@
           (io/exists-dir? dir)
           (string? name)] }
 
-  (-<> (private-key key-pair)
-       (. :RSA :toBytes <>)
-       (. :PemConverter :convertDerToPem <> :PrivateKey)
-       (io/spit (io/file dir (str name "-private.pem")) <>))
-
-  (-<> (public-key key-pair)
-       (. :RSA :toBytes <>)
-       (. :PemConverter :convertDerToPem <> :PublicKey)
-       (io/spit (io/file dir (str name "-public.pem")) <>)))
+  (. :RSA :storePrivateKey_X509PEM (private-key key-pair) 
+                                   (io/file dir (str name "-private.pem")))
+  (. :RSA :storePublicKey_X509PEM (public-key key-pair) 
+                                  (io/file dir (str name "-public.pem"))))
 
 
 (defn
@@ -280,18 +275,12 @@
 
   { :pre [(io/file? pem-file)] }
 
-  (let [key (io/slurp pem-file)]
+  (let [pem (io/slurp pem-file)]
     (cond
-      (str/starts-with? key "-----BEGIN PUBLIC KEY-----")
-         (->> (bytebuf-from-string key :UTF-8)
-              (. :PemConverter :convertPemToDer)
-              (. :RSA :loadPublicKey_X509DER))
-          
-      (str/starts-with? key "-----BEGIN PRIVATE KEY-----")
-         (->> (bytebuf-from-string key :UTF-8)
-              (. :PemConverter :convertPemToDer)
-              (. :RSA :loadPrivateKey_X509DER))
-
+      (. :PemConverter :isPem pem :PublicKey)
+         (. :RSA :loadPublicKey_X509PEM pem)         
+      (. :PemConverter :isPem pem :PrivateKey)
+         (. :RSA :loadPrivateKey_X509PEM pem)
       :else
          (throw (ex :VncException "Not a public or private key PEM file")))))
 

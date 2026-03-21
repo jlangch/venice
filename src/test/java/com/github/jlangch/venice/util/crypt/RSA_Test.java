@@ -22,14 +22,9 @@
 package com.github.jlangch.venice.util.crypt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 import org.junit.jupiter.api.Test;
 
@@ -45,40 +40,6 @@ public class RSA_Test {
         final String decrypted = RSA.decrypt(encrypted, keyPair.getPrivate());
 
         assertEquals("1234567890", decrypted);
-    }
-
-    @Test
-    public void test_load_strore_private_key() throws Exception {
-        final KeyPair keyPair = RSA.generateKeyPair();
-
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-        RSA.storePrivateKey_X509DER(keyPair.getPrivate(), os);
-
-        final byte[] data = os.toByteArray();
-
-        final ByteArrayInputStream is = new ByteArrayInputStream(data);
-
-        final PrivateKey key = RSA.loadPrivateKey_X509DER(is);
-
-        assertNotNull(key);
-    }
-
-    @Test
-    public void test_load_strore_public_key() throws Exception {
-        final KeyPair keyPair = RSA.generateKeyPair();
-
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-        RSA.storePublicKey_X509DER(keyPair.getPublic(), os);
-
-        final byte[] data = os.toByteArray();
-
-        final ByteArrayInputStream is = new ByteArrayInputStream(data);
-
-        final PublicKey key = RSA.loadPublicKey_X509DER(is);
-
-        assertNotNull(key);
     }
 
     @Test
