@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -172,6 +173,14 @@ public class CommandLineArgs {
     }
 
     public CommandLineArgs removeSwitches(final String... switchNames) {
+        CommandLineArgs args = this;
+        for(final String name : switchNames) {
+            args = args.removeSwitch(name);
+        }
+        return args;
+    }
+
+    public CommandLineArgs removeAllSwitches(final Collection<String> switchNames) {
         CommandLineArgs args = this;
         for(final String name : switchNames) {
             args = args.removeSwitch(name);
