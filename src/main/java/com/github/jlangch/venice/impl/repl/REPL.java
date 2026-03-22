@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,6 +79,7 @@ import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.repl.debug.ReplDebugClient;
 import com.github.jlangch.venice.impl.repl.remote.RemoteVeniceAdapter;
+import com.github.jlangch.venice.impl.repl.remote.ReplClientConfig;
 import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -99,6 +101,7 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 import com.github.jlangch.venice.util.OS;
+import com.github.jlangch.venice.util.crypt.RSA;
 
 
 public class REPL implements IRepl {
@@ -259,7 +262,7 @@ public class REPL implements IRepl {
         if (!veniceAdapter.runInitialLoadFile(
                 config.getLoadFile(), venice, env, printer, resultPrefix)
         ) {
-            printer.println("error", "Stopped REPL");
+            printer.println("error", "Stopped REPL (Initial load file run failed)");
             return; // we stop here, if the initial load file run failed
         }
 
@@ -657,6 +660,7 @@ public class REPL implements IRepl {
                     case "license":       handleLicenseCommand(args); break;
                     case "local":         handleSwitchToLocalReplCommand(); break;
                     case "remote":        handleSwitchToRemoteReplCommand(args); break;
+                    case "rsa-keys":      handleRsaKeysCommand(args); break;
 
                     default:              handleInvalidCommand(cmd); break;
                 }
@@ -1144,20 +1148,42 @@ public class REPL implements IRepl {
     }
 
     private void handleSwitchToRemoteReplCommand(final List<String> params) {
-        if (params.size() != 3) {
-            printer.println("error", "Require host, port, and password arguments to switch to remote REPL");
+        if (!(params.size() == 1 || params.size() == 3 || params.size() == 4)){
+            printer.println("error", "Invalid arguments to switch to remote REPL");
+            printer.println("error", "Require mandatory host, port, and password");
+            printer.println("error", "e.g \"localhost 33334 zuK;8\" or \"localhost 33334 zuK;8 \"");
             return;
         }
-        final String host = params.get(0);
-        final int port;
-        final String password = params.get(2);
 
+        final int port;
         try {
             port = Integer.parseInt(params.get(1));
         }
         catch(NumberFormatException ex) {
             printer.println("system", "Expected an integer for port argument!");
             return;
+        }
+
+        final ReplClientConfig replConfig;
+
+        if (params.size() == 3) {
+            replConfig = new ReplClientConfig(
+                                params.get(0),   // host
+                                port,            // port
+                                params.get(2));  // password
+        }
+        else if (params.size() == 1) {
+            replConfig = ReplClientConfig.load(new File( params.get(0)));
+        }
+        else {
+            final ReplClientConfig tmpCfg = ReplClientConfig.load(new File( params.get(3)));
+            replConfig = new ReplClientConfig(
+                                params.get(0),   // host
+                                port,            // port
+                                params.get(2),   // password
+                                tmpCfg.getClientPublicKeyFile(),
+                                tmpCfg.getClientPrivateKeyFile(),
+                                tmpCfg.getServerPublicKeyFile());
         }
 
         // [1] If a remote REPL is active close it
@@ -1170,11 +1196,11 @@ public class REPL implements IRepl {
         // [2] Open a new remote REPL client
         try {
             printer.println("stdout", "Starting new remote REPL client...");
-            final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(host, port, password);
+            final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(replConfig);
 
             // [3] Switch to the remote REPL client
             veniceAdapter = rexec;
-            printer.println("system", "Switched to remote REPL " + port + "@" + host);
+            printer.println("system", "Switched to remote REPL " + port + "@" + replConfig.getHost());
             changePrompt(promptRemote);
         }
         catch(Exception ex) {
@@ -1197,6 +1223,32 @@ public class REPL implements IRepl {
         }
         else {
             printer.println("stdout", "Local REPL is already active");
+        }
+    }
+
+
+    private void handleRsaKeysCommand(final List<String> params) {
+        if (params.size() != 2){
+            printer.println("error", "Pass a name and directory");
+            return;
+        }
+
+        final String name = params.get(0);
+        final String dir = params.get(1);
+
+        if (!new File(dir).isDirectory()) {
+            printer.println("error", "The directory does not exist");
+            return;
+        }
+
+        try {
+            final KeyPair pair = RSA.generateKeyPair();
+            RSA.storePublicKey_X509PEM(pair.getPublic(), new File(dir, name + "-public.pem"));
+            RSA.storePrivateKey_X509PEM(pair.getPrivate(), new File(dir, name + "-private.pem"));
+            printer.println("stdout", "Public and private key created and saved to the passed directory");
+        }
+        catch(Exception ex) {
+            printer.println("error", "Failed to ceate public and private key");
         }
     }
 

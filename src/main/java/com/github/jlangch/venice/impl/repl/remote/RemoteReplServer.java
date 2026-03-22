@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -65,14 +67,16 @@ public class RemoteReplServer implements AutoCloseable  {
     public RemoteReplServer(
             final IVeniceInterpreter interpreter,
             final Env env,
-            final int port,
-            final String password,
-            final boolean encrypt,
-            final boolean compress,
-            final int sessionTimeoutMinutes
+            final ReplServerConfig config
     ) {
         this.interpreter = interpreter;
         this.env = env;
+
+        // Load the keys from the PEM files. The keys may be null!
+        final KeyPair serverKeyPair = RsaKeyUtil.createKeyPair(
+                                    RsaKeyUtil.loadPublicKey(config.getServerPublicKeyFile()),
+                                    RsaKeyUtil.loadPrivateKey(config.getServerPrivateKeyFile()));
+        final PublicKey clientPublicKey = RsaKeyUtil.loadPublicKey(config.getClientPublicKeyFile());
 
         env.setGlobal(new Var(new VncSymbol("repl/remote-repl?"), VncBoolean.True, false, Var.Scope.Global));
         env.setGlobalDynamic(new VncSymbol("repl/session-id"), Constants.Nil);
@@ -80,9 +84,16 @@ public class RemoteReplServer implements AutoCloseable  {
         // Save the thread context for use with client REPL session threads
         this.mainThreadContextSnapshot = ThreadContext.snapshot();
 
-        this.ipcServer = createIpcServer(port, RemoteRepl.PRINCIPAL, password, encrypt, compress);
+        this.ipcServer = createIpcServer(
+                            config.getPort(),
+                            RemoteRepl.PRINCIPAL,
+                            config.getPassword(),
+                            config.isEncrypt(),
+                            config.isCompress(),
+                            serverKeyPair,
+                            clientPublicKey);
 
-        final int timeoutMinutes = Math.max(1, sessionTimeoutMinutes);
+        final int timeoutMinutes = Math.max(1, config.getSessionTimeoutMinutes());
         this.executors = new SessionThreadExecutors(timeoutMinutes);
     }
 
@@ -111,7 +122,10 @@ public class RemoteReplServer implements AutoCloseable  {
             final String principal,
             final String password,
             final boolean encrypt,
-            final boolean compress
+            final boolean compress,
+            final KeyPair serverKeyPair,
+            final PublicKey clientPublicKey
+
     ) {
         if (port <= 0 || port > 65536) {
             throw new VncException(
@@ -129,20 +143,34 @@ public class RemoteReplServer implements AutoCloseable  {
                     + "No password supplied! Please pass the option "
                     + "'-repl-pwd 123' or '-repl-pwd env:REPL_PASSWORD'");
         }
+        if ((serverKeyPair == null && clientPublicKey != null)
+            || (serverKeyPair != null && clientPublicKey == null)
+        ) {
+            throw new VncException(
+                    "Failed to start Venice REPL server. "
+                    + "Either pass both a server key pair with private/public key and a "
+                    + "client public key or none of them");
+        }
 
         try {
             final Authenticator authenticator = new Authenticator(true);
             authenticator.addCredentials(principal, password);
 
-            final ServerConfig config = ServerConfig
-                                            .builder()
-                                            .conn(port)
-                                            .authenticator(authenticator)
-                                            .encrypt(encrypt)
-                                            .compressCutoffSize(compress ? CompressCutoffSize : -1)
-                                            .build();
+            final ServerConfig.Builder config = ServerConfig
+                                                .builder()
+                                                .conn(port)
+                                                .authenticator(authenticator)
+                                                .encrypt(encrypt)
+                                                .compressCutoffSize(compress ? CompressCutoffSize : -1);
 
-            final Server server = Server.of(config);
+            // RSA signing?
+            if (serverKeyPair != null && clientPublicKey != null) {
+                config.dhRsaSign(true);
+                config.dhRsaSigningServerKeyPair(serverKeyPair);
+                config.dhRsaSigningClientPublicKey(clientPublicKey);
+            }
+
+            final Server server = Server.of(config.build());
 
             server.createFunction(RemoteRepl.FUNCTION, this::handler);
 

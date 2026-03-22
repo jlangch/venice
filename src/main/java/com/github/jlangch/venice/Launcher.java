@@ -21,12 +21,15 @@
  */
 package com.github.jlangch.venice;
 
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import com.github.jlangch.venice.impl.AppRunner;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
@@ -39,6 +42,7 @@ import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.repl.install.ReplInstaller;
 import com.github.jlangch.venice.impl.repl.remote.RemoteReplServer;
+import com.github.jlangch.venice.impl.repl.remote.ReplServerConfig;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -68,59 +72,6 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  *       -repl \
  *       -colors
  *  </pre>
- *
- *  <p>Launcher command line options:
- *  <pre>
- *  -loadpath path     defines a load path, colon or semi-colon delimited paths
- *                     On Windows the path separator <code>;</code> is supported
- *                     only. Linux and MacOS support the path separators <code>:</code>
- *                     and <code>;</code>
- *                     E.g.: -loadpath "/users/foo/scripts:/users/foo/res"
- *                           -loadpath "/users/foo/scripts;/users/foo/res"
- *
- *  -macroexpand b     turns up-front macro expansion on or off by setting the value
- *                     to true or false. Turning macro expansion on results in a
- *                     much better performance.
- *                     Enabled by default for launchers:  -file, -cp-file, -script, -app, or -app-rep
- *                     Disabled by default for launchers: -repl
- *
- *  -colors            use light mode colors (requires jansi library on the classpath)
- *
- *  -colors-light      synonym for -colors
- *
- *  -colors-dark       use dark mode colors (requires jansi library on the classpath)
- *
- *  -minimal           setup a minimal REPL. Only use together with -setup
- *
- *  -dir directory     REPL setup directory. Only use together with -setup
- *
- *  -file script       loads the script to run from a file
- *                     E.g.:  -file ./test.venice
- *
- *  -cp-file res       loads the script to run from the classpath
- *                     E.g.:  -cp-file com/github/jlangch/venice/test.venice
- *
- *  -script script     run a script
- *                     E.g.:  -script "(+ 1 10)"
- *
- *  -app app           run a Venice app
- *                     E.g.:  -app test-app.zip
- *
- *  -repl              start a REPL
- *                     E.g.:  -repl
- *
- *  -setup             setup a REPL
- *                     E.g.:  java -jar venice-1.12.85.jar -setup -colors -dir ./repl \n" +
- *                            java -jar venice-1.12.85.jar -setup -minimal -colors -dir ./repl \n" +
- *                            java -jar venice-1.12.85.jar -setup -colors-light -dir ./repl \n" +
- *                            java -jar venice-1.12.85.jar -setup -colors-dark -dir ./repl \n" +
- *
- *  -help              prints a help
- *  </pre>
- *
- *  <p>Note:
- *  The options '-file', '-cp-file', '-script', '-app', '-repl, '-app-repl', and '-setup'
- *  exclude each other
  */
 public class Launcher {
 
@@ -162,14 +113,7 @@ public class Launcher {
             }
             else {
                 // run the Venice REPL
-                new REPL(new AcceptAllInterceptor(loadPaths))
-                    .run(cli.removeSwitches("setup",
-                                            "-file", "-cp-file", "-script",
-                                            "-app", "-app-repl",
-                                            "-loadpath", "-dir",
-                                            "-repl-port", "-repl-pwd",
-                                            "-repl-encrypt", "-repl-compress",
-                                            "-repl-session-timeout"));
+                runReplCmd(loadPaths, cli);
             }
 
             return SystemFunctions.SYSTEM_EXIT_CODE.get();
@@ -190,37 +134,14 @@ public class Launcher {
     ) {
         final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 
-        final boolean macroexpand = isMacroexpand(cli);
-        final int replServerPort = getReplServerPort(cli);
-        final String replServerPassword = getReplServerPassword(cli);
-        final boolean replServerEncrypt = getReplEncrypt(cli);
-        final boolean replServerCompress = getReplCompress(cli);
-        final int replServerSessionTimeoutMinutes = getReplSessionTimeoutMinutes(cli);
-
         // run the file from the filesystem
         final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
         final String script = new String(FileUtil.load(new File(file)));
+        final String scriptName = new File(file).getName();
 
         final String scriptWrapped = "(do " + script + ")";
 
-        final String result = runScript(
-                                cli.removeSwitches("-file",
-                                                   "-macroexpand",  "-loadpath",
-                                                   "-minimal",      "dir",
-                                                   "-colors",
-                                                   "-colors-light", "-colors-dark",
-                                                   "-repl-port", "-repl-pwd",
-                                                   "-repl-encrypt", "-repl-compress",
-                                                   "-repl-session-timeout"),
-                                macroexpand,
-                                replServerPort,
-                                replServerPassword,
-                                replServerEncrypt,
-                                replServerCompress,
-                                replServerSessionTimeoutMinutes,
-                                interceptor,
-                                scriptWrapped,
-                                new File(file).getName());
+        final String result = runScript(cli, interceptor, scriptWrapped, scriptName);
 
         if (!"nil".equals(result)) {
             System.out.println(result);
@@ -233,35 +154,12 @@ public class Launcher {
     ) {
         final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 
-        final boolean macroexpand = isMacroexpand(cli);
-        final int replServerPort = getReplServerPort(cli);
-        final String replServerPassword = getReplServerPassword(cli);
-        final boolean replServerEncrypt = getReplEncrypt(cli);
-        final boolean replServerCompress = getReplCompress(cli);
-        final int replServerSessionTimeoutMinutes = getReplSessionTimeoutMinutes(cli);
-
         // run the file from the classpath
         final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
         final String script = new ClassPathResource(file).getResourceAsString();
+        final String scriptName = new File(file).getName();
 
-        final String result = runScript(
-                                cli.removeSwitches("-cp-file",
-                                                   "-macroexpand",  "-loadpath",
-                                                   "-minimal",      "dir",
-                                                   "-colors",
-                                                   "-colors-light", "-colors-dark",
-                                                   "-repl-port", "-repl-pwd",
-                                                   "-repl-encrypt", "-repl-compress",
-                                                   "-repl-session-timeout"),
-                                macroexpand,
-                                replServerPort,
-                                replServerPassword,
-                                replServerEncrypt,
-                                replServerCompress,
-                                replServerSessionTimeoutMinutes,
-                                interceptor,
-                                script,
-                                new File(file).getName());
+        final String result = runScript(cli, interceptor, script, scriptName);
 
         if (!"nil".equals(result)) {
             System.out.println(result);
@@ -274,35 +172,52 @@ public class Launcher {
     ) {
         final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 
-        final boolean macroexpand = isMacroexpand(cli);
-        final int replServerPort = getReplServerPort(cli);
-        final String replServerPassword = getReplServerPassword(cli);
-        final boolean replServerEncrypt = getReplEncrypt(cli);
-        final boolean replServerCompress = getReplCompress(cli);
-        final int replServerSessionTimeoutMinutes = getReplSessionTimeoutMinutes(cli);
-
         // run the script passed as command line argument
         final String script = cli.switchValue("-script");
 
-        final String result = runScript(
-                                cli.removeSwitches("-script",
-                                                   "-macroexpand",  "-loadpath",
-                                                   "-minimal",      "dir",
-                                                   "-colors",
-                                                   "-colors-light", "-colors-dark",
-                                                   "-repl-port",    "-repl-pwd",
-                                                   "-repl-encrypt", "-repl-compress",
-                                                   "-repl-session-timeout"),
-                                macroexpand,
-                                replServerPort,
-                                replServerPassword,
-                                replServerEncrypt,
-                                replServerCompress,
-                                replServerSessionTimeoutMinutes,
-                                interceptor,
-                                script,
-                                "script");
+        final String result = runScript(cli, interceptor, script, "script");
+
         System.out.println(result);
+    }
+
+    private static String runScript(
+            final CommandLineArgs cli,
+            final IInterceptor interceptor,
+            final String script,
+            final String name
+    ) {
+        final boolean macroexpand = isMacroexpand(cli);
+        final String replServerConfigFile = getReplServerConfigFile(cli);
+
+        final ReplServerConfig replServerConfig =
+                replServerConfigFile == null
+                    ? null
+                    : ReplServerConfig.load(new File(replServerConfigFile));
+
+        // no launcher pass-through options
+        final CommandLineArgs scriptCli = cli.removeAllSwitches(ALL_LAUNCHER_OPTIONS);
+
+        final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
+
+        final List<Var> vars = Arrays.asList(convertCliArgsToVar(scriptCli));
+
+        final Env env = createEnv(venice, macroexpand, RunMode.SCRIPT, vars);
+
+        if (replServerConfig != null) {
+            try (RemoteReplServer server = new RemoteReplServer(
+                                                venice,
+                                                new Env(env),  // run in own context
+                                                replServerConfig);
+            ) {
+                return venice.PRINT(venice.RE(script, name, env));
+            }
+            catch(IOException ex) {
+                throw new VncException("Failed to close Remote REPL server!", ex);
+            }
+        }
+        else {
+            return venice.PRINT(venice.RE(script, name, env));
+        }
     }
 
     private static void runAppCmd(
@@ -315,13 +230,13 @@ public class Launcher {
         final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 
         // The app runner has 'macroexpand' implicitly enabled
+
+        // no launcher pass-through options
+        final CommandLineArgs appCli = cli.removeAllSwitches(ALL_LAUNCHER_OPTIONS);
+
         AppRunner.run(
             appFile,
-            cli.removeSwitches("-app", "-macroexpand", "-loadpath",
-                               "-repl-port", "-repl-pwd",
-                               "-repl-encrypt", "-repl-compress",
-                               "-repl-session-timeout")
-               .argsAsList(),
+            appCli.argsAsList(),
             loadPaths,
             new PrintStream(System.out, true),
             new PrintStream(System.err, true),
@@ -338,8 +253,52 @@ public class Launcher {
         final String file = cli.switchValue("-app-repl");
 
         // The custom REPL has 'macroexpand' implicitly enabled
-        new CustomREPL(interceptor, new File(file))
-               .run(cli.removeSwitches("-macroexpand").args());
+
+        // launcher pass-through options:
+        final Set<String> passThroughOpts = toSet("-restartable",
+                                                  "-colors",
+                                                  "-colors-light",
+                                                  "-colors-dark");
+
+        final Set<String> removeOptions= ALL_LAUNCHER_OPTIONS;
+        removeOptions.removeAll(passThroughOpts); // keep launcher pass-through options
+
+        final CommandLineArgs replCli = cli.removeAllSwitches(removeOptions);
+
+        new CustomREPL(interceptor, new File(file)).run(replCli.args());
+    }
+
+    private static void runReplCmd(
+            final ILoadPaths loadPaths,
+            final CommandLineArgs cli
+    ) {
+        // launcher pass-through options:
+        final Set<String> passThroughOpts = toSet("-macroexpand",
+                                                  "-restartable",
+                                                  "-load-file",  // initial load file
+                                                  "-colors",
+                                                  "-colors-light",
+                                                 "-colors-dark");
+
+        final Set<String> removeOptions = ALL_LAUNCHER_OPTIONS;
+        removeOptions.removeAll(passThroughOpts); // keep launcher pass-through options
+
+        final CommandLineArgs replCli = cli.removeAllSwitches(removeOptions);
+
+        new REPL(new AcceptAllInterceptor(loadPaths)).run(replCli);
+    }
+
+    private static Env createEnv(
+            final IVeniceInterpreter venice,
+            final boolean macroexpand,
+            final RunMode runMode,
+            final List<Var> vars
+    ) {
+        return venice.createEnv(macroexpand, false, runMode)
+                     .addGlobalVars(vars)
+                     .setStdoutPrintStream(new PrintStream(System.out, true))
+                     .setStderrPrintStream(new PrintStream(System.err, true))
+                     .setStdinReader(new InputStreamReader(System.in));
     }
 
     private static void printHelp() {
@@ -353,12 +312,12 @@ public class Launcher {
              "\n" +
              "Running a REPL:  \n" +
              "    java \\ \n" +
-             "       -server \\ \n" +
-             "       -Xmx2G \\ \n" +
-             "       -XX:-OmitStackTraceInFastThrow \\ \n" +
-             "       -cp \"libs/*\" \\ \n" +
-             "       com.github.jlangch.venice.Launcher \\ \n" +
-             "       -repl \\ \n" +
+             "       -server \\\n" +
+             "       -Xmx2G \\\n" +
+             "       -XX:-OmitStackTraceInFastThrow \\\n" +
+             "       -cp \"libs/*\" \\\n" +
+             "       com.github.jlangch.venice.Launcher \\\n" +
+             "       -repl \\\n" +
              "       -colors \n" +
              "\n\n" +
              "Launcher command line options: \n" +
@@ -378,13 +337,17 @@ public class Launcher {
              "\n" +
              "  -colors           use light mode colors (requires jansi library on the classpath)\n" +
              "\n" +
-             "  -colors-light     synonym for -colors\n" +
+             "  -colors-light     synonym for -colors (requires jansi library on the classpath)\n" +
              "\n" +
              "  -colors-dark      use dark mode colors (requires jansi library on the classpath)\n" +
              "\n" +
              "  -minimal          setup a minimal REPL. Only use together with -setup\n" +
              "\n" +
              "  -dir directory    REPL setup directory. Only use together with -setup\n" +
+             "\n" +
+             "  -restartable      Mark a REPL as restartable. \n" +
+             "                    Only use this switch in the 'repl.sh' or 'repl.bat' launcher\n" +
+             "                    scripts!\n" +
              "\n" +
              "  -file script      run a script that is loaded from a file \n" +
              "                    e.g.:  -file ./test.venice \n" +
@@ -404,29 +367,6 @@ public class Launcher {
              "  -repl             start a REPL \n" +
              "                    e.g.:  -repl \n" +
              "\n" +
-             "  -repl-port port   acts as REPL server with communication port. No default.\n" +
-             "                    Only use together with -file or -cp-file option\n" +
-             "                    e.g.:  -repl-port 33334 \n" +
-             "\n" +
-             "  -repl-pwd pwd     acts as REPL server with password. No default.\n" +
-             "                    Only use together with -file or -cp-file option\n" +
-             "                    e.g.:  -repl-pwd xcf6zu=UI \n" +
-             "\n" +
-             "  -repl-encrypt b   REPL server transport encryption. Defaults to on. \n" +
-             "                    Only use together with -file or -cp-file option\n" +
-             "                    e.g.:  -repl-encrypt on \n" +
-             "                           -repl-encrypt off \n" +
-             "\n" +
-             "  -repl-compress b  REPL server transport compression. Defaults to off. \n" +
-             "                    Only use together with -file or -cp-file option\n" +
-             "                    e.g.:  -repl-compress on \n" +
-             "                           -repl-compress off \n" +
-             "\n" +
-             "  -repl-session-timeout t  \n" +
-             "                    remote REPL session timeout in minutes. Defaults to \n" +
-             "                    20 minutes\n" +
-             "                    e.g.: -repl-session-timeout 20 \n" +
-             "\n" +
              "  -app-repl         start a custom REPL \n" +
              "                    e.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
              "\n" +
@@ -436,6 +376,21 @@ public class Launcher {
              "                           java -jar venice-1.12.85.jar -setup -colors-light -dir ./repl \n" +
              "                           java -jar venice-1.12.85.jar -setup -colors-dark -dir ./repl \n" +
              "\n" +
+             "  -repl-server-config file\n" +
+             "                    REPL server JSON configuration file\n" +
+             "                    Starts a REPL server on the given socket port and acts as\n" +
+             "                    a local REPL in the  application.\n" +
+             "                    Only use together with -file or -cp-file option\n" +
+             "                    e.g.:  { \"port\": 33334,                \n" +
+             "                             \"password\": \"123\",          \n" +
+             "                             \"encrypt\": true,              \n" +
+             "                             \"compress\": false,            \n" +
+             "                             \"sessionTimeoutMinutes\": 30,  \n" +
+             "                             \"serverPublicKeyFile\": null,  \n" +
+             "                             \"serverPrivateKeyFile\": null, \n" +
+             "                             \"clientPublicKeyFile\": null } \n" +
+
+             "\n" +
              "  -help             prints a help \n" +
              "\n" +
              "Note: \n" +
@@ -443,111 +398,11 @@ public class Launcher {
              "  and '-setup' exclude each other \n");
     }
 
-    private static String runScript(
-            final CommandLineArgs cli,
-            final boolean macroexpand,
-            final int replServerPort,
-            final String replServerPassword,
-            final boolean replServerEncrypt,
-            final boolean replServerCompress,
-            final int replServerSessionTimeoutMinutes,
-            final IInterceptor interceptor,
-            final String script,
-            final String name
-    ) {
-        final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
-
-        final Env env = createEnv(
-                            venice,
-                            macroexpand,
-                            RunMode.SCRIPT,
-                            Arrays.asList(
-                                convertCliArgsToVar(cli)));
-
-        if (replServerPort > 0) {
-            try (RemoteReplServer server = new RemoteReplServer(
-                                                venice,
-                                                new Env(env),  // run in own context
-                                                replServerPort,
-                                                replServerPassword,
-                                                replServerEncrypt,
-                                                replServerCompress,
-                                                replServerSessionTimeoutMinutes)
-            ) {
-                return venice.PRINT(venice.RE(script, name, env));
-            }
-            catch(IOException ex) {
-                throw new VncException("Failed to close Remote REPL server!", ex);
-            }
-        }
-        else {
-            return venice.PRINT(venice.RE(script, name, env));
-        }
-    }
-
-    private static Env createEnv(
-            final IVeniceInterpreter venice,
-            final boolean macroexpand,
-            final RunMode runMode,
-            final List<Var> vars
-    ) {
-        return venice.createEnv(macroexpand, false, runMode)
-                     .addGlobalVars(vars)
-                     .setStdoutPrintStream(new PrintStream(System.out, true))
-                     .setStderrPrintStream(new PrintStream(System.err, true))
-                     .setStdinReader(new InputStreamReader(System.in));
-    }
-
     private static boolean isMacroexpand(final CommandLineArgs cli) {
         return CommandLineArgs.isTrue(cli.switchValue("-macroexpand", "on"), true);
     }
-
-    private static int getReplServerPort(final CommandLineArgs cli) {
-        if (cli.switchPresent("-repl-port")) {
-             final long port = cli.switchLongValue("-repl-port", 0L);
-             if (port < 0L) return 0;
-             if (port > 65536) return 0;
-             return (int)port;
-        }
-        else {
-            return 0;
-        }
-    }
-
-    private static String getReplServerPassword(final CommandLineArgs cli) {
-        if (cli.switchPresent("-repl-pwd")) {
-            final String pwd = cli.switchValue("-repl-pwd");
-            if (pwd.startsWith("env:")) {
-                final String envVar = pwd.substring(4);
-                return System.getenv(envVar);
-            }
-            else {
-                return pwd;
-            }
-       }
-       else {
-            return null;
-       }
-    }
-
-    private static boolean getReplEncrypt(final CommandLineArgs cli) {
-        return CommandLineArgs.isTrue(cli.switchValue("-repl-encrypt", "on"), true);
-    }
-
-    private static boolean getReplCompress(final CommandLineArgs cli) {
-       return CommandLineArgs.isTrue(cli.switchValue("-repl-compress", "off"), false);
-    }
-
-    private static int getReplSessionTimeoutMinutes(final CommandLineArgs cli) {
-        if (cli.switchPresent("-repl-session-timeout")) {
-            final long timeoutMinutes = cli.switchLongValue(
-                                                "-repl-session-timeout",
-                                                DEFAULT_REPL_SESSION_TIMEOUT);
-            return (int)Math.min(1440L, Math.max(1L, timeoutMinutes));
-        }
-        else {
-            return (int)DEFAULT_REPL_SESSION_TIMEOUT;
-        }
+    private static String getReplServerConfigFile(final CommandLineArgs cli) {
+        return cli.switchValue("-repl-server-config", null);
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {
@@ -563,5 +418,27 @@ public class Launcher {
     }
 
 
-    private final static long DEFAULT_REPL_SESSION_TIMEOUT = 30L;
+    private final static Set<String> ALL_LAUNCHER_OPTIONS = toSet(
+                                                                "-setup",
+                                                                "-file",
+                                                                "-cp-file",
+                                                                "-script",
+                                                                "-repl",
+                                                                "-app",
+                                                                "-app-repl",
+
+                                                                "-macroexpand",
+                                                                "-loadpath",
+                                                                "-restartable",
+                                                                "-minimal",
+                                                                "-dir",
+                                                                "-load-file",
+
+                                                                "-colors",
+                                                                "-colors-light",
+                                                                "-colors-dark",
+
+                                                                "-repl-server-config",
+
+                                                                "-help");
 }

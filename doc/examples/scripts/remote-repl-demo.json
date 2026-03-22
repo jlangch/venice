@@ -1,0 +1,9 @@
+{ "port": 33334,
+  "password": "123",
+  "encrypt": true,
+  "compress": false,
+  "sessionTimeoutMinutes": 30,
+  "serverPublicKeyFile": null,
+  "serverPrivateKeyFile": null,
+  "clientPublicKeyFile": null
+}

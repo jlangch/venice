@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.repl.remote;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.IOException;
+import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,14 +46,14 @@ import com.github.jlangch.venice.util.ipc.ResponseStatus;
 public class RemoteReplClient implements AutoCloseable  {
 
     public RemoteReplClient(
-            final String host,
-            final int port,
-            final String password
+            final ReplClientConfig replConfig
     ) {
         final String uuid = UUID.randomUUID().toString();
 
         this.sessionId = uuid;
-        this.ipcClient = createIpcClient(host, port, RemoteRepl.PRINCIPAL, password, uuid);
+        this.ipcClient = createIpcClient(
+                            replConfig,
+                            RemoteRepl.PRINCIPAL, uuid);
     }
 
 
@@ -118,36 +120,52 @@ public class RemoteReplClient implements AutoCloseable  {
 
 
     private static Client createIpcClient(
-            final String host,
-            final int port,
+            final ReplClientConfig replConfig,
             final String principal,
-            final String password,
             final String sessionId
     ) {
-        if (port <= 0 || port > 65536) {
+        if (replConfig.getPort() <= 0 || replConfig.getPort() > 65536) {
             throw new VncException(
                 "Failed to start Venice REPL client. "
-                + "The port (" + port + ") must be in the range [0..65536]! ");
+                + "The port (" + replConfig.getPort() + ") must be in the range [0..65536]! ");
         }
         if (StringUtil.isEmpty(principal)) {
             throw new VncException(
                     "Failed to start Venice REPL client. The principal must not be empty!");
         }
-        if (StringUtil.isEmpty(password)) {
+        if (StringUtil.isEmpty(replConfig.getPassword())) {
             throw new VncException(
                     "Failed to start Venice REPL client. The password must not be empty!");
         }
 
+        // Load the keys from the PEM files. The keys may be null!
+        final KeyPair keyPair = RsaKeyUtil.createKeyPair(
+                                    RsaKeyUtil.loadPublicKey(replConfig.getClientPublicKeyFile()),
+                                    RsaKeyUtil.loadPrivateKey(replConfig.getClientPrivateKeyFile()));
+        final PublicKey serverPublicKey = RsaKeyUtil.loadPublicKey(replConfig.getServerPublicKeyFile());
+
+        if ((keyPair == null && serverPublicKey != null)
+                || (keyPair != null && serverPublicKey == null)
+        ) {
+            throw new VncException(
+                    "Failed to start Venice REPL server. "
+                    + "Either pass both a key pair with private/public key and a "
+                    + "server public key or none of them");
+        }
+
+
         try {
             final ClientConfig config = ClientConfig
                                             .builder()
-                                            .conn(host, port)
+                                            .conn(replConfig.getHost(), replConfig.getPort())
                                             .encrypt(true)
+                                            .dhRsaSigningClientKeyPair(keyPair)
+                                            .dhRsaSigningServerPublicKey(serverPublicKey)
                                             .build();
 
             final Client client = Client.of(config);
 
-            client.open(principal, password);
+            client.open(principal, replConfig.getPassword());
 
             sendSessionInit(client, sessionId);
 
