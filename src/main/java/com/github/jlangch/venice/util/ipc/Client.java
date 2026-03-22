@@ -204,6 +204,13 @@ public class Client implements Cloneable, AutoCloseable {
     }
 
     /**
+     * @return the established security level
+     */
+    public SecurityLevel getSecurityLevel() {
+        return conn == null ? SecurityLevel.Unknown : conn.getSecurityLevel();
+    }
+
+    /**
      * Closes the client
      */
     @Override

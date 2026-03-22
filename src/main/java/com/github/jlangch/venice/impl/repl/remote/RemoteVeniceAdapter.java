@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.repl.IVeniceAdapter;
 import com.github.jlangch.venice.impl.repl.ReplResultHistory;
 import com.github.jlangch.venice.impl.repl.TerminalPrinter;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.ipc.SecurityLevel;
 
 
 public class RemoteVeniceAdapter implements IVeniceAdapter{
@@ -37,6 +38,12 @@ public class RemoteVeniceAdapter implements IVeniceAdapter{
             final ReplRemotingConfig remoteConfig
     ) {
         client = new RemoteReplClient(remoteConfig);
+    }
+
+
+
+    public SecurityLevel getSecurityLevel() {
+        return client.getSecurityLevel();
     }
 
     @Override

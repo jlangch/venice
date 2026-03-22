@@ -41,6 +41,7 @@ import com.github.jlangch.venice.util.ipc.ClientConfig;
 import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.MessageFactory;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
+import com.github.jlangch.venice.util.ipc.SecurityLevel;
 
 
 public class RemoteReplClient implements AutoCloseable  {
@@ -74,6 +75,10 @@ public class RemoteReplClient implements AutoCloseable  {
 
     public boolean isRunning() {
         return ipcClient != null && ipcClient.isRunning() && !isStop();
+    }
+
+    public SecurityLevel getSecurityLevel() {
+        return ipcClient.getSecurityLevel();
     }
 
     @Override
@@ -152,7 +157,6 @@ public class RemoteReplClient implements AutoCloseable  {
                     + "Either pass both a key pair with private/public key and a "
                     + "server public key or none of them");
         }
-
 
         try {
             final ClientConfig config = ClientConfig

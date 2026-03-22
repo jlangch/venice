@@ -53,6 +53,7 @@ import com.github.jlangch.venice.util.ipc.IMessage;
 import com.github.jlangch.venice.util.ipc.IpcException;
 import com.github.jlangch.venice.util.ipc.MessageType;
 import com.github.jlangch.venice.util.ipc.ResponseStatus;
+import com.github.jlangch.venice.util.ipc.SecurityLevel;
 import com.github.jlangch.venice.util.ipc.impl.Message;
 import com.github.jlangch.venice.util.ipc.impl.Messages;
 import com.github.jlangch.venice.util.ipc.impl.protocol.Protocol;
@@ -115,6 +116,10 @@ public class ClientConnection implements AutoCloseable {
                 encrypt = config.isEncrypting() || srv_encryption;
                 dhRsaSign = srv_dhRsaSign;
                 authentication = srv_authentication;
+
+                if (encrypt && dhRsaSign) securityLevel = SecurityLevel.EncryptionAndSigned;
+                else if (encrypt) securityLevel = SecurityLevel.Encryption;
+                else securityLevel = SecurityLevel.Plain;
 
                 // Note: The server is enforcing the encryption if activated.
                 //       The client cannot disregard it. Trying to do so results
@@ -216,6 +221,10 @@ public class ClientConnection implements AutoCloseable {
 
     public long getMessageReceiveCount() {
        return listener.getMessageReceiveCount();
+    }
+
+    public SecurityLevel getSecurityLevel() {
+        return securityLevel;
     }
 
     public VncMap getThreadPoolStatistics() {
@@ -621,6 +630,7 @@ public class ClientConnection implements AutoCloseable {
     private final Compressor compressor;
 
     // encryption
+    private final SecurityLevel securityLevel;
     private final DiffieHellmanKeys dhKeys;
     private final boolean encrypt;
     private final boolean dhRsaSign; // sign Diffie-Hellman key exchange

@@ -1196,6 +1196,19 @@ public class REPL implements IRepl {
             printer.println("stdout", "Starting new remote REPL client...");
             final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(remoteConfig);
 
+            switch(rexec.getSecurityLevel()) {
+                case Encryption:
+                    printer.println("stdout", "Communication encrypted!");
+                    break;
+                case EncryptionAndSigned:
+                    printer.println("stdout", "Communication encrypted, key exchange signed!");
+                    break;
+                case Plain:
+                case Unknown:
+                default:
+                    break;
+            }
+
             // [3] Switch to the remote REPL client
             veniceAdapter = rexec;
             printer.println("system", "Switched to remote REPL " + remoteConfig.getPort() + "@" + remoteConfig.getHost());
