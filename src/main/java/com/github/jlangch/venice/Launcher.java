@@ -42,7 +42,7 @@ import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.repl.install.ReplInstaller;
 import com.github.jlangch.venice.impl.repl.remote.RemoteReplServer;
-import com.github.jlangch.venice.impl.repl.remote.ReplServerConfig;
+import com.github.jlangch.venice.impl.repl.remote.ReplRemotingConfig;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -189,10 +189,10 @@ public class Launcher {
         final boolean macroexpand = isMacroexpand(cli);
         final String replServerConfigFile = getReplServerConfigFile(cli);
 
-        final ReplServerConfig replServerConfig =
+        final ReplRemotingConfig replRemoteConfig =
                 replServerConfigFile == null
                     ? null
-                    : ReplServerConfig.load(new File(replServerConfigFile));
+                    : ReplRemotingConfig.load(new File(replServerConfigFile));
 
         // no launcher pass-through options
         final CommandLineArgs scriptCli = cli.removeAllSwitches(ALL_LAUNCHER_OPTIONS);
@@ -203,11 +203,11 @@ public class Launcher {
 
         final Env env = createEnv(venice, macroexpand, RunMode.SCRIPT, vars);
 
-        if (replServerConfig != null) {
+        if (replRemoteConfig != null) {
             try (RemoteReplServer server = new RemoteReplServer(
                                                 venice,
                                                 new Env(env),  // run in own context
-                                                replServerConfig);
+                                                replRemoteConfig);
             ) {
                 return venice.PRINT(venice.RE(script, name, env));
             }

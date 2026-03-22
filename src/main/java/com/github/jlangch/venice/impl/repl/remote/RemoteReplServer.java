@@ -62,21 +62,21 @@ import com.github.jlangch.venice.util.ipc.Server;
 import com.github.jlangch.venice.util.ipc.ServerConfig;
 
 
-public class RemoteReplServer implements AutoCloseable  {
+public class RemoteReplServer implements AutoCloseable {
 
     public RemoteReplServer(
             final IVeniceInterpreter interpreter,
             final Env env,
-            final ReplServerConfig config
+            final ReplRemotingConfig replRemoteConfig
     ) {
         this.interpreter = interpreter;
         this.env = env;
 
         // Load the keys from the PEM files. The keys may be null!
         final KeyPair serverKeyPair = RsaKeyUtil.createKeyPair(
-                                    RsaKeyUtil.loadPublicKey(config.getServerPublicKeyFile()),
-                                    RsaKeyUtil.loadPrivateKey(config.getServerPrivateKeyFile()));
-        final PublicKey clientPublicKey = RsaKeyUtil.loadPublicKey(config.getClientPublicKeyFile());
+                                    RsaKeyUtil.loadPublicKey(replRemoteConfig.getServerPublicKeyFile()),
+                                    RsaKeyUtil.loadPrivateKey(replRemoteConfig.getServerPrivateKeyFile()));
+        final PublicKey clientPublicKey = RsaKeyUtil.loadPublicKey(replRemoteConfig.getClientPublicKeyFile());
 
         env.setGlobal(new Var(new VncSymbol("repl/remote-repl?"), VncBoolean.True, false, Var.Scope.Global));
         env.setGlobalDynamic(new VncSymbol("repl/session-id"), Constants.Nil);
@@ -85,15 +85,15 @@ public class RemoteReplServer implements AutoCloseable  {
         this.mainThreadContextSnapshot = ThreadContext.snapshot();
 
         this.ipcServer = createIpcServer(
-                            config.getPort(),
+                            replRemoteConfig.getPort(),
                             RemoteRepl.PRINCIPAL,
-                            config.getPassword(),
-                            config.isEncrypt(),
-                            config.isCompress(),
+                            replRemoteConfig.getPassword(),
+                            replRemoteConfig.isEncrypt(),
+                            replRemoteConfig.isCompress(),
                             serverKeyPair,
                             clientPublicKey);
 
-        final int timeoutMinutes = Math.max(1, config.getSessionTimeoutMinutes());
+        final int timeoutMinutes = Math.max(1, replRemoteConfig.getSessionTimeoutMinutes());
         this.executors = new SessionThreadExecutors(timeoutMinutes);
     }
 

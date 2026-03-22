@@ -38,28 +38,57 @@ import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.util.ipc.impl.util.Json;
 
 
-public class ReplServerConfig {
+public class ReplRemotingConfig {
 
-    public ReplServerConfig(
+    public ReplRemotingConfig(
+            final String host,
+            final int port,
+            final String password
+    ) {
+        this.host = host;
+        this.port = port;
+        this.password = password;
+        this.encrypt = true;
+        this.compress = false;
+        this.sessionTimeoutMinutes = 30;
+        this.signingKeys = false;
+        this.serverPublicKeyFile = null;
+        this.serverPrivateKeyFile = null;
+        this.clientPublicKeyFile = null;
+        this.clientPrivateKeyFile = null;
+    }
+
+    public ReplRemotingConfig(
+            final String host,
             final int port,
             final String password,
             final boolean encrypt,
             final boolean compress,
             final int sessionTimeoutMinutes,
+            final boolean signingKeys,
             final String serverPublicKeyFile,
             final String serverPrivateKeyFile,
-            final String clientPublicKeyFile
+            final String clientPublicKeyFile,
+            final String clientPrivateKeyFile
     ) {
+        this.host = host;
         this.port = port;
         this.password = password;
         this.encrypt = encrypt;
         this.compress = compress;
         this.sessionTimeoutMinutes = sessionTimeoutMinutes;
+        this.signingKeys = signingKeys;
         this.serverPublicKeyFile = serverPublicKeyFile;
         this.serverPrivateKeyFile = serverPrivateKeyFile;
         this.clientPublicKeyFile = clientPublicKeyFile;
+        this.clientPrivateKeyFile = clientPrivateKeyFile;
     }
 
+
+
+    public String getHost() {
+        return host;
+    }
 
     public int getPort() {
         return port;
@@ -81,56 +110,103 @@ public class ReplServerConfig {
         return sessionTimeoutMinutes;
     }
 
+    public boolean isSigningKeys() {
+        return signingKeys;
+    }
+
     public String getServerPublicKeyFile() {
-        return serverPublicKeyFile;
+        return signingKeys ? serverPublicKeyFile : null;
     }
 
     public String getServerPrivateKeyFile() {
-        return serverPrivateKeyFile;
+        return signingKeys ? serverPrivateKeyFile : null;
     }
 
     public String getClientPublicKeyFile() {
-        return clientPublicKeyFile;
+        return signingKeys ? clientPublicKeyFile : null;
+    }
+
+    public String getClientPrivateKeyFile() {
+        return signingKeys ? clientPrivateKeyFile : null;
     }
 
 
-    public static ReplServerConfig of(final String jsonConfig) {
+    @Override
+    public String toString() {
+        return "ReplRemotingConfig [\n"
+                + "host=" + host + ", \n"
+                + "port=" + port + ", \n"
+                + "encrypt=" + encrypt + ", \n"
+                + "compress=" + compress + ", \n"
+                + "password=" + password + ", \n"
+                + "sessionTimeoutMinutes=" + sessionTimeoutMinutes + ", \n"
+                + "signingKeys=" + signingKeys + ", \n"
+                + "serverPublicKeyFile=" + serverPublicKeyFile + ", \n"
+                + "serverPrivateKeyFile=" + serverPrivateKeyFile + ", \n"
+                + "clientPublicKeyFile=" + clientPublicKeyFile + ", \n"
+                + "clientPrivateKeyFile=" + clientPrivateKeyFile + "\n"
+                + "]";
+    }
+
+    public ReplRemotingConfig with(
+            final String host,
+            final int port,
+            final String password
+    ) {
+        return new ReplRemotingConfig(
+                host,
+                port,
+                password,
+                this.encrypt,
+                this.compress,
+                this.sessionTimeoutMinutes,
+                this.signingKeys,
+                this.serverPublicKeyFile,
+                this.serverPrivateKeyFile,
+                this.clientPublicKeyFile,
+                this.clientPrivateKeyFile);
+    }
+
+    public static ReplRemotingConfig of(final String jsonConfig) {
         Objects.requireNonNull(jsonConfig);
 
         final VncMap map = (VncMap)Json.readJson(jsonConfig, false);
 
-        return new ReplServerConfig(
+        return new ReplRemotingConfig(
+                toString("host", map.get(new VncString("host"), new VncString("localhost"))),
                 toInt("port", map.get(new VncString("port")), 0),
                 toString("password", map.get(new VncString("password"), Constants.Nil)),
                 toBool("encrypt", map.get(new VncString("encrypt"), VncBoolean.True)),
                 toBool("compress", map.get(new VncString("compress"), VncBoolean.False)),
                 toInt("sessionTimeoutMinutes", map.get(new VncString("sessionTimeoutMinutes")), 30),
+                toBool("signingKeys", map.get(new VncString("signingKeys"), VncBoolean.False)),
                 toString("serverPublicKeyFile", map.get(new VncString("serverPublicKeyFile"))),
                 toString("serverPrivateKeyFile", map.get(new VncString("serverPrivateKeyFile"))),
-                toString("clientPublicKeyFile", map.get(new VncString("clientPublicKeyFile"))));
+                toString("clientPublicKeyFile", map.get(new VncString("clientPublicKeyFile"))),
+                toString("clientPrivateKeyFile", map.get(new VncString("clientPrivateKeyFile"))));
     }
 
-    public static ReplServerConfig load(final File jsonConfig) {
+    public static ReplRemotingConfig load(final File jsonConfig) {
         Objects.requireNonNull(jsonConfig);
 
         try {
-            return ReplServerConfig.of(
+            return ReplRemotingConfig.of(
                        new String(FileUtil.load(jsonConfig), StandardCharsets.UTF_8));
         }
         catch (Exception ex) {
-            throw new RuntimeException("Failed to load REPL server config from file " + jsonConfig, ex);
+            throw new RuntimeException("Failed to load REPL remoting config from file " + jsonConfig, ex);
         }
     }
 
-    public static ReplServerConfig load(final InputStream is) {
+    public static ReplRemotingConfig load(final InputStream is) {
         Objects.requireNonNull(is);
 
         try {
-            return ReplServerConfig.of(
+            return ReplRemotingConfig.of(
                     new String(IOStreamUtil.copyIStoByteArray(is), StandardCharsets.UTF_8));
         }
         catch (Exception ex) {
-            throw new RuntimeException("Failed to load REPL server config from stream.", ex);
+            throw new RuntimeException("Failed to load REPL remoting config from stream.", ex);
         }
     }
 
@@ -144,7 +220,7 @@ public class ReplServerConfig {
         }
         else {
             throw new RuntimeException(
-                    "The REPL server config field '" + field + "' must be a string value");
+                    "The REPL remoting config field '" + field + "' must be a string value");
         }
     }
 
@@ -157,7 +233,7 @@ public class ReplServerConfig {
         }
         else {
             throw new RuntimeException(
-                    "The REPL server config field '" + field + "' must be a integer value");
+                    "The REPL remoting config field '" + field + "' must be a integer value");
         }
     }
 
@@ -170,17 +246,20 @@ public class ReplServerConfig {
         }
         else {
             throw new RuntimeException(
-                    "The REPL server config field '" + field + "' must be a boolean value");
+                    "The REPL remoting config field '" + field + "' must be a boolean value");
         }
     }
 
 
+    private final String host;
     private final int port;
     private final boolean encrypt;
     private final boolean compress;
     private final String password;
     private final int sessionTimeoutMinutes;
+    private final boolean signingKeys;
     private final String serverPublicKeyFile;
     private final String serverPrivateKeyFile;
     private final String clientPublicKeyFile;
+    private final String clientPrivateKeyFile;
 }

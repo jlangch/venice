@@ -79,7 +79,7 @@ import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.repl.debug.ReplDebugClient;
 import com.github.jlangch.venice.impl.repl.remote.RemoteVeniceAdapter;
-import com.github.jlangch.venice.impl.repl.remote.ReplClientConfig;
+import com.github.jlangch.venice.impl.repl.remote.ReplRemotingConfig;
 import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -1164,26 +1164,21 @@ public class REPL implements IRepl {
             return;
         }
 
-        final ReplClientConfig replConfig;
+        final ReplRemotingConfig remoteConfig;
 
         if (params.size() == 3) {
-            replConfig = new ReplClientConfig(
+            remoteConfig = new ReplRemotingConfig(
                                 params.get(0),   // host
                                 port,            // port
                                 params.get(2));  // password
         }
         else if (params.size() == 1) {
-            replConfig = ReplClientConfig.load(new File( params.get(0)));
+            remoteConfig = ReplRemotingConfig.load(new File( params.get(0)));
         }
         else {
-            final ReplClientConfig tmpCfg = ReplClientConfig.load(new File( params.get(3)));
-            replConfig = new ReplClientConfig(
-                                params.get(0),   // host
-                                port,            // port
-                                params.get(2),   // password
-                                tmpCfg.getClientPublicKeyFile(),
-                                tmpCfg.getClientPrivateKeyFile(),
-                                tmpCfg.getServerPublicKeyFile());
+            remoteConfig = ReplRemotingConfig
+                            .load(new File( params.get(3)))
+                            .with(params.get(0), port, params.get(2)); // host, port, password
         }
 
         // [1] If a remote REPL is active close it
@@ -1196,11 +1191,11 @@ public class REPL implements IRepl {
         // [2] Open a new remote REPL client
         try {
             printer.println("stdout", "Starting new remote REPL client...");
-            final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(replConfig);
+            final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(remoteConfig);
 
             // [3] Switch to the remote REPL client
             veniceAdapter = rexec;
-            printer.println("system", "Switched to remote REPL " + port + "@" + replConfig.getHost());
+            printer.println("system", "Switched to remote REPL " + port + "@" + remoteConfig.getHost());
             changePrompt(promptRemote);
         }
         catch(Exception ex) {

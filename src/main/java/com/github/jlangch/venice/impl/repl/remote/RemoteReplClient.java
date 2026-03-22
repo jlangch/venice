@@ -46,13 +46,13 @@ import com.github.jlangch.venice.util.ipc.ResponseStatus;
 public class RemoteReplClient implements AutoCloseable  {
 
     public RemoteReplClient(
-            final ReplClientConfig replConfig
+            final ReplRemotingConfig remoteConfig
     ) {
         final String uuid = UUID.randomUUID().toString();
 
         this.sessionId = uuid;
         this.ipcClient = createIpcClient(
-                            replConfig,
+                            remoteConfig,
                             RemoteRepl.PRINCIPAL, uuid);
     }
 
@@ -120,29 +120,29 @@ public class RemoteReplClient implements AutoCloseable  {
 
 
     private static Client createIpcClient(
-            final ReplClientConfig replConfig,
+            final ReplRemotingConfig remoteConfig,
             final String principal,
             final String sessionId
     ) {
-        if (replConfig.getPort() <= 0 || replConfig.getPort() > 65536) {
+        if (remoteConfig.getPort() <= 0 || remoteConfig.getPort() > 65536) {
             throw new VncException(
                 "Failed to start Venice REPL client. "
-                + "The port (" + replConfig.getPort() + ") must be in the range [0..65536]! ");
+                + "The port (" + remoteConfig.getPort() + ") must be in the range [0..65536]! ");
         }
         if (StringUtil.isEmpty(principal)) {
             throw new VncException(
                     "Failed to start Venice REPL client. The principal must not be empty!");
         }
-        if (StringUtil.isEmpty(replConfig.getPassword())) {
+        if (StringUtil.isEmpty(remoteConfig.getPassword())) {
             throw new VncException(
                     "Failed to start Venice REPL client. The password must not be empty!");
         }
 
         // Load the keys from the PEM files. The keys may be null!
         final KeyPair keyPair = RsaKeyUtil.createKeyPair(
-                                    RsaKeyUtil.loadPublicKey(replConfig.getClientPublicKeyFile()),
-                                    RsaKeyUtil.loadPrivateKey(replConfig.getClientPrivateKeyFile()));
-        final PublicKey serverPublicKey = RsaKeyUtil.loadPublicKey(replConfig.getServerPublicKeyFile());
+                                    RsaKeyUtil.loadPublicKey(remoteConfig.getClientPublicKeyFile()),
+                                    RsaKeyUtil.loadPrivateKey(remoteConfig.getClientPrivateKeyFile()));
+        final PublicKey serverPublicKey = RsaKeyUtil.loadPublicKey(remoteConfig.getServerPublicKeyFile());
 
         if ((keyPair == null && serverPublicKey != null)
                 || (keyPair != null && serverPublicKey == null)
@@ -157,7 +157,7 @@ public class RemoteReplClient implements AutoCloseable  {
         try {
             final ClientConfig config = ClientConfig
                                             .builder()
-                                            .conn(replConfig.getHost(), replConfig.getPort())
+                                            .conn(remoteConfig.getHost(), remoteConfig.getPort())
                                             .encrypt(true)
                                             .dhRsaSigningClientKeyPair(keyPair)
                                             .dhRsaSigningServerPublicKey(serverPublicKey)
@@ -165,7 +165,7 @@ public class RemoteReplClient implements AutoCloseable  {
 
             final Client client = Client.of(config);
 
-            client.open(principal, replConfig.getPassword());
+            client.open(principal, remoteConfig.getPassword());
 
             sendSessionInit(client, sessionId);
 

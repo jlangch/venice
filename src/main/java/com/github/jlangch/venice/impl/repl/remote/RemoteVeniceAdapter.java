@@ -34,9 +34,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class RemoteVeniceAdapter implements IVeniceAdapter{
 
     public RemoteVeniceAdapter(
-            final ReplClientConfig replConfig
+            final ReplRemotingConfig remoteConfig
     ) {
-        client = new RemoteReplClient(replConfig);
+        client = new RemoteReplClient(remoteConfig);
     }
 
     @Override
