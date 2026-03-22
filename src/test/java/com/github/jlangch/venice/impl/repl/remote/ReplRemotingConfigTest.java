@@ -37,7 +37,7 @@ public class ReplRemotingConfigTest {
                 + "  \"encrypt\": true, \n"
                 + "  \"compress\": false,\n"
                 + "  \"sessionTimeoutMinutes\": 30,\n"
-                + "  \"signKeys\": true,\n"
+                + "  \"signKeyExchange\": true,\n"
                 + "  \"serverPublicKeyFile\": \"/foo/server-public.pem\",\n"
                 + "  \"serverPrivateKeyFile\": \"/foo/server-private.pem\",\n"
                 + "  \"clientPublicKeyFile\": \"/foo/client-public.pem\",\n"
@@ -52,7 +52,7 @@ public class ReplRemotingConfigTest {
         assertEquals(true, cfg.isEncrypt());
         assertEquals(false, cfg.isCompress());
         assertEquals(30, cfg.getSessionTimeoutMinutes());
-        assertEquals(true, cfg.isSignKeys());
+        assertEquals(true, cfg.isSignKeyExchange());
         assertEquals("/foo/server-public.pem", cfg.getServerPublicKeyFile());
         assertEquals("/foo/server-private.pem", cfg.getServerPrivateKeyFile());
         assertEquals("/foo/client-public.pem", cfg.getClientPublicKeyFile());
@@ -68,7 +68,7 @@ public class ReplRemotingConfigTest {
                 + "  \"encrypt\": true, \n"
                 + "  \"compress\": false,\n"
                 + "  \"sessionTimeoutMinutes\": 30,\n"
-                + "  \"signKeys\": false,\n"
+                + "  \"signKeyExchange\": false,\n"
                 + "  \"serverPublicKeyFile\": null,\n"
                 + "  \"serverPrivateKeyFile\": null,\n"
                 + "  \"clientPublicKeyFile\": null,\n"
@@ -83,7 +83,7 @@ public class ReplRemotingConfigTest {
         assertEquals(true, cfg.isEncrypt());
         assertEquals(false, cfg.isCompress());
         assertEquals(30, cfg.getSessionTimeoutMinutes());
-        assertEquals(false, cfg.isSignKeys());
+        assertEquals(false, cfg.isSignKeyExchange());
         assertEquals(null, cfg.getServerPublicKeyFile());
         assertEquals(null, cfg.getServerPrivateKeyFile());
         assertEquals(null, cfg.getClientPublicKeyFile());

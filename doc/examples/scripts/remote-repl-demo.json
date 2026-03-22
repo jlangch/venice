@@ -3,7 +3,7 @@
   "encrypt": true, 
   "compress": false,
   "sessionTimeoutMinutes": 30,
-  "signKeys": false,
+  "signKeyExchange": false,
   "serverPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/server-public.pem",
   "serverPrivateKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/server-private.pem",
   "clientPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-public.pem",

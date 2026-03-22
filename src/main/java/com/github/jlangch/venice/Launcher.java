@@ -386,7 +386,7 @@ public class Launcher {
              "                             \"encrypt\": true,              \n" +
              "                             \"compress\": false,            \n" +
              "                             \"sessionTimeoutMinutes\": 30,  \n" +
-             "                             \"signKeys\": false,            \n" +
+             "                             \"signKeyExchange\": false,     \n" +
              "                             \"serverPublicKeyFile\": null,  \n" +
              "                             \"serverPrivateKeyFile\": null, \n" +
              "                             \"clientPublicKeyFile\": null } \n" +
