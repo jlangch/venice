@@ -1155,30 +1155,33 @@ public class REPL implements IRepl {
             return;
         }
 
-        final int port;
-        try {
-            port = Integer.parseInt(params.get(1));
-        }
-        catch(NumberFormatException ex) {
-            printer.println("system", "Expected an integer for port argument!");
-            return;
-        }
-
         final ReplRemotingConfig remoteConfig;
 
-        if (params.size() == 3) {
-            remoteConfig = new ReplRemotingConfig(
-                                params.get(0),   // host
-                                port,            // port
-                                params.get(2));  // password
-        }
-        else if (params.size() == 1) {
-            remoteConfig = ReplRemotingConfig.load(new File( params.get(0)));
+        if (params.size() == 1) {
+            remoteConfig = ReplRemotingConfig.load(new File(params.get(0)));
         }
         else {
-            remoteConfig = ReplRemotingConfig
-                            .load(new File( params.get(3)))
-                            .with(params.get(0), port, params.get(2)); // host, port, password
+            final int port;
+
+            try {
+                port = Integer.parseInt(params.get(1));
+            }
+            catch(NumberFormatException ex) {
+                printer.println("system", "Expected an integer for port argument!");
+                return;
+            }
+
+            if (params.size() == 3) {
+                remoteConfig = new ReplRemotingConfig(
+                                    params.get(0),   // host
+                                    port,            // port
+                                    params.get(2));  // password
+            }
+            else {
+                remoteConfig = ReplRemotingConfig
+                                .load(new File(params.get(3)))
+                                .with(params.get(0), port, params.get(2)); // host, port, password
+            }
         }
 
         // [1] If a remote REPL is active close it
@@ -1195,7 +1198,7 @@ public class REPL implements IRepl {
 
             // [3] Switch to the remote REPL client
             veniceAdapter = rexec;
-            printer.println("system", "Switched to remote REPL " + port + "@" + remoteConfig.getHost());
+            printer.println("system", "Switched to remote REPL " + remoteConfig.getPort() + "@" + remoteConfig.getHost());
             changePrompt(promptRemote);
         }
         catch(Exception ex) {
