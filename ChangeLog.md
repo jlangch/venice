@@ -9,16 +9,16 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- [#10](https://github.com/jlangch/venice/issues/10): Allow `:` and `;` as load path separator 
-  on *Linux* and *MacOS*. On *Windows* `;` is supported only due to the Windows' convention for absolute
-  paths `C:\users\foo`.
+- [#10](https://github.com/jlangch/venice/issues/10): Allow `:` and `;` as load path 
+  separator on *Linux* and *MacOS*. On *Windows* `;` is supported only due to the 
+  Windows' convention for absolute paths `C:\users\foo`.
 
 ### Bugs
 
-- Fixed a nasty Github CI unit test problem on the Ubuntu platform. Github CI Ubuntu
-  silently changed to a *Dash Shell* when using `/bin/sh`, causing some test scripts
-  with Bourne Shell syntax to fail. Switched to `/bin/bash` in the affected 
-  unit tests.
+- Fixed a nasty Github CI unit test problem on the Ubuntu platform. Github CI 
+  Ubuntu silently changed to a *Dash Shell* when using the `/bin/sh` link, causing 
+  some test scripts with Bourne Shell syntax to fail. Switched to `/bin/bash` in 
+  the affected unit tests.
 
 
 
