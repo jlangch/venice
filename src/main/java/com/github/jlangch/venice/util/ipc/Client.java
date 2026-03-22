@@ -182,6 +182,12 @@ public class Client implements Cloneable, AutoCloseable {
 
                 return this;
             }
+            catch(IpcException ex) {
+                IO.safeClose(c);
+                opened.set(false);
+                conn = null;
+                throw ex;
+            }
             catch(Exception ex) {
                 IO.safeClose(c);
                 opened.set(false);

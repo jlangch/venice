@@ -1150,50 +1150,38 @@ public class REPL implements IRepl {
     private void handleSwitchToRemoteReplCommand(final List<String> params) {
         if (!(params.size() == 1 || params.size() == 3 || params.size() == 4)){
             printer.println("error", "Invalid arguments to switch to remote REPL");
-            printer.println("error", "Require mandatory host, port, and password");
-            printer.println("error", "e.g \"localhost 33334 zuK;8\" or \"localhost 33334 zuK;8 \"");
+            printer.println("error", "Require mandatory [host, port, password] or config file");
+            printer.println("error", "e.g \"localhost 33334 zuK;8\" or \"./remote-cfg.json\"");
             return;
         }
 
         final ReplRemotingConfig remoteConfig;
 
         if (params.size() == 1) {
+            // config file
             remoteConfig = ReplRemotingConfig.load(new File(params.get(0)));
         }
+        else if (params.size() == 3) {
+            // host, port, password
+            remoteConfig = new ReplRemotingConfig(params.get(0), parsePort(params.get(1)), params.get(2));
+        }
         else {
-            final int port;
-
-            try {
-                port = Integer.parseInt(params.get(1));
-            }
-            catch(NumberFormatException ex) {
-                printer.println("system", "Expected an integer for port argument!");
-                return;
-            }
-
-            if (params.size() == 3) {
-                remoteConfig = new ReplRemotingConfig(
-                                    params.get(0),   // host
-                                    port,            // port
-                                    params.get(2));  // password
-            }
-            else {
-                remoteConfig = ReplRemotingConfig
-                                .load(new File(params.get(3)))
-                                .with(params.get(0), port, params.get(2)); // host, port, password
-            }
+            // host, port, password, and config file
+            remoteConfig = ReplRemotingConfig
+                            .load(new File(params.get(3)))
+                            .with(params.get(0), parsePort(params.get(1)), params.get(2));
         }
 
-        // [1] If a remote REPL is active close it
+        // [1] If a remote REPL is already active, close it
         if (isRemoteRepl()) {
-            printer.println("stdout", "Closing remote REPL client...");
+            printer.println("stdout", "Closing active remote REPL client...");
             veniceAdapter.close();
             veniceAdapter = veniceAdapterLocal;
         }
 
-        // [2] Open a new remote REPL client
         try {
-            printer.println("stdout", "Starting new remote REPL client...");
+            // [2] Open a new remote REPL client
+            printer.println("stdout", "Starting remote REPL client...");
             final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(remoteConfig);
 
             // Give feedback on the established security level
@@ -1551,6 +1539,14 @@ public class REPL implements IRepl {
         return veniceAdapter instanceof RemoteVeniceAdapter;
     }
 
+    private int parsePort(final String val) {
+        try {
+           return Integer.parseInt(val);
+        }
+        catch(NumberFormatException ex) {
+            throw new RuntimeException("Expected an integer as port number!");
+        }
+    }
 
 
     private final static String HISTORY_FILE = ".repl.history";
