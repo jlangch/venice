@@ -115,8 +115,7 @@ public class TcpAuthenticationTest {
             fail("Should not reach here");
         }
         catch(IpcException ex) {
-            IpcException cause = (IpcException)ex.getCause();
-            assertEquals("Authentication failure! Bad user credentials!", cause.getMessage());
+            assertEquals("Authentication failure! Bad user credentials!", ex.getMessage());
         }
         finally {
             client.close();
@@ -154,11 +153,10 @@ public class TcpAuthenticationTest {
             fail("Should not reach here");
         }
         catch(IpcException ex) {
-            IpcException cause = (IpcException)ex.getCause();
             assertEquals(
                 "The IPC server requires authentication! Please pass a user name and a "
                 + "password for opening an IPC client!",
-                cause.getMessage());
+                ex.getMessage());
         }
         finally {
             client.close();
