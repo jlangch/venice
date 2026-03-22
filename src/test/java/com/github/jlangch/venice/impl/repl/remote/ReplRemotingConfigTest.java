@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class ReplRemotingConfigTest {
 
     @Test
-    public void test_parse_json() {
+    public void test_parse_json_1() {
         final String json =
                 "{ \"host\": \"localhost\",\n"
                 + "  \"port\": 33334,\n"
@@ -57,6 +57,37 @@ public class ReplRemotingConfigTest {
         assertEquals("/foo/server-private.pem", cfg.getServerPrivateKeyFile());
         assertEquals("/foo/client-public.pem", cfg.getClientPublicKeyFile());
         assertEquals("/foo/client-private.pem", cfg.getClientPrivateKeyFile());
+    }
+
+    @Test
+    public void test_parse_json_2() {
+        final String json =
+                "{ \"host\": \"localhost\",\n"
+                + "  \"port\": 33334,\n"
+                + "  \"password\": \"123\",\n"
+                + "  \"encrypt\": true, \n"
+                + "  \"compress\": false,\n"
+                + "  \"sessionTimeoutMinutes\": 30,\n"
+                + "  \"signKeys\": false,\n"
+                + "  \"serverPublicKeyFile\": null,\n"
+                + "  \"serverPrivateKeyFile\": null,\n"
+                + "  \"clientPublicKeyFile\": null,\n"
+                + "  \"clientPrivateKeyFile\": null\n"
+                + "}";
+
+        final ReplRemotingConfig cfg = ReplRemotingConfig.of(json);
+
+        assertEquals("localhost", cfg.getHost());
+        assertEquals(33334, cfg.getPort());
+        assertEquals("123", cfg.getPassword());
+        assertEquals(true, cfg.isEncrypt());
+        assertEquals(false, cfg.isCompress());
+        assertEquals(30, cfg.getSessionTimeoutMinutes());
+        assertEquals(false, cfg.isSignKeys());
+        assertEquals(null, cfg.getServerPublicKeyFile());
+        assertEquals(null, cfg.getServerPrivateKeyFile());
+        assertEquals(null, cfg.getClientPublicKeyFile());
+        assertEquals(null, cfg.getClientPrivateKeyFile());
     }
 
 }
