@@ -23,13 +23,13 @@
 ;;;; Remote REPL demo (server)
 ;;;;
 ;;;; The remote REPL demo config 'remote-repl-demo.json':
-;;;; { "port": 33334,
-;;;;   "password": "123",
-;;;;   "encrypt": true,
-;;;;   "compress": false,
-;;;;   "sessionTimeoutMinutes": 30,
-;;;;   "serverPublicKeyFile": null,
-;;;;   "serverPrivateKeyFile": null,
+;;;; { "port": 33334,                
+;;;;   "password": "123",              
+;;;;   "encrypt": true,              
+;;;;   "compress": false,              
+;;;;   "sessionTimeoutMinutes": 30,  
+;;;;   "serverPublicKeyFile": null,  
+;;;;   "serverPrivateKeyFile": null, 
 ;;;;   "clientPublicKeyFile": null
 ;;;; }
 ;;;;

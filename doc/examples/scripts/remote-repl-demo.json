@@ -1,9 +1,11 @@
 { "port": 33334,
   "password": "123",
-  "encrypt": true,
+  "encrypt": true, 
   "compress": false,
   "sessionTimeoutMinutes": 30,
-  "serverPublicKeyFile": null,
-  "serverPrivateKeyFile": null,
-  "clientPublicKeyFile": null
+  "signKeys": false,
+  "serverPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/server-public.pem",
+  "serverPrivateKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/server-private.pem",
+  "clientPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-public.pem",
+  "clientPrivateKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-private.pem"
 }

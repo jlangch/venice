@@ -51,7 +51,7 @@ public class ReplRemotingConfig {
         this.encrypt = true;
         this.compress = false;
         this.sessionTimeoutMinutes = 30;
-        this.signingKeys = false;
+        this.signKeys = false;
         this.serverPublicKeyFile = null;
         this.serverPrivateKeyFile = null;
         this.clientPublicKeyFile = null;
@@ -65,7 +65,7 @@ public class ReplRemotingConfig {
             final boolean encrypt,
             final boolean compress,
             final int sessionTimeoutMinutes,
-            final boolean signingKeys,
+            final boolean signKeys,
             final String serverPublicKeyFile,
             final String serverPrivateKeyFile,
             final String clientPublicKeyFile,
@@ -77,7 +77,7 @@ public class ReplRemotingConfig {
         this.encrypt = encrypt;
         this.compress = compress;
         this.sessionTimeoutMinutes = sessionTimeoutMinutes;
-        this.signingKeys = signingKeys;
+        this.signKeys = signKeys;
         this.serverPublicKeyFile = serverPublicKeyFile;
         this.serverPrivateKeyFile = serverPrivateKeyFile;
         this.clientPublicKeyFile = clientPublicKeyFile;
@@ -110,24 +110,24 @@ public class ReplRemotingConfig {
         return sessionTimeoutMinutes;
     }
 
-    public boolean isSigningKeys() {
-        return signingKeys;
+    public boolean isSignKeys() {
+        return signKeys;
     }
 
     public String getServerPublicKeyFile() {
-        return signingKeys ? serverPublicKeyFile : null;
+        return signKeys ? serverPublicKeyFile : null;
     }
 
     public String getServerPrivateKeyFile() {
-        return signingKeys ? serverPrivateKeyFile : null;
+        return signKeys ? serverPrivateKeyFile : null;
     }
 
     public String getClientPublicKeyFile() {
-        return signingKeys ? clientPublicKeyFile : null;
+        return signKeys ? clientPublicKeyFile : null;
     }
 
     public String getClientPrivateKeyFile() {
-        return signingKeys ? clientPrivateKeyFile : null;
+        return signKeys ? clientPrivateKeyFile : null;
     }
 
 
@@ -140,7 +140,7 @@ public class ReplRemotingConfig {
                 + "compress=" + compress + ", \n"
                 + "password=" + password + ", \n"
                 + "sessionTimeoutMinutes=" + sessionTimeoutMinutes + ", \n"
-                + "signingKeys=" + signingKeys + ", \n"
+                + "signKeys=" + signKeys + ", \n"
                 + "serverPublicKeyFile=" + serverPublicKeyFile + ", \n"
                 + "serverPrivateKeyFile=" + serverPrivateKeyFile + ", \n"
                 + "clientPublicKeyFile=" + clientPublicKeyFile + ", \n"
@@ -160,7 +160,7 @@ public class ReplRemotingConfig {
                 this.encrypt,
                 this.compress,
                 this.sessionTimeoutMinutes,
-                this.signingKeys,
+                this.signKeys,
                 this.serverPublicKeyFile,
                 this.serverPrivateKeyFile,
                 this.clientPublicKeyFile,
@@ -179,7 +179,7 @@ public class ReplRemotingConfig {
                 toBool("encrypt", map.get(new VncString("encrypt"), VncBoolean.True)),
                 toBool("compress", map.get(new VncString("compress"), VncBoolean.False)),
                 toInt("sessionTimeoutMinutes", map.get(new VncString("sessionTimeoutMinutes")), 30),
-                toBool("signingKeys", map.get(new VncString("signingKeys"), VncBoolean.False)),
+                toBool("signKeys", map.get(new VncString("signKeys"), VncBoolean.False)),
                 toString("serverPublicKeyFile", map.get(new VncString("serverPublicKeyFile"))),
                 toString("serverPrivateKeyFile", map.get(new VncString("serverPrivateKeyFile"))),
                 toString("clientPublicKeyFile", map.get(new VncString("clientPublicKeyFile"))),
@@ -257,7 +257,7 @@ public class ReplRemotingConfig {
     private final boolean compress;
     private final String password;
     private final int sessionTimeoutMinutes;
-    private final boolean signingKeys;
+    private final boolean signKeys;
     private final String serverPublicKeyFile;
     private final String serverPrivateKeyFile;
     private final String clientPublicKeyFile;
