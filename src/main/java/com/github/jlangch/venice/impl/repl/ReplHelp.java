@@ -61,8 +61,8 @@ public class ReplHelp {
             "  !source-pdf  render Venice source code to PDF\n" +
             "                 !source-pdf {source-file}\n" +
             "                 !source-pdf {source-file} {dest-dir}\n" +
-            "  !rsa-keys    create a public/private RSA keys and store it as\n" +
-            "               PEM files\n" +
+            "  !rsa-keys    create a public/private RSA keys and store them as\n" +
+            "               PEM files to a directory\n" +
             "                 !rsa-keys {name} {dir}\n" +
             "                 e.g.: !rsa-keys demo ./test \n" +
             "  !license     show the Venice license\n" +
