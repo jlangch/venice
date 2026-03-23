@@ -61,6 +61,12 @@ public class ReplHelp {
             "  !source-pdf  render Venice source code to PDF\n" +
             "                 !source-pdf {source-file}\n" +
             "                 !source-pdf {source-file} {dest-dir}\n" +
+            "  !remote      start a remote REPL session\n" +
+            "                 !remote {host} {port} {password}\n" +
+            "                 !remote {host} {port} {password} {client-config-file}\n" +
+            "                 !remote {client-config-file}\n" +
+            "                 e.g.: !remote localhost 33334 123\n" +
+            "  !local       close the remote REPL session and return to local REPL\n" +
             "  !rsa-keys    create a public/private RSA keys and store them as\n" +
             "               PEM files to a directory\n" +
             "                 !rsa-keys {name} {dir}\n" +
