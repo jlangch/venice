@@ -66,11 +66,19 @@ public class ReplHelp {
             "                 !remote {host} {port} {password} {client-config-file}\n" +
             "                 !remote {client-config-file}\n" +
             "                 e.g.: !remote localhost 33334 123\n" +
+            "                 e.g.: JSON client config:\n" +
+            "                       { \"host\": \"localhost\",\n" +
+            "                         \"port\": 33334,\n" +
+            "                         \"password\": \"123\",\n" +
+            "                         \"clientPublicKeyFile\": \"/data/client-public.pem\",\n" +
+            "                         \"clientPrivateKeyFile\": \"/data/client-private.pem\"\n" +
+            "                         \"serverPublicKeyFile\": \"/data/server-public.pem\",\n" +
+            "                       }\n" +
             "  !local       close the remote REPL session and return to local REPL\n" +
-            "  !rsa-keys    create a public/private RSA keys and store them as\n" +
-            "               PEM files to a directory\n" +
+            "  !rsa-keys    create public/private RSA keys and store them asPEM \n" +
+            "               files to a directory\n" +
             "                 !rsa-keys {name} {dir}\n" +
-            "                 e.g.: !rsa-keys demo ./test \n" +
+            "                 e.g.: !rsa-keys demo ./demo \n" +
             "  !license     show the Venice license\n" +
             "                 !license\n" +
             "                 !license all\n" +
