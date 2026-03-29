@@ -39,6 +39,10 @@
                "expr-parser-2.venice"
                "expr-parser-3.venice"
                "fibonacci.venice"
+               "remote-repl-demo.venice"
+               "remote-repl-demo-client.json"
+               "remote-repl-demo-server.json"
+               "remote-repl-trace-demo.venice"
                "sudoku.venice"
                "tomcat-geoip-map.venice"
                "zip-tomcat-logs.venice"
@@ -96,7 +100,7 @@
 
 
 (defn setup-scripts [scripts-dir]
-  (println "Extracting example scripts...")
+  (println "Extracting example" (count scripts) "scripts...")
   (let [load-script (fn [script]
                       (-<> (io/load-classpath-resource script)
                            (bytebuf-to-string <> :utf-8)

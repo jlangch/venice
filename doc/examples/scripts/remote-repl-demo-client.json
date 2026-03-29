@@ -1,0 +1,7 @@
+{ "host": "localhost",
+  "port": 33334,
+  "password": "123",
+  "clientPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-public.pem",
+  "clientPrivateKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-private.pem",
+  "serverPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/server-public.pem"
+}

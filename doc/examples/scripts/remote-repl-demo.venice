@@ -22,19 +22,20 @@
 ;;;; ---------------------------------------------------------------------------
 ;;;; Remote REPL demo (server)
 ;;;;
-;;;; The remote REPL demo config 'remote-repl-demo.json':
+;;;; The remote REPL demo config 'remote-repl-demo-server.json':
 ;;;; { "port": 33334,                
 ;;;;   "password": "123",              
 ;;;;   "encrypt": true,              
 ;;;;   "compress": false,              
 ;;;;   "sessionTimeoutMinutes": 30,  
+;;;;   "signKeyExchange": false,
 ;;;;   "serverPublicKeyFile": null,  
 ;;;;   "serverPrivateKeyFile": null, 
 ;;;;   "clientPublicKeyFile": null
 ;;;; }
 ;;;;
 ;;;; [start a Venice app with a remote REPL server enabled]
-;;;; $ java -jar venice-1.12.86.jar -file remote-repl-demo.venice -repl-server-config remote-repl-demo.json
+;;;; $ java -jar venice-1.12.86.jar -file remote-repl-demo.venice -repl-server-config remote-repl-demo-server.json
 ;;;;
 ;;;; [operate from the client REPL]
 ;;;; venice> !remote localhost 33334 123

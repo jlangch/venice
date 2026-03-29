@@ -6,6 +6,5 @@
   "signKeyExchange": false,
   "serverPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/server-public.pem",
   "serverPrivateKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/server-private.pem",
-  "clientPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-public.pem",
-  "clientPrivateKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-private.pem"
+  "clientPublicKeyFile": "/Users/juerg/Desktop/venice/tmp/remote-demo/client-public.pem"
 }
