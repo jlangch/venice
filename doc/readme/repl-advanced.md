@@ -166,7 +166,7 @@ list        list*       list?       list-comp
 ``` text
 REPL_HOME
 ├── libs
-│   ├── venice-1.12.85.jar
+│   ├── venice-1.12.86.jar
 │   ├── jansi-2.4.1.jar
 │   ├── xchart-3.8.8.jar    (added jar)
 │   └── repl.json
@@ -196,7 +196,7 @@ venice> !classpath
 REPL classpath:
   libs
   libs/jansi-2.4.1.jar
-  libs/venice-1.12.85.jar
+  libs/venice-1.12.86.jar
   libs/xchart-3.8.8.jar
 ```
 
