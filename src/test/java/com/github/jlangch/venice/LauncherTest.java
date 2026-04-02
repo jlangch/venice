@@ -194,6 +194,40 @@ public class LauncherTest {
     }
 
     @Test
+    public void test_run_file_with_args_dir() throws Exception {
+        final File tmp = Files.createTempDirectory("launcher").toFile();
+
+        final PrintStream orgStdOut = System.out;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            System.setOut(new PrintStream(baos));
+
+            final File script = new File(tmp, "script.venice");
+            FileUtil.save(
+                "(do                                      \n" +
+                "  (assert (= 4 (count *ARGV*)))          \n" +
+                "  (println 200))                         ",
+                script,
+                true);
+
+            final int exitCode = Launcher.run(new String[] {
+                                                "-file", script.getPath(),
+                                                "-dir", ".",
+                                                "-minimal", "true"});
+
+            assertEquals(0, exitCode);
+
+            // Must run on *nix and Windows
+            assertEquals("200\n", StringUtil.crlf_to_lf(baos.toString()));
+        }
+        finally {
+            System.setOut(orgStdOut);
+            deleteSetupDir(tmp);
+        }
+    }
+
+    @Test
     public void test_run_classpath_file() {
         final PrintStream orgStdOut = System.out;
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
