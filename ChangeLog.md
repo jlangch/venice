@@ -9,8 +9,8 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed a flaw in the custom options processing for the launcher introduced with version 
-  1.12.86. The custom options '-dir' and '-minimal' have not been passed downstream to
+- Fixed a flaw in the custom options processing for the launcher introduced with the last
+  version. The custom options '-dir' and '-minimal' have not been passed downstream to
   the executed script.
   
   ```
