@@ -17,9 +17,10 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed a flaw in the custom options processing for the launcher introduced with the last
-  version. The custom options '-dir' and '-minimal' have not been passed downstream to
-  the executed script, should they have been used (all other custom options are fine).
+- Fixed a flaw in the custom options processing for the launcher that has been introduced 
+  with the last version. The custom options '-dir' and '-minimal' have not been passed 
+  downstream to the executed script, should they have been used (all other custom options 
+  are fine).
   
   ```
   foo> java -jar venice-1.12.86.jar -file test.venice -dir . -mode test
