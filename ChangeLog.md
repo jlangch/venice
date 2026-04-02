@@ -5,11 +5,17 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.87] - 2026-04-xx
+## [1.12.87] - 2026-04-02
 
-### Enhancements
+### Bugs
 
-- ... 
+- Fixed a flaw in the custom options processing for the launcher introduced with version 
+  1.12.86. The custom options '-dir' and '-minimal' have not been passed downstream to
+  the executed script.
+  
+  ```
+  foo> java -jar venice-1.12.86.jar -file test.venice -dir . -mode test
+  ```
 
 
 
