@@ -69,6 +69,13 @@ The remote REPL demo application looks like:
   (println "Stopped demo server"))
 ```
 
+It offers two public functions that can be remotely called:
+
+| Function         | Description            | Example                |
+| :--              | :--                    | :--                    |
+| `demo/sum`        | sum two numbers        | `(demo/sum 2 3)`        |
+| `demo/stop`       | stop the application   | `(demo/stop)`           |
+
  
 
 ## Connect from a REPL
@@ -108,40 +115,8 @@ venice>
 
 ## Remote REPL demo session
 
-The demo uses this Venice server application:
+The demo uses the remote REPL demo application listed above.
 
-``` clojure
-(do
-  (ns demo)
-
-  (def- stop? (atom false))
-
-
-  (defn stop [] 
-    (reset! stop? true)
-    (println "Stopping demo server..."))
-
-  (defn sum [x y] 
-    (println "Function 'sum' called")
-    (+ x y))
-
-
-  (println "Started demo server")
-  
-  ;; just sleep until we get stopped
-  (while (not @stop?)
-    (sleep 1000))
-
-  (println "Stopped demo server"))
-```
-
-
-It offers two public functions that can be remotely called:
-
-| Function         | Description            | Example                |
-| :--              | :--                    | :--                    |
-| `demo/sum`        | sum two numbers        | `(demo/sum 2 3)`        |
-| `demo/stop`       | stop the application   | `(demo/stop)`           |
 
 Standard out/err text produced by the remote functions are routed back to the REPL
 client and displayed.
