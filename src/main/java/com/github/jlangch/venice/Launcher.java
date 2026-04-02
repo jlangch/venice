@@ -141,7 +141,7 @@ public class Launcher {
 
         final String scriptWrapped = "(do " + script + ")";
 
-        final String result = runScript(cli, interceptor, scriptWrapped, scriptName);
+        final String result = runScript(cli, interceptor, scriptWrapped, scriptName, "-file");
 
         if (!"nil".equals(result)) {
             System.out.println(result);
@@ -159,7 +159,7 @@ public class Launcher {
         final String script = new ClassPathResource(file).getResourceAsString();
         final String scriptName = new File(file).getName();
 
-        final String result = runScript(cli, interceptor, script, scriptName);
+        final String result = runScript(cli, interceptor, script, scriptName, "-cp-file");
 
         if (!"nil".equals(result)) {
             System.out.println(result);
@@ -175,7 +175,7 @@ public class Launcher {
         // run the script passed as command line argument
         final String script = cli.switchValue("-script");
 
-        final String result = runScript(cli, interceptor, script, "script");
+        final String result = runScript(cli, interceptor, script, "script", "-script");
 
         System.out.println(result);
     }
@@ -184,7 +184,8 @@ public class Launcher {
             final CommandLineArgs cli,
             final IInterceptor interceptor,
             final String script,
-            final String name
+            final String name,
+            final String blockCmdLineOption
     ) {
         final boolean macroexpand = isMacroexpand(cli);
         final String replServerConfigFile = getReplServerConfigFile(cli);
@@ -194,8 +195,9 @@ public class Launcher {
                     ? null
                     : ReplRemotingConfig.load(new File(replServerConfigFile));
 
-        // no launcher pass-through options
-        final CommandLineArgs scriptCli = cli.removeAllSwitches(ALL_LAUNCHER_OPTIONS);
+        // adjust options
+        final CommandLineArgs scriptCli = cli.removeAllSwitches(SCRIPT_BLOCK_OPTIONS)
+                                             .removeSwitch(blockCmdLineOption);
 
         final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -231,8 +233,9 @@ public class Launcher {
 
         // The app runner has 'macroexpand' implicitly enabled
 
-        // no launcher pass-through options
-        final CommandLineArgs appCli = cli.removeAllSwitches(ALL_LAUNCHER_OPTIONS);
+        // Luncher options
+        final CommandLineArgs appCli = cli.removeAllSwitches(APP_BLOCK_OPTIONS)
+                                          .removeSwitch("-app");
 
         AppRunner.run(
             appFile,
@@ -254,38 +257,22 @@ public class Launcher {
 
         // The custom REPL has 'macroexpand' implicitly enabled
 
-        // launcher pass-through options:
-        final Set<String> passThroughOpts = toSet("-restartable",
-                                                  "-colors",
-                                                  "-colors-light",
-                                                  "-colors-dark");
+        // Launcher options
+        final CommandLineArgs appCli = cli.removeAllSwitches(APP_REPL_BLOCK_OPTIONS)
+                                          .removeSwitch("-app-repl");
 
-        final Set<String> removeOptions= ALL_LAUNCHER_OPTIONS;
-        removeOptions.removeAll(passThroughOpts); // keep launcher pass-through options
-
-        final CommandLineArgs replCli = cli.removeAllSwitches(removeOptions);
-
-        new CustomREPL(interceptor, new File(file)).run(replCli.args());
+        new CustomREPL(interceptor, new File(file)).run(appCli.args());
     }
 
     private static void runReplCmd(
             final ILoadPaths loadPaths,
             final CommandLineArgs cli
     ) {
-        // launcher pass-through options:
-        final Set<String> passThroughOpts = toSet("-macroexpand",
-                                                  "-restartable",
-                                                  "-load-file",  // initial load file
-                                                  "-colors",
-                                                  "-colors-light",
-                                                 "-colors-dark");
+        // Launcher options
+        final CommandLineArgs appCli = cli.removeAllSwitches(REPL_BLOCK_OPTIONS)
+                                          .removeSwitch("-repl");
 
-        final Set<String> removeOptions = ALL_LAUNCHER_OPTIONS;
-        removeOptions.removeAll(passThroughOpts); // keep launcher pass-through options
-
-        final CommandLineArgs replCli = cli.removeAllSwitches(removeOptions);
-
-        new REPL(new AcceptAllInterceptor(loadPaths)).run(replCli);
+        new REPL(new AcceptAllInterceptor(loadPaths)).run(appCli);
     }
 
     private static Env createEnv(
@@ -300,6 +287,28 @@ public class Launcher {
                      .setStderrPrintStream(new PrintStream(System.err, true))
                      .setStdinReader(new InputStreamReader(System.in));
     }
+
+
+    // OPTIONS
+    //
+    // ╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+    // │                             -help   -setup   -file   -cp-file   -script   -app   -repl   -app-repl          │
+    // │─────────────────────────────────────────────────────────────────────────────────────────────────────────────│
+    // │                                                                                                             │
+    // │ -macroexpand                                   +        +          +        +      -         +              │
+    // │ -loadpath                              x       x        x          x        x      x         x              │
+    // │ -restartable                           x                                           x                        │
+    // │ -minimal                               x                                                                    │
+    // │ -dir                                   x                                                                    │
+    // │ -load-file                                                                         x                        │
+    // │                                                                                                             │
+    // │ -colors                                x                                           x         x              │
+    // │ -colors-light                          x                                           x         x              │
+    // │ -colors-dark                           x                                           x         x              │
+    // │                                                                                                             │
+    // │ -repl-server-config                             x        x         x                                        │
+    // ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+    //                                               x: optionally    +: implicitely active    -:implicitely inactive
 
     private static void printHelp() {
         System.out.println(
@@ -402,6 +411,7 @@ public class Launcher {
     private static boolean isMacroexpand(final CommandLineArgs cli) {
         return CommandLineArgs.isTrue(cli.switchValue("-macroexpand", "on"), true);
     }
+
     private static String getReplServerConfigFile(final CommandLineArgs cli) {
         return cli.switchValue("-repl-server-config", null);
     }
@@ -418,28 +428,19 @@ public class Launcher {
         return s == null ? null : (s.endsWith(".zip") ? s : s + ".zip");
     }
 
+    private final static Set<String> SCRIPT_BLOCK_OPTIONS = toSet(
+    		"-macroexpand",
+    		"-loadpath",
+            "-repl-server-config");
 
-    private final static Set<String> ALL_LAUNCHER_OPTIONS = toSet(
-                                                                "-setup",
-                                                                "-file",
-                                                                "-cp-file",
-                                                                "-script",
-                                                                "-repl",
-                                                                "-app",
-                                                                "-app-repl",
+    private final static Set<String> APP_BLOCK_OPTIONS = toSet(
+    		"-macroexpand",
+    		"-loadpath");
 
-                                                                "-macroexpand",
-                                                                "-loadpath",
-                                                                "-restartable",
-                                                                "-minimal",
-                                                                "-dir",
-                                                                "-load-file",
+    private final static Set<String> APP_REPL_BLOCK_OPTIONS = toSet(
+    		"-macroexpand",
+    		"-loadpath");
 
-                                                                "-colors",
-                                                                "-colors-light",
-                                                                "-colors-dark",
-
-                                                                "-repl-server-config",
-
-                                                                "-help");
+    private final static Set<String> REPL_BLOCK_OPTIONS = toSet(
+            "-loadpath");
 }
