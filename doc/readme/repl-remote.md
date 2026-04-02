@@ -121,7 +121,7 @@ The demo uses the remote REPL demo application listed above.
 
 
 Standard out/err text produced by the remote functions are routed back to the REPL
-client and displayed.
+client and displayed in the according REPL colors.
 
 
 <table>
