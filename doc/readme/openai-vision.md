@@ -14,7 +14,7 @@ along with the prompt as an additional source of information.
 (do
   (load-module :openai)
 
-  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
         prompt      [ { :role    "user"
                         :content [ { :type "text"
                                      :text "What’s in this image?" }
@@ -48,7 +48,7 @@ Message:
      (->> (io/download url :binary true)
           (str/encode-base64)))
 
-  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
         base64-img  (download-and-encode-base64 img-url)
         prompt      [ { :role    "user"
                         :content [ { :type "text"
@@ -78,7 +78,7 @@ Message:
 (do
   (load-module :openai)
 
-  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
         prompt      [ { :role    "user"
                         :content [ { :type "text"
                                      :text "What are in these images? Is there any difference between them?" }
@@ -110,7 +110,7 @@ Controlling the *detail* parameter ("low", "high", "auto")
 (do
   (load-module :openai)
 
-  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
         prompt      [ { :role    "user"
                         :content [ { :type "text"
                                      :text "What’s in this image?" }
@@ -141,7 +141,7 @@ Message:
 (do
   (load-module :openai)
 
-  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Wolves_hunting_elk.jpg/1280px-Wolves_hunting_elk.jpg"
+  (let [img-url     "https://upload.wikimedia.org/wikipedia/commons/4/4e/Wolves_hunting_elk.jpg"
         prompt      [ { :role    "user"
                         :content [ { :type "text"
                                      :text """
