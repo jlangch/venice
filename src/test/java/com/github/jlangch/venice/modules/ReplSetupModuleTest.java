@@ -484,8 +484,8 @@ public class ReplSetupModuleTest {
              .map(Path::toFile)
              .forEach(File::delete);
 
-       System.out.println();
-       System.out.println("Deleted setup dir: " + dir);
+        System.out.println();
+        System.out.println("Deleted setup dir: " + dir);
     }
 }
 
