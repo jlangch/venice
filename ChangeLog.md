@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 
   Added an additional example how to install artifacts with all transitive dependencies:
   
-  ```
+  ``` clojure
   (do
     (load-module :maven)
     (load-module :installer)
