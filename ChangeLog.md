@@ -14,20 +14,21 @@ All notable changes to this project will be documented in this file.
 - Fixed the problem of not being able to run Maven from the `:maven` module. 
 
   Added an additional example how to install artifacts with all transitive dependencies:
-```
-(do
-  (load-module :maven)
-  (load-module :installer)
-  (-> (maven/dependencies [ "com.openai:openai-java:4.30.0" 
-                            "org.apache.poi:poi:5.4.0"
-                            "org.apache.poi:poi-ooxml:5.4.0"
-                            "org.apache.poi:poi-ooxml-full:5.4.0" ] 
-                          :scope :runtime 
-                          :format :list
-                          :print false)
-      (installer/install :dir (repl/libs-dir)
-                         :silent false)))
-```
+  
+  ```
+  (do
+    (load-module :maven)
+    (load-module :installer)
+    (-> (maven/dependencies [ "com.openai:openai-java:4.30.0" 
+                              "org.apache.poi:poi:5.4.0"
+                              "org.apache.poi:poi-ooxml:5.4.0"
+                              "org.apache.poi:poi-ooxml-full:5.4.0" ] 
+                            :scope :runtime 
+                            :format :list
+                            :print false)
+        (installer/install :dir (repl/libs-dir)
+                           :silent false)))
+  ```
 
 ## [1.12.87] - 2026-04-02
 
