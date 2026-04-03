@@ -90,12 +90,41 @@ public class LauncherTest {
         try {
             System.setOut(new PrintStream(baos));
 
+            final String script = "(do                                      \n" +
+                                  "  (assert (= 1 (count *ARGV*)))          \n" +
+                                  "  (println (+ 1 (long (first *ARGV*))))) ";
+
             final int exitCode = Launcher.run(new String[] {
-                                                  "-macroexpand", "true",
-                                                  "-script", "(do " +
-                                                             "  (assert (= 1 (count *ARGV*)))" +
-                                                             "  (println (+ 1 (long (first *ARGV*)))))",
-                                                  "100"});
+                                                  "-macroexpand", "true",  // blocked from sending downstream
+                                                  "-script", script,       // blocked from sending downstream
+                                                  "100"});                 // pass through to downstream
+
+            assertEquals(0, exitCode);
+
+            // Must run on *nix and Windows
+            assertEquals("101\nnil\n", StringUtil.crlf_to_lf(baos.toString()));
+        }
+        finally {
+            System.setOut(orgStdOut);
+        }
+    }
+
+    @Test
+    public void test_run_script_with_args_file() {
+        final PrintStream orgStdOut = System.out;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            System.setOut(new PrintStream(baos));
+
+            final String script = "(do                                      \n" +
+                                  "  (assert (= 1 (count *ARGV*)))          \n" +
+                                  "  (println (+ 1 (long (first *ARGV*))))) ";
+
+            final int exitCode = Launcher.run(new String[] {
+                                                  "-macroexpand", "true",  // blocked from sending downstream
+                                                  "-script", script,       // blocked from sending downstream
+                                                  "100"});                 // pass through to downstream
 
             assertEquals(0, exitCode);
 
@@ -146,7 +175,9 @@ public class LauncherTest {
             final File script = new File(tmp, "script.venice");
             FileUtil.save("(println (+ 1 (long (first *ARGV*))))", script, true);
 
-            final int exitCode = Launcher.run(new String[] {"-file", script.getPath(), "200"});
+            final int exitCode = Launcher.run(new String[] {
+                                                "-file", script.getPath(),  // blocked from sending downstream
+                                                "200"});                    // pass through to downstream
 
             assertEquals(0, exitCode);
 
@@ -178,9 +209,9 @@ public class LauncherTest {
                 true);
 
             final int exitCode = Launcher.run(new String[] {
-                                                "-macroexpand", "true",
-                                                "-file", script.getPath(),
-                                                "200"});
+                                                "-macroexpand", "true",       // blocked from sending downstream
+                                                "-file", script.getPath(),    // blocked from sending downstream
+                                                "200"});                      // pass through to downstream
 
             assertEquals(0, exitCode);
 
@@ -212,9 +243,43 @@ public class LauncherTest {
                 true);
 
             final int exitCode = Launcher.run(new String[] {
-                                                "-file", script.getPath(),
-                                                "-dir", ".",
-                                                "-minimal", "true"});
+                                                "-file", script.getPath(),  // blocked from sending downstream
+                                                "-dir", ".",                // pass through to downstream
+                                                "-minimal", "true"});       // pass through to downstream
+
+            assertEquals(0, exitCode);
+
+            // Must run on *nix and Windows
+            assertEquals("200\n", StringUtil.crlf_to_lf(baos.toString()));
+        }
+        finally {
+            System.setOut(orgStdOut);
+            deleteSetupDir(tmp);
+        }
+    }
+
+    @Test
+    public void test_run_file_with_args_script() throws Exception {
+        final File tmp = Files.createTempDirectory("launcher").toFile();
+
+        final PrintStream orgStdOut = System.out;
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            System.setOut(new PrintStream(baos));
+
+            final File script = new File(tmp, "script.venice");
+            FileUtil.save(
+                "(do                                      \n" +
+                "  (assert (= 4 (count *ARGV*)))          \n" +
+                "  (println 200))                         ",
+                script,
+                true);
+
+            final int exitCode = Launcher.run(new String[] {
+                                                "-file", script.getPath(),  // blocked from sending downstream
+                                                "-dir", ".",                // pass through to downstream
+                                                "-script", "(+ 1 1)"});     // pass through to downstream
 
             assertEquals(0, exitCode);
 
