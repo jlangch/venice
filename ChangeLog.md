@@ -9,7 +9,9 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+### Bugs
+
+- Fixed the problem of not being able to run Maven from the `:maven` module. 
 
 
 

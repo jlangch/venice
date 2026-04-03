@@ -816,18 +816,20 @@
 
 
 (defn- mvn-binary []
-  (->> (case (os-type)
-          :mac-osx (str (maven/mvn-home) "/bin/mvn")
-          :linux   (str (maven/mvn-home) "/bin/mvn")
-          :windows (str (maven/mvn-home) "/bin/mvn.cmd"))
-       (validate-mvn-binary)))
+  (let [binary (case (os-type)
+                 :mac-osx (str (maven/mvn-home) "/bin/mvn")
+                 :linux   (str (maven/mvn-home) "/bin/mvn")
+                 :windows (str (maven/mvn-home) "/bin/mvn.cmd")
+                 (throw (ex :VncException "Unsupported OS")))]
+    (validate-mvn-binary binary)
+    binary))
 
 
 (defn- validate-mvn-binary [binary]
-    (assert (io/exists-file? binary) 
-            "The Maven tool '~{binary}' does not exist!")
-    (assert (io/file-can-execute? binary) 
-            "The Maven tool '~{binary}' has no executable permissions!"))
+  (assert (io/exists-file? binary) 
+          "The Maven tool '~{binary}' does not exist!")
+  (assert (io/file-can-execute? binary) 
+          "The Maven tool '~{binary}' has no executable permissions!"))
 
 
 (defn- exec []
