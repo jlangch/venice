@@ -502,8 +502,7 @@
           |     +- org.apache.pdfbox:fontbox:jar:2.0.27:runtime
           |     \\- commons-logging:commons-logging:jar:1.2:runtime
           \\- com.madgag:animated-gif-lib:jar:1.4:runtime
-          ```
-         """
+          """
      :examples '(
           """
           (do
@@ -523,6 +522,21 @@
             (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ] 
                                 :scope :runtime
                                 :format :list))
+          """,
+          """
+          ;; Install artifacts with transitive dependencies
+          (do
+            (load-module :maven)
+            (load-module :installer)
+            (-> (maven/dependencies [ "com.openai:openai-java:4.30.0" 
+                                      "org.apache.poi:poi:5.4.0"
+                                      "org.apache.poi:poi-ooxml:5.4.0"
+                                      "org.apache.poi:poi-ooxml-full:5.4.0" ] 
+                                    :scope :runtime 
+                                    :format :list
+                                    :print false)
+                (installer/install :dir (repl/libs-dir)
+                                   :silent false)))
           """) }
 
   maven/dependencies   [artifacts & options]
