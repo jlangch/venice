@@ -11,9 +11,9 @@ All notable changes to this project will be documented in this file.
 
 ### Bugs
 
-- Fixed the problem of not being able to run Maven from the `:maven` module. 
+- Fixed the problem of not being able to run Maven from the `:maven` module.
 
-  Added an additional Maven example to show how to install artifacts with all transitive dependencies:
+  Added an additional Maven example to demo the installation of artifacts with transitive dependencies:
   
   ``` clojure
   (do
