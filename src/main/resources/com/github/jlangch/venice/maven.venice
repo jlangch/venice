@@ -440,7 +440,7 @@
           Options:
 
           | :scope s                | A scope. :compile, :provided, :runtime, \
-                                      :test. Defaults to :compile |
+                                      :test. Defaults to :runtime |
           | :verbose v              | if true invokes for verbose output else \
                                       standard output. Defaults to false |
           | :excludes e             | A list of excluded dependencies |
@@ -474,14 +474,14 @@
           ````
 
           ```
-          org.knowm.xchart:xchart:jar:3.8.6:compile
-          +- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:compile
-          +- de.rototor.pdfbox:graphics2d:jar:3.0.0:compile
-          |  \\- org.apache.pdfbox:pdfbox:jar:3.0.0:compile
-          |     +- org.apache.pdfbox:pdfbox-io:jar:3.0.0:compile
-          |     +- org.apache.pdfbox:fontbox:jar:3.0.0:compile
-          |     \\- commons-logging:commons-logging:jar:1.2:compile
-          \\- com.madgag:animated-gif-lib:jar:1.4:compile
+          org.knowm.xchart:xchart:jar:3.8.6::runtime
+          +- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:runtime
+          +- de.rototor.pdfbox:graphics2d:jar:3.0.0:runtime
+          |  \- org.apache.pdfbox:pdfbox:jar:3.0.0:runtime
+          |     +- org.apache.pdfbox:pdfbox-io:jar:3.0.0:runtime
+          |     +- org.apache.pdfbox:fontbox:jar:3.0.0:runtime
+          |     \- commons-logging:commons-logging:jar:1.2:runtime
+          \- com.madgag:animated-gif-lib:jar:1.4:runtime
           ```
  
           Example 2:
@@ -495,13 +495,13 @@
           ````
 
           ```
-          org.knowm.xchart:xchart:jar:3.8.6::compile
+          org.knowm.xchart:xchart:jar:3.8.6::runtime
           +- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:runtime
           +- de.rototor.pdfbox:graphics2d:jar:3.0.0:runtime
-          |  \\- org.apache.pdfbox:pdfbox:jar:2.0.27:runtime
+          |  \- org.apache.pdfbox:pdfbox:jar:2.0.27:runtime
           |     +- org.apache.pdfbox:fontbox:jar:2.0.27:runtime
-          |     \\- commons-logging:commons-logging:jar:1.2:runtime
-          \\- com.madgag:animated-gif-lib:jar:1.4:runtime
+          |     \- commons-logging:commons-logging:jar:1.2:runtime
+          \- com.madgag:animated-gif-lib:jar:1.4:runtime
           """
      :examples '(
           """
@@ -513,7 +513,7 @@
           (do
             (load-module :maven)
             (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ] 
-                                :scope :compile
+                                :scope :runtime
                                 :verbose true))
           """,
           """
@@ -541,7 +541,7 @@
 
   maven/dependencies   [artifacts & options]
     (let [opts         (apply hash-map options)
-          scope        (:scope opts :compile)
+          scope        (:scope opts :runtime)
           verbose      (:verbose opts false)
           format       (:format opts :tree)
           print-data   (:print opts true)
