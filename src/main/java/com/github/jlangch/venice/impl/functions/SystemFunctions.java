@@ -689,6 +689,29 @@ public class SystemFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction java_home =
+        new VncFunction(
+                "java-home",
+                VncFunction
+                    .meta()
+                    .arglists("(java-home)")
+                    .doc("Returns the installation directory for Java Runtime Environment (JRE)")
+                    .examples("(java-home)")
+                    .seeAlso("java-version")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                final String version = System.getProperty( "java.home");
+
+                return new VncString(version);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction java_version =
         new VncFunction(
                 "java-version",
@@ -697,7 +720,7 @@ public class SystemFunctions {
                     .arglists("(java-version)")
                     .doc("Returns the Java VM version (1.8.0_252, 11.0.7, ...)")
                     .examples("(java-version)")
-                    .seeAlso("java-major-version", "java-version-info")
+                    .seeAlso("java-major-version", "java-version-info", "java-home")
                     .build()
         ) {
             @Override
@@ -1077,6 +1100,7 @@ public class SystemFunctions {
                     .add(system_prop)
                     .add(system_env)
                     .add(system_exit_code)
+                    .add(java_home)
                     .add(java_version)
                     .add(java_version_info)
                     .add(java_source_location)

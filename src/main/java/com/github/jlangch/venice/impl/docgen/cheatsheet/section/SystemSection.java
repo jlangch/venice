@@ -57,6 +57,7 @@ public class SystemSection implements ISectionBuilder {
 
         final DocSection java = new DocSection("Java", "system.java");
         all.addSection(java);
+        java.addItem(diBuilder.getDocItem("java-home", false));
         java.addItem(diBuilder.getDocItem("java-version"));
         java.addItem(diBuilder.getDocItem("java-version-info"));
         java.addItem(diBuilder.getDocItem("java-major-version"));
