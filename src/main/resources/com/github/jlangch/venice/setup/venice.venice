@@ -126,25 +126,16 @@
 ;; REPL launcher utils                                                         -
 ;; -----------------------------------------------------------------------------
 
-(defn- start-repl [java-major]
+(defn- start-repl []
   (println  "Starting new REPL: (~{repl-home})")
   (println)
-  (sh/open (repl-script-path java-major)))
+  (sh/open (repl-script-path)))
 
-(defn- repl-script-path [java-major]
-  (let [base-name (case (to-long java-major)
-                     8  "repl"
-                    11  "replJava11"
-                    17  "replJava17"
-                    21  "replJava21"
-                        "repl")]
-    (case (os-type)
-      :mac-osx (str repl-home "/" base-name ".sh")
-      :linux   (str repl-home "/" base-name ".sh")
-      :windows (str repl-home "/" base-name ".bat"))))
-
-(defn- to-long [s]
-  (if (and (string? s) (match? s "[1-9][0-9]*")) (long s) nil)) 
+(defn- repl-script-path []
+  (case (os-type)
+    :mac-osx (str repl-home "/repl.sh")
+    :linux   (str repl-home "/repl.sh")
+    :windows (str repl-home "/repl.bat")))
 
 
 ;; -----------------------------------------------------------------------------
@@ -234,8 +225,8 @@
     (match? cmd "b|build")        (gradle-tasks "clean" "shadowJar")
     (match? cmd "r|rebuild")      (do (gradle-tasks "clean" "shadowJar")
                                       (deploy)
-                                      (start-repl (first args)))
-    (match? cmd "s|start")        (start-repl (first args))
+                                      (start-repl))
+    (match? cmd "s|start")        (start-repl)
     (match? cmd "c|cheatsheet")   (gradle-tasks "cheatsheet")
     (match? cmd "cp")             (do (gradle-tasks "cheatsheet")
                                       (sh/open (io/file proj-home "cheatsheet.pdf")))

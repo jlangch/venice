@@ -18,28 +18,28 @@ set VENICE_PROJECT_HOME=C:\Users\juerg\Documents\workspace\venice
 set VENICE_REPL_HOME=C:\Users\juerg\Desktop\venice
 
 
-if not exist %VENICE_SHELL_HOME% (
+if not exist "%VENICE_SHELL_HOME%" (
   echo Error: The Venice shell home dir %VENICE_SHELL_HOME% does not exist!
   timeout /t 5
   exit 2
 )
 
-if not exist %VENICE_SHELL_HOME%\libs (
+if not exist "%VENICE_SHELL_HOME%\libs" (
   echo Error: The Venice shell libs dir %VENICE_SHELL_HOME%\libs does not exist!
   timeout /t 5
   exit 2
 )
 
-if not exist %JAVA_8_HOME%\libs (
-  echo Error: The Java 8 home dir %JAVA_8_HOME% does not exist!
+if not exist "%JAVA_HOME%" (
+  echo "Error: The Java home dir %JAVA_HOME% does not exist!"
   timeout /t 5
   exit 2
 )
 
 
-cd %VENICE_SHELL_HOME%
+cd "%VENICE_SHELL_HOME%"
 
-"%JAVA_8_HOME%\bin\java.exe" ^
+"%JAVA_HOME%\bin\java.exe" ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
