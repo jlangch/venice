@@ -275,9 +275,9 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             .venicedoc-body .md-code-block {
                 page-break-inside: avoid;
                 display: block;
-            	border: 1px solid #ebebeb;
-            	border-radius: 4px;
-           		color: #4884E0;
+                border: 1px solid #ebebeb;
+                border-radius: 4px;
+                color: #4884E0;
                 background-color: #f5f5f5;
                 padding: 1em;
             }
@@ -514,7 +514,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             }
         </style>
     </head>
-    
+
     <body>
         <div class="main">
             <div class="title">
@@ -530,7 +530,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         ${ (when-not pdfmode }$
                         <img src="https://raw.githubusercontent.com/jlangch/venice/master/doc/assets/cheatsheet/logo.png"/>
                         ${ ) }$
-                    </div>              
+                    </div>
                 </div>
                 <div style="clear: both;"></div>
             </div>
@@ -558,7 +558,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                     </tbody>
                  </table>
             </div>
-            
+
             <div class="column">
                  ${ (doseq [s1 left] }$
                  <div class="section" id="${= (:id s1) }$">
@@ -590,7 +590,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         </tbody>
                     </table>
                     ${ ) }$
-                     
+
                     ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
@@ -599,7 +599,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 </div>
                 ${ ) }$
             </div>
-            
+
             <div class="column">
                 ${ (doseq [s1 right] }$
                 <div class="section" id="${= (:id s1) }$">
@@ -631,7 +631,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         </tbody>
                     </table>
                     ${ ) }$
-                    
+
                     ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
@@ -640,13 +640,13 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 </div>
                 ${ ) }$
             </div>
-            
+
             <div style="clear: both;"></div>
-            
+
             <div class="section-main-title" id="modules" style="page-break-before: always;">
                <h1>Modules</h1>
             </div>
-            
+
             <div class="column">
                  ${ (doseq [s1 left-modules] }$
                  <div class="section" id="${= (:id s1) }$">
@@ -679,7 +679,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         </tbody>
                     </table>
                     ${ ) }$
-                    
+
                     ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
@@ -688,7 +688,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 </div>
                 ${ ) }$
             </div>
-            
+
             <div class="column">
                 ${ (doseq [s1 right-modules] }$
                 <div class="section" id="${= (:id s1) }$">
@@ -721,7 +721,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         </tbody>
                     </table>
                     ${ ) }$
-                    
+
                     ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
@@ -730,13 +730,13 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 </div>
                 ${ ) }$
             </div>
-            
+
             <div style="clear: both;"></div>
-            
+
             <div class="section-main-title" id="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
             </div>
-            
+
             <div class="embedding">
                ${ (doseq [s snippets] }$ 
                <div class="code-example">
@@ -747,35 +747,35 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                </div>
                ${ ) }$
             </div>
-            
+
             <div style="clear: both;"></div>
  
             ${ (doseq [it topics] }$
             <div class="section-main-title" id="${= (:id it) }$" style="page-break-before: always;">
                <h1>${= (kira/escape-xml (:title it)) }$</h1>
             </div>
-            
+
             <div class="venicedoc">
-           	   <div class="venicedoc-frame">
+               <div class="venicedoc-frame">
                   <div class="venicedoc-body">
-	                 ${= (:docMarkdownXmlStyled it) }$
-	              </div>
-	           </div>
+                     ${= (:docMarkdownXmlStyled it) }$
+                  </div>
+               </div>
             </div>
             ${ ) }$
 
-            
+
             <div class="section-main-title" id="details" style="page-break-before: always;">
                <h1>Function Details</h1>
             </div>
-            
+
             <div class="details">
                 ${ (doseq [it details] }$ 
                 ${ (when (:id it) }$
                 <div class="detail" id="${= (:id it) }$">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <div class="header">${= (kira/escape-xml (:name it)) }$</div>
-                    
+
                     ${ (when (not-empty? (:signatures it)) }$
                     <div class="arglists">
                         <div class="arglist">
@@ -785,7 +785,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         </div>
                     </div>
                     ${ ) }$
-                    
+
                     <div class="descr">
                         ${ (when (not-empty? (:description it)) }$
                         <code>${= (kira/escape-xml (:description it)) }$</code>
@@ -795,7 +795,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         ${= (:descriptionXmlStyled it) }$
                         ${ ) }$
                     </div>
-                    
+
                     ${ (when (not-empty? (:examplesXmlStyled it)) }$
                     <div class="examples">
                         ${ (doseq [code (:examplesXmlStyled it)] }$
@@ -803,7 +803,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                         ${ ) }$
                     </div>
                     ${ ) }$
-                    
+
                     ${ (when (not-empty? (:crossRefs it)) }$
                     <div class="seealso">
                         <div class="header">SEE ALSO</div>
@@ -821,5 +821,4 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             </div>
         </div>
     </body>
-    
 </html>
