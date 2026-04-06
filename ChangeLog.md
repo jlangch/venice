@@ -5,11 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.88] - 2026-04-xx
-
-### Enhancements
-
-- ...
+## [1.12.88] - 2026-04-06
 
 ### Bugs
 
@@ -31,6 +27,8 @@ All notable changes to this project will be documented in this file.
         (installer/install :dir (repl/libs-dir)
                            :silent false)))
   ```
+
+
 
 ## [1.12.87] - 2026-04-02
 
@@ -67,6 +65,7 @@ All notable changes to this project will be documented in this file.
 
   *Note:* Hybrid encryption can also be achieved by tunneling a *Level 0* type remote 
   REPL communication through an accordingly configured SSH tunnel.
+
 
 
 ### Bugs
