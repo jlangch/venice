@@ -49,6 +49,7 @@ public class DocItem {
         this.examples = examples;
         this.id = id;
         this.crossRefs = new ArrayList<>();
+        this.section = null;
 
         if (crossRefs != null) {
             this.crossRefs.addAll(crossRefs);
@@ -58,6 +59,7 @@ public class DocItem {
     public DocItem(final String name, final String id) {
         this(name, null, null, null, null, null, null, id);
     }
+
 
     public String getName() {
         return name;
@@ -109,6 +111,26 @@ public class DocItem {
         return crossRefs;
     }
 
+    public DocSection getSection() {
+        return section;
+    }
+
+    public void setSection(final DocSection section) {
+        this.section = section;
+    }
+
+    public DocSection getTopSection() {
+        DocSection top = null;
+        DocSection s = section;
+
+        while(s != null) {
+            top = s;
+            s = s.getParent();
+        }
+
+        return top;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -145,4 +167,6 @@ public class DocItem {
     private final String descriptionXmlStyled;
     private final List<ExampleOutput> examples;
     private final List<CrossRef> crossRefs;
+
+    private DocSection section;
 }

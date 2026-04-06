@@ -55,6 +55,7 @@ public class DocSection {
         this.footerTextStyled = styleText(footer);
         this.headerXmlStyled = styleXml(header);
         this.footerXmlStyled = styleXml(footer);
+        this.parent = null;
     }
 
 
@@ -92,6 +93,7 @@ public class DocSection {
 
     public void addSection(final DocSection section) {
         if (section != null) {
+            section.setParent(this);
             sections.add(section);
         }
     }
@@ -112,6 +114,7 @@ public class DocSection {
 
     public void addItem(final DocItem item) {
         if (item != null) {
+            item.setSection(this);
             items.add(item);
         }
     }
@@ -124,10 +127,19 @@ public class DocSection {
         return items.isEmpty();
     }
 
+    public DocSection getParent() {
+        return parent;
+    }
+
+    public void setParent(final DocSection parent) {
+        this.parent = parent;
+    }
+
     @Override
     public String toString() {
         return getFormattedTitle() + ", id=" + id;
     }
+
 
     private static String styleText(final String markdown) {
         return markdown == null
@@ -152,4 +164,6 @@ public class DocSection {
 
     private final List<DocSection> sections = new ArrayList<>();
     private final List<DocItem> items = new ArrayList<>();
+
+    private DocSection parent;
 }
