@@ -132,7 +132,7 @@ public class DocItem {
     }
 
     public String getTopSectionId() {
-        DocSection top = getTopSection();
+        final DocSection top = getTopSection();
         return top == null ? null : top.getId();
     }
 
