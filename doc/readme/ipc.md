@@ -31,7 +31,7 @@ Venice Inter-Process-Communication (IPC) is a Venice API that allows application
  
 
 > [!NOTE]
-> For API details please see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/78aea15/cheatsheet.pdf) under *Overview* -> *I/O* -> *Inter Process Communication*
+> For API details please see the [cheatsheet](https://cdn.rawgit.com/jlangch/venice/04265f3/cheatsheet.pdf) under *Overview* -> *I/O* -> *Inter Process Communication*
 >
 
  
