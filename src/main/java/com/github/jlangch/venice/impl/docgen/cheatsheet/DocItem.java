@@ -131,6 +131,11 @@ public class DocItem {
         return top;
     }
 
+    public String getTopSectionId() {
+        DocSection top = getTopSection();
+        return top == null ? null : top.getId();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- Cheatsheet PDF: added back navigation to a function's module/section.
 
 
 

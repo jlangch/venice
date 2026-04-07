@@ -773,7 +773,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 ${ (doseq [it details] }$ 
                 ${ (when (:id it) }$
                 <div class="detail" id="${= (:id it) }$">
-                    <div class="nav-back"><a href="#top">top</a></div>
+                    <div class="nav-back"><a href="#${= (:topSectionId it) }$">section</a><a href="#top">top</a></div>
                     <div class="header">${= (kira/escape-xml (:name it)) }$</div>
 
                     ${ (when (not-empty? (:signatures it)) }$
