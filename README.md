@@ -161,8 +161,8 @@ venice>
 
 **Modules**
 
-* [Cryptography](doc/readme/cryptography.md)
 * [Inter-Process-Communication (Messaging)](doc/readme/ipc.md)
+* [Cryptography](doc/readme/cryptography.md)
 * [Docker](doc/readme/docker.md)
 * [Kira Templates](doc/readme/ext-kira.md)
 * [Parsifal Parser Combinator](doc/readme/ext-parsifal.md)
