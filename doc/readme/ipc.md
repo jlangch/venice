@@ -154,9 +154,13 @@ pluggable handler function computes the response from the request.
 
 ### Queues Offer-Poll
 
-Offer messages to a queue and poll messages from a queue. More than one client can offer/poll
-messages to/from queues but a message is delivered to one client only.
+Offer messages to a queue and poll messages from a queue. More than one client 
+can offer/pollmessages to/from queues but a message is delivered to one client 
+only.
 
+Venice supports *transient*, *durable* and *temporary* queues.
+
+ 
 
 #### Offer and Poll with transient Queues
 
