@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Cheatsheet PDF: improved in-doc navigation. Added back navigation from functions to it's module/section.
+- Cheatsheet PDF: improved in-doc navigation. Added back navigation from functions to its module/section.
 
 
 
