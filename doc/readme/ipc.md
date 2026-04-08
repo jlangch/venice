@@ -160,6 +160,13 @@ only.
 
 Venice supports *transient*, *durable* and *temporary* queues.
 
+| Feature          | Transient Queue | Durable Queue | Temporary Queue     |
+| :--              | :--             | :--           | :--                 |
+| Persistence      | no              | yes           | no                  |
+| Survives restart | no              | yes           | no                  |
+| Lifetime         | server          | until removed | client (connection) |
+| Performance      | fast            | slower        | fast                |
+
  
 
 #### Offer and Poll with transient Queues
