@@ -160,12 +160,12 @@ only.
 
 Venice supports *transient*, *durable* and *temporary* queues.
 
-| Feature          | Transient Queue | Durable Queue | Temporary Queue     |
-| :--              | :--             | :--           | :--                 |
-| Persistence      | no              | yes           | no                  |
-| Survives restart | no              | yes           | no                  |
-| Lifetime         | server          | until removed | client (connection) |
-| Performance      | fast            | slower        | fast                |
+| Feature          | Transient Queue | Durable Queue    | Temporary Queue     |
+| :--              | :--             | :--              | :--                 |
+| Persistence      | no              | yes (filesystem) | no                  |
+| Survives restart | no              | yes              | no                  |
+| Lifetime         | server (broker) | until removed    | client (connection) |
+| Performance      | fast            | slower           | fast                |
 
  
 
@@ -242,7 +242,9 @@ Transient queues and its messages live only as long as the servers lives.
 
 **Temporary queues**
 
-Temporary queues can be created dynamically for use as a dedicated reply queue for a client. You can use these queues to ensure that a reply message can be sent to the appropriate client.
+Temporary queues can be created dynamically for use as a dedicated reply queue for a 
+client. You can use these queues to ensure that a reply message can be sent to the 
+appropriate client.
 
 Temporary queues live only as long as the client, that created it, lives.
 
