@@ -136,14 +136,22 @@ public abstract class UTF8 {
     public static char SUPERSCRIPT_THREE              = '\u00B3';  // ³
     public static char DEGREE_SIGN                    = '\u00B0';  // °
 
-    // Table
+
+    // Table 1
     public static String TABLE_1             = "┌───┬───┐"
                                              + "│   │   │"
                                              + "├───┼───┤"
                                              + "│   │   │"
                                              + "└───┴───┘";
-    // Table
-    public static String TABLE_2             = "┏━━━┳━━━┓"
+
+    // Table 2
+    public static String TABLE_2             = "╭───┬───╮"
+                                             + "│   │   │"
+                                             + "├───┼───┤"
+                                             + "│   │   │"
+                                             + "╰───┴───╯";
+    // Table 3
+    public static String TABLE_3             = "┏━━━┳━━━┓"
                                              + "┃   ┃   ┃"
                                              + "┣━━━╋━━━┫"
                                              + "┃   ┃   ┃"
