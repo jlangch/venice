@@ -158,7 +158,7 @@ Offer messages to a queue and poll messages from a queue. More than one client
 can offer/pollmessages to/from queues but a message is delivered to one client 
 only.
 
-Venice supports *transient*, *durable* and *temporary* queues.
+Venice supports *transient*, *durable*, and *temporary* queues.
 
 | Feature          | Transient Queue | Durable Queue    | Temporary Queue     |
 | :--              | :--             | :--              | :--                 |
