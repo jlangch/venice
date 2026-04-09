@@ -128,8 +128,6 @@ public abstract class UTF8 {
     public static char RIGHTWARDS_DOUBLE_ARROW    = '\u21D2';  // ⇒
     public static char RIGHTWARDS_WHITE_ARROW     = '\u21E8';  // ⇨
 
-
-
     // Superscript
     public static char SUPERSCRIPT_LEFT_PARENTHESIS   = '\u207D';  // ⁽
     public static char SUPERSCRIPT_RIGHT_PARENTHESIS  = '\u207E';  // ⁾
