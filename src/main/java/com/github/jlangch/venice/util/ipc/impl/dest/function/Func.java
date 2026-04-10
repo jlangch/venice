@@ -39,7 +39,7 @@ public class Func extends Destination implements IpcFunction {
     }
 
     @Override
-	public IMessage apply(final IMessage m) {
+    public IMessage apply(final IMessage m) {
         return func.apply(m);
     }
 

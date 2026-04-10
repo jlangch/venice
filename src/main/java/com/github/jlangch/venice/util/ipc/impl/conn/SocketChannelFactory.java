@@ -62,7 +62,7 @@ public class SocketChannelFactory {
     // Client SocketChannel
     // ------------------------------------------------------------------------
 
-	public static SocketChannel createSocketChannel(
+    public static SocketChannel createSocketChannel(
             final URI conn
     ) throws IOException {
         final String scheme = conn.getScheme();

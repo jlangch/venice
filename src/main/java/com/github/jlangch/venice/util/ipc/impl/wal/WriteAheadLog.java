@@ -305,8 +305,8 @@ public final class WriteAheadLog implements AutoCloseable {
             final boolean discardExpiredEntries,
             final boolean removeBackupLogFile
     ) throws WriteAheadLogException {
-    	Objects.requireNonNull(logFile);
-    	Objects.requireNonNull(logger);
+        Objects.requireNonNull(logFile);
+        Objects.requireNonNull(logger);
         if (!logFile.exists()) {
             // nothing to do
             return new ArrayList<>();
