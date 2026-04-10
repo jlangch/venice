@@ -429,17 +429,17 @@ public class Launcher {
     }
 
     private final static Set<String> SCRIPT_BLOCK_OPTIONS = toSet(
-    		"-macroexpand",
-    		"-loadpath",
+            "-macroexpand",
+            "-loadpath",
             "-repl-server-config");
 
     private final static Set<String> APP_BLOCK_OPTIONS = toSet(
-    		"-macroexpand",
-    		"-loadpath");
+            "-macroexpand",
+            "-loadpath");
 
     private final static Set<String> APP_REPL_BLOCK_OPTIONS = toSet(
-    		"-macroexpand",
-    		"-loadpath");
+            "-macroexpand",
+            "-loadpath");
 
     private final static Set<String> REPL_BLOCK_OPTIONS = toSet(
             "-loadpath");
