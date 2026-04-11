@@ -18,8 +18,12 @@ REM #    +-- repl.env.bat
 REM #    +-- repl.bat
 REM # -------------------------------------------------------------------------
 
+REM # Do not set custom variables in this script. Instead put them into the
+REM # repl.env.bat in the REPL_HOME to keep your customizations separate.
+
 
 set REPL_HOME={{INSTALL_PATH}}
+
 
 if not exist "%REPL_HOME%" (
   echo The REPL home dir %REPL_HOME% does not exist!

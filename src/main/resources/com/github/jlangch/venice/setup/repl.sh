@@ -18,6 +18,10 @@
 #    +-- repl.sh
 # ------------------------------------------------------------------------------
 
+# Do not set custom variables in this script. Instead put them into the
+# repl.env in the REPL_HOME to keep your customizations separate.
+
+
 export REPL_HOME={{INSTALL_PATH}}
 
 
@@ -29,8 +33,6 @@ fi
 
 [ ! -d "${REPL_HOME}/tmp" ] && mkdir "${REPL_HOME}/tmp"
 [ ! -d "${REPL_HOME}/scripts" ] && mkdir "${REPL_HOME}/scripts"
-
-# DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 
 
 cd "$REPL_HOME"
@@ -51,10 +53,11 @@ while true; do
     exit 1
   fi
 
+  JAVA_OPTS="-server -Xmx4G -XX:-OmitStackTraceInFastThrow ${DEBUG_OPTS}"
+
+
   "${JAVA_HOME}/bin/java" \
-    -server \
-    -Xmx4G \
-    -XX:-OmitStackTraceInFastThrow \
+    ${JAVA_OPTS} \
     -Djava.io.tmpdir="${REPL_HOME}/tmp" \
     -Dvenice.repl.home="${REPL_HOME}" \
     -cp "libs:libs/*" \
