@@ -29,12 +29,14 @@ import static com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor.inv
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -697,7 +699,7 @@ public class SystemFunctions {
                     .arglists("(java-home)")
                     .doc("Returns the installation directory for Java Runtime Environment (JRE)")
                     .examples("(java-home)")
-                    .seeAlso("java-version")
+                    .seeAlso("java-version", "java-vm-args")
                     .build()
         ) {
             @Override
@@ -720,7 +722,7 @@ public class SystemFunctions {
                     .arglists("(java-version)")
                     .doc("Returns the Java VM version (1.8.0_252, 11.0.7, ...)")
                     .examples("(java-version)")
-                    .seeAlso("java-major-version", "java-version-info", "java-home")
+                    .seeAlso("java-major-version", "java-version-info", "java-home", "java-vm-args")
                     .build()
         ) {
             @Override
@@ -764,7 +766,7 @@ public class SystemFunctions {
                     .arglists("(java-version-info)")
                     .doc("Returns the Java VM version info.")
                     .examples("(java-version-info)")
-                    .seeAlso("java-version", "java-major-version")
+                    .seeAlso("java-version", "java-major-version", "java-vm-args")
                     .build()
         ) {
             @Override
@@ -786,6 +788,33 @@ public class SystemFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+
+    public static VncFunction java_vm_args =
+        new VncFunction(
+                "java-vm-args",
+                VncFunction
+                    .meta()
+                    .arglists("(java-vm-args)")
+                    .doc("Returns the Java JVM arguments passed.")
+                    .examples("(java-vm-args)")
+                    .seeAlso("java-home", "java-version", "java-version-info")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                final RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
+                final List<String> arguments = RuntimemxBean.getInputArguments();
+
+                return VncList.ofColl(
+                        arguments.stream().map(a -> new VncString(a)).collect(Collectors.toList()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
     public static VncFunction java_source_location =
         new VncFunction(
@@ -1103,6 +1132,7 @@ public class SystemFunctions {
                     .add(java_home)
                     .add(java_version)
                     .add(java_version_info)
+                    .add(java_vm_args)
                     .add(java_source_location)
                     .add(java_major_version)
                     .add(total_memory)
