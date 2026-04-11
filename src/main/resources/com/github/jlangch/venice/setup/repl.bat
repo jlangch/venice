@@ -18,13 +18,8 @@ REM #    +-- repl.env.bat
 REM #    +-- repl.bat
 REM # -------------------------------------------------------------------------
 
-REM # if Java is already installed use 'where java.exe' to find the JAVA_HOME
-REM # of the active Java runtime
-REM set JAVA_HOME=C:\Program Files\Zulu\zulu-17
 
 set REPL_HOME={{INSTALL_PATH}}
-
-if "%JAVA_HOME%" == "" goto :error
 
 if not exist "%REPL_HOME%" (
   echo The REPL home dir %REPL_HOME% does not exist!
@@ -41,10 +36,12 @@ cd "%REPL_HOME%"
 
 :start
 
-REM # load environment variables
+REM # load REPL environment variables
 if exist "%REPL_HOME%/repl.env.bat" (
   call "%REPL_HOME%/repl.env.bat"
 )
+
+if "%JAVA_HOME%" == "" goto :error
 
 "%JAVA_HOME%\bin\java.exe" ^
   -server ^
@@ -67,7 +64,7 @@ echo ERROR: JAVA_HOME not found in your environment.
 echo Please, set the JAVA_HOME variable in your environment to match the
 echo location of the Java Virtual Machine you want to use.
 echo.
-echo Alternatively set JAVA_HOME in this repl.bat 
+echo Alternatively set JAVA_HOME in the 'repl.env.bat' file. 
 timeout /t 5
 exit 2
 

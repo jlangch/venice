@@ -23,8 +23,9 @@ All notable changes to this project will be documented in this file.
 
 > [!TIP]
 > Should you encounter problems with the *JAVA_HOME* change, the *JAVA_HOME* 
-> environment var can also be defined explicitly in the *repl.sh* or *repl.bat* 
-> script. To check if *JAVA_HOME* is defined by your system run `echo $JAVA_HOME`
+> environment variable can also be defined explicitly in the *repl.env* (Linux/MacOS)
+> or *repl.env.bat* (Windows) file in the REPL home directory.
+> To check if *JAVA_HOME* is defined by your system run `echo $JAVA_HOME`
 > on Linux/MacOS or `echo %JAVA_HOME%` on Windows.
 
 
