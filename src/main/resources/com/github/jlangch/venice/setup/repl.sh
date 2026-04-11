@@ -30,6 +30,7 @@ if [ "${JAVA_HOME}" = "" ] ; then
   echo "location of the Java Virtual Machine you want to use."
   echo 
   echo Alternatively set JAVA_HOME in this repl start script 
+  sleep 5
   exit 1
 fi
 
