@@ -22,10 +22,10 @@ All notable changes to this project will be documented in this file.
   (relying on the environment variable PATH) gives more flexibility.
 
 > [!TIP]
-> Should you encounter problems with the *JAVA_HOME* change, define the 
-> *JAVA_HOME* environment var explicitly in the *repl.sh* or *repl.bat* 
-> script. To check if *JAVA_HOME* is defined run `echo $JAVA_HOME` on 
-> Linux/MacOS or `echo %JAVA_HOME%` on Windows.
+> Should you encounter problems with the *JAVA_HOME* change, the *JAVA_HOME* 
+> environment var can also be defined explicitly in the *repl.sh* or *repl.bat* 
+> script. To check if *JAVA_HOME* is defined by your system run `echo $JAVA_HOME`
+> on Linux/MacOS or `echo %JAVA_HOME%` on Windows.
 
 
 
