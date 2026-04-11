@@ -21,11 +21,11 @@ All notable changes to this project will be documented in this file.
   Starting the Java VM with "${JAVA_HOME}/bin/java" instead of just "java" 
   (relying on the environment variable PATH) gives more flexibility.
 
-  > [!TIP]
-  > Should you encounter problems with this change, define the *JAVA_HOME* 
-  > environment var explicitly in the *repl.sh* or *repl.bat* script. 
-  > To check if *JAVA_HOME* is defined run `echo $JAVA_HOME` on Linux/MacOS or 
-  > `echo %JAVA_HOME%` on Windows
+> [!TIP]
+> Should you encounter problems with this change, define the *JAVA_HOME* 
+> environment var explicitly in the *repl.sh* or *repl.bat* script. 
+> To check if *JAVA_HOME* is defined run `echo $JAVA_HOME` on Linux/MacOS or 
+> `echo %JAVA_HOME%` on Windows
 
 
 
