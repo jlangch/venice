@@ -669,8 +669,6 @@ task updateReleaseVersion {
         ) {
             fileset(dir: 'src/main/resources', includes: '**/repl.sh')
             fileset(dir: 'src/main/resources', includes: '**/repl.bat')
-            fileset(dir: 'doc/examples/repl', includes: 'repl.sh')
-            fileset(dir: 'doc/examples/repl', includes: 'repl.bat')
         }
            
         println "Updating Aviron lib version ${aviron_Version} -> 'aviron.venice'"
