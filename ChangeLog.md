@@ -9,7 +9,17 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Cheatsheet PDF: improved in-doc navigation. Added back navigation from functions to its module/section.
+- Cheatsheet PDF: improved in-doc navigation. Added back navigation from functions 
+  to its module/section.
+
+- REPL launcher scripts are relying now on the *JAVA_HOME* environment variable 
+  to locate and start the REPL Java VM.
+  
+  The *JAVA_HOME* environment variable points to the directory where Java
+  (JDK/JRE) is installed
+
+  Starting the Java VM with "${JAVA_HOME}/bin/java" instead of just "java" 
+  (relying on the environment variable PATH) gives more flexibility.
 
 
 
