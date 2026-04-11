@@ -6,7 +6,7 @@
 #    |
 #    +-- libs
 #    |    +-- repl.json
-#    |    +-- venice-1.12.85.jar
+#    |    +-- venice-1.12.88.jar
 #    |
 #    +-- scripts
 #    |    +-- script-1.venice
@@ -18,34 +18,46 @@
 #    +-- repl.sh
 # ------------------------------------------------------------------------------
 
+# Set JAVA_HOME locally
+# export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/
 
 export REPL_HOME={{INSTALL_PATH}}
 
-if [ ! -d ${REPL_HOME} ]; then
+if [ "${JAVA_HOME}" = "" ] ; then
+  echo "ERROR: JAVA_HOME not found in your environment."
+  echo
+  echo "Please, set the JAVA_HOME variable in your environment to match the"
+  echo "location of the Java Virtual Machine you want to use."
+  echo 
+  echo Alternatively set JAVA_HOME in this repl start script 
+  exit 1
+fi
+
+if [ ! -d "${REPL_HOME}" ]; then
   echo "Error: The REPL home dir ${REPL_HOME} does not exist!"
   sleep 5
   exit 1
 fi
 
-[ ! -d ${REPL_HOME}/tmp ] && mkdir ${REPL_HOME}/tmp
-[ ! -d ${REPL_HOME}/scripts ] && mkdir ${REPL_HOME}/scripts
+[ ! -d "${REPL_HOME}/tmp" ] && mkdir "${REPL_HOME}/tmp"
+[ ! -d "${REPL_HOME}/scripts" ] && mkdir "${REPL_HOME}/scripts"
 
 # DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 
 
-cd $REPL_HOME
+cd "$REPL_HOME"
 
 while true; do
   
   # load environment variables (note: source command is available in bash only!)
-  [ -f ${REPL_HOME}/repl.env ] && source ${REPL_HOME}/repl.env
+  [ -f "${REPL_HOME}/repl.env" ] && source "${REPL_HOME}/repl.env"
 
-  java \
+  "${JAVA_HOME}/bin/java" \
     -server \
     -Xmx4G \
     -XX:-OmitStackTraceInFastThrow \
-    -Djava.io.tmpdir=${REPL_HOME}/tmp \
-    -Dvenice.repl.home=${REPL_HOME} \
+    -Djava.io.tmpdir="${REPL_HOME}/tmp" \
+    -Dvenice.repl.home="${REPL_HOME}" \
     -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
     -loadpath "" \
