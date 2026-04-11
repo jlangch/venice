@@ -12,20 +12,20 @@ All notable changes to this project will be documented in this file.
 - Cheatsheet PDF: improved in-doc navigation. Added back navigation from functions 
   to its module/section.
 
-- REPL launcher scripts are relying now on the *JAVA_HOME* environment variable 
+- The REPL launcher script is now relying on the *JAVA_HOME* environment variable 
   to locate and start the REPL Java VM.
   
   The *JAVA_HOME* environment variable points to the directory where Java
-  (JDK/JRE) is installed
+  (JDK/JRE) is installed.
 
   Starting the Java VM with "${JAVA_HOME}/bin/java" instead of just "java" 
   (relying on the environment variable PATH) gives more flexibility.
 
 > [!TIP]
-> Should you encounter problems with this change, define the *JAVA_HOME* 
-> environment var explicitly in the *repl.sh* or *repl.bat* script. 
-> To check if *JAVA_HOME* is defined run `echo $JAVA_HOME` on Linux/MacOS or 
-> `echo %JAVA_HOME%` on Windows
+> Should you encounter problems with the *JAVA_HOME* change, define the 
+> *JAVA_HOME* environment var explicitly in the *repl.sh* or *repl.bat* 
+> script. To check if *JAVA_HOME* is defined run `echo $JAVA_HOME` on 
+> Linux/MacOS or `echo %JAVA_HOME%` on Windows
 
 
 
