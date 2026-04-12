@@ -584,6 +584,17 @@ task updateReleaseVersion {
             fileset(dir: 'doc', includes: 'maven-central.svg')
         }
 
+        println "Updating version ${project.version} -> 'latest'"
+        new File("latest").newWriter().withWriter { w -> w << "${project.version}" }
+
+        ant.replaceregexp(
+                match:   "${version_regex}",
+                replace: "${project.version}",
+                flags:   'g'
+        ) {
+            fileset(dir: '.', includes: 'latest')
+        }
+
         println "Updating version ${project.version} -> 'build-dependencies.md'"
         ant.replaceregexp(
                 match:   "<version>${version_regex}",
