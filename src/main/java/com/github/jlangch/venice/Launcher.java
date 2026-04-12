@@ -59,7 +59,7 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  * <p>The launcher is configured as the Venice JAR's main-class.
  *
  * <p>Running scripts:
- * <pre>java -jar venice-1.12.88.jar -script "(+ 1 1)"</pre>
+ * <pre>java -jar venice-1.12.89.jar -script "(+ 1 1)"</pre>
  *
  * <p>Running a REPL:
  * <pre>
@@ -317,7 +317,7 @@ public class Launcher {
              "The launcher is configured as the Venice JAR's main-class. \n" +
              "\n" +
              "Running scripts: \n" +
-             "    java -jar venice-1.12.88.jar -script \"(+ 1 1)\" \n" +
+             "    java -jar venice-1.12.89.jar -script \"(+ 1 1)\" \n" +
              "\n" +
              "Running a REPL:  \n" +
              "    java \\ \n" +
@@ -380,10 +380,10 @@ public class Launcher {
              "                    e.g.:  -app-repl /Users/foo/tools/dbclient.venice\n" +
              "\n" +
              "  -setup            setup a REPL \n" +
-             "                    e.g.:  java -jar venice-1.12.88.jar -setup -colors -dir ./repl \n" +
-             "                           java -jar venice-1.12.88.jar -setup -minimal -colors -dir ./repl \n" +
-             "                           java -jar venice-1.12.88.jar -setup -colors-light -dir ./repl \n" +
-             "                           java -jar venice-1.12.88.jar -setup -colors-dark -dir ./repl \n" +
+             "                    e.g.:  java -jar venice-1.12.89.jar -setup -colors -dir ./repl \n" +
+             "                           java -jar venice-1.12.89.jar -setup -minimal -colors -dir ./repl \n" +
+             "                           java -jar venice-1.12.89.jar -setup -colors-light -dir ./repl \n" +
+             "                           java -jar venice-1.12.89.jar -setup -colors-dark -dir ./repl \n" +
              "\n" +
              "  -repl-server-config file\n" +
              "                    REPL server JSON configuration file\n" +

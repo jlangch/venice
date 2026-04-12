@@ -42,10 +42,11 @@ public class SystemSection implements ISectionBuilder {
         final DocSection venice = new DocSection("Venice", "system.venice");
         all.addSection(venice);
         venice.addItem(diBuilder.getDocItem("version"));
+        venice.addItem(diBuilder.getDocItem("latest"));
 
         final DocSection logo = new DocSection("Logo", "system.logo");
         all.addSection(logo);
-        venice.addItem(diBuilder.getDocItem("logo", false));
+        logo.addItem(diBuilder.getDocItem("logo", false));
 
         final DocSection system = new DocSection("System", "system.system");
         all.addSection(system);
