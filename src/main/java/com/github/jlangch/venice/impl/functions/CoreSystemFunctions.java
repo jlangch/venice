@@ -75,6 +75,30 @@ public class CoreSystemFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction latest =
+        new VncFunction(
+                "latest",
+                VncFunction
+                    .meta()
+                    .arglists("(latest)")
+                    .doc("Returns the latest avialble Venice version.")
+                    .examples("(latest)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                final String url = "https://raw.githubusercontent.com/jlangch/venice/refs/heads/master/latest";
+
+                return IOFunctions.io_download.applyOf(
+                            new VncString(url),
+                            new VncKeyword("user-agent"),
+                            new VncString("Mozilla"));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction uuid =
         new VncFunction(
@@ -542,6 +566,7 @@ public class CoreSystemFunctions {
                     .add(format_milli_time)
                     .add(sleep)
                     .add(version)
+                    .add(latest)
                     .add(charset_default_encoding)
                     .add(auto_run_jar)
                     .toMap();
