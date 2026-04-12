@@ -78,6 +78,14 @@ public class SystemFunctionsTest {
     }
 
     @Test
+    public void test_java_home() {
+        final Venice venice = new Venice();
+
+        assertNotNull(venice.eval("(java-home)"));
+        assertEquals(System.getProperty("java.home"), venice.eval("(java-home)"));
+    }
+
+    @Test
     public void test_java_major_version() {
         final Venice venice = new Venice();
 
