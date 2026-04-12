@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -118,7 +117,6 @@ public class SystemFunctionsTest {
     }
 
     @Test
-    @Disabled
     public void test_latest() {
         final Venice venice = new Venice();
 
