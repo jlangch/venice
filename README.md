@@ -65,7 +65,7 @@ Venice requires Java 8 or newer.
 
 ## Documentation
 
-[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/04265f3/cheatsheet.pdf)
+[Cheat Sheet](https://cdn.rawgit.com/jlangch/venice/5afb22f/cheatsheet.pdf)
  
 
 [Change Log](ChangeLog.md)
