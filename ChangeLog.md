@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
   to the directory where Java (JDK/JRE) is installed.
 
   Starting the Java VM with "${JAVA_HOME}/bin/java" instead of just "java" 
-  (relying on the environment variable PATH) gives more flexibility.
+  (relying on the environment variable *PATH*) provides more flexibility.
   
   The REPL setup configures the *JAVA_HOME* in the *repl.env* (Linux/MacOS) or 
   *repl.env.bat* (Windows) with the Java home used to run the setup.
