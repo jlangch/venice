@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file.
 
 > [!TIP]
 > You can define the *JAVA_HOME* environment variable explicitly in the *repl.env* 
-> file (on Linux/macOS) or the *repl.env.bat* file (on Windows), both located in 
+> file (on Linux/MacOS) or the *repl.env.bat* file (on Windows), both located in 
 > the REPL home directory.
 >
 > This makes switching the Java VM across different Java versions a breeze. Just
