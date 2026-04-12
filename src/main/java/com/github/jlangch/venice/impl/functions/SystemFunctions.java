@@ -805,11 +805,13 @@ public class SystemFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0);
 
-                final RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
-                final List<String> arguments = RuntimemxBean.getInputArguments();
+                final RuntimeMXBean mbean = ManagementFactory.getRuntimeMXBean();
+                final List<String> arguments = mbean.getInputArguments();
 
                 return VncList.ofColl(
-                        arguments.stream().map(a -> new VncString(a)).collect(Collectors.toList()));
+                        arguments.stream()
+                                 .map(a -> new VncString(a))
+                                 .collect(Collectors.toList()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

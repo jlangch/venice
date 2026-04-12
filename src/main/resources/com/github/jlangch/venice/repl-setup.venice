@@ -149,11 +149,21 @@
                   :encoding (charset-default-encoding)))))
 
 
+(defn- modify-java-home-in-env-windows [env]
+  (let [modify  (fn [line] (if (str/contains? line "JAVA_HOME=")
+                             (str "set JAVA_HOME=" (java-home))
+                             line))]
+    (->> (str/split-lines env)
+         (map #(modify %))
+         (str/join "\r\n"))))
+
+
 (defn- setup-repl-launcher-windows [install-dir color-mode]
   (when-not (io/exists-file? (io/file install-dir "repl.env.bat"))
     (println "Setting up 'repl.env.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.win.env")
          (bytebuf-to-string <> :utf-8)
+         (modify-java-home-in-env-windows <>)
          (repl-setup/cr-lf <>)
          (io/spit (io/file install-dir "repl.env.bat") 
                    <> 
@@ -170,11 +180,21 @@
                   :encoding (charset-default-encoding)))))
 
 
+(defn- modify-java-home-in-env-unix [env]
+  (let [modify  (fn [line] (if (str/contains? line "JAVA_HOME=")
+                             (str "export JAVA_HOME=" (java-home))
+                             line))]
+    (->> (str/split-lines env)
+         (map #(modify %))
+         (str/join "\n"))))
+
+
 (defn- setup-repl-launcher-unix [install-dir color-mode]
   (when-not (io/exists-file? (io/file install-dir "repl.env"))
     (println "Setting up 'repl.env'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.unix.env")
          (bytebuf-to-string <> :utf-8)
+         (modify-java-home-in-env-unix <>)
          (repl-setup/cr-lf <>)
          (io/spit (io/file install-dir "repl.env") 
                   <> 

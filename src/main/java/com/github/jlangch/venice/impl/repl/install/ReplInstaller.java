@@ -55,8 +55,10 @@ public class ReplInstaller {
             final boolean jansi = true;
 
             System.out.println("Venice" + (minimal ? " minimal " : " ") + "REPL setup...");
+            System.out.println();
             System.out.println("Venice REPL: V" + Venice.getVersion());
             System.out.println("Java: " + System.getProperty("java.version"));
+            System.out.println("Java Home: " + System.getProperty("java.home"));
 
             final ReplConfig config = ReplConfig.load(cli, null);
 
