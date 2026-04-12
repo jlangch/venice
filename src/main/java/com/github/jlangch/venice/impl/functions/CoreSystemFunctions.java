@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -81,7 +82,8 @@ public class CoreSystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(latest)")
-                    .doc("Returns the latest avialble Venice version.")
+                    .doc("Returns the latest available Venice version or `nil` if " +
+                         "the internet is not available.")
                     .examples("(latest)")
                     .build()
         ) {
@@ -89,12 +91,17 @@ public class CoreSystemFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0);
 
-                final String url = "https://raw.githubusercontent.com/jlangch/venice/refs/heads/master/latest";
-
-                return IOFunctions.io_download.applyOf(
-                            new VncString(url),
-                            new VncKeyword("user-agent"),
-                            new VncString("Mozilla"));
+                final VncVal avail = IOFunctions.io_internet_avail_Q.applyOf();
+                if (VncBoolean.isTrue(avail)) {
+                    final String url = "https://raw.githubusercontent.com/jlangch/venice/refs/heads/master/latest";
+                    return IOFunctions.io_download.applyOf(
+                                new VncString(url),
+                                new VncKeyword("user-agent"),
+                                new VncString("Mozilla"));
+                }
+                else {
+                    return Nil;
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
