@@ -743,7 +743,7 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(java-major-version)")
-                    .doc("Returns the Java major version (8, 9, 11, ...).")
+                    .doc("Returns the Java major version (8, 17, 21, ...).")
                     .examples("(java-major-version)")
                     .seeAlso("java-version", "java-version-info")
                     .build()
