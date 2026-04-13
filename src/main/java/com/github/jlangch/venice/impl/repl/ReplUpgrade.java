@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.repl;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
@@ -47,10 +48,65 @@ import com.github.jlangch.venice.impl.util.io.FileUtil;
 
 public class ReplUpgrade {
 
-    private ReplUpgrade(final List<String> lines) {
-        this.lines = lines;
-        this.createdAt = lines.isEmpty() ? null : parse(lines.get(0));
+    private ReplUpgrade(
+             final LocalDateTime createdAt,
+             final String upgradeVersion
+   ) {
+        this.createdAt = createdAt;
+        this.upgradeVersion = StringUtil.trimToNull(upgradeVersion);
     }
+
+
+    public boolean isEmpty() {
+        return createdAt == null || upgradeVersion == null;
+    }
+
+    public String getUpgradeVersion() {
+        return upgradeVersion;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public List<String> format() {
+        final List<String> lines = new ArrayList<>();
+        lines.add(formatTimestamp(createdAt));
+        lines.add(upgradeVersion);
+        return lines;
+    }
+
+    public static ReplUpgrade parse(final List<String> lines) {
+        if (lines.size() == 2) {
+            return new ReplUpgrade(parseTimestamp(lines.get(0)), lines.get(1));
+        }
+        else {
+            return new ReplUpgrade(null, null);
+        }
+    }
+
+    public static ReplUpgrade read() throws IOException {
+        final List<String> lines = Files.readAllLines(UPGRADE_FILE.toPath())
+                                     .stream()
+                                     .map(s -> StringUtil.trimToNull(s))
+                                     .filter(s -> s != null)
+                                     .collect(Collectors.toList());
+
+         return ReplUpgrade.parse(lines);
+    }
+
+    public void write() throws IOException {
+        final List<String> lines = format();
+
+        Files.write(
+                UPGRADE_FILE.toPath(),
+                lines,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+
 
     public static String currentVersion() {
         return Version.VERSION;
@@ -88,17 +144,7 @@ public class ReplUpgrade {
 
     public static void initiate(final String latestVersion) {
         try {
-            final List<String> lines = new ArrayList<>();
-
-            lines.add(format(LocalDateTime.now()));
-            lines.add(latestVersion);
-
-            Files.write(
-                    UPGRADE_FILE.toPath(),
-                    lines,
-                    StandardOpenOption.WRITE,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING);
+            new ReplUpgrade(LocalDateTime.now(), latestVersion).write();
         }
         catch(Exception ex) {
             // skipped (best effort)
@@ -107,17 +153,17 @@ public class ReplUpgrade {
 
     public static String upgrade() {
         try {
-            if (!exists()) {
+            if (!existsUpgradeFile()) {
                 throw new RuntimeException("There is no initiated Venice upgrade!");
             }
 
             final ReplUpgrade data = read();
-            if (data.lines.isEmpty()) {
-                throw new RuntimeException("Failed to read the Venice upgrade meta data!");
+            if (data.isEmpty()) {
+                throw new RuntimeException("Failed to read the Venice upgrade data!");
             }
 
             final String currVersion = currentVersion();
-            final String upgradeVersion = data.upgradeVersion();
+            final String upgradeVersion = data.getUpgradeVersion();
 
             if (upgradeVersion == null) {
                 throw new RuntimeException("There is no version for upgrading Venice!");
@@ -135,7 +181,7 @@ public class ReplUpgrade {
             }
 
             // [1] download the new version
-            final byte[] jar = download(upgradeVersion);
+            final byte[] jar = downloadVeniceJar(upgradeVersion);
 
             // [2] save the new version
             FileUtil.save(jar, upgradeJar, true);
@@ -147,41 +193,26 @@ public class ReplUpgrade {
                                            + ". Could to replace the old version!");
             }
             else {
-                return data.upgradeVersion();
+                return data.getUpgradeVersion();
             }
+        }
+        catch(IOException ex) {
+            throw new RuntimeException("Failed to read Venice upgrade data");
         }
         catch(Exception ex) {
             throw ex;
         }
         finally {
-            remove();
+            removeUpgradeFile();
         }
     }
 
-    private static ReplUpgrade read() {
-        try {
-            return new ReplUpgrade(
-                    Files.readAllLines(UPGRADE_FILE.toPath())
-                         .stream()
-                         .map(s -> StringUtil.trimToNull(s))
-                         .filter(s -> s != null)
-                         .collect(Collectors.toList()));
-        }
-        catch(Exception ex) {
-            return new ReplUpgrade(new ArrayList<>());
-        }
+
+    private static boolean existsUpgradeFile() {
+        return UPGRADE_FILE.exists();
     }
 
-    private static boolean exists() {
-        try {
-            return UPGRADE_FILE.exists();
-        }
-        catch(Exception ex) {
-            return false;
-        }
-    }
-
-    private static void remove() {
+    private static void removeUpgradeFile() {
         try {
             UPGRADE_FILE.delete();
         }
@@ -190,21 +221,12 @@ public class ReplUpgrade {
         }
     }
 
-    private String upgradeVersion() {
-        try {
-            return lines.size() == 2 ? lines.get(1) : null;
-        }
-        catch(Exception ex) {
-            return null;
-        }
-    }
-
     public boolean oudated() {
         return createdAt == null || ChronoUnit.HOURS.between(createdAt, readAt) > 2L;
     }
 
 
-    private static byte[] download(final String upgradeVersion) {
+    private static byte[] downloadVeniceJar(final String upgradeVersion) {
         try {
             final String url = "https://repo1.maven.org/maven2/com/github/jlangch/venice/"
                                + upgradeVersion + "/venice-" + upgradeVersion + ".jar";
@@ -224,11 +246,11 @@ public class ReplUpgrade {
         }
     }
 
-    private static String format(final LocalDateTime dt) {
+    private static String formatTimestamp(final LocalDateTime dt) {
         return dtFormatter.format(dt);
     }
 
-    private static LocalDateTime parse(final String s) {
+    private static LocalDateTime parseTimestamp(final String s) {
         try {
             return LocalDateTime.parse(s, dtFormatter);
         }
@@ -242,7 +264,7 @@ public class ReplUpgrade {
     private final static DateTimeFormatter dtFormatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-    private final List<String> lines;
+    private final String upgradeVersion;
     private final LocalDateTime createdAt;
     private final LocalDateTime readAt = LocalDateTime.now();
 }

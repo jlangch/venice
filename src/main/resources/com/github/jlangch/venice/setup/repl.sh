@@ -61,6 +61,8 @@ while true; do
       -cp "libs:libs/*" \
       com.github.jlangch.venice.Launcher \
       -repl-upgrade 
+
+    rm -f "${REPL_HOME}/.repl.upgrade"
   fi
 
 
