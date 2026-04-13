@@ -404,8 +404,12 @@ public class REPL implements IRepl {
                                 }
                                 break;
 
+                            case "upgrade?":
+                                handleUpgrade(true);
+                                break;
+
                             case "upgrade":
-                                handleUpgrade();
+                                handleUpgrade(false);
                                 break;
 
                             case "attach":
@@ -1104,21 +1108,11 @@ public class REPL implements IRepl {
         printer.println("interrupt", "interrupt");
     }
 
-
-    private void handleUpgrade() {
-        if (isRemoteRepl()) {
-            printer.println(
-                "error",
-                "Cannot upgrade this REPL as long as a remote REPL is active!");
-            return;
-        }
-
+    private void handleUpgrade(final boolean checkOnly) {
         if (!ReplUpgrade.isNewerVersionAvailable()) {
-            printer.println("stdout", "No new Venice version available!");
+            printer.println("stdout", "You have the latest Venice version installed in the REPL!");
             return;
         }
-
-        // Upgrade available
 
         final String currVersion = ReplUpgrade.currentVersion();
         final String latestVersion = ReplUpgrade.latestVersion();
@@ -1126,6 +1120,22 @@ public class REPL implements IRepl {
         printer.println(
                 "stdout",
                 "Venice upgrade available " + currVersion  +" -> " + latestVersion);
+
+        if (checkOnly) {
+            return;
+        }
+
+        if (isRemoteRepl()) {
+            printer.println(
+                "error",
+                "Cannot upgrade this REPL as long as a remote REPL is active!");
+            return;
+        }
+
+        // do the upgrade ...
+        printer.println(
+                "stdout",
+                "Venice upgrade is not yet implemented. Will be available with next release.");
     }
 
     private void handleRestartableCommand() {
