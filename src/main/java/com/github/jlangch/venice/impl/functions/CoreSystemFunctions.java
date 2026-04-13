@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -122,8 +123,7 @@ public class CoreSystemFunctions {
                        "  :minor   4             \n" +
                        "  :patch   34            \n" +
                        "  :suffix  \"alpha\" }   \n" +
-                       "```"
-                       )
+                       "```")
                     .examples(
                         "(parse-version \"1.23\")",
                         "(parse-version \"1.23.56\")",
@@ -161,14 +161,59 @@ public class CoreSystemFunctions {
                     major = Long.parseLong(e[0]);
                     minor = Long.parseLong(e[1]);
                     patch = Long.parseLong(e[2]);
-
                     suffix = v.substring(v.indexOf('-') + 1);
                 }
+
                 return VncOrderedMap.of(
-                    new VncKeyword("major"), major == null ? Nil : new VncLong(major),
-                    new VncKeyword("minor"), minor == null ? Nil : new VncLong(minor),
-                    new VncKeyword("patch"), patch == null ? Nil : new VncLong(patch),
+                    new VncKeyword("major"),  major == null  ? Nil : new VncLong(major),
+                    new VncKeyword("minor"),  minor == null  ? Nil : new VncLong(minor),
+                    new VncKeyword("patch"),  patch == null  ? Nil : new VncLong(patch),
                     new VncKeyword("suffix"), suffix == null ? Nil : new VncString(suffix));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction newerVersion_Q =
+        new VncFunction(
+                "newer-version?",
+                VncFunction
+                    .meta()
+                    .arglists("(newer-version? v1 v2)")
+                    .doc(
+                       "Returns `true` if v1 is newer than v2 else `false`.\n\n" +
+                       "Compares the fields: 'major', ")
+                    .examples(
+                        "(newer-version? \"1.23\"  \"1.20\")",
+                        "(newer-version? \"1.12.4\"  \"1.2.56\")")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncMap v1 = (VncMap)parseVersion.applyOf(args.first());
+                final VncMap v2 = (VncMap)parseVersion.applyOf(args.second());
+
+                final long v1_major = ((VncLong)v1.get(new VncKeyword("major"), new VncLong(0))).toJavaLong();
+                final long v1_minor = ((VncLong)v1.get(new VncKeyword("minor"), new VncLong(0))).toJavaLong();
+                final long v1_patch = ((VncLong)v1.get(new VncKeyword("patch"), new VncLong(0))).toJavaLong();
+
+                final long v2_major = ((VncLong)v2.get(new VncKeyword("major"), new VncLong(0))).toJavaLong();
+                final long v2_minor = ((VncLong)v2.get(new VncKeyword("minor"), new VncLong(0))).toJavaLong();
+                final long v2_patch = ((VncLong)v2.get(new VncKeyword("patch"), new VncLong(0))).toJavaLong();
+
+                if (v1_major > v2_major) return VncBoolean.True;
+                if (v1_major < v2_major) return VncBoolean.False;
+
+                if (v1_minor > v2_minor) return VncBoolean.True;
+                if (v1_minor < v2_minor) return VncBoolean.False;
+
+                if (v1_patch > v2_patch) return VncBoolean.True;
+                if (v1_patch < v2_patch) return VncBoolean.False;
+
+                // we cannot compare the unstructured suffix field
+                return VncBoolean.False;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -642,6 +687,7 @@ public class CoreSystemFunctions {
                     .add(version)
                     .add(latest)
                     .add(parseVersion)
+                    .add(newerVersion_Q)
                     .add(charset_default_encoding)
                     .add(auto_run_jar)
                     .toMap();

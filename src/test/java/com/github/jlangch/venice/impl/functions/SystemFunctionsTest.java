@@ -210,6 +210,25 @@ public class SystemFunctionsTest {
     }
 
     @Test
+    public void test_newer_version() {
+        final Venice venice = new Venice();
+
+        assertFalse((Boolean)venice.eval("(newer-version? \"1\" \"2\")"));
+        assertFalse((Boolean)venice.eval("(newer-version? \"2\" \"2\")"));
+        assertTrue( (Boolean)venice.eval("(newer-version? \"3\" \"2\")"));
+
+        assertFalse((Boolean)venice.eval("(newer-version? \"1.0\" \"2\")"));
+        assertFalse((Boolean)venice.eval("(newer-version? \"2.0\" \"2\")"));
+        assertTrue( (Boolean)venice.eval("(newer-version? \"2.1\" \"2\")"));
+        assertTrue( (Boolean)venice.eval("(newer-version? \"3.1\" \"2\")"));
+
+        assertFalse((Boolean)venice.eval("(newer-version? \"1.0.0\" \"2\")"));
+        assertFalse((Boolean)venice.eval("(newer-version? \"2.0.0\" \"2\")"));
+        assertTrue( (Boolean)venice.eval("(newer-version? \"2.0.1\" \"2\")"));
+        assertTrue( (Boolean)venice.eval("(newer-version? \"3.1.8\" \"2\")"));
+    }
+
+    @Test
     public void test_callstack() {
         final Venice venice = new Venice();
 
