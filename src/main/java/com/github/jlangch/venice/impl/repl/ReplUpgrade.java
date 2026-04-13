@@ -33,13 +33,16 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.functions.CoreSystemFunctions;
-import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.functions.IOFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 
 
 public class ReplUpgrade {
@@ -83,43 +86,12 @@ public class ReplUpgrade {
         }
     }
 
-    public static void restart(
-            final boolean macroExpandOnLoad,
-            final ColorMode colorMode
-    ) {
-        ReplUpgrade.write(macroExpandOnLoad, colorMode);
-    }
-
-    public static ReplUpgrade read() {
-        try {
-            return new ReplUpgrade(
-                    Files.readAllLines(UPGRADE_FILE.toPath())
-                         .stream()
-                         .map(s -> StringUtil.trimToNull(s))
-                         .filter(s -> s != null)
-                         .collect(Collectors.toList()));
-        }
-        catch(Exception ex) {
-            return new ReplUpgrade(new ArrayList<>());
-        }
-    }
-
-    public static void write(
-            final boolean macroEpxandOnLoad,
-            final ColorMode mode
-    ) {
+    public static void initiate(final String latestVersion) {
         try {
             final List<String> lines = new ArrayList<>();
 
             lines.add(format(LocalDateTime.now()));
-
-            if (macroEpxandOnLoad) {
-                lines.add("-macropexand");
-            }
-
-            if (mode != null) {
-                lines.add("ColorMode." + mode.name());
-            }
+            lines.add(latestVersion);
 
             Files.write(
                     UPGRADE_FILE.toPath(),
@@ -133,7 +105,74 @@ public class ReplUpgrade {
         }
     }
 
-    public static boolean exists() {
+    public static String upgrade() {
+        try {
+            if (!exists()) {
+                throw new RuntimeException("There is no initiated Venice upgrade!");
+            }
+
+            final ReplUpgrade data = read();
+            if (data.lines.isEmpty()) {
+                throw new RuntimeException("Failed to read the Venice upgrade meta data!");
+            }
+
+            final String currVersion = currentVersion();
+            final String upgradeVersion = data.upgradeVersion();
+
+            if (upgradeVersion == null) {
+                throw new RuntimeException("There is no version for upgrading Venice!");
+            }
+
+            if (currVersion.equals(upgradeVersion)) {
+                throw new RuntimeException("There is no newer version for upgrading Venice!");
+            }
+
+            final File currJar = new File("lib/venice-" + currVersion + ".jar");
+            final File upgradeJar = new File("lib/venice-" + upgradeVersion + ".jar");
+
+            if (upgradeJar.exists()) {
+                throw new RuntimeException("There is no newer version for upgrading Venice!");
+            }
+
+            // [1] download the new version
+            final byte[] jar = download(upgradeVersion);
+
+            // [2] save the new version
+            FileUtil.save(jar, upgradeJar, true);
+
+            // [3] remove the old version
+            if (!currJar.delete()) {
+                upgradeJar.delete();
+                throw new RuntimeException("Failed to upgrade Venice to " + upgradeVersion
+                                           + ". Could to replace the old version!");
+            }
+            else {
+                return data.upgradeVersion();
+            }
+        }
+        catch(Exception ex) {
+            throw ex;
+        }
+        finally {
+            remove();
+        }
+    }
+
+    private static ReplUpgrade read() {
+        try {
+            return new ReplUpgrade(
+                    Files.readAllLines(UPGRADE_FILE.toPath())
+                         .stream()
+                         .map(s -> StringUtil.trimToNull(s))
+                         .filter(s -> s != null)
+                         .collect(Collectors.toList()));
+        }
+        catch(Exception ex) {
+            return new ReplUpgrade(new ArrayList<>());
+        }
+    }
+
+    private static boolean exists() {
         try {
             return UPGRADE_FILE.exists();
         }
@@ -142,7 +181,7 @@ public class ReplUpgrade {
         }
     }
 
-    public static void remove() {
+    private static void remove() {
         try {
             UPGRADE_FILE.delete();
         }
@@ -151,34 +190,38 @@ public class ReplUpgrade {
         }
     }
 
-    public boolean hasMacroExpand() {
+    private String upgradeVersion() {
         try {
-            return lines.stream().anyMatch(s -> s.equals("-macropexand"));
+            return lines.size() == 2 ? lines.get(1) : null;
         }
         catch(Exception ex) {
-            return false;
-        }
-    }
-
-    public ColorMode getColorMode() {
-        try {
-            if (lines.stream().anyMatch(s -> s.equals("ColorMode.Light"))) {
-                return ColorMode.Light;
-            }
-            else if (lines.stream().anyMatch(s -> s.equals("ColorMode.Dark"))) {
-                return ColorMode.Dark;
-            }
-            else {
-                return ColorMode.None;
-            }
-        }
-        catch(Exception ex) {
-            return ColorMode.None;
+            return null;
         }
     }
 
     public boolean oudated() {
         return createdAt == null || ChronoUnit.HOURS.between(createdAt, readAt) > 2L;
+    }
+
+
+    private static byte[] download(final String upgradeVersion) {
+        try {
+            final String url = "https://repo1.maven.org/maven2/com/github/jlangch/venice/"
+                               + upgradeVersion + "/venice-" + upgradeVersion + ".jar";
+
+            final VncByteBuffer jar = (VncByteBuffer)IOFunctions.io_download.applyOf(
+                                            new VncString(url),
+                                            new VncKeyword("binary"),
+                                            VncBoolean.True,
+                                            new VncKeyword("user-agent"),
+                                            new VncString("Mozilla"));
+
+            return jar.getBytes();
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to upgrade Venice to " + upgradeVersion
+                    + ". Could to download the new version from Maven repo!");
+        }
     }
 
     private static String format(final LocalDateTime dt) {

@@ -1135,6 +1135,8 @@ public class REPL implements IRepl {
         // do the upgrade ...
 
         if (restartable) {
+            ReplUpgrade.initiate(latestVersion);
+
             printer.println("system", "Restarting REPL...");
             ReplRestart.restart(
                     venice.isMacroExpandOnLoad(),

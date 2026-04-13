@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
+import com.github.jlangch.venice.impl.repl.ReplUpgrade;
 import com.github.jlangch.venice.impl.repl.install.ReplInstaller;
 import com.github.jlangch.venice.impl.repl.remote.RemoteReplServer;
 import com.github.jlangch.venice.impl.repl.remote.ReplRemotingConfig;
@@ -281,13 +282,15 @@ public class Launcher {
     private static void runReplUpgradeCmd(
             final CommandLineArgs cli
     ) {
-        // Launcher options
-        final CommandLineArgs appCli = cli.removeAllSwitches(REPL_BLOCK_OPTIONS)
-                                          .removeSwitch("-repl-upgrade");
-
         System.out.println("REPL upgrade not yet implemented!");
 
-        //new REPL(new AcceptAllInterceptor()).run(appCli);
+        try {
+            final String newVersion = ReplUpgrade.upgrade();
+            System.out.println("REPL upgraded to version " + newVersion + "!");
+        }
+        catch(Exception ex) {
+            System.out.println("REPL upgrade failed! Reason: " + ex.getMessage());
+        }
     }
 
     private static Env createEnv(
