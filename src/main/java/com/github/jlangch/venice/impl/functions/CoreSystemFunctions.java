@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -102,6 +103,64 @@ public class CoreSystemFunctions {
                 else {
                     return Nil;
                 }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction parseVersion =
+        new VncFunction(
+                "parse-version",
+                VncFunction
+                    .meta()
+                    .arglists("(parse-version v)")
+                    .doc(
+                       "Parses a version to its elements: major, minor, path and suffix")
+                    .examples(
+                        "(parse-version \"1.23\")",
+                        "(parse-version \"1.23.56\")",
+                        "(parse-version \"1.23.56-alpha-01\")",
+                        "(parse-version \"1.23.56-snapshot\")")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                Long major = null;
+                Long minor = null;
+                Long patch = null;
+                String suffix = null;
+
+                final String v = Coerce.toVncString(args.first()).getValue();
+
+                if (v.matches("^[0-9]+$")) {
+                    major = Long.parseLong(v);
+                }
+                else if (v.matches("^[0-9]+[.][0-9]+$")) {
+                    final String e[] = v.split("[.]");
+                    major = Long.parseLong(e[0]);
+                    minor = Long.parseLong(e[1]);
+                }
+                else if (v.matches("^[0-9]+[.][0-9]+[.][0-9]+$")) {
+                    final String e[] = v.split("[.]");
+                    major = Long.parseLong(e[0]);
+                    minor = Long.parseLong(e[1]);
+                    patch = Long.parseLong(e[2]);
+                }
+                else if (v.matches("^[0-9]+[.][0-9]+[.][0-9]+-.*$")) {
+                    final String e[] = v.split("[.-]");
+                    major = Long.parseLong(e[0]);
+                    minor = Long.parseLong(e[1]);
+                    patch = Long.parseLong(e[2]);
+
+                    suffix = v.substring(v.indexOf('-') + 1);
+                }
+                return VncOrderedMap.of(
+                    new VncKeyword("major"), major == null ? Nil : new VncLong(major),
+                    new VncKeyword("minor"), minor == null ? Nil : new VncLong(minor),
+                    new VncKeyword("patch"), patch == null ? Nil : new VncLong(patch),
+                    new VncKeyword("suffix"), suffix == null ? Nil : new VncString(suffix));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -574,6 +633,7 @@ public class CoreSystemFunctions {
                     .add(sleep)
                     .add(version)
                     .add(latest)
+                    .add(parseVersion)
                     .add(charset_default_encoding)
                     .add(auto_run_jar)
                     .toMap();

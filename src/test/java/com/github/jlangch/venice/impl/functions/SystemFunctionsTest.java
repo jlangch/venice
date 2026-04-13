@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -123,6 +124,89 @@ public class SystemFunctionsTest {
         final String version = (String)venice.eval("(latest)");
 
         assertTrue(version.matches("[0-9]+[.][0-9]+[.][0-9]+(-snapshot)*"));
+    }
+
+    @Test
+    public void test_parse_version_1() {
+        final Venice venice = new Venice();
+
+        @SuppressWarnings("unchecked")
+        Map<String,Object> v1 = (Map<String,Object>)venice.eval("(parse-version \"2\")");
+        assertEquals(2L, v1.get("major"));
+        assertEquals(null, v1.get("minor"));
+        assertEquals(null, v1.get("patch"));
+        assertEquals(null, v1.get("suffix"));
+
+        @SuppressWarnings("unchecked")
+        Map<String,Object> v2 = (Map<String,Object>)venice.eval("(parse-version \"456\")");
+        assertEquals(456L, v2.get("major"));
+        assertEquals(null, v2.get("minor"));
+        assertEquals(null, v2.get("patch"));
+        assertEquals(null, v2.get("suffix"));
+    }
+
+    @Test
+    public void test_parse_version_2() {
+        final Venice venice = new Venice();
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> v1 = (Map<String,Object>)venice.eval("(parse-version \"2.3\")");
+        assertEquals(2L, v1.get("major"));
+        assertEquals(3L, v1.get("minor"));
+        assertEquals(null, v1.get("patch"));
+        assertEquals(null, v1.get("suffix"));
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> v2 = (Map<String,Object>)venice.eval("(parse-version \"23.114\")");
+        assertEquals(23L, v2.get("major"));
+        assertEquals(114L, v2.get("minor"));
+        assertEquals(null, v2.get("patch"));
+        assertEquals(null, v2.get("suffix"));
+    }
+
+    @Test
+    public void test_parse_version_3() {
+        final Venice venice = new Venice();
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> v1 = (Map<String,Object>)venice.eval("(parse-version \"2.3.4\")");
+        assertEquals(2L, v1.get("major"));
+        assertEquals(3L, v1.get("minor"));
+        assertEquals(4L, v1.get("patch"));
+        assertEquals(null, v1.get("suffix"));
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> v2 = (Map<String,Object>)venice.eval("(parse-version \"23.114.9\")");
+        assertEquals(23L, v2.get("major"));
+        assertEquals(114L, v2.get("minor"));
+        assertEquals(9L, v2.get("patch"));
+        assertEquals(null, v2.get("suffix"));
+    }
+
+    @Test
+    public void test_parse_version_4() {
+        final Venice venice = new Venice();
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> v1 = (Map<String,Object>)venice.eval("(parse-version \"2.3.4-pre\")");
+        assertEquals(2L, v1.get("major"));
+        assertEquals(3L, v1.get("minor"));
+        assertEquals(4L, v1.get("patch"));
+        assertEquals("pre", v1.get("suffix"));
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> v2 = (Map<String,Object>)venice.eval("(parse-version \"20.35.100-pre-1\")");
+        assertEquals(20L, v2.get("major"));
+        assertEquals(35L, v2.get("minor"));
+        assertEquals(100L, v2.get("patch"));
+        assertEquals("pre-1", v2.get("suffix"));
+
+        @SuppressWarnings("unchecked")
+        final Map<String,Object> v3 = (Map<String,Object>)venice.eval("(parse-version \"20.35.100-pre.1\")");
+        assertEquals(20L, v3.get("major"));
+        assertEquals(35L, v3.get("minor"));
+        assertEquals(100L, v3.get("patch"));
+        assertEquals("pre.1", v3.get("suffix"));
     }
 
     @Test
