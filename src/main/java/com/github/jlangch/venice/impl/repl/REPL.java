@@ -405,22 +405,7 @@ public class REPL implements IRepl {
                                 break;
 
                             case "upgrade":
-                                if (isRemoteRepl()) {
-                                    printer.println(
-                                        "error",
-                                        "Cannot upgrade this REPL as long as a remote REPL is active!");
-                                    return;
-                                }
-                                if (ReplUpgrade.isNewerVersionAvailable()) {
-                                    final String currVersion = ReplUpgrade.currentVersion();
-                                    final String latestVersion = ReplUpgrade.latestVersion();
-                                    printer.println(
-                                            "stdout",
-                                            "Venice upgrade available " + currVersion  +" -> " + latestVersion);
-                                }
-                                else {
-                                    printer.println("stdout", "No new Venice version available!");
-                                }
+                                handleUpgrade();
                                 break;
 
                             case "attach":
@@ -1117,6 +1102,30 @@ public class REPL implements IRepl {
         printer.println("error",     "error");
         printer.println("system",    "system");
         printer.println("interrupt", "interrupt");
+    }
+
+
+    private void handleUpgrade() {
+        if (isRemoteRepl()) {
+            printer.println(
+                "error",
+                "Cannot upgrade this REPL as long as a remote REPL is active!");
+            return;
+        }
+
+        if (!ReplUpgrade.isNewerVersionAvailable()) {
+            printer.println("stdout", "No new Venice version available!");
+            return;
+        }
+
+        // Upgrade available
+
+        final String currVersion = ReplUpgrade.currentVersion();
+        final String latestVersion = ReplUpgrade.latestVersion();
+
+        printer.println(
+                "stdout",
+                "Venice upgrade available " + currVersion  +" -> " + latestVersion);
     }
 
     private void handleRestartableCommand() {
