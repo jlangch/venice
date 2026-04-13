@@ -111,6 +111,9 @@ public class Launcher {
             else if (cli.switchPresent("-app-repl")) {
                 runCustomReplCmd(loadPaths, cli);
             }
+            else if (cli.switchPresent("-repl-upgrade")) {
+                runReplUpgradeCmd(cli);
+            }
             else {
                 // run the Venice REPL
                 runReplCmd(loadPaths, cli);
@@ -273,6 +276,18 @@ public class Launcher {
                                           .removeSwitch("-repl");
 
         new REPL(new AcceptAllInterceptor(loadPaths)).run(appCli);
+    }
+
+    private static void runReplUpgradeCmd(
+            final CommandLineArgs cli
+    ) {
+        // Launcher options
+        final CommandLineArgs appCli = cli.removeAllSwitches(REPL_BLOCK_OPTIONS)
+                                          .removeSwitch("-repl-upgrade");
+
+        System.out.println("REPL upgrade not yet implemented!");
+
+        //new REPL(new AcceptAllInterceptor()).run(appCli);
     }
 
     private static Env createEnv(

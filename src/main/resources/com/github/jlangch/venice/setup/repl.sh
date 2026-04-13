@@ -53,6 +53,15 @@ while true; do
     exit 1
   fi
 
+  if [ -f "${REPL_HOME}/.repl.upgrade" ]; then 
+    "${JAVA_HOME}/bin/java" \
+      -Djava.io.tmpdir="${REPL_HOME}/tmp" \
+      -Dvenice.repl.home="${REPL_HOME}" \
+      -cp "libs:libs/*" \
+      com.github.jlangch.venice.Launcher \
+      -repl-upgrade 
+  fi
+
   JAVA_OPTS="-server -Xmx4G -XX:-OmitStackTraceInFastThrow ${DEBUG_OPTS}"
 
 
@@ -62,6 +71,7 @@ while true; do
     -Dvenice.repl.home="${REPL_HOME}" \
     -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
+    -repl \
     -loadpath "" \
     -restartable \
     -colors

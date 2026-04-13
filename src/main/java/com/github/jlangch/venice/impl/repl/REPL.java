@@ -1133,9 +1133,18 @@ public class REPL implements IRepl {
         }
 
         // do the upgrade ...
-        printer.println(
-                "stdout",
-                "Venice upgrade is not yet implemented. Will be available with next release.");
+
+        if (restartable) {
+            printer.println("system", "Restarting REPL...");
+            ReplRestart.restart(
+                    venice.isMacroExpandOnLoad(),
+                    config.getColorMode());
+            return;
+        }
+        else {
+            printer.println("system", "This REPL is not restartable!");
+            printer.println("system", "Manually restart this REPL to finalize the upgrade!");
+        }
     }
 
     private void handleRestartableCommand() {
