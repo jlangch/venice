@@ -159,7 +159,7 @@ public class REPL implements IRepl {
                     "Please download the jar artifact 'org.fusesource.jansi:jansi:2.4.1' \n" +
                     "from a Maven repo and put it on the REPL classpath.                 \n" +
                     "                                                                    \n" +
-                    "> curl https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/2.4.1/jansi-2.4.1.jar --output jansi-2.4.1.jar \n" +
+                    "> curl -O https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/2.4.1/jansi-2.4.1.jar \n" +
                     "--------------------------------------------------------------------\n\n");
             }
 
@@ -401,6 +401,25 @@ public class REPL implements IRepl {
                                 }
                                 else {
                                     printer.println("error", "This REPL is not restartable!");
+                                }
+                                break;
+
+                            case "upgrade":
+                                if (isRemoteRepl()) {
+                                    printer.println(
+                                        "error",
+                                        "Cannot upgrade this REPL as long as a remote REPL is active!");
+                                    return;
+                                }
+                                if (ReplUpgrade.isNewerVersionAvailable()) {
+                                    final String currVersion = ReplUpgrade.currentVersion();
+                                    final String latestVersion = ReplUpgrade.latestVersion();
+                                    printer.println(
+                                            "stdout",
+                                            "Venice upgrade available " + currVersion  +" -> " + latestVersion);
+                                }
+                                else {
+                                    printer.println("stdout", "No new Venice version available!");
                                 }
                                 break;
 

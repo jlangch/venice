@@ -31,37 +31,76 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.Version;
+import com.github.jlangch.venice.impl.functions.CoreSystemFunctions;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class ReplRestart {
+public class ReplUpgrade {
 
-    private ReplRestart(final List<String> lines) {
+    private ReplUpgrade(final List<String> lines) {
         this.lines = lines;
         this.createdAt = lines.isEmpty() ? null : parse(lines.get(0));
+    }
+
+    public static String currentVersion() {
+        return Version.VERSION;
+    }
+
+    public static String latestVersion() {
+        try {
+            final VncVal latest = CoreSystemFunctions.latest.applyOf();
+            if (latest == Constants.Nil) {
+                return null;
+            }
+            else {
+                return Coerce.toVncString(latest).getValue();
+            }
+        }
+        catch(Exception ex) {
+            return null;
+        }
+    }
+
+    public static boolean isNewerVersionAvailable() {
+        final String currVersion = currentVersion();
+        final String latestVersion = latestVersion();
+
+        if (latestVersion == null) {
+            return false;
+        }
+        else {
+            return VncBoolean.isTrue(
+                CoreSystemFunctions.newerVersion_Q.applyOf(
+                        new VncString(latestVersion),
+                        new VncString(currVersion)));
+        }
     }
 
     public static void restart(
             final boolean macroExpandOnLoad,
             final ColorMode colorMode
     ) {
-        ReplRestart.write(macroExpandOnLoad, colorMode);
-
-        System.exit(RESTART_EXIT_CODE);
+        ReplUpgrade.write(macroExpandOnLoad, colorMode);
     }
 
-    public static ReplRestart read() {
+    public static ReplUpgrade read() {
         try {
-            return new ReplRestart(
-                    Files.readAllLines(RESTART_FILE.toPath())
+            return new ReplUpgrade(
+                    Files.readAllLines(UPGRADE_FILE.toPath())
                          .stream()
                          .map(s -> StringUtil.trimToNull(s))
                          .filter(s -> s != null)
                          .collect(Collectors.toList()));
         }
         catch(Exception ex) {
-            return new ReplRestart(new ArrayList<>());
+            return new ReplUpgrade(new ArrayList<>());
         }
     }
 
@@ -83,7 +122,7 @@ public class ReplRestart {
             }
 
             Files.write(
-                    RESTART_FILE.toPath(),
+                    UPGRADE_FILE.toPath(),
                     lines,
                     StandardOpenOption.WRITE,
                     StandardOpenOption.CREATE,
@@ -96,7 +135,7 @@ public class ReplRestart {
 
     public static boolean exists() {
         try {
-            return RESTART_FILE.exists();
+            return UPGRADE_FILE.exists();
         }
         catch(Exception ex) {
             return false;
@@ -105,7 +144,7 @@ public class ReplRestart {
 
     public static void remove() {
         try {
-            RESTART_FILE.delete();
+            UPGRADE_FILE.delete();
         }
         catch(Exception ex) {
             // skipped (best effort)
@@ -156,9 +195,7 @@ public class ReplRestart {
     }
 
 
-    public final static int RESTART_EXIT_CODE = 99;
-
-    private final static File RESTART_FILE = new File(".repl.restart");
+    private final static File UPGRADE_FILE = new File(".repl.upgrade");
     private final static DateTimeFormatter dtFormatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
