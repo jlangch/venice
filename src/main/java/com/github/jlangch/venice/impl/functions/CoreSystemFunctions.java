@@ -115,7 +115,15 @@ public class CoreSystemFunctions {
                     .meta()
                     .arglists("(parse-version v)")
                     .doc(
-                       "Parses a version to its elements: major, minor, path and suffix")
+                       "Parses a version to its elements: major, minor, path and suffix.\n\n" +
+                       "Returns a map with the version elements:\n\n" +
+                       "```                      \n" +
+                       "{ :major   1             \n" +
+                       "  :minor   4             \n" +
+                       "  :patch   34            \n" +
+                       "  :suffix  \"alpha\" }   \n" +
+                       "```"
+                       )
                     .examples(
                         "(parse-version \"1.23\")",
                         "(parse-version \"1.23.56\")",

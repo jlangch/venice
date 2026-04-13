@@ -43,6 +43,7 @@ public class SystemSection implements ISectionBuilder {
         all.addSection(venice);
         venice.addItem(diBuilder.getDocItem("version"));
         venice.addItem(diBuilder.getDocItem("latest"));
+        venice.addItem(diBuilder.getDocItem("parse-version"));
 
         final DocSection logo = new DocSection("Logo", "system.logo");
         all.addSection(logo);
