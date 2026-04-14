@@ -9,7 +9,11 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- 
+
+### Bugs
+
+- Fixed the REPL internal manual restart, broken since 1.12.89
 
 
 
