@@ -118,13 +118,24 @@ public class REPL implements IRepl {
         }
 
         try {
+            final File replHome = ReplDirs.getReplHomeDir();
+
+            // Delete the REPL upgrade file, should it survive
+            try {
+                final File replUpgrade = new File(replHome, ReplUpgrade.UPGRADE_FILE.getPath());
+                if (replUpgrade.isFile()) {
+                    replUpgrade.delete();
+                }
+            }
+            catch(Exception ignore) {}
+
             ThreadContext.setInterceptor(interceptor);
 
             final ILoadPaths loadpaths = interceptor.getLoadPaths();
 
             boolean macroexpand = false;
 
-            config = ReplConfig.load(cli, ReplDirs.getReplHomeDir());
+            config = ReplConfig.load(cli, replHome);
 
             initJLineLogger(config);
 
@@ -1135,7 +1146,13 @@ public class REPL implements IRepl {
         // do the upgrade ...
 
         if (restartable) {
-            ReplUpgrade.initiate(latestVersion);
+            try {
+                ReplUpgrade.initiate(latestVersion, s -> printer.println("stdout", s));
+            }
+            catch(Exception ex) {
+                printer.println("error", "Failed to initiate Venice upgrade. Reason: " + ex.getMessage());
+                return;
+            }
 
             printer.println("system", "Restarting REPL...");
             ReplRestart.restart(

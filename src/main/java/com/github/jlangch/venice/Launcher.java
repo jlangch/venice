@@ -282,11 +282,11 @@ public class Launcher {
     private static void runReplUpgradeCmd(
             final CommandLineArgs cli
     ) {
-        System.out.println("REPL upgrade not yet implemented!");
-
         try {
+            System.out.println("REPL upgrading...");
             final String newVersion = ReplUpgrade.upgrade();
             System.out.println("REPL upgraded to version " + newVersion + "!");
+            System.out.println("Starting upgraded REPL...\n");
         }
         catch(Exception ex) {
             System.out.println("REPL upgrade failed! Reason: " + ex.getMessage());
