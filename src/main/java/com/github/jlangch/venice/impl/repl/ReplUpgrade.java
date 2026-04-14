@@ -237,6 +237,10 @@ public class ReplUpgrade {
     }
 
     public static boolean isReplSupportingUpgrades(final File replHome) {
+        if (replHome == null || !replHome.isDirectory()) {
+            return false;
+        }
+
         try {
             if (OS.isLinux() || OS.isMacOSX()) {
                 final File replSh = new File(replHome, "repl.sh");
