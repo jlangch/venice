@@ -116,7 +116,7 @@ public class CoreSystemFunctions {
                     .meta()
                     .arglists("(parse-version v)")
                     .doc(
-                       "Parses a version to its elements: major, minor, path and suffix.\n\n" +
+                       "Parses a version to its elements: major, minor, patch and suffix.\n\n" +
                        "Returns a map with the version elements:\n\n" +
                        "```                      \n" +
                        "{ :major   1             \n" +
@@ -182,10 +182,16 @@ public class CoreSystemFunctions {
                     .arglists("(newer-version? v1 v2)")
                     .doc(
                        "Returns `true` if v1 is newer than v2 else `false`.\n\n" +
-                       "Compares the fields: 'major', ")
+                       "Compares the fields: 'major', 'minor', 'patch' and 'suffix'. " +
+                       "'major', 'minor', and 'patch' are compared as integer numbers. " +
+                       "'suffix' is compared in lexicographical order.")
                     .examples(
                         "(newer-version? \"1.23\"  \"1.20\")",
-                        "(newer-version? \"1.12.4\"  \"1.2.56\")")
+                        "(newer-version? \"1.12.4\"  \"1.2.56\")",
+                        "(newer-version? \"1.10.0\"  \"1.10.0-rc1\")",
+                        "(newer-version? \"1.10.0-rc1\"  \"1.10.0-rc2\")",
+                        "(newer-version? \"1.10.0-rc2\"  \"1.10.0-rc1\")",
+                        "(newer-version? \"1.10.0-alpha\"  \"1.10.0-epsilon\")")
                     .build()
         ) {
             @Override
@@ -198,10 +204,12 @@ public class CoreSystemFunctions {
                 final long v1_major = ((VncLong)v1.get(new VncKeyword("major"), new VncLong(0))).toJavaLong();
                 final long v1_minor = ((VncLong)v1.get(new VncKeyword("minor"), new VncLong(0))).toJavaLong();
                 final long v1_patch = ((VncLong)v1.get(new VncKeyword("patch"), new VncLong(0))).toJavaLong();
+                final String v1_suffix = ((VncString)v1.get(new VncKeyword("suffix"), new VncString(""))).getValue();
 
                 final long v2_major = ((VncLong)v2.get(new VncKeyword("major"), new VncLong(0))).toJavaLong();
                 final long v2_minor = ((VncLong)v2.get(new VncKeyword("minor"), new VncLong(0))).toJavaLong();
                 final long v2_patch = ((VncLong)v2.get(new VncKeyword("patch"), new VncLong(0))).toJavaLong();
+                final String v2_suffix = ((VncString)v2.get(new VncKeyword("suffix"), new VncString(""))).getValue();
 
                 if (v1_major > v2_major) return VncBoolean.True;
                 if (v1_major < v2_major) return VncBoolean.False;
@@ -212,8 +220,9 @@ public class CoreSystemFunctions {
                 if (v1_patch > v2_patch) return VncBoolean.True;
                 if (v1_patch < v2_patch) return VncBoolean.False;
 
-                // we cannot compare the unstructured suffix field
-                return VncBoolean.False;
+                if (v1_suffix.isEmpty() && !v2_suffix.isEmpty()) return VncBoolean.True;
+                if (!v1_suffix.isEmpty() && v2_suffix.isEmpty()) return VncBoolean.False;
+                return VncBoolean.of(v1_suffix.compareTo(v2_suffix) > 0);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

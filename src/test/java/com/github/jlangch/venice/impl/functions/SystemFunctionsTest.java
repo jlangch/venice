@@ -303,31 +303,34 @@ public class SystemFunctionsTest {
     public void test_newer_version_4() {
         final Venice venice = new Venice();
 
-        // The version suffix is part of the version compare!!
-
         assertFalse((Boolean)venice.eval("(newer-version? \"1\" \"2.0.1-beta\")"));
-        assertFalse((Boolean)venice.eval("(newer-version? \"2\" \"2.0.0-beta\")"));
+        assertTrue((Boolean)venice.eval("(newer-version? \"2\" \"2.0.0-beta\")"));
         assertFalse((Boolean)venice.eval("(newer-version? \"2\" \"2.0.1-beta\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"3\" \"2.0.1-beta\")"));
 
         assertFalse((Boolean)venice.eval("(newer-version? \"1.0\" \"2.0.1-beta\")"));
-        assertFalse((Boolean)venice.eval("(newer-version? \"2.0\" \"2.0.0-beta\")"));
+        assertTrue((Boolean)venice.eval("(newer-version? \"2.0\" \"2.0.0-beta\")"));
         assertFalse((Boolean)venice.eval("(newer-version? \"2.0\" \"2.0.1-beta\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"2.1\" \"2.0.9-beta\")"));
-        assertFalse((Boolean)venice.eval("(newer-version? \"2.1\" \"2.1.0-beta\")"));
+        assertTrue((Boolean)venice.eval("(newer-version? \"2.1\" \"2.1.0-beta\")"));
         assertFalse((Boolean)venice.eval("(newer-version? \"2.1\" \"2.2.3-beta\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"3.1\" \"2.0.7-beta\")"));
 
         assertFalse((Boolean)venice.eval("(newer-version? \"1.0.0\" \"2.0.1-beta\")"));
         assertFalse((Boolean)venice.eval("(newer-version? \"2.0.0\" \"2.0.1-beta\")"));
-        assertFalse((Boolean)venice.eval("(newer-version? \"2.0.1\" \"2.0.1-beta\")"));
+        assertTrue((Boolean)venice.eval("(newer-version? \"2.0.1\" \"2.0.1-beta\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"2.0.2\" \"2.0.1-beta\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"2.1.2\" \"2.1.1-beta\")"));
         assertFalse((Boolean)venice.eval("(newer-version? \"2.2.2\" \"2.3.9-beta\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"3.1.8\" \"2.0.10-beta\")"));
 
         assertFalse((Boolean)venice.eval("(newer-version? \"1.0.0-alpha\" \"2.0.1-beta\")"));
-        assertFalse((Boolean)venice.eval("(newer-version? \"2.0.0-alpha\" \"2.0.0-beta\")"));
+        assertFalse((Boolean)venice.eval("(newer-version? \"2.0.0-a\" \"2.0.0-b\")"));
+        assertFalse((Boolean)venice.eval("(newer-version? \"2.0.0-aaa\" \"2.0.0-b\")"));
+        assertTrue((Boolean)venice.eval("(newer-version? \"2.0.0-b\" \"2.0.0-a\")"));
+        assertTrue((Boolean)venice.eval("(newer-version? \"2.0.0-b\" \"2.0.0-aaa\")"));
+        assertFalse((Boolean)venice.eval("(newer-version? \"2.0.0-rc-1\" \"2.0.0-rc-2\")"));
+        assertTrue((Boolean)venice.eval("(newer-version? \"2.0.0-rc-2\" \"2.0.0-rc-1\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"2.0.1-alpha\" \"2.0.0-beta\")"));
         assertTrue( (Boolean)venice.eval("(newer-version? \"2.1.2-alpha\" \"2.1.1-beta\")"));
         assertFalse((Boolean)venice.eval("(newer-version? \"2.2.2-alpha\" \"2.3.1-beta\")"));
