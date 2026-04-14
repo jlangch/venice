@@ -93,9 +93,11 @@ public class CommandLineArgs {
 
         final int switchIndex = switchIndexes.get(switchName);
         if (switchIndex + 1 < args.length) {
-            takenIndexes.add(switchIndex + 1);
-            return args[switchIndex + 1];
+            if (!takenIndexes.contains(switchIndex + 1)) {
+                return args[switchIndex + 1];
+            }
         }
+
         return defaultValue;
     }
 
@@ -119,36 +121,18 @@ public class CommandLineArgs {
         return val == null ? defaultValue : val;
     }
 
-    public String[] switchValues(final String switchName) {
-        if (!switchIndexes.containsKey(switchName)) {
-            return new String[0];
-        }
-
-        final int switchIndex = switchIndexes.get(switchName);
-
-        int nextArgIndex = switchIndex + 1;
-        while (nextArgIndex < args.length && !args[nextArgIndex].startsWith("-")) {
-            takenIndexes.add(nextArgIndex);
-            nextArgIndex++;
-        }
-
-        final String[] values = new String[nextArgIndex - switchIndex - 1];
-        for (int jj=0; jj < values.length; jj++) {
-            values[jj] = args[switchIndex + jj + 1];
-        }
-        return values;
-    }
-
     public String[] targets() {
-        final String[] targetArray = new String[args.length - takenIndexes.size()];
-        int targetIndex = 0;
-        for (int ii=0; ii < args.length ; ii++) {
-            if (!takenIndexes.contains(ii)) {
-                targetArray[targetIndex++] = args[ii];
-            }
+        final int maxTakenIndex = takenIndexes.stream().max(Integer::compare).orElse(-1);
+        if (maxTakenIndex < 0) {
+            return args();  // return a copy
         }
 
-        return targetArray;
+        final List<String> targets = new ArrayList<>();
+        for(int ii=maxTakenIndex+2; ii<args.length; ii++) {
+           targets.add(args[ii]);
+        }
+
+        return targets.toArray(new String[0]);
     }
 
     public CommandLineArgs removeSwitch(final String switchName) {

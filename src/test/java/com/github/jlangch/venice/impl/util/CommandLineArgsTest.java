@@ -92,6 +92,7 @@ public class CommandLineArgsTest {
         assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
 
+        assertArrayEquals(new String[] {"-file", "a.txt", "1"}, cli.args());
         assertArrayEquals(new String[] {"1"}, cli.targets());
     }
 
@@ -102,7 +103,8 @@ public class CommandLineArgsTest {
         assertTrue(cli.switchPresent("-file"));
         assertEquals("a.txt", cli.switchValue("-file"));
 
-       assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+        assertArrayEquals(new String[] {"-file", "a.txt", "1", "2"}, cli.args());
+        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
     }
 
     @Test
@@ -114,7 +116,8 @@ public class CommandLineArgsTest {
 
         assertTrue(cli.switchPresent("-c"));
 
-        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+        assertArrayEquals(new String[] {"-file", "a.txt", "-c", "1", "2"}, cli.args());
+        assertArrayEquals(new String[] {"2"}, cli.targets());
     }
 
     @Test
@@ -123,14 +126,16 @@ public class CommandLineArgsTest {
 
         assertEquals("a.txt", cli.switchValue("-file"));
         assertTrue(cli.switchPresent("-c"));
-        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+        assertTrue(cli.switchPresent("-d"));
+        assertArrayEquals(new String[] {"-file", "a.txt", "-c", "-d", "1", "2"}, cli.args());
+        assertArrayEquals(new String[] {"2"}, cli.targets());
     }
 
     @Test
     public void test_targets_5() {
-        final CommandLineArgs cli = CommandLineArgs.of("1", "2");
+        final CommandLineArgs cli = CommandLineArgs.of("1", "2", "3");
 
-        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+        assertArrayEquals(new String[] {"1", "2", "3"}, cli.targets());
     }
 
     @Test
@@ -142,7 +147,8 @@ public class CommandLineArgsTest {
 
         assertTrue(cli.switchPresent("-c"));
 
-        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+        assertArrayEquals(new String[] {"-c", "1", "2"}, cli.args());
+        assertArrayEquals(new String[] {"2"}, cli.targets());
     }
 
     @Test
@@ -155,7 +161,64 @@ public class CommandLineArgsTest {
 
         assertFalse(cli.switchPresent("-c"));
 
+        assertArrayEquals(new String[] {"2"}, cli.args());
         assertArrayEquals(new String[] {"2"}, cli.targets());
+    }
+
+    @Test
+    public void test_removeSwitch_3() {
+        final CommandLineArgs cli = CommandLineArgs.of("-repl",
+                                                       "-loadpath", ".",
+                                                       "-restartable",
+                                                       "-colors");
+
+        assertTrue(cli.switchPresent("-repl"));
+        assertTrue(cli.switchPresent("-loadpath"));
+        assertEquals(".", cli.switchValue("-loadpath"));
+        assertTrue(cli.switchPresent("-restartable"));
+        assertTrue(cli.switchPresent("-colors"));
+        assertArrayEquals(new String[] {}, cli.targets());
+        assertArrayEquals(new String[] {"-repl", "-loadpath", ".", "-restartable", "-colors"}, cli.args());
+
+
+        final CommandLineArgs cli2 = cli.removeSwitch("-repl");
+
+        assertFalse(cli2.switchPresent("-repl"));
+        assertTrue(cli2.switchPresent("-loadpath"));
+        assertEquals(".", cli2.switchValue("-loadpath"));
+        assertTrue(cli2.switchPresent("-restartable"));
+        assertTrue(cli2.switchPresent("-colors"));
+        assertArrayEquals(new String[] {}, cli2.targets());
+        assertArrayEquals(new String[] {"-loadpath", ".", "-restartable", "-colors"}, cli2.args());
+   }
+
+    @Test
+    public void test_removeSwitch_4() {
+        final CommandLineArgs cli = CommandLineArgs.of("-repl",
+                                                       "-loadpath", ".",
+                                                       "-restartable",
+                                                       "-macroexpand", "true",
+                                                       "-colors")
+                                                   .removeAllSwitches(CollectionUtil.toSet("-loadpath", "-macroexpand"))
+                                                   .removeSwitch("-repl");
+
+        assertFalse(cli.switchPresent("-repl"));
+        assertFalse(cli.switchPresent("-loadpath"));
+        assertFalse(cli.switchPresent("-macroexpand"));
+        assertTrue(cli.switchPresent("-restartable"));
+        assertTrue(cli.switchPresent("-colors"));
+        assertArrayEquals(new String[] {}, cli.targets());
+        assertArrayEquals(new String[] {"-restartable", "-colors"}, cli.args());
+    }
+
+    @Test
+    public void test_removeSwitch_5() {
+        final CommandLineArgs cli = CommandLineArgs.of("-script", "(+ 1 2)", "1", "2")
+                                                   .removeSwitch("-script");
+
+        assertFalse(cli.switchPresent("-script"));
+        assertArrayEquals(new String[] {"1", "2"}, cli.args());
+        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
     }
 
 }
