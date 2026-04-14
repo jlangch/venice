@@ -64,13 +64,6 @@ public class ReplUpgrade {
     }
 
 
-    public boolean isEmpty() {
-        return createdAt == null
-               || upgradeVersion == null
-               || binary == null
-               || binary.length == 0;
-    }
-
     public String getUpgradeVersion() {
         return upgradeVersion;
     }
@@ -87,7 +80,11 @@ public class ReplUpgrade {
         return createdAt;
     }
 
-    public String toJson() {
+    public boolean oudated() {
+        return createdAt == null || ChronoUnit.HOURS.between(createdAt, readAt) > 2L;
+    }
+
+    private String toJson() {
         final VncOrderedMap map = VncOrderedMap.of(
                 new VncString("createdAt"),
                 new VncString(formatTimestamp(createdAt)),
@@ -101,7 +98,8 @@ public class ReplUpgrade {
         return ((VncString)JsonFunctions.write_str.applyOf(map)).getValue();
     }
 
-    public static ReplUpgrade fromJson(final String json) {
+
+    private static ReplUpgrade fromJson(final String json) {
         final VncMap data = (VncMap)JsonFunctions.read_str.applyOf(new VncString(json));
 
         final VncString createdAt = (VncString)data.get(new VncString("createdAt"));
@@ -114,18 +112,22 @@ public class ReplUpgrade {
                     base64Decode(binary.getValue()));
     }
 
-    public static ReplUpgrade read() throws IOException {
+    private static ReplUpgrade read(
+            final File replHome
+    ) throws IOException {
         final String json = new String(
-                                    Files.readAllBytes(UPGRADE_FILE.toPath()),
+                                    Files.readAllBytes(new File(replHome, UPGRADE_FILE).toPath()),
                                     StandardCharsets.UTF_8);
         return ReplUpgrade.fromJson(json);
     }
 
-    public void write() throws IOException {
+    private void write(
+            final File replHome
+    ) throws IOException {
         final String json = toJson();
 
         Files.write(
-                UPGRADE_FILE.toPath(),
+                new File(replHome, UPGRADE_FILE).toPath(),
                 json.getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.WRITE,
                 StandardOpenOption.CREATE,
@@ -165,7 +167,12 @@ public class ReplUpgrade {
         }
     }
 
-    public static ReplUpgrade initiate(final String latestVersion, final Consumer<String> log) {
+    public static ReplUpgrade initiate(
+            final String latestVersion,
+            final Consumer<String> log
+    ) {
+        final File replHome = ReplDirs.getReplHomeDir();
+
         log.accept("Downloading 'venice-" + latestVersion + ".jar' ...");
 
         final byte[] binary = downloadVeniceJar(latestVersion);
@@ -174,7 +181,7 @@ public class ReplUpgrade {
 
         try {
             final ReplUpgrade data = new ReplUpgrade(LocalDateTime.now(), latestVersion, binary);
-            data.write();
+            data.write(replHome);
 
             log.accept("New Venice version " + latestVersion + " ready for upgrade.");
 
@@ -187,12 +194,14 @@ public class ReplUpgrade {
     }
 
     public static String upgrade() {
+        final File replHome = ReplDirs.getReplHomeDir();
+
         try {
-            if (!existsUpgradeFile()) {
+            if (!existsUpgradeFile(replHome)) {
                 throw new RuntimeException("There is no initiated Venice upgrade!");
             }
 
-            final ReplUpgrade data = read();
+            final ReplUpgrade data = read(replHome);
 
             final String currVersion = currentVersion();
             final String upgradeVersion = data.getUpgradeVersion();
@@ -234,11 +243,13 @@ public class ReplUpgrade {
             throw ex;
         }
         finally {
-            removeUpgradeFile();
+            removeUpgradeFile(replHome);
         }
     }
 
-    public static boolean isReplSupportingUpgrades(final File replHome) {
+    public static boolean isReplSupportingUpgrades() {
+        final File replHome = ReplDirs.getReplHomeDir();
+
         if (replHome == null || !replHome.isDirectory()) {
             return false;
         }
@@ -269,21 +280,17 @@ public class ReplUpgrade {
     }
 
 
-    private static boolean existsUpgradeFile() {
-        return UPGRADE_FILE.exists();
+    private static boolean existsUpgradeFile(final File replHome) {
+        return new File(replHome, UPGRADE_FILE).exists();
     }
 
-    private static void removeUpgradeFile() {
+    private static void removeUpgradeFile(final File replHome) {
         try {
-            UPGRADE_FILE.delete();
+            new File(replHome, UPGRADE_FILE).delete();
         }
         catch(Exception ex) {
             // skipped (best effort)
         }
-    }
-
-    public boolean oudated() {
-        return createdAt == null || ChronoUnit.HOURS.between(createdAt, readAt) > 2L;
     }
 
 
@@ -331,7 +338,7 @@ public class ReplUpgrade {
 
 
 
-    public final static File UPGRADE_FILE = new File(".repl.upgrade");
+    public final static String UPGRADE_FILE = ".repl.upgrade";
     private final static DateTimeFormatter dtFormatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 

@@ -122,7 +122,7 @@ public class REPL implements IRepl {
 
             // Delete the REPL upgrade file, should it survive
             try {
-                final File replUpgrade = new File(replHome, ReplUpgrade.UPGRADE_FILE.getPath());
+                final File replUpgrade = new File(replHome, ReplUpgrade.UPGRADE_FILE);
                 if (replUpgrade.isFile()) {
                     replUpgrade.delete();
                 }
@@ -1120,9 +1120,7 @@ public class REPL implements IRepl {
     }
 
     private void handleUpgrade(final boolean checkOnly) {
-        final File replHome = ReplDirs.getReplHomeDir();
-
-        if (!ReplUpgrade.isReplSupportingUpgrades(replHome)) {
+        if (!ReplUpgrade.isReplSupportingUpgrades()) {
             printer.println("error", "Your REPL setup does not support upgrading Venice!");
             printer.println("error", "Please setup a new REPL with the latest Venice version!");
             return;
