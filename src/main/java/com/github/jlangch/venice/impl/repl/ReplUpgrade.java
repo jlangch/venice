@@ -247,7 +247,7 @@ public class ReplUpgrade {
                 if (replSh.isFile()) {
                     return Files.readAllLines(replSh.toPath())
                                 .stream()
-                                .anyMatch(line -> line.contains("-repl-upgrade "));
+                                .anyMatch(line -> line.contains("-repl-upgrade"));
                 }
             }
             else if (OS.isWindows()) {
@@ -255,7 +255,7 @@ public class ReplUpgrade {
                 if (replSh.isFile()) {
                     return Files.readAllLines(replSh.toPath())
                                 .stream()
-                                .anyMatch(line -> line.contains("-repl-upgrade "));
+                                .anyMatch(line -> line.contains("-repl-upgrade"));
                 }
             }
 
