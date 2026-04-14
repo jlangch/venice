@@ -1120,6 +1120,14 @@ public class REPL implements IRepl {
     }
 
     private void handleUpgrade(final boolean checkOnly) {
+        final File replHome = ReplDirs.getReplHomeDir();
+
+        if (!ReplUpgrade.isReplSupportingUpgrades(replHome)) {
+            printer.println("error", "Your REPL setup does not support upgrading Venice!");
+            printer.println("error", "Please setup a new REPL with the latest Venice version!");
+            return;
+        }
+
         if (!ReplUpgrade.isNewerVersionAvailable()) {
             printer.println("stdout", "You have the latest Venice version installed in the REPL!");
             return;

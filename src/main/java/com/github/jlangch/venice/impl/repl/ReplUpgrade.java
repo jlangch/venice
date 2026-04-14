@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
+import com.github.jlangch.venice.util.OS;
 
 
 public class ReplUpgrade {
@@ -232,6 +233,32 @@ public class ReplUpgrade {
         }
         finally {
             removeUpgradeFile();
+        }
+    }
+
+    public static boolean isReplSupportingUpgrades(final File replHome) {
+        try {
+            if (OS.isLinux() || OS.isMacOSX()) {
+                final File replSh = new File(replHome, "repl.sh");
+                if (replSh.isFile()) {
+                    return Files.readAllLines(replSh.toPath())
+                                .stream()
+                                .anyMatch(line -> line.contains("-repl-upgrade "));
+                }
+            }
+            else if (OS.isWindows()) {
+                final File replSh = new File(replHome, "repl.bat");
+                if (replSh.isFile()) {
+                    return Files.readAllLines(replSh.toPath())
+                                .stream()
+                                .anyMatch(line -> line.contains("-repl-upgrade "));
+                }
+            }
+
+            return false;
+        }
+        catch(Exception ignore) {
+            return false;
         }
     }
 
