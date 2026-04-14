@@ -93,6 +93,8 @@ public class ReplUpgrade {
                 new VncString(formatTimestamp(createdAt)),
                 new VncString("upgradeVersion"),
                 new VncString(upgradeVersion),
+                new VncString("name"),
+                new VncString("venice-" + upgradeVersion + ".jar"),
                 new VncString("binary"),
                 new VncString(base64Encode(binary)));
 
