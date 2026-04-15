@@ -9,7 +9,19 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- The REPL start scripts support now custom Java VM options.
+
+  Modify '{REPL_HOME}/repl.env' on Linux/MacOS:
+  
+  ```
+  export JAVA_OPTS=-Xmx2G
+  ```
+
+  Modify '{REPL_HOME}/repl.env.bat' on Windows:
+  
+  ```
+  set JAVA_OPTS=-Xmx2G
+  ```
 
 ### Bugs
 
