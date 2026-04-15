@@ -6,8 +6,9 @@
 
 Reload the Venice context without restarting the REPL. 
 
-Reloading will remove all loaded modules and global vars created since 
-the start of the REPL.
+Reloading will remove all loaded modules and global vars created since the start of the 
+REPL. The result is a pristine REPL Venice 
+context.
 
 ``` text
 venice> !reload
