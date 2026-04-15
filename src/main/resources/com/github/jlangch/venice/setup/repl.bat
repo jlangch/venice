@@ -60,7 +60,7 @@ if exist "%REPL_HOME%/.repl.upgrade" (
 )
 
 
-set JAVA_VM_OPTS=-server -Xmx2G -XX:-OmitStackTraceInFastThrow %JAVA_OPTS%
+set JAVA_VM_OPTS=-server -XX:-OmitStackTraceInFastThrow %JAVA_OPTS%
 
 REM # start the REPL
 "%JAVA_HOME%\bin\java.exe" ^

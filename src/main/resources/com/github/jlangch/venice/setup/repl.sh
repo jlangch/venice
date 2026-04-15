@@ -67,7 +67,7 @@ while true; do
   fi
 
 
-  JAVA_VM_OPTS="-server -Xmx4G -XX:-OmitStackTraceInFastThrow ${JAVA_OPTS} ${DEBUG_OPTS}"
+  JAVA_VM_OPTS="-server -XX:-OmitStackTraceInFastThrow ${JAVA_OPTS} ${DEBUG_OPTS}"
 
   # start the REPL
   "${JAVA_HOME}/bin/java" \
