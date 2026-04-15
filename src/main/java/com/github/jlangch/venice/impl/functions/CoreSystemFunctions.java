@@ -66,6 +66,7 @@ public class CoreSystemFunctions {
                     .arglists("(version)")
                     .doc("Returns the Venice version.")
                     .examples("(version)")
+                    .seeAlso("latest", "parse-version", "newer-version?")
                     .build()
         ) {
             @Override
@@ -87,6 +88,7 @@ public class CoreSystemFunctions {
                     .doc("Returns the latest available Venice version or `nil` if " +
                          "the internet is not available.")
                     .examples("(latest)")
+                    .seeAlso("version", "parse-version", "newer-version?")
                     .build()
         ) {
             @Override
@@ -129,6 +131,7 @@ public class CoreSystemFunctions {
                         "(parse-version \"1.23.56\")",
                         "(parse-version \"1.23.56-alpha-01\")",
                         "(parse-version \"1.23.56-snapshot\")")
+                    .seeAlso("version", "latest", "newer-version?")
                     .build()
         ) {
             @Override
@@ -192,6 +195,7 @@ public class CoreSystemFunctions {
                         "(newer-version? \"1.10.0-rc1\"  \"1.10.0-rc2\")",
                         "(newer-version? \"1.10.0-rc2\"  \"1.10.0-rc1\")",
                         "(newer-version? \"1.10.0-alpha\"  \"1.10.0-epsilon\")")
+                    .seeAlso("version", "latest", "parse-version")
                     .build()
         ) {
             @Override
