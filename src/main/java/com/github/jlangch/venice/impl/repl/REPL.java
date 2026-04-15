@@ -392,7 +392,7 @@ public class REPL implements IRepl {
                         switch(cmd) {
                             case "reload":
                                 env = loadEnv(venice, cli, terminal, out, err, in, venice.isMacroExpandOnLoad());
-                                printer.println("system", "reloaded");
+                                printer.println("system", "Reloaded");
                                 break;
 
                             case "restart":

@@ -187,10 +187,13 @@ public class CoreSystemFunctions {
                        "Returns `true` if v1 is newer than v2 else `false`.\n\n" +
                        "Compares the fields: 'major', 'minor', 'patch' and 'suffix'. " +
                        "'major', 'minor', and 'patch' are compared as integer numbers. " +
-                       "'suffix' is compared in lexicographical order.")
+                       "'suffix' is compared in lexicographical order. \n\n" +
+                       "A missing 'minor' or 'patch' level is treated as 0. A missing " +
+                       "suffix is treated as empty string.")
                     .examples(
                         "(newer-version? \"1.23\"  \"1.20\")",
                         "(newer-version? \"1.12.4\"  \"1.2.56\")",
+                        "(newer-version? \"1.12\"  \"1.11.78\")",
                         "(newer-version? \"1.10.0\"  \"1.10.0-rc1\")",
                         "(newer-version? \"1.10.0-rc1\"  \"1.10.0-rc2\")",
                         "(newer-version? \"1.10.0-rc2\"  \"1.10.0-rc1\")",
