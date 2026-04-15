@@ -201,15 +201,6 @@ REPL classpath:
 ```
 
 
-## Reload Venice context
-
-Reload the Venice context without restarting the REPL
-
-``` text
-venice> !reload
-```
-
-
 ## Sandbox with the REPL
 
 The Venice sandbox can be managed from within the REPL: [managing the sandbox](repl-sandbox.md)

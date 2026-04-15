@@ -121,6 +121,7 @@ venice>
 * REPL
     * [Basics](doc/readme/repl.md)
     * [Advanced](doc/readme/repl-advanced.md)
+    * [Reload/Restart](doc/readme/repl-restart.md)
     * [Sandbox](doc/readme/repl-sandbox.md)
     * [Remote](doc/readme/repl-remote.md)
 * [On Functional Programming](doc/readme/functional-about.md)
