@@ -53,8 +53,9 @@ while true; do
     exit 1
   fi
 
+
+  # finish an initiated upgrade
   if [ -f "${REPL_HOME}/.repl.upgrade" ]; then 
-    # finish the initiated upgrade
     "${JAVA_HOME}/bin/java" \
       -Djava.io.tmpdir="${REPL_HOME}/tmp" \
       -Dvenice.repl.home="${REPL_HOME}" \
@@ -66,11 +67,11 @@ while true; do
   fi
 
 
-  JAVA_OPTS="-server -Xmx4G -XX:-OmitStackTraceInFastThrow ${DEBUG_OPTS}"
+  JAVA_VM_OPTS="-server -Xmx4G -XX:-OmitStackTraceInFastThrow ${JAVA_OPTS} ${DEBUG_OPTS}"
 
   # start the REPL
   "${JAVA_HOME}/bin/java" \
-    ${JAVA_OPTS} \
+    ${JAVA_VM_OPTS} \
     -Djava.io.tmpdir="${REPL_HOME}/tmp" \
     -Dvenice.repl.home="${REPL_HOME}" \
     -cp "libs:libs/*" \

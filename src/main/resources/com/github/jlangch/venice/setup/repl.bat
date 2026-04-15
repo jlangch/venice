@@ -45,9 +45,10 @@ if exist "%REPL_HOME%/repl.env.bat" (
   call "%REPL_HOME%/repl.env.bat"
 )
 
+if "%JAVA_HOME%" == "" goto :error
 
+REM # finish an initiated upgrade
 if exist "%REPL_HOME%/.repl.upgrade" (
-  REM # finish the initiated upgrade
   "%JAVA_HOME%\bin\java.exe" ^
     -Djava.io.tmpdir="%REPL_HOME%\tmp" ^
     -Dvenice.repl.home="%REPL_HOME%" ^
@@ -59,13 +60,11 @@ if exist "%REPL_HOME%/.repl.upgrade" (
 )
 
 
-if "%JAVA_HOME%" == "" goto :error
+set JAVA_VM_OPTS=-server -Xmx2G -XX:-OmitStackTraceInFastThrow %JAVA_OPTS%
 
 REM # start the REPL
 "%JAVA_HOME%\bin\java.exe" ^
-  -server ^
-  -Xmx2G ^
-  -XX:-OmitStackTraceInFastThrow ^
+  %JAVA_VM_OPTS% ^
   -Djava.io.tmpdir="%REPL_HOME%\tmp" ^
   -Dvenice.repl.home="%REPL_HOME%" ^
   -cp "libs;libs/*" ^
