@@ -68,6 +68,7 @@ while true; do
 
   JAVA_OPTS="-server -Xmx4G -XX:-OmitStackTraceInFastThrow ${DEBUG_OPTS}"
 
+  # start the REPL
   "${JAVA_HOME}/bin/java" \
     ${JAVA_OPTS} \
     -Djava.io.tmpdir="${REPL_HOME}/tmp" \
@@ -82,4 +83,5 @@ while true; do
   # if the REPL exits with exit code  99 restart the REPL otherwise
   # exit the shell
   if [ $? -ne 99 ]; then exit 0; fi
+
 done

@@ -45,18 +45,35 @@ if exist "%REPL_HOME%/repl.env.bat" (
   call "%REPL_HOME%/repl.env.bat"
 )
 
+
+if exist "%REPL_HOME%/.repl.upgrade" (
+  REM # finish the initiated upgrade
+  "%JAVA_HOME%\bin\java.exe" ^
+    -Djava.io.tmpdir="%REPL_HOME%\tmp" ^
+    -Dvenice.repl.home="%REPL_HOME%" ^
+    -cp "libs;libs/*" ^
+    com.github.jlangch.venice.Launcher ^
+    -repl-upgrade
+
+  del /F "%REPL_HOME%/.repl.upgrade"
+)
+
+
 if "%JAVA_HOME%" == "" goto :error
 
+REM # start the REPL
 "%JAVA_HOME%\bin\java.exe" ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
   -Djava.io.tmpdir="%REPL_HOME%\tmp" ^
   -Dvenice.repl.home="%REPL_HOME%" ^
-  -cp "libs;libs/*" com.github.jlangch.venice.Launcher ^
+  -cp "libs;libs/*" ^
+  com.github.jlangch.venice.Launcher ^
   -restartable ^
   -colors-darkmode
-  
+
+ 
 REM # if the REPL exits with exit code 99 restart the REPL otherwise
 REM # exit the shell
 if %errorlevel% equ 99 goto start
