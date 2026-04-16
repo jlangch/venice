@@ -43,13 +43,13 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.autorun.AutoRunScriptJarRewriter;
+import com.github.jlangch.venice.util.VeniceVersion;
 
 
 public class CoreSystemFunctions {
@@ -138,40 +138,15 @@ public class CoreSystemFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                Long major = null;
-                Long minor = null;
-                Long patch = null;
-                String suffix = null;
+                final String val = Coerce.toVncString(args.first()).getValue();
 
-                final String v = Coerce.toVncString(args.first()).getValue();
-
-                if (v.matches("^[0-9]+$")) {
-                    major = Long.parseLong(v);
-                }
-                else if (v.matches("^[0-9]+[.][0-9]+$")) {
-                    final String e[] = v.split("[.]");
-                    major = Long.parseLong(e[0]);
-                    minor = Long.parseLong(e[1]);
-                }
-                else if (v.matches("^[0-9]+[.][0-9]+[.][0-9]+$")) {
-                    final String e[] = v.split("[.]");
-                    major = Long.parseLong(e[0]);
-                    minor = Long.parseLong(e[1]);
-                    patch = Long.parseLong(e[2]);
-                }
-                else if (v.matches("^[0-9]+[.][0-9]+[.][0-9]+-.*$")) {
-                    final String e[] = v.split("[.-]");
-                    major = Long.parseLong(e[0]);
-                    minor = Long.parseLong(e[1]);
-                    patch = Long.parseLong(e[2]);
-                    suffix = v.substring(v.indexOf('-') + 1);
-                }
+                final VeniceVersion version = VeniceVersion.parse(val);
 
                 return VncOrderedMap.of(
-                    new VncKeyword("major"),  major == null  ? Nil : new VncLong(major),
-                    new VncKeyword("minor"),  minor == null  ? Nil : new VncLong(minor),
-                    new VncKeyword("patch"),  patch == null  ? Nil : new VncLong(patch),
-                    new VncKeyword("suffix"), suffix == null ? Nil : new VncString(suffix));
+                    new VncKeyword("major"),  new VncLong(version.getMajor()),
+                    new VncKeyword("minor"),  new VncLong(version.getMinor()),
+                    new VncKeyword("patch"),  new VncLong(version.getPatch()),
+                    new VncKeyword("suffix"), new VncString(version.getSuffix()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -205,31 +180,13 @@ public class CoreSystemFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final VncMap v1 = (VncMap)parseVersion.applyOf(args.first());
-                final VncMap v2 = (VncMap)parseVersion.applyOf(args.second());
+                final String val1 = Coerce.toVncString(args.first()).getValue();
+                final String val2 = Coerce.toVncString(args.second()).getValue();
 
-                final long v1_major = ((VncLong)v1.get(new VncKeyword("major"), new VncLong(0))).toJavaLong();
-                final long v1_minor = ((VncLong)v1.get(new VncKeyword("minor"), new VncLong(0))).toJavaLong();
-                final long v1_patch = ((VncLong)v1.get(new VncKeyword("patch"), new VncLong(0))).toJavaLong();
-                final String v1_suffix = ((VncString)v1.get(new VncKeyword("suffix"), new VncString(""))).getValue();
+                final VeniceVersion version1 = VeniceVersion.parse(val1);
+                final VeniceVersion version2 = VeniceVersion.parse(val2);
 
-                final long v2_major = ((VncLong)v2.get(new VncKeyword("major"), new VncLong(0))).toJavaLong();
-                final long v2_minor = ((VncLong)v2.get(new VncKeyword("minor"), new VncLong(0))).toJavaLong();
-                final long v2_patch = ((VncLong)v2.get(new VncKeyword("patch"), new VncLong(0))).toJavaLong();
-                final String v2_suffix = ((VncString)v2.get(new VncKeyword("suffix"), new VncString(""))).getValue();
-
-                if (v1_major > v2_major) return VncBoolean.True;
-                if (v1_major < v2_major) return VncBoolean.False;
-
-                if (v1_minor > v2_minor) return VncBoolean.True;
-                if (v1_minor < v2_minor) return VncBoolean.False;
-
-                if (v1_patch > v2_patch) return VncBoolean.True;
-                if (v1_patch < v2_patch) return VncBoolean.False;
-
-                if (v1_suffix.isEmpty() && !v2_suffix.isEmpty()) return VncBoolean.True;
-                if (!v1_suffix.isEmpty() && v2_suffix.isEmpty()) return VncBoolean.False;
-                return VncBoolean.of(v1_suffix.compareTo(v2_suffix) > 0);
+                return VncBoolean.of(version1.isNewerThan(version2));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

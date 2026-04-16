@@ -136,16 +136,16 @@ public class SystemFunctionsTest {
         @SuppressWarnings("unchecked")
         Map<String,Object> v1 = (Map<String,Object>)venice.eval("(parse-version \"2\")");
         assertEquals(2L, v1.get("major"));
-        assertEquals(null, v1.get("minor"));
-        assertEquals(null, v1.get("patch"));
-        assertEquals(null, v1.get("suffix"));
+        assertEquals(0L, v1.get("minor"));
+        assertEquals(0L, v1.get("patch"));
+        assertEquals("", v1.get("suffix"));
 
         @SuppressWarnings("unchecked")
         Map<String,Object> v2 = (Map<String,Object>)venice.eval("(parse-version \"456\")");
         assertEquals(456L, v2.get("major"));
-        assertEquals(null, v2.get("minor"));
-        assertEquals(null, v2.get("patch"));
-        assertEquals(null, v2.get("suffix"));
+        assertEquals(0L, v2.get("minor"));
+        assertEquals(0L, v2.get("patch"));
+        assertEquals("", v2.get("suffix"));
     }
 
     @Test
@@ -156,15 +156,15 @@ public class SystemFunctionsTest {
         final Map<String,Object> v1 = (Map<String,Object>)venice.eval("(parse-version \"2.3\")");
         assertEquals(2L, v1.get("major"));
         assertEquals(3L, v1.get("minor"));
-        assertEquals(null, v1.get("patch"));
-        assertEquals(null, v1.get("suffix"));
+        assertEquals(0L, v1.get("patch"));
+        assertEquals("", v1.get("suffix"));
 
         @SuppressWarnings("unchecked")
         final Map<String,Object> v2 = (Map<String,Object>)venice.eval("(parse-version \"23.114\")");
         assertEquals(23L, v2.get("major"));
         assertEquals(114L, v2.get("minor"));
-        assertEquals(null, v2.get("patch"));
-        assertEquals(null, v2.get("suffix"));
+        assertEquals(0L, v2.get("patch"));
+        assertEquals("", v2.get("suffix"));
     }
 
     @Test
@@ -176,14 +176,14 @@ public class SystemFunctionsTest {
         assertEquals(2L, v1.get("major"));
         assertEquals(3L, v1.get("minor"));
         assertEquals(4L, v1.get("patch"));
-        assertEquals(null, v1.get("suffix"));
+        assertEquals("", v1.get("suffix"));
 
         @SuppressWarnings("unchecked")
         final Map<String,Object> v2 = (Map<String,Object>)venice.eval("(parse-version \"23.114.9\")");
         assertEquals(23L, v2.get("major"));
         assertEquals(114L, v2.get("minor"));
         assertEquals(9L, v2.get("patch"));
-        assertEquals(null, v2.get("suffix"));
+        assertEquals("", v2.get("suffix"));
     }
 
     @Test

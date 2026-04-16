@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.RegexFileFilter;
 import com.github.jlangch.venice.util.OS;
+import com.github.jlangch.venice.util.VeniceVersion;
 
 
 /**
@@ -108,10 +109,8 @@ public class ReplUpgrade {
             return false;
         }
         else {
-            return VncBoolean.isTrue(
-                CoreSystemFunctions.newerVersion_Q.applyOf(
-                        new VncString(latestVersion),
-                        new VncString(currVersion)));
+            return VeniceVersion.parse(latestVersion)
+                                .isNewerThan(VeniceVersion.parse(currVersion));
         }
     }
 
@@ -249,11 +248,13 @@ public class ReplUpgrade {
         try {
             final File localRepo = new File(replHome, "local-repo");
             if (localRepo.isDirectory()) {
-                final List<File> files = listVeniceJars(localRepo);
-                return files.stream()
+                return listVeniceJars(localRepo)
+                            .stream()
                             .map(f -> f.getName())
                             .map(f -> extractVeniceJarVersion(f))
-                            .sorted(Comparator.comparing(v -> v))
+                            .map(v -> VeniceVersion.parse(v))
+                            .sorted(Comparator.comparing(v -> v, Comparator.reverseOrder()))
+                            .map(v -> v.getVersion())
                             .map(f -> addLocalRepoPrefix(f))
                             .findFirst()
                             .orElse(null);
