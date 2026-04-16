@@ -25,115 +25,30 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Base64;
+import java.util.Comparator;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.functions.CoreSystemFunctions;
 import com.github.jlangch.venice.impl.functions.IOFunctions;
-import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
+import com.github.jlangch.venice.impl.util.io.RegexFileFilter;
 import com.github.jlangch.venice.util.OS;
 
 
 public class ReplUpgrade {
 
-    private ReplUpgrade(
-             final LocalDateTime createdAt,
-             final String upgradeVersion,
-             final byte[] binary
-   ) {
-        this.createdAt = createdAt;
-        this.upgradeVersion = StringUtil.trimToNull(upgradeVersion);
-        this.name = "venice-" + upgradeVersion + ".jar";
-        this.binary = binary;
+    private ReplUpgrade() {
     }
-
-
-    public String getUpgradeVersion() {
-        return upgradeVersion;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public byte[] getBinary() {
-        return binary;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public boolean oudated() {
-        return createdAt == null || ChronoUnit.HOURS.between(createdAt, readAt) > 2L;
-    }
-
-    private String toJson() {
-        final VncOrderedMap map = VncOrderedMap.of(
-                new VncString("createdAt"),
-                new VncString(formatTimestamp(createdAt)),
-                new VncString("upgradeVersion"),
-                new VncString(upgradeVersion),
-                new VncString("name"),
-                new VncString("venice-" + upgradeVersion + ".jar"),
-                new VncString("binary"),
-                new VncString(base64Encode(binary)));
-
-        return ((VncString)JsonFunctions.write_str.applyOf(map)).getValue();
-    }
-
-
-    private static ReplUpgrade fromJson(final String json) {
-        final VncMap data = (VncMap)JsonFunctions.read_str.applyOf(new VncString(json));
-
-        final VncString createdAt = (VncString)data.get(new VncString("createdAt"));
-        final VncString upgradeVersion = (VncString)data.get(new VncString("upgradeVersion"));
-        final VncString binary = (VncString)data.get(new VncString("binary"));
-
-        return new ReplUpgrade(
-                    parseTimestamp(createdAt.getValue()),
-                    upgradeVersion.getValue(),
-                    base64Decode(binary.getValue()));
-    }
-
-    private static ReplUpgrade read(
-            final File replHome
-    ) throws IOException {
-        final String json = new String(
-                                    Files.readAllBytes(new File(replHome, UPGRADE_FILE).toPath()),
-                                    StandardCharsets.UTF_8);
-        return ReplUpgrade.fromJson(json);
-    }
-
-    private void write(
-            final File replHome
-    ) throws IOException {
-        final String json = toJson();
-
-        Files.write(
-                new File(replHome, UPGRADE_FILE).toPath(),
-                json.getBytes(StandardCharsets.UTF_8),
-                StandardOpenOption.WRITE,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING);
-    }
-
 
 
     public static String currentVersion() {
@@ -167,25 +82,39 @@ public class ReplUpgrade {
         }
     }
 
-    public static ReplUpgrade initiate(
+    public static void initiate(
             final String latestVersion,
             final Consumer<String> log
     ) {
         final File replHome = ReplDirs.getReplHomeDir();
+        final File upgradeDir = new File(replHome, ".upgrade");
+        final String jarName =  "venice-" + latestVersion + ".jar";
+        final String versionName = "version";
 
-        log.accept("Downloading 'venice-" + latestVersion + ".jar' ...");
+        log.accept("Downloading " + jarName + " ...");
 
         final byte[] binary = downloadVeniceJar(latestVersion);
 
         log.accept("Downloaded 'venice-" + latestVersion + ".jar'");
 
         try {
-            final ReplUpgrade data = new ReplUpgrade(LocalDateTime.now(), latestVersion, binary);
-            data.write(replHome);
+            FileUtil.mkdir(upgradeDir);
 
-            log.accept("New Venice version " + latestVersion + " ready for upgrade.");
+            // {REPL_HOME}/.upgrade/version
+            Files.write(
+                    new File(upgradeDir, versionName).toPath(),
+                    latestVersion.getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
 
-            return data;
+            // {REPL_HOME}/.upgrade/venice-1.x.y.jar
+            Files.write(
+                    new File(upgradeDir, jarName).toPath(),
+                    binary,
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
        }
         catch(Exception ex) {
             throw new RuntimeException(
@@ -195,55 +124,58 @@ public class ReplUpgrade {
 
     public static String upgrade() {
         final File replHome = ReplDirs.getReplHomeDir();
+        final File libsDir = new File(replHome, "libs");
+        final File upgradeDir = new File(replHome, ".upgrade");
 
         try {
-            if (!existsUpgradeFile(replHome)) {
+            if (!upgradeDir.isDirectory()) {
                 throw new RuntimeException("There is no initiated Venice upgrade!");
             }
 
-            final ReplUpgrade data = read(replHome);
+            // read: {REPL_HOME}/.upgrade/version
+            final byte[] versionData = Files.readAllBytes(new File(upgradeDir, "version").toPath());
+            final String version = new String(versionData, StandardCharsets.UTF_8);
+            final String jarName =  "venice-" + version + ".jar";
+            final File upgradeLibsJar = new File(libsDir, "venice-" + version + ".jar");
 
-            final String currVersion = currentVersion();
-            final String upgradeVersion = data.getUpgradeVersion();
+            // read: {REPL_HOME}/.upgrade/venice-1.x.y.jar
+            final byte[] binary = Files.readAllBytes(new File(upgradeDir, jarName).toPath());
 
-            if (upgradeVersion == null) {
-                throw new RuntimeException("There is no version for upgrading Venice!");
-            }
-
-            if (currVersion.equals(upgradeVersion)) {
+            if (upgradeLibsJar.exists()) {
                 throw new RuntimeException("There is no newer version for upgrading Venice!");
             }
 
-            final File currJar = new File("libs/venice-" + currVersion + ".jar");
-            final File upgradeJar = new File("libs/venice-" + upgradeVersion + ".jar");
+            // list old Venice versions
+            final File[] oldVersions = libsDir.listFiles(new RegexFileFilter("venice-.*.jar"));
 
-            if (upgradeJar.exists()) {
-                throw new RuntimeException("There is no newer version for upgrading Venice!");
+            // save the new version
+            FileUtil.save(binary, upgradeLibsJar, true);
+            System.out.println("Copying new version to " + upgradeLibsJar);
+
+            // remove the old Venice versions
+            if (oldVersions.length > 0) {
+                for(File f : oldVersions) {
+                   f.delete();
+                   System.out.println("Deleted old version " + f.getName());
+                }
             }
 
-            // [1] save the new version
-            FileUtil.save(data.getBinary(), upgradeJar, true);
-            System.out.println("Copying new version to " + upgradeJar);
-
-            // [2] remove the old version
-            if (!currJar.delete()) {
-                upgradeJar.delete();
-                throw new RuntimeException("Failed to upgrade Venice to " + upgradeVersion
-                                           + ". Could to replace the old version!");
-            }
-            else {
-                System.out.println("Deleted old version " + currJar);
-                return data.getUpgradeVersion();
-            }
+            return version;
         }
         catch(IOException ex) {
-            throw new RuntimeException("Failed to read Venice upgrade data");
+            throw new RuntimeException("Failed to upgrade Venice", ex);
         }
         catch(Exception ex) {
             throw ex;
         }
         finally {
-            removeUpgradeFile(replHome);
+            try {
+                Files.walk(upgradeDir.toPath())
+                     .sorted(Comparator.reverseOrder())
+                     .map(Path::toFile)
+                     .forEach(File::delete);
+            }
+            catch(Exception ignore) {}
         }
     }
 
@@ -279,21 +211,6 @@ public class ReplUpgrade {
         }
     }
 
-
-    private static boolean existsUpgradeFile(final File replHome) {
-        return new File(replHome, UPGRADE_FILE).exists();
-    }
-
-    private static void removeUpgradeFile(final File replHome) {
-        try {
-            new File(replHome, UPGRADE_FILE).delete();
-        }
-        catch(Exception ex) {
-            // skipped (best effort)
-        }
-    }
-
-
     private static byte[] downloadVeniceJar(final String upgradeVersion) {
         try {
             final String url = "https://repo1.maven.org/maven2/com/github/jlangch/venice/"
@@ -315,36 +232,4 @@ public class ReplUpgrade {
         }
     }
 
-    private static String formatTimestamp(final LocalDateTime dt) {
-        return dtFormatter.format(dt);
-    }
-
-    private static LocalDateTime parseTimestamp(final String s) {
-        try {
-            return LocalDateTime.parse(s, dtFormatter);
-        }
-        catch (Exception ex) {
-            return null;
-        }
-    }
-
-    private static String base64Encode(final byte[] buf) {
-        return Base64.getEncoder().encodeToString(buf);
-    }
-
-    private static byte[] base64Decode(final String base64) {
-        return Base64.getDecoder().decode(base64);
-    }
-
-
-
-    public final static String UPGRADE_FILE = ".repl.upgrade";
-    private final static DateTimeFormatter dtFormatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-    private final String upgradeVersion;
-    private final LocalDateTime createdAt;
-    private final String name;
-    private final byte[] binary;
-    private final LocalDateTime readAt = LocalDateTime.now();
 }

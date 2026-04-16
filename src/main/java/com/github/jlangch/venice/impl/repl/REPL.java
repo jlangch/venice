@@ -120,15 +120,6 @@ public class REPL implements IRepl {
         try {
             final File replHome = ReplDirs.getReplHomeDir();
 
-            // Delete the REPL upgrade file, should it survive
-            try {
-                final File replUpgrade = new File(replHome, ReplUpgrade.UPGRADE_FILE);
-                if (replUpgrade.isFile()) {
-                    replUpgrade.delete();
-                }
-            }
-            catch(Exception ignore) {}
-
             ThreadContext.setInterceptor(interceptor);
 
             final ILoadPaths loadpaths = interceptor.getLoadPaths();

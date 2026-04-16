@@ -65,15 +65,15 @@ while true; do
 
 
   # finish an initiated upgrade
-  if [ -f "${REPL_HOME}/.repl.upgrade" ]; then 
+  if [ -d "${REPL_HOME}/.upgrade" ]; then 
     "${JAVA_HOME}/bin/java" \
       -Djava.io.tmpdir="${REPL_HOME}/tmp" \
       -Dvenice.repl.home="${REPL_HOME}" \
-      -cp "libs:libs/*" \
+      -cp "libs:${REPL_HOME}/.upgrade/*" \
       com.github.jlangch.venice.Launcher \
       -repl-upgrade
 
-    rm -f "${REPL_HOME}/.repl.upgrade"
+    rm -rf "${REPL_HOME}/.upgrade"
   fi
 
 

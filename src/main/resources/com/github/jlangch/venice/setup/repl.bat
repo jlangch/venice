@@ -59,17 +59,16 @@ if exist "%REPL_HOME%/repl.env.bat" (
 if "%JAVA_HOME%" == "" goto :error
 
 REM # finish an initiated upgrade
-if exist "%REPL_HOME%/.repl.upgrade" (
+if not exist %REPL_HOME%\.upgrade (
   "%JAVA_HOME%\bin\java.exe" ^
     -Djava.io.tmpdir="%REPL_HOME%\tmp" ^
     -Dvenice.repl.home="%REPL_HOME%" ^
-    -cp "libs;libs/*" ^
+    -cp "libs:%REPL_HOME%/.upgrade/*" ^
     com.github.jlangch.venice.Launcher ^
     -repl-upgrade
 
-  del /F "%REPL_HOME%/.repl.upgrade"
+   rmdir "%REPL_HOME%\.upgrade" /s /q
 )
-
 
 set JAVA_VM_OPTS=-server -XX:-OmitStackTraceInFastThrow %JAVA_OPTS%
 
