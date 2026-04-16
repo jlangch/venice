@@ -138,7 +138,7 @@ public class ReplUpgrade {
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
 
-            log.accept("Ready for upgrading to Venice " + veniceVersion);
+            log.accept("Ready for activating Venice " + veniceVersion);
        }
         catch(Exception ex) {
             throw new RuntimeException(
