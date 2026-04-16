@@ -20,6 +20,12 @@
 
 # Do not set custom variables in this script. Instead put them into the
 # repl.env in the REPL_HOME to keep your customizations separate.
+#
+# The repl.env defines the REPL env vars 
+#   - JAVA_HOME
+#   - JAVA_OPTS
+#   - LOADPATH
+# used within this start script. These can be modified as well.
 
 
 export REPL_HOME={{INSTALL_PATH}}
@@ -77,7 +83,7 @@ while true; do
     -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
     -repl \
-    -loadpath "" \
+    -loadpath "${LOADPATH}" \
     -restartable \
     -colors
 

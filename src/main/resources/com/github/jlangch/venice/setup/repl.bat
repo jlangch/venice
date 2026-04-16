@@ -20,6 +20,12 @@ REM # -------------------------------------------------------------------------
 
 REM # Do not set custom variables in this script. Instead put them into the
 REM # repl.env.bat in the REPL_HOME to keep your customizations separate.
+REM #
+REM # The repl.env defines the REPL env vars 
+REM #   - JAVA_HOME
+REM #   - JAVA_OPTS
+REM #   - LOADPATH
+REM # used within this start script. These can be modified as well.
 
 
 set REPL_HOME={{INSTALL_PATH}}
@@ -69,6 +75,8 @@ REM # start the REPL
   -Dvenice.repl.home="%REPL_HOME%" ^
   -cp "libs;libs/*" ^
   com.github.jlangch.venice.Launcher ^
+  -repl ^
+  -loadpath "%LOADPATH%" ^
   -restartable ^
   -colors-darkmode
 

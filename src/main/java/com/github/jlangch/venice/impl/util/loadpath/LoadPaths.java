@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
+import com.github.jlangch.venice.util.OS;
 
 
 public class LoadPaths implements ILoadPaths {
@@ -375,6 +376,15 @@ public class LoadPaths implements ILoadPaths {
     @Override
     public boolean active() {
         return !getPaths().isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        final String pathDelimiter = OS.isWindows() ? ";" : ":";
+
+        return paths.stream()
+                    .map(p -> p.path().getPath())
+                    .collect(Collectors.joining(pathDelimiter));
     }
 
 
