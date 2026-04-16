@@ -104,10 +104,10 @@ The Sudoku solver:
     (nil? (some #{val} coll)))
 
   (defn grid-3x3-vals [board x y]
-    (let [xs  (-> x (/ 3) (* 3))
-          ys  (-> y (/ 3) (* 3))]
-      (for [x1 (range xs (+ xs 3))
-            y1 (range ys (+ ys 3))]
+    (let [xs  (* (/ x 3) 3)
+          ys  (* (/ y 3) 3)]
+       (for [x1 (range xs (+ xs 3))
+             y1 (range ys (+ ys 3))]
         (get-in board [y1 x1]))))
 
   (defn possible? [board x y val]
