@@ -98,6 +98,8 @@ public class ReplUpgrade {
         log.accept("Downloaded 'venice-" + latestVersion + ".jar'");
 
         try {
+            deleteDirRecursively(upgradeDir);
+
             FileUtil.mkdir(upgradeDir);
 
             // {REPL_HOME}/.upgrade/version
@@ -115,6 +117,8 @@ public class ReplUpgrade {
                     StandardOpenOption.WRITE,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
+
+            log.accept("Ready for upgrading to Venice " + latestVersion);
        }
         catch(Exception ex) {
             throw new RuntimeException(
@@ -138,25 +142,23 @@ public class ReplUpgrade {
             final String jarName =  "venice-" + version + ".jar";
             final File upgradeLibsJar = new File(libsDir, "venice-" + version + ".jar");
 
-            // read: {REPL_HOME}/.upgrade/venice-1.x.y.jar
-            final byte[] binary = Files.readAllBytes(new File(upgradeDir, jarName).toPath());
-
             if (upgradeLibsJar.exists()) {
                 throw new RuntimeException("There is no newer version for upgrading Venice!");
             }
+
+            // read: {REPL_HOME}/.upgrade/venice-x.y.z.jar
+            final byte[] binary = Files.readAllBytes(new File(upgradeDir, jarName).toPath());
 
             // list old Venice versions
             final File[] oldVersions = libsDir.listFiles(new RegexFileFilter("venice-.*.jar"));
 
             // save the new version
             FileUtil.save(binary, upgradeLibsJar, true);
-            System.out.println("Copying new version to " + upgradeLibsJar);
 
             // remove the old Venice versions
             if (oldVersions.length > 0) {
                 for(File f : oldVersions) {
                    f.delete();
-                   System.out.println("Deleted old version " + f.getName());
                 }
             }
 
@@ -169,13 +171,7 @@ public class ReplUpgrade {
             throw ex;
         }
         finally {
-            try {
-                Files.walk(upgradeDir.toPath())
-                     .sorted(Comparator.reverseOrder())
-                     .map(Path::toFile)
-                     .forEach(File::delete);
-            }
-            catch(Exception ignore) {}
+            deleteDirRecursively(upgradeDir);
         }
     }
 
@@ -192,7 +188,7 @@ public class ReplUpgrade {
                 if (replSh.isFile()) {
                     return Files.readAllLines(replSh.toPath())
                                 .stream()
-                                .anyMatch(line -> line.contains("-repl-upgrade"));
+                                .anyMatch(line -> line.contains("com.github.jlangch.venice.Upgrader"));
                 }
             }
             else if (OS.isWindows()) {
@@ -200,7 +196,7 @@ public class ReplUpgrade {
                 if (replSh.isFile()) {
                     return Files.readAllLines(replSh.toPath())
                                 .stream()
-                                .anyMatch(line -> line.contains("-repl-upgrade"));
+                                .anyMatch(line -> line.contains("com.github.jlangch.venice.Upgrader"));
                 }
             }
 
@@ -230,6 +226,20 @@ public class ReplUpgrade {
                         "Failed to upgrade Venice to " + upgradeVersion
                         + ". Could to download the new version from Maven repo!");
         }
+    }
+
+    private static boolean deleteDirRecursively(final File dir) {
+        if (dir.isDirectory()) {
+            try {
+                Files.walk(dir.toPath())
+                     .sorted(Comparator.reverseOrder())
+                     .map(Path::toFile)
+                     .forEach(File::delete);
+            }
+            catch(Exception ignore) {}
+        }
+
+        return !dir.isDirectory();
     }
 
 }

@@ -40,7 +40,6 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
-import com.github.jlangch.venice.impl.repl.ReplUpgrade;
 import com.github.jlangch.venice.impl.repl.install.ReplInstaller;
 import com.github.jlangch.venice.impl.repl.remote.RemoteReplServer;
 import com.github.jlangch.venice.impl.repl.remote.ReplRemotingConfig;
@@ -112,9 +111,6 @@ public class Launcher {
             else if (cli.switchPresent("-app-repl")) {
                 runCustomReplCmd(loadPaths, cli);
             }
-            else if (cli.switchPresent("-repl-upgrade")) {
-                runReplUpgradeCmd(cli);
-            }
             else {
                 // run the Venice REPL
                 runReplCmd(loadPaths, cli);
@@ -124,11 +120,11 @@ public class Launcher {
         }
         catch (VncException ex) {
             ex.printVeniceStackTrace();
-            return 99;
+            return 9;
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            return 99;
+            return 9;
         }
     }
 
@@ -277,20 +273,6 @@ public class Launcher {
                                           .removeSwitch("-repl");
 
         new REPL(new AcceptAllInterceptor(loadPaths)).run(appCli);
-    }
-
-    private static void runReplUpgradeCmd(
-            final CommandLineArgs cli
-    ) {
-        try {
-            System.out.println("REPL upgrading...");
-            final String newVersion = ReplUpgrade.upgrade();
-            System.out.println("REPL upgraded to version " + newVersion + "!");
-            System.out.println("Starting upgraded REPL...\n");
-        }
-        catch(Exception ex) {
-            System.out.println("REPL upgrade failed! Reason: " + ex.getMessage());
-        }
     }
 
     private static Env createEnv(
