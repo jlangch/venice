@@ -52,8 +52,8 @@ cd "%REPL_HOME%"
 :start
 
 REM # load REPL environment variables
-if exist "%REPL_HOME%/repl.env.bat" (
-  call "%REPL_HOME%/repl.env.bat"
+if exist "%REPL_HOME%\repl.env.bat" (
+  call "%REPL_HOME%\repl.env.bat"
 )
 
 if "%JAVA_HOME%" == "" goto :error
@@ -66,7 +66,7 @@ if exist "%REPL_HOME%\.upgrade" (
     -cp "%REPL_HOME%/.upgrade/*" ^
     com.github.jlangch.venice.Upgrader
 
-   rmdir "%REPL_HOME%\.upgrade" /s /q
+  rmdir "%REPL_HOME%\.upgrade" /s /q
 )
 
 set JAVA_VM_OPTS=-server -XX:-OmitStackTraceInFastThrow %JAVA_OPTS%
