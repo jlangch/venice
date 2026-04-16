@@ -344,7 +344,7 @@ public class ReplUpgrade {
     }
 
     private static String stripLocalRepoPrefix(final String version) {
-        return version.startsWith("local:")
+        return version != null && version.startsWith("local:")
                 ? version.substring("local:".length())
                 : version;
     }

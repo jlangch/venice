@@ -66,7 +66,9 @@ if exist "%REPL_HOME%\.upgrade" (
     -cp "%REPL_HOME%/.upgrade/*" ^
     com.github.jlangch.venice.Upgrader
 
-  rmdir "%REPL_HOME%\.upgrade" /s /q
+  if exist "%REPL_HOME%\.upgrade" (
+    rmdir "%REPL_HOME%\.upgrade" /s /q
+  )
 )
 
 set JAVA_VM_OPTS=-server -XX:-OmitStackTraceInFastThrow %JAVA_OPTS%
