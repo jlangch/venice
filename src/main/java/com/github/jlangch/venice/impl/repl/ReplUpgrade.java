@@ -27,7 +27,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.Version;
@@ -57,10 +59,19 @@ public class ReplUpgrade {
 
     public static String latestVersion() {
         try {
-            final VncVal latest = CoreSystemFunctions.latest.applyOf();
-            return latest == Constants.Nil
-                    ? null
-                    : Coerce.toVncString(latest).getValue();
+            final File replHome = ReplDirs.getReplHomeDir();
+
+            // try local repo first
+            final String latestLocalRepo = newestVersionLocalRepo(replHome);
+            if (latestLocalRepo != null) {
+                return latestLocalRepo;
+            }
+            else {
+                final VncVal latest = CoreSystemFunctions.latest.applyOf();
+                return latest == Constants.Nil
+                        ? null
+                        : Coerce.toVncString(latest).getValue();
+            }
         }
         catch(Exception ex) {
             return null;
@@ -69,7 +80,7 @@ public class ReplUpgrade {
 
     public static boolean isNewerVersionAvailable() {
         final String currVersion = currentVersion();
-        final String latestVersion = latestVersion();
+        final String latestVersion = stripLocalRepoPrefix(latestVersion());
 
         if (latestVersion == null) {
             return false;
@@ -88,14 +99,23 @@ public class ReplUpgrade {
     ) {
         final File replHome = ReplDirs.getReplHomeDir();
         final File upgradeDir = new File(replHome, ".upgrade");
-        final String jarName =  "venice-" + latestVersion + ".jar";
-        final String versionName = "version";
 
-        log.accept("Downloading " + jarName + " ...");
+        VeniceJar veniceJar = null;
 
-        final byte[] binary = downloadVeniceJar(latestVersion);
+        if (hasLocalRepoPrefix(latestVersion)) {
+            veniceJar = loadFromLocalRepo(replHome, stripLocalRepoPrefix(latestVersion));
+            log.accept("Downloaded " + veniceJar.name + " from local repo");
+        }
+        else {
+            log.accept("Downloading venice-" + latestVersion + ".jar ...");
+            veniceJar = downloadVeniceJar(latestVersion);
+            log.accept("Downloaded " + veniceJar.name + ".jar'");
+        }
 
-        log.accept("Downloaded 'venice-" + latestVersion + ".jar'");
+        final String veniceVersion = stripLocalRepoPrefix(latestVersion);
+
+        final String versionFileName = "version";
+        final String jarFileName =  veniceJar.name;
 
         try {
             deleteDirRecursively(upgradeDir);
@@ -104,21 +124,21 @@ public class ReplUpgrade {
 
             // {REPL_HOME}/.upgrade/version
             Files.write(
-                    new File(upgradeDir, versionName).toPath(),
-                    latestVersion.getBytes(StandardCharsets.UTF_8),
+                    new File(upgradeDir, versionFileName).toPath(),
+                    veniceVersion.getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.WRITE,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
 
             // {REPL_HOME}/.upgrade/venice-1.x.y.jar
             Files.write(
-                    new File(upgradeDir, jarName).toPath(),
-                    binary,
+                    new File(upgradeDir, jarFileName).toPath(),
+                    veniceJar.binary,
                     StandardOpenOption.WRITE,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
 
-            log.accept("Ready for upgrading to Venice " + latestVersion);
+            log.accept("Ready for upgrading to Venice " + veniceVersion);
        }
         catch(Exception ex) {
             throw new RuntimeException(
@@ -207,10 +227,56 @@ public class ReplUpgrade {
         }
     }
 
-    private static byte[] downloadVeniceJar(final String upgradeVersion) {
+    private static String newestVersionLocalRepo(final File replHome) {
         try {
+            final File localRepo = new File(replHome, "local-repo");
+            if (localRepo.isDirectory()) {
+                final List<File> files = Arrays.asList(localRepo.listFiles(new RegexFileFilter("venice-.*[.]jar")));
+                return files.stream()
+                            .map(f -> f.getName())
+                            .map(f -> extractVeniceJarVersion(f))
+                            .sorted(Comparator.comparing(v -> v))
+                            .map(f -> "local:" + f)
+                            .findFirst()
+                            .orElse(null);
+            }
+
+            return null;
+        }
+        catch(Exception ex) {
+            return null;
+        }
+    }
+
+    private static VeniceJar loadFromLocalRepo(final File replHome, final String version) {
+        final String jarName = "venice-" + version + ".jar";
+        final File localRepo = new File(replHome, "local-repo");
+        final File file = new File(localRepo, jarName);
+
+        if (file.isFile()) {
+            try {
+                return new VeniceJar(jarName, Files.readAllBytes(file.toPath()));
+            }
+            catch(Exception ex) {
+                throw new RuntimeException(
+                        "Failed to upgrade Venice to " + version
+                        + ". Could to download the new version from the local repo!");
+            }
+        }
+        else {
+            throw new RuntimeException(
+                    "Failed to upgrade Venice to " + version
+                    + ". The new version does not exist in the local repo!");
+        }
+    }
+
+    private static VeniceJar downloadVeniceJar(final String version) {
+        try {
+            final String jarName = "venice-" + version + ".jar";
+
+            // standard download
             final String url = "https://repo1.maven.org/maven2/com/github/jlangch/venice/"
-                               + upgradeVersion + "/venice-" + upgradeVersion + ".jar";
+                               + version + "/" + jarName;
 
             final VncByteBuffer jar = (VncByteBuffer)IOFunctions.io_download.applyOf(
                                             new VncString(url),
@@ -219,14 +285,27 @@ public class ReplUpgrade {
                                             new VncKeyword("user-agent"),
                                             new VncString("Mozilla"));
 
-            return jar.getBytes();
+            return new VeniceJar(jarName, jar.getBytes());
         }
         catch(Exception ex) {
             throw new RuntimeException(
-                        "Failed to upgrade Venice to " + upgradeVersion
+                        "Failed to upgrade Venice to " + version
                         + ". Could to download the new version from Maven repo!");
         }
     }
+
+    private static String extractVeniceJarVersion(final String filename) {
+        if (filename.matches("^venice[-][0-9]+[.][0-9]+[.][0-9]+.*[.]jar$")) {
+            String v = filename;
+            if (v.startsWith("venice-")) v = v.replace("venice-", "");
+            if (v.endsWith(".jar")) v = v.replace(".jar", "");
+            return v;
+        }
+        else {
+            return null;
+        }
+    }
+
 
     private static boolean deleteDirRecursively(final File dir) {
         if (dir.isDirectory()) {
@@ -240,6 +319,25 @@ public class ReplUpgrade {
         }
 
         return !dir.isDirectory();
+    }
+
+    private static String stripLocalRepoPrefix(final String version) {
+        return version.startsWith("local:")
+                ? version.substring("local:".length())
+                : version;
+    }
+
+    private static boolean hasLocalRepoPrefix(final String version) {
+        return version.startsWith("local:");
+    }
+
+    private static class VeniceJar {
+        public VeniceJar(String name, byte[] binary) {
+            this.name = name;
+            this.binary = binary;
+        }
+        public final String name;
+        public final byte[] binary;
     }
 
 }
