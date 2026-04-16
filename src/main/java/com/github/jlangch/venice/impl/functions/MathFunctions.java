@@ -2183,7 +2183,9 @@ public class MathFunctions {
                 VncFunction
                     .meta()
                     .arglists("(math/softmax coll)")
-                    .doc("Softmax algorithm")
+                    .doc(
+                        "Softmax algorithm\n\n" +
+                        "See [Softmax](https://en.wikipedia.org/wiki/Softmax_function)")
                     .examples("(math/softmax [3.2 1.3 0.2 0.8])")
                     .seeAlso()
                     .build()
