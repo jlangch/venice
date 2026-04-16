@@ -22,9 +22,9 @@
 # PLEASE DO NOT MODIFY THIS REPL START SCRIPT!
 # ------------------------------------------------------------------------------
 # Do not set custom variables in this script. Instead put them into the
-# repl.env in the REPL_HOME to keep your customizations separate.
+# {REPL_HOME}/repl.env in the REPL_HOME to keep your customizations separate.
 #
-# The repl.env defines the REPL env vars 
+# The {REPL_HOME}/repl.env defines the REPL env vars 
 #   - JAVA_HOME
 #   - JAVA_OPTS
 #   - LOADPATH

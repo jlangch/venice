@@ -22,9 +22,10 @@ REM # -------------------------------------------------------------------------
 REM # PLEASE DO NOT MODIFY THIS REPL START SCRIPT!
 REM # -------------------------------------------------------------------------
 REM # Do not set custom variables in this script. Instead put them into the
-REM # repl.env.bat in the REPL_HOME to keep your customizations separate.
+REM # {REPL_HOME}/repl.env.bat in the REPL_HOME to keep your customizations 
+REM # separate.
 REM #
-REM # The repl.env.bat defines the REPL env vars 
+REM # The {REPL_HOME}/repl.env.bat defines the REPL env vars 
 REM #   - JAVA_HOME
 REM #   - JAVA_OPTS
 REM #   - LOADPATH
