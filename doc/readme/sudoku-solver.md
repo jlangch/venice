@@ -95,9 +95,9 @@ The Sudoku solver:
          (docoll #(apply println %))))
 
   (defn first-empty-cell [board]
-    (first (list-comp [x (range 9)
-                       y (range 9)
-                       :when (== 0 (get-in board [y x]))]
+    (first (for [x (range 9)
+                 y (range 9)
+                 :when (== 0 (get-in board [y x]))]
              [x y])))
 
   (defn value-not-used? [val coll]
@@ -106,8 +106,8 @@ The Sudoku solver:
   (defn grid-3x3-vals [board x y]
     (let [xs  (-> x (/ 3) (* 3))
           ys  (-> y (/ 3) (* 3))]
-      (list-comp [x1 (range xs (+ xs 3))
-                  y1 (range ys (+ ys 3))]
+      (for [x1 (range xs (+ xs 3))
+            y1 (range ys (+ ys 3))]
         (get-in board [y1 x1]))))
 
   (defn possible? [board x y val]
@@ -118,7 +118,7 @@ The Sudoku solver:
 
   (defn solve [board]
     (if-let [[x y] (first-empty-cell board)]
-      (list-comp [v (range 1 10) :when (possible? board x y v)]
+      (for [v (range 1 10) :when (possible? board x y v)]
         (solve (assoc-in board [y x] v)))
       (print-board board)))
 
