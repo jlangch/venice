@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
   export JAVA_OPTS=-Xmx2G
   ```
 
-  Modify `{REPL_HOME}/repl.env.bat on Windows, e.g.:
+  Modify `{REPL_HOME}/repl.env.bat` on Windows, e.g.:
   
   ```
   set JAVA_OPTS=-Xmx2G
