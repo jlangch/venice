@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -81,12 +82,13 @@ public class ReplUpgrade {
         try {
             final File replHome = ReplDirs.getReplHomeDir();
 
-            // try local repo first
-            final String latestLocalRepo = newestVersionLocalRepo(replHome);
+            // try local repo first (nice for testing)
+            final String latestLocalRepo = newestVersionFromLocalRepo(replHome);
             if (latestLocalRepo != null) {
                 return latestLocalRepo;
             }
             else {
+                // and Venice's latest published version second
                 final VncVal latest = CoreSystemFunctions.latest.applyOf();
                 return latest == Constants.Nil
                         ? null
@@ -123,12 +125,12 @@ public class ReplUpgrade {
         VeniceJar veniceJar = null;
 
         if (hasLocalRepoPrefix(latestVersion)) {
-            veniceJar = loadFromLocalRepo(replHome, stripLocalRepoPrefix(latestVersion));
+            veniceJar = downloadVeniceJarFromLocalRepo(replHome, stripLocalRepoPrefix(latestVersion));
             log.accept("Downloaded " + veniceJar.name + " from local repo");
         }
         else {
             log.accept("Downloading venice-" + latestVersion + ".jar ...");
-            veniceJar = downloadVeniceJar(latestVersion);
+            veniceJar = downloadVeniceJarFromMavenRepo(latestVersion);
             log.accept("Downloaded " + veniceJar.name + ".jar'");
         }
 
@@ -190,17 +192,13 @@ public class ReplUpgrade {
             final byte[] binary = Files.readAllBytes(new File(upgradeDir, jarName).toPath());
 
             // list old Venice versions
-            final File[] oldVersions = libsDir.listFiles(new RegexFileFilter("venice-.*.jar"));
+            final List<File> oldLibsVeniceJars = listVeniceJars(libsDir);
 
             // save the new version
             FileUtil.save(binary, upgradeLibsJar, true);
 
             // remove the old Venice versions
-            if (oldVersions.length > 0) {
-                for(File f : oldVersions) {
-                   f.delete();
-                }
-            }
+            oldLibsVeniceJars.forEach(f -> f.delete());
 
             return version;
         }
@@ -247,13 +245,11 @@ public class ReplUpgrade {
         }
     }
 
-    private static String newestVersionLocalRepo(final File replHome) {
+    private static String newestVersionFromLocalRepo(final File replHome) {
         try {
             final File localRepo = new File(replHome, "local-repo");
             if (localRepo.isDirectory()) {
-                final List<File> files = Arrays.asList(
-                                            localRepo.listFiles(
-                                                new RegexFileFilter("venice-.*[.]jar")));
+                final List<File> files = listVeniceJars(localRepo);
                 return files.stream()
                             .map(f -> f.getName())
                             .map(f -> extractVeniceJarVersion(f))
@@ -270,7 +266,7 @@ public class ReplUpgrade {
         }
     }
 
-    private static VeniceJar loadFromLocalRepo(final File replHome, final String version) {
+    private static VeniceJar downloadVeniceJarFromLocalRepo(final File replHome, final String version) {
         final String jarName = "venice-" + version + ".jar";
         final File localRepo = new File(replHome, "local-repo");
         final File file = new File(localRepo, jarName);
@@ -292,7 +288,7 @@ public class ReplUpgrade {
         }
     }
 
-    private static VeniceJar downloadVeniceJar(final String version) {
+    private static VeniceJar downloadVeniceJarFromMavenRepo(final String version) {
         try {
             final String jarName = "venice-" + version + ".jar";
 
@@ -328,6 +324,11 @@ public class ReplUpgrade {
         }
     }
 
+    private static List<File> listVeniceJars(final File dir) {
+        return dir.isDirectory()
+                ? Arrays.asList(dir.listFiles(new RegexFileFilter("venice-.*[.]jar")))
+                : new ArrayList<>();
+    }
 
     private static boolean deleteDirRecursively(final File dir) {
         if (dir.isDirectory()) {
