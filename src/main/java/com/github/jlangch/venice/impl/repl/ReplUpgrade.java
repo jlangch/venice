@@ -47,6 +47,26 @@ import com.github.jlangch.venice.impl.util.io.RegexFileFilter;
 import com.github.jlangch.venice.util.OS;
 
 
+/**
+ * REPL Upgrader
+ *
+ * <p>For testing locally create a *local-repo* directory:
+ * <pre>
+ *   REPL_HOME
+ *   ├── libs
+ *   │   ├── venice-1.12.89.jar
+ *   │   ├── jansi-2.4.1.jar
+ *   │   └── repl.json
+ *   ├── local-repo
+ *   │   └── venice-1.12.80.jar
+ *   │   └── venice-1.12.100.jar
+ *   ├── tmp
+ *   │   └── ...
+ *   ├── repl.env
+ *   ├── repl.sh
+ *   └── run-script.sh
+ * </pre>
+ */
 public class ReplUpgrade {
 
     private ReplUpgrade() {
