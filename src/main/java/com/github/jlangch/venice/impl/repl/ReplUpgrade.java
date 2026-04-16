@@ -231,12 +231,14 @@ public class ReplUpgrade {
         try {
             final File localRepo = new File(replHome, "local-repo");
             if (localRepo.isDirectory()) {
-                final List<File> files = Arrays.asList(localRepo.listFiles(new RegexFileFilter("venice-.*[.]jar")));
+                final List<File> files = Arrays.asList(
+                                            localRepo.listFiles(
+                                                new RegexFileFilter("venice-.*[.]jar")));
                 return files.stream()
                             .map(f -> f.getName())
                             .map(f -> extractVeniceJarVersion(f))
                             .sorted(Comparator.comparing(v -> v))
-                            .map(f -> "local:" + f)
+                            .map(f -> addLocalRepoPrefix(f))
                             .findFirst()
                             .orElse(null);
             }
@@ -329,6 +331,10 @@ public class ReplUpgrade {
 
     private static boolean hasLocalRepoPrefix(final String version) {
         return version.startsWith("local:");
+    }
+
+    private static String addLocalRepoPrefix(final String version) {
+        return "local:" + version;
     }
 
     private static class VeniceJar {
