@@ -190,13 +190,13 @@ public class ReplUpgrade {
             // read: {REPL_HOME}/.upgrade/venice-x.y.z.jar
             final byte[] binary = Files.readAllBytes(new File(upgradeDir, jarName).toPath());
 
-            // list old Venice versions
+            // list old Venice versions in {REPL_HOME}/libs
             final List<File> oldLibsVeniceJars = listVeniceJars(libsDir);
 
-            // save the new version
+            // save the new version to {REPL_HOME}/libs
             FileUtil.save(binary, upgradeLibsJar, true);
 
-            // remove the old Venice versions
+            // remove the old Venice versions in {REPL_HOME}/libs
             oldLibsVeniceJars.forEach(f -> f.delete());
 
             return version;
