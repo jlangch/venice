@@ -18,6 +18,9 @@
 #    +-- repl.sh
 # ------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# PLEASE DO NOT MODIFY THIS REPL START SCRIPT!
+# ------------------------------------------------------------------------------
 # Do not set custom variables in this script. Instead put them into the
 # repl.env in the REPL_HOME to keep your customizations separate.
 #
@@ -26,6 +29,7 @@
 #   - JAVA_OPTS
 #   - LOADPATH
 # used within this start script. These can be modified as well.
+# ------------------------------------------------------------------------------
 
 
 export REPL_HOME={{INSTALL_PATH}}
