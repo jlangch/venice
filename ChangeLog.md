@@ -14,13 +14,13 @@ All notable changes to this project will be documented in this file.
   Modify `{REPL_HOME}/repl.env` on Linux/MacOS, e.g.:
   
   ```
-  export JAVA_OPTS=-Xmx2G
+  export JAVA_OPTS=-Xms512M -Xmx2G
   ```
 
   Modify `{REPL_HOME}/repl.env.bat` on Windows, e.g.:
   
   ```
-  set JAVA_OPTS=-Xmx2G
+  set JAVA_OPTS=-Xms512M -Xmx2G
   ```
 
 ### Bugs
