@@ -17,18 +17,18 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- The REPL start scripts support now custom Java VM options
+- The REPL start scripts support now custom Java VM options and system properties:
 
   Modify `{REPL_HOME}/repl.env` on Linux/MacOS, e.g.:
   
   ```
-  export JAVA_OPTS=-Xms512M -Xmx2G
+  export JAVA_OPTS=-Xms512M -Xmx2G -Dmyapp.language=en-us
   ```
 
   Modify `{REPL_HOME}/repl.env.bat` on Windows, e.g.:
   
   ```
-  set JAVA_OPTS=-Xms512M -Xmx2G
+  set JAVA_OPTS=-Xms512M -Xmx2G -Dmyapp.language=en-us
   ```
 
 - The REPL start scripts support now *loadpaths* defined in the REPL env file
