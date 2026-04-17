@@ -83,7 +83,7 @@ REM # start the REPL
   -repl ^
   -loadpath "%LOADPATH%" ^
   -restartable ^
-  -colors ${COLOR_MODE}
+  -colors %COLOR_MODE%
 
  
 REM # if the REPL exits with exit code 99 restart the REPL otherwise
