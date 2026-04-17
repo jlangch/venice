@@ -349,7 +349,13 @@ public class ReplConfig {
 
     private static ColorMode getColorMode(final CommandLineArgs cli) {
         if (cli.switchPresent("-colors")) {
-            return ColorMode.Light;
+            final String mode = cli.switchValue("-colors", "null");
+            switch(mode.toLowerCase()) {
+                case "light": return ColorMode.Light;
+                case "dark":  return ColorMode.Dark;
+                case "null":  return ColorMode.Light;
+                default:      return ColorMode.None;
+            }
         }
         else if (cli.switchPresent("-colors-light")) {
             return ColorMode.Light;

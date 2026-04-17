@@ -88,7 +88,7 @@ while true; do
     -repl \
     -loadpath "${LOADPATH}" \
     -restartable \
-    -colors
+    -colors ${COLOR_MODE}
 
   # if the REPL exits with exit code  99 restart the REPL otherwise
   # exit the shell

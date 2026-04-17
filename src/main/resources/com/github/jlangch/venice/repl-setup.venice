@@ -126,18 +126,6 @@
       (sh "/bin/sh" "-c" "chmod u+x shebang-demo.venice" :dir scripts-dir))))
 
 
-(defn change-repl-launcher-color [cfg color-mode]
-  (if (== :none color-mode)
-    cfg  ;; do not change
-    (let [color-switch (case color-mode
-                             :light  "-colors"
-                             :dark   "-colors-darkmode"
-                                     "-colors")]
-      (if (str/contains? cfg "-colors-darkmode")
-        (str/replace-last cfg "-colors-darkmode" color-switch)
-        (str/replace-last cfg "-colors" color-switch)))))
-
-
 (defn setup-repl-config [libs-dir]
   ;; do not overwrite
   (when-not (io/exists-file? (io/file libs-dir "repl.json"))
@@ -159,6 +147,16 @@
          (str/join "\r\n"))))
 
 
+(defn- modify-color-mode-in-env-windows [env color-mode]
+  (let [cmode   (if (== :light color-mode) "light" "dark")
+        modify  (fn [line] (if (str/contains? line "COLOR_MODE=")
+                             (str "set COLOR_MODE=" cmode)
+                             line))]
+    (->> (str/split-lines env)
+         (map #(modify %))
+         (str/join "\r\n"))))
+
+
 (defn- setup-repl-launcher-windows [install-dir color-mode]
   ;; do not overwrite
   (when-not (io/exists-file? (io/file install-dir "repl.env.bat"))
@@ -166,6 +164,7 @@
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.win.env")
          (bytebuf-to-string <> :utf-8)
          (modify-java-home-in-env-windows <>)
+         (modify-color-mode-in-env-windows <> color-mode)
          (repl-setup/cr-lf <>)
          (io/spit (io/file install-dir "repl.env.bat") 
                    <> 
@@ -176,7 +175,6 @@
         (bytebuf-to-string <> :utf-8)
         (repl-setup/cr-lf <>)
         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
-        (change-repl-launcher-color <> color-mode)
         (io/spit (io/file install-dir "repl.bat") 
                 <> 
                 :encoding (charset-default-encoding))))
@@ -191,6 +189,16 @@
          (str/join "\n"))))
 
 
+(defn- modify-color-mode-in-env-unix [env color-mode]
+  (let [cmode   (if (== :dark color-mode) "dark" "light")
+        modify  (fn [line] (if (str/contains? line "COLOR_MODE=")
+                             (str "export COLOR_MODE=" cmode)
+                             line))]
+    (->> (str/split-lines env)
+         (map #(modify %))
+         (str/join "\n"))))
+
+
 (defn- setup-repl-launcher-unix [install-dir color-mode]
   ;; do not overwrite
   (when-not (io/exists-file? (io/file install-dir "repl.env"))
@@ -198,6 +206,7 @@
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/setup/repl.unix.env")
          (bytebuf-to-string <> :utf-8)
          (modify-java-home-in-env-unix <>)
+         (modify-color-mode-in-env-unix <> color-mode)
          (repl-setup/cr-lf <>)
          (io/spit (io/file install-dir "repl.env") 
                   <> 
@@ -208,7 +217,6 @@
         (bytebuf-to-string <> :utf-8)
         (repl-setup/cr-lf <>)
         (str/replace-all <> "{{INSTALL_PATH}}" (io/file-path install-dir))
-        (change-repl-launcher-color <> color-mode)
         (io/spit (io/file install-dir "repl.sh") 
                 <> 
                 :encoding (charset-default-encoding)))
