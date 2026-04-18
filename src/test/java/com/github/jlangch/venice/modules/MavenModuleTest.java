@@ -210,7 +210,7 @@ public class MavenModuleTest {
         final File tmp = Files.createTempDirectory("maven").toFile();
 
         try {
-            final String mavenVersion = getVeniceMavenVersion();
+            final String mavenVersion = getVeniceMavenVersionForInstallation();
 
             final String script =
                     "(do                                             \n" +
@@ -253,11 +253,11 @@ public class MavenModuleTest {
         }
     }
 
-    private static String getVeniceMavenVersion() {
+    private static String getVeniceMavenVersionForInstallation() {
         final String script =
                 "(do                      \n" +
                 "   (load-module :maven)  \n" +
-                "   maven/maven-version)  ";
+                "   maven/maven-version-for-installation)  ";
 
         return (String)new Venice().eval(script);
     }

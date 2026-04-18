@@ -71,9 +71,9 @@
 
 
 (defn install-maven [dir]
-  (println "Installing Maven ~{maven/maven-version} locally in the REPL/tools ...")
+  (println "Installing Maven ~{maven/maven-version-for-installation} locally in the REPL/tools ...")
   (if (io/internet-avail?)
-    (maven/install maven/maven-version dir)
+    (maven/install maven/maven-version-for-installation dir)
     (println *err* "Internet is not available! Maven cannot be downloaded!"))
   (println))
 

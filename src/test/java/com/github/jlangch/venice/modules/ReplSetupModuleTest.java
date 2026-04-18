@@ -46,6 +46,7 @@ public class ReplSetupModuleTest {
 
     // The Venice version to download from Maven, for staged REPL setup tests
     private static final String VERSION = "1.12.90";
+    private static final String MAVEN_VERSION = "3.9.6";
 
 
     @Test
@@ -56,7 +57,7 @@ public class ReplSetupModuleTest {
         final File tmp = Files.createTempDirectory("setup").toFile();
 
         try {
-            final String mavenVersion = getVeniceMavenVersion();
+            final String mavenVersion = getVeniceMavenVersionForInstallation();
 
             final String script =
                     "(do                                             \n" +
@@ -114,8 +115,6 @@ public class ReplSetupModuleTest {
         final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
-             final String mavenVersion = getVeniceMavenVersion();
-
              final String script =
                     "(do                                                                          \n" +
                     "   (load-module :repl-setup)                                                 \n" +
@@ -166,8 +165,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
                 assertTrue(new File(setup, "scripts/shebang-demo.venice").isFile());
 
-                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion).isDirectory());
-                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
+                 assertTrue(new File(setup, "tools/apache-maven-" + MAVEN_VERSION).isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-" + MAVEN_VERSION + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -190,8 +189,6 @@ public class ReplSetupModuleTest {
         final File setup = Files.createTempDirectory("setup").toFile();
 
         try {
-            final String mavenVersion = getVeniceMavenVersion();
-
             final String script =
                     "(do                                                                          \n" +
                     "   (load-module :repl-setup)                                                 \n" +
@@ -243,8 +240,8 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "scripts/sudoku.venice").isFile());
                 assertTrue(new File(setup, "scripts/shebang-demo.venice").isFile());
 
-                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion).isDirectory());
-                assertTrue(new File(setup, "tools/apache-maven-" + mavenVersion + "/bin/mvn").isFile());
+                assertTrue(new File(setup, "tools/apache-maven-" + MAVEN_VERSION).isDirectory());
+                assertTrue(new File(setup, "tools/apache-maven-" + MAVEN_VERSION + "/bin/mvn").isFile());
             }
             else {
                 fail("got " + result);
@@ -267,7 +264,7 @@ public class ReplSetupModuleTest {
         final File tmp = Files.createTempDirectory("setup").toFile();
 
         try {
-             final String mavenVersion = getVeniceMavenVersion();
+             final String mavenVersion = getVeniceMavenVersionForInstallation();
 
             final String script =
                     "(do                                            \n" +
@@ -325,7 +322,7 @@ public class ReplSetupModuleTest {
         System.out.println("Setup dir: " + setup.getPath());
 
         try {
-             final String mavenVersion = getVeniceMavenVersion();
+             final String mavenVersion = getVeniceMavenVersionForInstallation();
 
             final String script =
                     "(do                                                                                 \n" +
@@ -403,7 +400,7 @@ public class ReplSetupModuleTest {
         System.out.println("Setup dir: " + setup.getPath());
 
         try {
-            final String mavenVersion = getVeniceMavenVersion();
+            final String mavenVersion = getVeniceMavenVersionForInstallation();
 
             final String script =
                     "(do                                                                                 \n" +
@@ -469,11 +466,11 @@ public class ReplSetupModuleTest {
         }
     }
 
-    private static String getVeniceMavenVersion() {
+    private static String getVeniceMavenVersionForInstallation() {
         final String script =
                 "(do                      \n" +
                 "   (load-module :maven)  \n" +
-                "   maven/maven-version)  ";
+                "   maven/maven-version-for-installation)  ";
 
         return (String)new Venice().eval(script);
     }
