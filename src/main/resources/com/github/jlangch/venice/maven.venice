@@ -408,10 +408,16 @@
 (defn
   ^{ :arglists '("(maven/version)")
      :doc """
-          Runs the Maven version command and prints the commands output.
+          Runs the Maven version command and returns the Maven version 
+          (e.g. "3.9.15") parsed from the Maven command result.
 
-          Relies on the environment variable `MAVEN_HOME` to access Maven.
-          """
+          If run in the REPL tries to locate an installed Maven in the
+          `{REPL_HOME}/tools` dir. If not found tries environment variable 
+          `MAVEN_HOME` to access Maven.
+
+          If not run in REPL relies on the environment variable `MAVEN_HOME` 
+          to access Maven.
+         """
      :examples '(
           """
           (do
@@ -419,10 +425,53 @@
             (maven/version))
           """)
      :see-also '(
+          "maven/version-info"
           "maven/mvn"
           "maven/home-dir" )  }
 
   maven/version []
+
+  (-<> (with-out-str (maven/version-info))
+       (str/split-lines <>)
+       (first <>)
+       (str/split <> " ")
+       (third <>)))
+ 
+
+(defn
+  ^{ :arglists '("(maven/version-info)")
+     :doc """
+          Runs the Maven version command and prints the commands output.
+
+          If run in the REPL tries to locate an installed Maven in the
+          `{REPL_HOME}/tools` dir. If not found tries environment variable 
+          `MAVEN_HOME` to access Maven.
+
+          If not run in REPL relies on the environment variable `MAVEN_HOME` 
+          to access Maven.
+
+          Example output:
+
+          ```
+          Apache Maven 3.9.15 (98b2cdbfdb5f1ac8781f537ea9acccaed7922349)
+          Maven home: /Users/.../venice/tools/apache-maven-3.9.15
+          Java version: 1.8.0_462, vendor: Azul Systems, Inc., runtime: /Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/jre
+          Default locale: en_CH, platform encoding: UTF-8
+          OS name: "mac os x", version: "26.4.1", arch: "aarch64", family: "mac"
+          ```
+          """
+     :examples '(
+          """
+          (do
+            (load-module :maven)
+            (maven/version-info))
+          """)
+     :see-also '(
+          "maven/version"
+          "maven/mvn"
+          "maven/home-dir" )  }
+
+  maven/version-info []
 
   (let [binary  (maven/mvn-binary)]     
     (->> ((maven/exec) (str binary " --version") :throw-ex true)
