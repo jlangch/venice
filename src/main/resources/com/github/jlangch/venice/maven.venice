@@ -33,7 +33,7 @@
 
 (def exludes-junit ["org.junit.*" "org.opentest4j" "org.apiguardian,junit"])
 
-(def maven-version "3.9.6")
+(def maven-version "3.9.15")
 
 (def maven-binary-uri "https://archive.apache.org/dist/maven/maven-3/{{version}}/binaries/apache-maven-{{version}}-bin.zip")
 
