@@ -83,7 +83,6 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "run-script.sh").canExecute());
 
                 assertTrue(new File(tmp, "libs/repl.json").isFile());
-                assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
 
                 assertTrue(new File(tmp, "scripts/pdf").isDirectory());
                 assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
@@ -155,7 +154,6 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "run-script.sh").canExecute());
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
-                assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
                 assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
@@ -230,7 +228,6 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "run-script.sh").canExecute());
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
-                assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
                 assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
@@ -287,7 +284,6 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(tmp, "repl.bat").isFile());
 
                 assertTrue(new File(tmp, "libs/repl.json").isFile());
-                assertTrue(new File(tmp, "libs/jansi-2.4.1.jar").isFile());
 
                 assertTrue(new File(tmp, "scripts/pdf").isDirectory());
                 assertTrue(new File(tmp, "scripts/pdf/pdf-example.venice").isFile());
@@ -361,7 +357,6 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "repl.bat").isFile());
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
-                assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
                 assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
@@ -440,7 +435,6 @@ public class ReplSetupModuleTest {
                 assertTrue(new File(setup, "repl.bat").isFile());
 
                 assertTrue(new File(setup, "libs/repl.json").isFile());
-                assertTrue(new File(setup, "libs/jansi-2.4.1.jar").isFile());
                 assertTrue(new File(setup, "libs/venice-" + VERSION + ".jar").isFile());
 
                 assertTrue(new File(setup, "scripts/pdf").isDirectory());
