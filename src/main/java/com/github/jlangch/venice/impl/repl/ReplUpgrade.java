@@ -167,7 +167,7 @@ public class ReplUpgrade {
         }
     }
 
-    public static String upgrade() {
+    public static String upgrade(final boolean jansiLibIncluded) {
         final File replHome = ReplDirs.getReplHomeDir();
         final File libsDir = new File(replHome, "libs");
         final File upgradeDir = new File(replHome, ".upgrade");
@@ -198,6 +198,12 @@ public class ReplUpgrade {
 
             // remove the old Venice versions in {REPL_HOME}/libs
             oldLibsVeniceJars.forEach(f -> f.delete());
+
+            if (jansiLibIncluded) {
+                // remove Jansi jar libraries that are not needed anymore
+                final List<File> jansiJars = listJansiJars(libsDir);
+                jansiJars.forEach(f -> f.delete());
+            }
 
             return version;
         }
@@ -328,6 +334,12 @@ public class ReplUpgrade {
     private static List<File> listVeniceJars(final File dir) {
         return dir.isDirectory()
                 ? Arrays.asList(dir.listFiles(new RegexFileFilter("venice-.*[.]jar")))
+                : new ArrayList<>();
+    }
+
+    private static List<File> listJansiJars(final File dir) {
+        return dir.isDirectory()
+                ? Arrays.asList(dir.listFiles(new RegexFileFilter("jansi-.*[.]jar")))
                 : new ArrayList<>();
     }
 

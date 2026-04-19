@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.91] - 2026-04-xx
+## [1.13.0] - 2026-04-xx
 
 ### Enhancements
 
-- ...
+- The Jansi library `jansi-2.4.1.jar` is now included in the Venice jar!
 
 
 

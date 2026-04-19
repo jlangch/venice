@@ -371,9 +371,9 @@ test {
 
     testLogging {
         showStandardStreams = false
-        
+
         events "PASSED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
-        
+
         afterSuite { desc, result ->
             if (!desc.parent) { // will match the outermost suite
                 def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
@@ -398,6 +398,8 @@ jar {
 }
 
 shadowJar {
+    dependsOn 'downloadJansi'
+
     // https://github.com/johnrengelman/shadow/
     // https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Jar.html
 
@@ -428,6 +430,14 @@ shadowJar {
 
     archiveFileName = "${project.artifactId}-${project.version}.jar"
     archiveClassifier = ''  // default is '-all'
+
+    // Note: The Gradle shadow plugin fails to relocate the jansi JAR!
+    //
+    //       Therefore the jansi JAR is simply merged into the target
+    //       Venice JAR without relocation!
+    def jarJansi = file("${buildDir}/libs/jansi-${jansi_Version}.jar") 
+    from(zipTree(jarJansi))
+
 }
 
 /*
@@ -505,15 +515,15 @@ tasks.register('sonatypeBundle') {
     //                    deployment name "com.github.jlangch:venice:x.y.z"
     //                    scroll down to upload 'bundle.jar'
     // Browse artifacts:  https://central.sonatype.com/search?namespace=com.github.jlangch
-                  
+
     doLast {
        ant.zip(destfile:"build/sonatype-bundle.zip", basedir:"build/staging-deploy")
-       
+
        println "Bundle:              build/sonatype-bundle.zip"
        println "Publish manually at: https://central.sonatype.com/publishing"
        println "Deployment name:     ${sonatypeDeploymentName}"
     }
-    
+
     dependsOn clean, shadowJar, sourcesJar, javadocJar, publishMavenCustomPublicationToLocalMavenWithChecksumsRepository
 }
 
@@ -542,6 +552,51 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
         println "Publishing to Central Sonatype (mode=${sonatypePublishType})"
     }
 }
+
+
+task downloadJansi(type: Exec) {
+    commandLine "/bin/sh",
+                "-c",
+                "curl -s -o ${buildDir}/libs/jansi-${jansi_Version}.jar " + 
+                "https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/${jansi_Version}/jansi-${jansi_Version}.jar"
+
+    doFirst {
+        new File("${buildDir}/libs").mkdirs()
+        println "Downloading JAnsi ${jansi_Version}..."
+    }
+}
+
+
+/*
+tasks.register('standaloneJar', Jar) {
+    dependsOn 'shadowJar, downloadJansi'
+
+    archiveBaseName.set("venice-standalone")
+    archiveVersion.set("${project.version}")
+    destinationDirectory.set(layout.buildDirectory.dir('libs'))
+
+    manifest {
+        attributes 'Main-Class':             'com.github.jlangch.venice.Launcher',
+                   'Build-Date':             new Date().format("yyyy-MM-dd'T'HH:mm:ss"),
+                   'Implementation-Vendor':  'com.github.jlangch',
+                   'Implementation-Title':   'Venice (standalone)',
+                   'Implementation-Version': "${project.version}",
+                   'Specification-Vendor':   'com.github.jlangch',
+                   'Application-Name':       'Venice'
+    }
+
+    // Input JARs
+    def jar1 = file("build/libs/jansi-${jansi_Version}.jar")
+    def jar2 = file("build/libs/venice-${project.version}.jar")
+
+    // Include contents of both JARs
+    from(zipTree(jar1))
+    from(zipTree(jar2))
+
+    // Handle duplicate files
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+*/
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     description="Generate cheatsheet"
@@ -700,6 +755,7 @@ task updateReleaseVersion {
      }
 }
 
+
 task updateCopyright {
     doLast {
         def yearFrom = 2017
@@ -718,6 +774,7 @@ task updateCopyright {
         println "Updating copyright done."
     }
 }
+
 
 task updateReadMeCheatsheetRef {
     doLast {

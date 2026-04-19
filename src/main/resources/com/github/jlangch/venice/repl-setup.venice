@@ -338,7 +338,10 @@
         color-mode    (:color-mode options :none)        ;; {:none :light :dark}
         silent        (:silent options true)                     ;; {true false}
         minimal?      (:minimal options false)                   ;; {true false}
-        jansi?        (:jansi options true)                      ;; {true false}
+        ;jansi?        (:jansi options true)                      ;; {true false}
+        jansi?        false                  ;; Starting with Venice 1.13.0 the 
+                                             ;; Jansi library is included in the
+                                             ;; Venice jar!
         charset       (name (charset-default-encoding))
         install-dir   (-> (:install-dir options ".")
                           (io/file)
@@ -398,8 +401,9 @@
         (repl-setup/setup-scripts scripts-dir)
         (repl-setup/setup-shebang-demo-script install-dir scripts-dir))
 
-      (when-not (jansi-available? libs-dir)
-        (throw :jansi-not-available))
+      (when jansi?
+        (when-not (jansi-available? libs-dir)
+          (throw :jansi-not-available)))
 
       (println "Venice REPL setup completed.")
       (print-success-message install-dir)

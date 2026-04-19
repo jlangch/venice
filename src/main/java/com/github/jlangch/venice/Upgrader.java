@@ -32,7 +32,7 @@ public class Upgrader {
     public static void main(final String[] args) {
         try {
             System.out.println("REPL upgrading...");
-            final String newVersion = ReplUpgrade.upgrade();
+            final String newVersion = ReplUpgrade.upgrade(isJansiLibIncluded());
             System.out.println("REPL upgraded to version " + newVersion + "!");
             System.out.println("Starting upgraded REPL...\n");
             System.exit(0);
@@ -41,5 +41,9 @@ public class Upgrader {
             System.out.println("REPL upgrade failed! Reason: " + ex.getMessage());
             System.exit(1);
         }
+    }
+
+    public static boolean isJansiLibIncluded() {
+        return true;
     }
 }
