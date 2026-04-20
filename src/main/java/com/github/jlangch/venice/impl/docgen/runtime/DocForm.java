@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.modules.Modules;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
+import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -55,6 +56,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
+import com.github.jlangch.venice.util.Ansi;
 
 
 public class DocForm {
@@ -62,10 +64,10 @@ public class DocForm {
     public static VncString doc(final VncVal ref, final Env env) {
         if (ref == Constants.Nil) {
             return new VncString(
-                    "help on doc itself:          (doc doc)\n" +
-                    "list available modules:      (doc modules)\n" +
-                    "find loaded symbols:         (doc finder)\n" +
-                    "find loaded name spaces:     (doc ns-list)");
+                    "Help on doc itself:          " + bold("(doc doc)") + "\n" +
+                    "List available modules:      " + bold("(doc modules)") + "\n" +
+                    "Find loaded symbols:         " + bold("(doc finder)") + "\n" +
+                    "Find loaded name spaces:     " + bold("(doc ns-list)"));
         }
         else if (Types.isVncSymbol(ref)) {
             return docForSymbol((VncSymbol)ref, env);
@@ -447,6 +449,7 @@ public class DocForm {
             sb.append(argsList
                         .stream()
                         .map(s -> toString(s))
+                        .map(s -> bold(s))
                         .collect(Collectors.joining(", ")));
 
             sb.append("\n\n");
@@ -455,13 +458,13 @@ public class DocForm {
         final String fnDescr = toString(doc);
         if (!fnDescr.isEmpty()) {
             sb.append(MARKDOWN_FN_DESCR
-                        ? Markdown.parse(fnDescr).renderToText(width)
+                        ? renderMarkdown(fnDescr, width)
                         : fnDescr);
         }
 
         if (!examples.isEmpty()) {
             sb.append("\n\n");
-            sb.append("EXAMPLES:\n");
+            sb.append(bold("EXAMPLES:") + "\n");
             sb.append(examples
                         .stream()
                         .map(s -> toString(s))
@@ -471,7 +474,7 @@ public class DocForm {
 
         if (!seeAlso.isEmpty()) {
             sb.append("\n\n");
-            sb.append("SEE ALSO:\n   ");
+            sb.append(bold("SEE ALSO:") + "\n   ");
             sb.append(seeAlso
                         .stream()
                         .map(s -> toString(s))
@@ -499,6 +502,7 @@ public class DocForm {
             sb.append(argsList
                         .stream()
                         .map(s -> toString(s))
+                        .map(s -> bold(s))
                         .collect(Collectors.joining(", ")));
 
             sb.append("\n\n");
@@ -507,13 +511,13 @@ public class DocForm {
         final String fnDescr = toString(doc);
         if (!fnDescr.isEmpty()) {
             sb.append(MARKDOWN_FN_DESCR
-                        ? Markdown.parse(fnDescr).renderToText(width)
+                        ? renderMarkdown(fnDescr, width)
                         : fnDescr);
         }
 
         if (!examples.isEmpty()) {
             sb.append("\n\n");
-            sb.append("EXAMPLES:\n");
+            sb.append(bold("EXAMPLES:") + "\n");
             sb.append(examples
                         .stream()
                         .map(s -> toString(s))
@@ -523,7 +527,7 @@ public class DocForm {
 
         if (!seeAlso.isEmpty()) {
             sb.append("\n\n");
-            sb.append("SEE ALSO:\n   ");
+            sb.append(bold("SEE ALSO:") + "\n   ");
             sb.append(seeAlso
                         .stream()
                         .map(s -> toString(s))
@@ -551,7 +555,7 @@ public class DocForm {
             empty = false;
             final String descr = ((VncString)doc).getValue();
             sb.append(MARKDOWN_FN_DESCR
-                        ? Markdown.parse(descr).renderToText(width)
+                        ? renderMarkdown(descr, width)
                         : descr);
         }
 
@@ -560,7 +564,7 @@ public class DocForm {
             if (!examples_.isEmpty()) {
                 empty = false;
                 sb.append("\n\n");
-                sb.append("EXAMPLES:\n");
+                sb.append(bold("EXAMPLES:") + "\n");
                 sb.append(examples_
                             .stream()
                             .map(s -> toString(s))
@@ -572,8 +576,8 @@ public class DocForm {
 
         if (empty) {
             // no user supplied doc
-            sb.append("Protocol: " + protocol.getName().getValue() + "\n\n");
-            sb.append("Functions:\n");
+            sb.append(bold("Protocol: ") + protocol.getName().getValue() + "\n\n");
+            sb.append(bold("Functions:") + "\n");
             protocol
                 .getFunctions()
                 .entries()
@@ -651,6 +655,32 @@ public class DocForm {
                   .filter(p -> p.isRegistered(typeDef.getType()))
                   .sorted()
                   .collect(Collectors.toList());
+    }
+
+    private static boolean isReplAnsiTerminal() {
+        return REPL.isActive() && REPL.isAnsiTerminal();
+    }
+
+    private static String renderMarkdown(final String markdown, final int width) {
+        return isReplAnsiTerminal()
+                 ? Markdown.parse(markdown).renderToAnsiText(width)
+                 : Markdown.parse(markdown).renderToText(width);
+    }
+
+    private static String bold(final String text) {
+        return isReplAnsiTerminal() ? Ansi.bold(text): text;
+    }
+
+    private static String italic(final String text) {
+        return isReplAnsiTerminal() ? Ansi.italic(text): text;
+    }
+
+    private static String boldItalic(final String text) {
+        return isReplAnsiTerminal() ? Ansi.boldItalic(text): text;
+    }
+
+    private static String underline(final String text) {
+        return isReplAnsiTerminal() ? Ansi.underline(text): text;
     }
 
 

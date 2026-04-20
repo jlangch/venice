@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -117,6 +118,8 @@ public class REPL implements IRepl {
             throw new VncException("The REPL is already running!");
         }
 
+        replActive.set(true);
+
         try {
             final File replHome = ReplDirs.getReplHomeDir();
 
@@ -133,6 +136,7 @@ public class REPL implements IRepl {
             restartable = isRestartable(cli);
 
             ansiTerminal = isAnsiTerminal(cli, config);
+            replWithAnsiTerminal.set(ansiTerminal);
 
             macroexpand = isMacroexpand(cli);
 
@@ -187,6 +191,9 @@ public class REPL implements IRepl {
             ex.printStackTrace();
         }
         finally {
+            replActive.set(false);
+            replWithAnsiTerminal.set(false);
+
             semaphore.release();
             veniceAdapter.close();
             ThreadContext.remove();
@@ -218,6 +225,14 @@ public class REPL implements IRepl {
         return terminal.getHeight();
     }
 
+
+    public static boolean isActive() {
+        return replActive.get();
+    }
+
+    public static boolean isAnsiTerminal() {
+        return replWithAnsiTerminal.get();
+    }
 
     private void repl(
             final CommandLineArgs cli,
@@ -1614,6 +1629,9 @@ public class REPL implements IRepl {
 
     private final static String HISTORY_FILE = ".repl.history";
 
+
+    private static final AtomicBoolean replActive = new AtomicBoolean(false);
+    private static final AtomicBoolean replWithAnsiTerminal = new AtomicBoolean(false);
 
     private final Semaphore semaphore = new Semaphore(1);
 

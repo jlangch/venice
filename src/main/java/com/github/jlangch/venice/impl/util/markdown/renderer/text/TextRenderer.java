@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.UrlChunk;
+import com.github.jlangch.venice.util.Ansi;
 
 
 public class TextRenderer {
@@ -181,7 +182,7 @@ public class TextRenderer {
     }
 
     private String render(final TitleBlock block) {
-        return "\n" + block.getText() + "\n";
+        return "\n" + bold(block.getText()) + "\n";
     }
 
     private String render(final TextBlock block) {
@@ -239,7 +240,14 @@ public class TextRenderer {
         s = StringUtil.replace(s, "&nbsp;", "\u00A0", -1, false);
         s = StringUtil.replace(s, "&ensp;", "\u00A0\u00A0", -1, false);
         s = StringUtil.replace(s, "&emsp;", "\u00A0\u00A0\u00A0\u00A0", -1, false);
-        return s;
+
+        switch(chunk.getFormat()) {
+            case NORMAL:       return s;
+            case ITALIC:       return italic(s);
+            case BOLD:         return bold(s);
+            case BOLD_ITALIC:  return boldItalic(s);
+            default:           return s;
+        }
     }
 
     private String render(final LineBreakChunk chunk) {
@@ -255,9 +263,18 @@ public class TextRenderer {
             return "";
         }
         else {
-            return chunk.getCaption().isEmpty()
-                ? chunk.getUrl()
-                : chunk.getCaption() + " (" + chunk.getUrl() + ")";
+            final String url = chunk.getUrl();
+            final String caption = chunk.getCaption();
+            if (ansi) {
+                return caption.isEmpty()
+                        ? underline(url)
+                        : italic(caption) + " (" + underline(url) + ")";
+            }
+            else {
+                return caption.isEmpty()
+                    ? url
+                    : caption + " (" + url + ")";
+            }
         }
     }
 
@@ -304,6 +321,21 @@ public class TextRenderer {
         return (int)Math.log10(x);
     }
 
+    private String bold(final String text) {
+        return ansi ? Ansi.bold(text): text;
+    }
+
+    private String italic(final String text) {
+        return ansi ? Ansi.italic(text): text;
+    }
+
+    private String boldItalic(final String text) {
+        return ansi ? Ansi.boldItalic(text): text;
+    }
+
+    private String underline(final String text) {
+        return ansi ? Ansi.underline(text): text;
+    }
 
     private static final char BULLET = 'o';
 

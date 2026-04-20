@@ -41,11 +41,15 @@
   { ;; decorations
     :reset              "[0m"  ;; reset all styles and colors
     :bold               "[1m"
+    :bold-off           "[21m"
     :dim                "[2m"
+    :dim-off            "[22m"
     :italic             "[3m"
-    :blink-slow         "[5m"
+    :italic-off         "[23m"
     :underline          "[4m"
     :underline-off      "[24m"
+    :blink-slow         "[5m"
+    :blink-slow-off     "[25m"
     :reverse            "[7m"
     :reverse-off        "[27m"
     :strikethrough      "[9m"
