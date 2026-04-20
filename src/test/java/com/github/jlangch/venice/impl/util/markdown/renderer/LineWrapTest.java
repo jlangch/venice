@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.util.markdown.renderer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -326,4 +328,47 @@ public class LineWrapTest {
             assertEquals(wrapped[ii], LineWrap.softWrap(test, 50).get(ii));
         }
     }
+
+
+
+    @Test
+    public void test_break_in_ansi_seq() {
+        //                 0     123456
+        final String s1 = "\u001b[25m..";
+
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s1, 0));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s1, 1));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s1, 2));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s1, 3));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s1, 4));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s1, 5));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s1, 6));
+
+
+        //                 012     3456
+        final String s2 = "..\u001b[25m";
+
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s2, 0));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s2, 1));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s2, 2));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s2, 3));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s2, 4));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s2, 5));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s2, 6));
+
+
+        //                 012     345678
+        final String s3 = "..\u001b[25m..";
+
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s3, 0));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s3, 1));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s3, 2));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s3, 3));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s3, 4));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s3, 5));
+        assertTrue (LineWrap.isBreakWithinAnsiSeq(s3, 6));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s3, 7));
+        assertFalse(LineWrap.isBreakWithinAnsiSeq(s3, 8));
+     }
+
 }

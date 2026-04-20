@@ -93,13 +93,14 @@ public class LineWrap {
                 }
 
                 if (pos >= minWidth) {
-                    // soft wrap
+                    // soft wrap position found
                     final String part = rest.substring(0, pos).trim();
                     rest = rest.substring(pos).trim();
                     lines.add(part);
                 }
                 else {
-                    // hard wrap
+                    // could not find a soft break between minWidth..maxWidth
+                    // ⇒ hard wrap at maxWidth
                     final String part = rest.substring(0, maxWidth).trim();
                     rest = rest.substring(maxWidth).trim();
                     lines.add(part);
@@ -153,6 +154,7 @@ public class LineWrap {
             //case ':':
             case ',':
             case ';':
+            case '/':
             case '!':
             case '?':
                 return true;
@@ -160,4 +162,50 @@ public class LineWrap {
                 return false;
         }
     }
+
+    private static boolean isAnsiSeqStart(final int ch) {
+        return ch == '\u001b';
+    }
+
+    public static boolean isBreakWithinAnsiSeq(final String line, final int pos) {
+        // case:     123      4 56  7
+        // pos:      ↓↓↓      ↓ ↓↓  ↓
+        //       ".....\u001b[25m....."
+        final int startAnsiSeq = findAnsiSeqStartBackward(line, pos);
+        if (startAnsiSeq < 0) return false;
+
+        final int endAnsiSeq = findAnsiSeqEndForward(line, startAnsiSeq);
+        if (endAnsiSeq < 0) return true;
+        if (endAnsiSeq < pos) return false;
+        return true;
+    }
+
+    private static int findAnsiSeqStartBackward(final String line, final int startPos) {
+        // ANSI sequences used follow this pattern:  "\u001b[5m", "\u001b[25m"
+
+       int pos = startPos-1;
+        while (pos >= 0) {
+            if (isAnsiSeqStart(line.charAt(pos))) {
+                return pos;
+            }
+            pos--;
+        }
+
+        return -1;
+    }
+
+    private static int findAnsiSeqEndForward(final String line, final int posAnsiSeqStart) {
+        // ANSI sequences used follow this pattern:  "\u001b[5m", "\u001b[25m"
+
+        int pos = posAnsiSeqStart;
+        while (pos < line.length()) {
+            if ('m' == line.charAt(pos)) {
+                return pos;
+            }
+            pos++;
+        }
+
+        return -1;
+    }
+
 }

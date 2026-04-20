@@ -265,10 +265,10 @@ public class DocForm {
                                     .max()
                                     .orElse(0);
 
-        sb.append(String.format("Custom type: %s", typeDef.getType()));
+        sb.append(bold("Custom type: ") + typeDef.getType());
 
         sb.append("\n\n");
-        sb.append("Fields: \n");
+        sb.append(bold("Fields: ") + "\n");
         typeDef.getFieldDefs().forEach(f -> sb.append(String.format(
                                                         "   %s: %s\n",
                                                         StringUtil.padRight(
@@ -287,7 +287,7 @@ public class DocForm {
         if (!protocols.isEmpty()) {
             protocols.forEach(p -> {
                 sb.append("\n")
-                  .append("Protocol: ")
+                  .append(bold("Protocol: "))
                   .append(p.getName().getName())
                   .append("\n");
 
@@ -342,11 +342,11 @@ public class DocForm {
         final StringBuilder sb = new StringBuilder();
         sb.append(String.format("Custom choice type: %s\n", type.getValue()));
         if (!types.isEmpty()) {
-            sb.append("Types: \n");
+            sb.append(bold("Types: ") + "\n");
             typeDef.typesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
         }
         if (!values.isEmpty()) {
-            sb.append("Values: \n");
+            sb.append(bold("Values: ") + "\n");
             typeDef.valuesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
         }
 
@@ -446,6 +446,8 @@ public class DocForm {
         final StringBuilder sb =  new StringBuilder();
 
         if (!argsList.isEmpty()) {
+            if (isReplAnsiTerminal()) sb.append("\n");
+
             sb.append(argsList
                         .stream()
                         .map(s -> toString(s))
@@ -499,6 +501,8 @@ public class DocForm {
         final StringBuilder sb =  new StringBuilder();
 
         if (!argsList.isEmpty()) {
+            if (isReplAnsiTerminal()) sb.append("\n");
+
             sb.append(argsList
                         .stream()
                         .map(s -> toString(s))
