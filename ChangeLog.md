@@ -11,9 +11,9 @@ All notable changes to this project will be documented in this file.
 
 - The Jansi library `jansi-2.4.1.jar` is now included in the Venice jar!
 
-- Improved the built-in 'doc' function
+- Improved the built-in `doc` function
 
-  The built-in 'doc' function prints the markdown documention now with a 
+  The built-in `doc` function prints the markdown documentation now with a 
   text renderer that uses ANSI styles (bold, italic, ...) when run within a 
   REPL.
   
