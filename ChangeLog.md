@@ -36,13 +36,13 @@ All notable changes to this project will be documented in this file.
   Modify `{REPL_HOME}/repl.env` on Linux/MacOS, e.g.:
   
   ```
-  export LOADPATH=/home/data/scripts
+  export LOADPATH=/data/scripts
   ```
 
   Modify `{REPL_HOME}/repl.env.bat` on Windows, e.g.:
   
   ```
-  set LOADPATH=C:\home\data\scripts
+  set LOADPATH=C:\data\scripts
   ```
 
 ### Bugs
