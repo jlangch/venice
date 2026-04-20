@@ -51,8 +51,8 @@ java -jar venice-1.12.90.jar -setup -colors -dir ./repl
 
 For a REPL run in a darkmode terminal use the option `-colors-dark` instead of
 `-colors`. This can also be changed later on by modifying the environment variable
-`COLOR_MODE` in the REPL env file  `{REPL_HOME}/repl.env` on Linux/MacOS or 
-`{REPL_HOME}/repl.env.bat`.
+`COLOR_MODE` in the REPL env file  `{REPL_HOME}/repl.env` on *Linux/MacOS* or 
+`{REPL_HOME}/repl.env.bat` on *Windows*.
 
 The `-setup` option will cause the Venice setup to:
   - create the setup dir given by the option `-dir ./repl` if it does not exist
