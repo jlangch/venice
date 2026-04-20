@@ -13,10 +13,12 @@ All notable changes to this project will be documented in this file.
 
 - Improved the built-in 'doc' function
 
-  The built-in 'doc' function prints the markdown documention now with an 
-  text renderer that uses ANSI styles when run within a REPL.
+  The built-in 'doc' function prints the markdown documention now with a 
+  text renderer that uses ANSI styles (bold, italic, ...) when run within a 
+  REPL.
   
   E.g.: `(doc)`, `(doc doc)`, `(doc map)`
+
 
 
 ## [1.12.90] - 2026-04-17
