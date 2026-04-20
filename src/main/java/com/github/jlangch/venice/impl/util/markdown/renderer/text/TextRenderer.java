@@ -268,7 +268,7 @@ public class TextRenderer {
             if (ansi) {
                 return caption.isEmpty()
                         ? underline(url)
-                        : italic(caption) + " (" + underline(url) + ")";
+                        : caption + " → " + underline(url);
             }
             else {
                 return caption.isEmpty()
