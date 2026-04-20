@@ -1390,7 +1390,7 @@ public class IOFunctions {
                         "  * a `java.io.File`          \n" +
                         "  * a `java.nio.file.Path`    \n" +
                         "  * a `java.net.URI`\n\n" +
-                        "Arguments:¶" +
+                        "*Arguments:*¶" +
                         "\u2001**protocol**\u2003the name of the protocol to use.¶" +
                         "\u2001**host**\u2003the name of the host.¶" +
                         "\u2001**port**\u2003the port number on the host.¶" +
@@ -1474,7 +1474,7 @@ public class IOFunctions {
                         "  * a `java.io.File`          \n" +
                         "  * a `java.nio.file.Path`    \n" +
                         "  * a `java.net.URL`        \n\n" +
-                        "Arguments:¶" +
+                        "*Arguments:*¶" +
                         "\u2001**scheme**\u2003Scheme name¶" +
                         "\u2001**userInfo**\u2003User name and authorization information¶" +
                         "\u2001**host**\u2003Host name¶" +
@@ -2137,7 +2137,7 @@ public class IOFunctions {
                         "Source must be a file or a string (file path), dest must be a file, " +
                         "a string (file path), or an `java.io.OutputStream`." +
                         "\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| [![width: 25%]] | [![width: 75%]] |\n" +
                         "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
                         "| :copy-attributes true/false | e.g.: if true copy attributes to the new file, defaults to false |\n" +
@@ -2340,7 +2340,7 @@ public class IOFunctions {
                         "Source must be a file or a string (file path), dest must be a file, " +
                         "a string (file path), or an `java.io.OutputStream`." +
                         "\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| [![width: 25%]] | [![width: 75%]] |\n" +
                         "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
                         "| :copy-attributes true/false | e.g.: if true copy attributes to the new file, defaults to false |\n" +
@@ -2447,7 +2447,7 @@ public class IOFunctions {
                         "Moves source to target. Returns nil or throws a VncException. " +
                         "Source and target must be a file or a string (file path)." +
                         "\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| [![width: 20%]] | [![width: 80%]] |\n" +
                         "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
                         "| :atomic-move true/false | e.g.: if true move the file as an atomic file system operation, defaults to false |\n")
@@ -2517,7 +2517,7 @@ public class IOFunctions {
                         "destination directory. \n" +
                         "src-dir and  dst-dir must be a file or a string (file path)." +
                         "\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| [![width: 20%]] | [![width: 80%]] |\n" +
                         "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
                         "| :atomic-move true/false | e.g.: if true move the file as an atomic file system operation, defaults to false |" +
@@ -2808,7 +2808,7 @@ public class IOFunctions {
                     .doc(
                         "Downloads the content from the uri and reads it as text (string) " +
                         "or binary (bytebuf). Supports http and https protocols!\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :binary b           | e.g.: `:binary true`, defaults to false |\n" +
                         "| :user-agent agent   | e.g.: `:user-agent \"Mozilla\"`, defaults to nil |\n" +
                         "| :encoding enc       | e.g.: `:encoding :utf-8,` defaults to :utf-8 |\n" +
@@ -2825,7 +2825,7 @@ public class IOFunctions {
                         "                        [1] progress (0..100%) ¶" +
                         "                        [2] status {:start :progress :end :failed}|\n" +
                         "| :debug-fn fn        | an optional debug function that takes a message as argument |\n\n" +
-                        "Note:¶" +
+                        "**Note:**¶" +
                         "If the server returns the HTTP response status code 403 (*Access Denied*) " +
                         "sending a user agent like \"Mozilla\" may fool the website and solve the " +
                         "problem.\n\n" +

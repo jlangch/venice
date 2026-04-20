@@ -257,7 +257,7 @@ public class IOFunctionsStreams {
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`    \n\n" +
                         "`io/file-in-stream` supports load paths. See the `loadpath/paths` " +
                         "doc for a description of the *load path* feature.\n\n" +
-                        "Note: The caller is responsible for closing the stream!")
+                        "**Note:** The caller is responsible for closing the stream!")
                     .seeAlso(
                         "io/slurp", "io/slurp-stream",
                         "io/string-in-stream", "io/bytebuf-in-stream",
@@ -316,12 +316,12 @@ public class IOFunctionsStreams {
                         "f may be a:  \n\n" +
                         " * string file path, e.g: \"/temp/foo.json\" \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")` \n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
                         "`io/file-out-stream` supports load paths. See the `loadpath/paths` " +
                         "doc for a description of the *load path* feature.\n\n" +
-                       "Note: The caller is responsible for closing the stream!")
+                       "**Note:** The caller is responsible for closing the stream!")
                     .seeAlso(
                         "io/slurp", "io/slurp-stream",
                         "io/string-in-stream", "io/bytebuf-in-stream",
@@ -387,9 +387,9 @@ public class IOFunctionsStreams {
                     .arglists("(io/string-in-stream s & options)")
                     .doc(
                         "Returns a `java.io.InputStream` for the string s.                     \n\n" +
-                        "Options:                                                              \n\n" +
+                        "*Options:*                                                              \n\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n\n" +
-                        "Note: The caller is responsible for closing the stream!")
+                        "**Note:** The caller is responsible for closing the stream!")
                     .examples(
                         "(let [text \"The quick brown fox jumped over the lazy dog\"]  \n" +
                         "  (try-with [is (io/string-in-stream text)]                   \n" +
@@ -433,7 +433,7 @@ public class IOFunctionsStreams {
                     .arglists("(io/bytebuf-in-stream buf)")
                     .doc(
                         "Returns a `java.io.InputStream` from a bytebuf.\n\n" +
-                        "Note: The caller is responsible for closing the stream!")
+                        "**Note:** The caller is responsible for closing the stream!")
                     .examples(
                         "(try-with [is (io/bytebuf-in-stream (bytebuf [97 98 99]))] \n"+
                         "    ; do something with is                                 \n" +
@@ -470,7 +470,7 @@ public class IOFunctionsStreams {
                         "Returns a new `java.io.ByteArrayOutputStream`.\n\n" +
                         "Dereferencing a :ByteArrayOutputStream returns the " +
                         "captured bytebuf.\n\n" +
-                        "Note: The caller is responsible for closing the stream!")
+                        "**Note:** The caller is responsible for closing the stream!")
                     .examples(
                         "(try-with [os (io/bytebuf-out-stream)]                  \n" +
                         "   (io/spit-stream os (bytebuf [97 98 99]) :flush true) \n" +
@@ -503,7 +503,7 @@ public class IOFunctionsStreams {
                     .arglists("(io/uri-stream uri)")
                     .doc(
                         "Returns a `java.io.InputStream` from the uri.\n\n" +
-                        "Note: The caller is responsible for closing the stream!")
+                        "**Note:** The caller is responsible for closing the stream!")
                     .examples(
                         "(let [url \"https://www.w3schools.com/xml/books.xm\"]     \n" +
                         "  (try-with [is (io/uri-stream url)]                      \n" +
@@ -579,7 +579,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps a `java.io.OutputStream` os with a `java.io.BufferedWriter` using an optional " +
                         "encoding (defaults to :utf-8).\n\n" +
-                        "Note: The caller is responsible for closing the writer!")
+                        "**Note:** The caller is responsible for closing the writer!")
                     .examples(
                         "(try-with [os (io/bytebuf-out-stream)                        \n" +
                         "           wr (io/wrap-os-with-buffered-writer os :utf-8)]   \n" +
@@ -622,7 +622,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps an `java.io.OutputStream` os with a `java.io.PrintWriter` using an optional " +
                         "encoding (defaults to :utf-8).\n\n"  +
-                        "Note: The caller is responsible for closing the writer!")
+                        "**Note:** The caller is responsible for closing the writer!")
                     .examples(
                         "(let [os (io/bytebuf-out-stream)]                            \n" +
                         "  (try-with [pr (io/wrap-os-with-print-writer os :utf-8)]    \n" +
@@ -666,7 +666,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps an `java.io.InputStream` is with a `java.io.BufferedReader` using an optional " +
                         "encoding (defaults to :utf-8).\n\n" +
-                        "Note: The caller is responsible for closing the reader!")
+                        "**Note:** The caller is responsible for closing the reader!")
                     .examples(
                         "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]    \n" +
                         "  (try-with [is   (io/bytebuf-in-stream data)                             \n" +
@@ -719,7 +719,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps a `:java.io.InputStream` is with a `:java.io.GZIPInputStream` " +
                         "to read compressed data in the GZIP format.\n\n" +
-                        "Note: The caller is responsible for closing the reader!")
+                        "**Note:** The caller is responsible for closing the reader!")
                     .examples(
                         "(let [text      \"hello, hello, hello\"                        \n" +
                         "      gzip-buf  (-> (bytebuf-from-string text :utf-8)          \n" +
@@ -767,7 +767,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps a `:java.io.OutputStream` is with a `:java.io.GZIPOutputStream` " +
                         "to write compressed data in the GZIP format.\n\n" +
-                        "Note: The caller is responsible for closing the reader!")
+                        "**Note:** The caller is responsible for closing the reader!")
                     .examples(
                         "(let [text  \"hello, hello, hello\"                         \n" +
                         "      bos   (io/bytebuf-out-stream)]                        \n" +
@@ -816,7 +816,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps a `:java.io.InputStream` is with a `:java.io.InflaterInputStream` " +
                         "to read compressed data in the 'zlib' format.\n\n" +
-                        "Note: The caller is responsible for closing the reader!")
+                        "**Note:** The caller is responsible for closing the reader!")
                     .examples(
                         "(let [text      \"hello, hello, hello\"                        \n" +
                         "      zlib-buf  (-> (bytebuf-from-string text :utf-8)          \n" +
@@ -864,7 +864,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps a `:java.io.OutputStream` is with a `:java.io.DeflaterOutputStream` " +
                         "to write compressed data in the 'zlib' format.\n\n" +
-                        "Note: The caller is responsible for closing the reader!")
+                        "**Note:** The caller is responsible for closing the reader!")
                     .examples(
                         "(let [text  \"hello, hello, hello\"                             \n" +
                         "      bos   (io/bytebuf-out-stream)]                            \n" +
@@ -917,7 +917,7 @@ public class IOFunctionsStreams {
                         " * `java.nio.file.Path`                                           \n" +
                         " * `java.io.OutputStream`                                         \n" +
                         " * `java.io.Writer`                                               \n" +
-                    "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
                         "`io/buffered-writer` supports load paths. See the `loadpath/paths` " +
@@ -1018,7 +1018,7 @@ public class IOFunctionsStreams {
                             "Creates a `java.io.StringWriter`.\n\n" +
                             "Dereferencing a string writer returns the " +
                             "captured string.\n\n" +
-                            "Note: The caller is responsible for closing the writer!")
+                            "**Note:** The caller is responsible for closing the writer!")
                         .examples(
                             "(try-with [sw (io/string-writer)]     \n" +
                             "  (print sw 100)                      \n" +
@@ -1058,11 +1058,11 @@ public class IOFunctionsStreams {
                         " * `java.io.Reader`                                               \n" +
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
-                        "Options:                                                          \n\n" +
+                        "*Options:*                                                          \n\n" +
                         "| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |  \n\n" +
                         "`io/buffered-reader` supports load paths. See the `loadpath/paths`" +
                         "doc for a description of the *load path* feature.                 \n\n" +
-                        "Note: The caller is responsible for closing the reader!")
+                        "**Note:** The caller is responsible for closing the reader!")
                 .examples(
                         "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]     \n" +
                         "  (try-with [rd (io/buffered-reader data :encoding :utf-8)]                \n" +
@@ -1186,7 +1186,7 @@ public class IOFunctionsStreams {
                         "(io/string-reader s)" )
                     .doc(
                         "Creates a `java.io.StringReader` from a string.\n\n" +
-                        "Note: The caller is responsible for closing the reader!")
+                        "**Note:** The caller is responsible for closing the reader!")
                     .examples(
                         "(try-with [rd (io/string-reader \"1234\")]       \n" +
                         "  (println (read-char rd))                       \n" +
@@ -1224,7 +1224,7 @@ public class IOFunctionsStreams {
                         "Creates a new capturing print stream.\n\n" +
                         "Dereferencing a capturing print stream returns the " +
                         "captured string.\n\n" +
-                        "Note: The caller is responsible for closing the stream!")
+                        "**Note:** The caller is responsible for closing the stream!")
                     .examples(
                         "(try-with [ps (io/capturing-print-stream)]    \n" +
                         "  (binding [*out* ps]                         \n" +

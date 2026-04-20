@@ -74,7 +74,7 @@ public class JsonFunctions {
                         "(json/write-str val & options)")
                     .doc(
                         "Writes the val to a JSON string.\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :pretty b            | Enables/disables pretty printing. " +
                         "                         Defaults to false. |\n" +
                         "| :decimal-as-double b | If true emit a decimal as double else as string. " +
@@ -129,7 +129,7 @@ public class JsonFunctions {
                         " * `java.nio.Path`                                           \n" +
                         " * `java.io.OutputStream`                                    \n" +
                         " * `java.io.Writer`                                          \n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :pretty b            | Enables/disables pretty printing. " +
                         "                         Defaults to false. |\n" +
                         "| :decimal-as-double b | If true emit a decimal as double else as string. " +
@@ -226,7 +226,7 @@ public class JsonFunctions {
                     .arglists("(json/read-str s & options)")
                     .doc(
                         "Reads a JSON string and returns it as a Venice datatype.\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :key-fn fn   | Single argument function called on JSON property names; " +
                         "                 return value will replace the property names in the output. " +
                         "                 Default is 'identity', use 'keyword' to get keyword " +
@@ -297,7 +297,7 @@ public class JsonFunctions {
                         " * `java.nio.Path`                                           \n" +
                         " * `java.io.InputStream`                                     \n" +
                         " * `java.io.Reader`                                          \n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :key-fn fn   | Single-argument function called on JSON property " +
                         "                 names; return value will replace the property names " +
                         "                 in the output. Default is 'identity', use 'keyword' " +
@@ -393,7 +393,7 @@ public class JsonFunctions {
                         "(json/pretty-print s & options)")
                     .doc(
                         "Pretty prints a JSON string\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :indent s    | The indent for indented output. Must contain spaces or " +
                         "                 tabs only. Defaults to two spaces. |")
                     .examples(

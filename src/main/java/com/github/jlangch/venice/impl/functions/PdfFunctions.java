@@ -95,7 +95,7 @@ public class PdfFunctions {
                         "(pdf/render xhtml & options)")
                     .doc(
                         "Renders a PDF.\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :base-url url     | a base url for resources . E.g.: \"classpath:/\"  |\n" +
                         "| :resources resmap | a resource map for dynamic resources              |\n")
                     .examples(
@@ -169,7 +169,7 @@ public class PdfFunctions {
                     .doc(
                         "Adds a watermark text to the pages of a PDF. The passed PDF pdf is " +
                         "a bytebuf. Returns the new PDF as a bytebuf.\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :text s              | watermark text (string), defaults to \"WATERMARK\" |\n" +
                         "| :font-size n         | font size in pt (double), defaults to 24.0 |\n" +
                         "| :font-char-spacing n | font character spacing (double), defaults to 0.0 |\n" +
@@ -513,7 +513,7 @@ public class PdfFunctions {
                         "Creates a PDF from simple text. The tool process line-feeds '\\n' " +
                         "and form-feeds. To start a new page just insert a form-feed " +
                         "marker \"<form-feed>\".\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :font-size n      | font size in pt (double), defaults to 9.0 |\n" +
                         "| :font-weight n    | font weight (0...1000) (long), defaults to 200 |\n" +
                         "| :font-monospace b | if true use monospaced font, defaults to false |\n")

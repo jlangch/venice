@@ -74,7 +74,7 @@ public class IOFunctionsFileWatcher {
                         "does. Calls the optional `failure-fn` if errors occur. On closing " +
                         "the watcher `termination-fn` is called." +
                         "\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| [![width: 25%]] | [![width: 75%]] |\n" +
                         "| :include-all-subdirs true/false | " +
                                "If `true` includes in addtion to the main dir recursively all subdirs. " +
@@ -90,7 +90,7 @@ public class IOFunctionsFileWatcher {
                                "A one argument function called when the watcher terminates. It receives " +
                                "the main watch dir.  Defaults to `nil`.|\n" +
                         "\n\n" +
-                        "Specific MacOS options (fswatch): \n\n" +
+                        "*Specific MacOS options (fswatch):* \n\n" +
                         "| [![width: 25%]] | [![width: 75%]] |\n" +
                         "| :fswatch-monitor m | " +
                                "An optional platform dependent monitor {:fsevents_monitor, " +
@@ -121,7 +121,7 @@ public class IOFunctionsFileWatcher {
                         "   $ brew install fswatch  \n" +
                         "```                        \n" +
                         "\n" +
-                        "Documentation:\n" +
+                        "**Documentation:**\n" +
                         "* [fswatch Github](https://github.com/emcrisostomo/fswatch/)\n" +
                         "* [fswatch Manual](https://emcrisostomo.github.io/fswatch/doc/1.17.1/fswatch.html)\n" +
                         "* [fswatch Installation](https://formulae.brew.sh/formula/fswatch)\n")

@@ -85,7 +85,7 @@ public class IOFunctionsSpitSlurp {
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
                         "Returns the a list of strings.                                    \n\n" +
-                        "Options:                                                          \n\n" +
+                        "*Options:*                                                          \n\n" +
                         "| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |  \n\n" +
                         "`io/slurp-lines` supports load paths. See the `loadpath/paths` " +
                         "doc for a description of the *load path* feature.")
@@ -244,12 +244,12 @@ public class IOFunctionsSpitSlurp {
                         " * `java.net.URI`                                                     \n\n" +
                         "Returns a `bytebuf` or string depending on the passed :binary         " +
                         "option.                                                               \n\n" +
-                        "Options:                                                              \n\n" +
+                        "*Options:*                                                              \n\n" +
                         "| :binary true/false | e.g.: `:binary true`, defaults to false |      \n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n\n" +
                         "`io/slurp` supports load paths. See the `loadpath/paths` doc for a    " +
                         "description of the *load path* feature.                               \n\n" +
-                        "Note: For HTTP and HTTPS downloads prefer to use `io/download`.       ")
+                        "**Note:** For HTTP and HTTPS downloads prefer to use `io/download`.       ")
                     .seeAlso(
                         "io/slurp-lines", "io/slurp-stream", "io/slurp-reader",
                         "io/spit", "io/download", "loadpath/paths")
@@ -391,7 +391,7 @@ public class IOFunctionsSpitSlurp {
                         "Opens file f, writes content, and then closes f. " +
                         "f may be a file or a string (file path). " +
                         "The content may be a string or a bytebuf.\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
                         "`io/spit` supports load paths. See the `loadpath/paths` " +
@@ -521,10 +521,10 @@ public class IOFunctionsSpitSlurp {
                         "For string data an optional encoding can be specified.                \n\n" +
                         "Returns the result as a `bytebuf` or string depending on the          \n" +
                         "passed :binary option.                                                \n\n" +
-                        "Options:                                                              \n\n" +
+                        "*Options:*                                                              \n\n" +
                         "| :binary true/false | e.g.: `:binary true`, defaults to false |      \n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n\n" +
-                        "Note: \n\n" +
+                        "**Note:**\n\n" +
                         "`io/slurp-stream` offers the same functionality as `io/slurp` but it " +
                         "opens more flexibility with sandbox configuration. `io/slurp` can be " +
                         "blacklisted to prevent reading data from the filesystem and still having " +
@@ -650,10 +650,10 @@ public class IOFunctionsSpitSlurp {
                         "If content is of type string an optional encoding (defaults to " +
                         "UTF-8) is supported. The stream can optionally be flushed after " +
                         "the operation.\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :flush true/false | e.g.: :flush true, defaults to false |\n" +
                         "| :encoding enc     | e.g.: :encoding :utf-8, defaults to :utf-8 |\n\n" +
-                        "Note: \n\n" +
+                        "**Note:** \n\n" +
                         "`io/spit-stream` offers the same functionality as `io/spit` but it " +
                         "opens more flexibility with sandbox configuration. `io/spit` can be " +
                         "blacklisted to prevent writing data to the filesystem and still having " +
@@ -728,9 +728,9 @@ public class IOFunctionsSpitSlurp {
                     .doc(
                         "Writes text to the `java.io.Writer` wr. The writer can optionally be " +
                         "flushed after the operation.\n\n" +
-                        "Options: \n\n" +
+                        "*Options:* \n\n" +
                         "| :flush true/false | e.g.: :flush true, defaults to false |\n" +
-                        "Note: \n\n" +
+                        "**Note:** \n\n" +
                         "`io/spit-writer` offers the same functionality as `io/spit` but it " +
                         "opens more flexibility with sandbox configuration. `io/spit` can be " +
                         "blacklisted to prevent writing data to the filesystem and still having " +
