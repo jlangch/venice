@@ -45,6 +45,10 @@ public class Markdown {
         return new TextRenderer().softWrap(width).render(this);
     }
 
+    public String renderToAnsiText(final int width) {
+        return new TextRenderer().softWrap(width).ansi().render(this);
+    }
+
     public String renderToHtml() {
         return new HtmlRenderer().render(this);
     }

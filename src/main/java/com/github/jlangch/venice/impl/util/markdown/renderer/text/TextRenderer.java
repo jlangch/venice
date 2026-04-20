@@ -46,16 +46,19 @@ public class TextRenderer {
 
     private TextRenderer(
             final int width,
-            final boolean softWrap
+            final boolean softWrap,
+            final boolean ansi
     ) {
         this.width = width;
         this.softWrap = softWrap;
+        this.ansi = ansi;
     }
 
     /**
      * Creates a renderer without line wraps.
      */
     public TextRenderer() {
+        this(-1, true, false);
     }
 
     /**
@@ -69,10 +72,7 @@ public class TextRenderer {
             throw new IllegalArgumentException("A wrap width must be positive");
         }
 
-        this.width = width;
-        this.softWrap = false;
-
-        return this;
+        return new TextRenderer(width, false, ansi);
     }
 
     /**
@@ -88,11 +88,7 @@ public class TextRenderer {
             throw new IllegalArgumentException("A wrap width must be positive");
         }
 
-
-        this.width = width;
-        this.softWrap = true;
-
-        return this;
+        return new TextRenderer(width, true, ansi);
     }
 
     /**
@@ -101,10 +97,17 @@ public class TextRenderer {
      * @return This renderer
      */
     public TextRenderer nowrap() {
-        this.width = -1;
-        this.softWrap = false;
+        return new TextRenderer(-1, false, ansi);
+    }
 
-        return this;
+    /**
+     * Configures the renderer to use ANSI escape codes for bold and italic
+     * text blocks.
+     *
+     * @return This renderer
+     */
+    public TextRenderer ansi() {
+        return new TextRenderer(width, softWrap, true);
     }
 
     /**
@@ -214,7 +217,7 @@ public class TextRenderer {
             if (isWrap()) {
                 sb.append(
                     indent(
-                        new TextRenderer(blockWidth, softWrap).render(b),
+                        new TextRenderer(blockWidth, softWrap, ansi).render(b),
                         prefix,
                         StringUtil.repeat(' ', prefix.length())));
             }
@@ -307,6 +310,7 @@ public class TextRenderer {
     private static final String CODE_INDENT = "\u00A0\u00A0\u00A0";
     private static final String LIST_INDENT = "\u00A0\u00A0";
 
-    private int width = -1;
-    private boolean softWrap = true;
+    private final int width;
+    private final boolean softWrap;
+    private final boolean ansi;
 }
