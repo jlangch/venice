@@ -11,6 +11,15 @@ Venice applications are *not* aware of the REPL server. No specific preparations
  
  
 
+* [Usage](#usage)
+* [Start Venice Application with REPL server](#start-venice-application-with-repl-server)
+* [Connect from a REPL](#connect-from-a-repl)
+* [Remote REPL demo session](#remote-repl-demo-session)
+* [Tracing via remote REPL](#tracing-via-remote-repl)
+
+ 
+ 
+
 ## Usage 
 
 * Start Venice application with a REPL server attached
