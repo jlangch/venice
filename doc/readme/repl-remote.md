@@ -463,17 +463,17 @@ i) Create the remote REPL demo application `./demo/server/remote-repl-demo.venic
 
 ii) Start the remote application with remote REPL enabled
 
-``` shell
+```
 > cd ./demo/server
-java -jar ../venice-1.13.0.jar -file ./remote-repl-trace-demo.venice -repl-server-config server-config.json
+> java -jar ../venice-1.13.0.jar -file ./remote-repl-trace-demo.venice -repl-server-config ./server-config.json
 ```
 
 
 ### 5. Start the client REPL
 
-``` shell
+```
 > cd ./demo/client
-java -jar ../venice-1.13.0.jar -repl
+> java -jar ../venice-1.13.0.jar -repl
 ```
 
 
