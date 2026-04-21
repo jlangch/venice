@@ -351,8 +351,7 @@ Create the RSA asymmetric key pair for the client REPL
 ``` clojure
 (do
   (load-module :rsa)
-  (mkdir "client")
-  (rsa/save-key-pair (rsa/generate-key-pair) ./client "client"))
+  (rsa/save-key-pair (rsa/generate-key-pair) "./demo/client" "client"))
 ```
 
 
@@ -367,8 +366,7 @@ Create the RSA asymmetric key pair for the server REPL
 ``` clojure
 (do
   (load-module :rsa)
-  (mkdir "server")
-  (rsa/save-key-pair (rsa/generate-key-pair) ./server "server"))
+  (rsa/save-key-pair (rsa/generate-key-pair) "./demo/server" "server"))
 ```
 
 
@@ -398,16 +396,20 @@ The client requires the keys:
 - *client-private.pem*
 - *server-public.pem*
 
-The client remote REPL demo config `demo/server/client-config.json`:
+The client remote REPL demo config `./demo/server/client-config.json`:
 
-``` json
-{ "port": 33334,
-  "host": "localhost",
-  "password": "123",
-  "clientPublicKeyFile": "./demo/client/client-public.pem",
-  "clientPrivateKeyFile": "./demo/client/client-public.pem",
-  "serverPublicKeyFile": "./demo/server/server-public.pem"
-}
+``` clojure
+(do
+  (def config (ordered-map "port"                  33334
+                           "host"                  "localhost"
+                           "password"              "123"
+                           "clientPublicKeyFile"  "./client/client-public.pem"
+                           "clientPrivateKeyFile" "./client/client-public.pem"
+                           "serverPublicKeyFile"  "./server/server-public.pem"))
+  
+  (->> (json/write-str config)
+       (json/pretty-print)
+       (io/spit (io/file "./client/client-config.json"))))
 ```
 
 The server requires the keys:
@@ -417,17 +419,21 @@ The server requires the keys:
 
 The server remote REPL demo config `demo/server/server-config.json`:
 
-``` json
-{ "port": 33334,
-  "password": "123",
-  "encrypt": true,
-  "compress": true,
-  "sessionTimeoutMinutes": 30,
-  "signKeyExchange": true,
-  "serverPublicKeyFile": "./demo/server/server-public.pem",
-  "serverPrivateKeyFile": "./demo/server/server-private.pem",
-  "clientPublicKeyFile": "./demo/client/client-public.pem"
-}
+``` clojure
+(do
+  (def config (ordered-map "port"                  33334
+                           "password"              "123"
+                           "encrypt"               true
+                           "compress"              true
+                           "sessionTimeoutMinutes" 30
+                           "signKeyExchange"       true
+                           "serverPublicKeyFile"   "./server/server-public.pem"
+                           "serverPrivateKeyFile"  "./server/server-private.pem"
+                           "clientPublicKeyFile"   "./client/client-public.pem"))
+  
+  (->> (json/write-str config)
+       (json/pretty-print)
+       (io/spit (io/file "./demo/server/server-config.json"))))
 ```
 
 ### 4. Start the server application
@@ -436,37 +442,45 @@ i) Create the remote REPL demo application `./demo/server/remote-repl-demo.venic
 
 ``` clojure
 (do
-  (ns demo)
+  (def app """
+           (do
+             (ns demo)
 
-  (def- stop? (atom false))
+             (def- stop? (atom false))
 
-  (defn stop [] 
-    (reset! stop? true)
-    (println "Stopping demo server..."))
+             (defn stop [] 
+               (reset! stop? true)
+               (println "Stopping demo server..."))
 
+             (println "Started demo server")
 
-  (println "Started demo server")
+             ;; just sleep until we get stopped
+             (while (not @stop?)
+               (sleep 1000))
 
-  ;; just sleep until we get stopped
-  (while (not @stop?)
-    (sleep 1000))
-
-  (println "Stopped demo server"))
+             (println "Stopped demo server"))
+           """)
+  
+  (io/spit (io/file "./server/remote-repl-demo.venice") app))
 ```
 
 ii) Start the remote application with remote REPL enabled
 
 ```
-> cd ./demo/server
-> java -jar ../venice-1.13.0.jar -file ./remote-repl-trace-demo.venice -repl-server-config ./server-config.json
+cd ./demo
+
+java -jar ./venice-1.13.0.jar \
+     -file ./server/remote-repl-demo.venice \
+     -repl-server-config ./server/server-config.json
 ```
 
 
 ### 5. Start the client REPL
 
 ```
-> cd ./demo/client
-> java -jar ../venice-1.13.0.jar -repl
+cd ./demo
+
+java -jar ./venice-1.13.0.jar -repl
 ```
 
 
@@ -475,7 +489,7 @@ ii) Start the remote application with remote REPL enabled
 In the client REPL connect to the remote server REPL:
 
 ```
-venice> !remote ./client-config.json
+venice> !remote ./client/client-config.json
 
 remote>
 ```
