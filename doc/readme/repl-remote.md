@@ -339,38 +339,12 @@ keys.
 Hybrid Encryption protects against *Man-in-the-Middle* attacks and provides a TLS, SSH
 grade security level. 
 
+ 
+ 
 
-### 1. Create the client REPL keys
+### Demo
 
-Create the RSA asymmetric key pair for the client REPL 
-- *client-public.pem*
-- *client-private.pem*
-
-... and store the keys to the `./client` directory:
-
-``` clojure
-(do
-  (load-module :rsa)
-  (rsa/save-key-pair (rsa/generate-key-pair) "./demo/client" "client"))
-```
-
-
-### 2. Create the server REPL keys
-
-Create the RSA asymmetric key pair for the server REPL 
-- *server-public.pem*
-- *server-private.pem*
-
-... and store the keys to the `./server` directory:
-
-``` clojure
-(do
-  (load-module :rsa)
-  (rsa/save-key-pair (rsa/generate-key-pair) "./demo/server" "server"))
-```
-
-
-### 3. Key deployment and REPL config
+The remote REPL Hybrid Encryption requires the following file setup:
 
 ``` text
 demo
@@ -391,6 +365,63 @@ demo
     └── client-public.pem
 ```
 
+Create the demo directory structure, download Venice and start a REPL in the `./demo` 
+directory to create all the required files step by step.
+
+```
+mkdir ./demo ./demo/client ./demo/sever
+cd ./demo
+
+curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.13.0/venice-1.13.0.jar
+
+java -jar ./venice-1.13.0.jar -repl
+```
+
+
+
+### 1. Create the client REPL keys
+
+Create the RSA asymmetric key pair for the client REPL 
+- *client-public.pem*
+- *client-private.pem*
+
+run this script in the started REPL:
+
+``` clojure
+(do
+  (load-module :rsa)
+  (rsa/save-key-pair (rsa/generate-key-pair) "./client" "client"))
+```
+
+
+### 2. Create the server REPL keys
+
+Create the RSA asymmetric key pair for the server REPL 
+- *server-public.pem*
+- *server-private.pem*
+
+run this script in the started REPL:
+
+``` clojure
+(do
+  (load-module :rsa)
+  (rsa/save-key-pair (rsa/generate-key-pair) "./server" "server"))
+```
+
+
+### 3. Public key deployment
+
+run this script in the started REPL:
+
+``` clojure
+(do
+  (io/copy-file (io/file "server/server-public.pem") (io/file "client/server-public.pem"))
+  (io/copy-file (io/file "client/client-public.pem") (io/file "server/client-public.pem"))
+```
+
+
+### 4. Create the REPL configs
+
 **Client**
 
 The client requires the keys:
@@ -400,14 +431,7 @@ The client requires the keys:
 
 *Create client remote REPL demo config `./demo/server/client-config.json`*
 
-Start a REPL in `./demo` ...
-
-```
-cd ./demo
-java -jar ./venice-1.13.0.jar -repl
-```
-
-... and run this script:
+run this script in the started REPL:
 
 ``` clojure
 (do
@@ -432,15 +456,7 @@ The server requires the keys:
 
 *Create server remote REPL demo config `./demo/server/server-config.json`*
 
-Start a REPL in `./demo` ...
-
-```
-cd ./demo
-java -jar ./venice-1.13.0.jar -repl
-```
-
-... and run this script:
-
+run this script in the started REPL:
 
 ``` clojure
 (do
@@ -462,6 +478,8 @@ java -jar ./venice-1.13.0.jar -repl
 ### 4. Start the server application
 
 i) Create the remote REPL demo application `./demo/server/remote-repl-demo.venice`:
+
+run this script in the started REPL:
 
 ``` clojure
 (do
