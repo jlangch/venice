@@ -265,8 +265,9 @@
          (println (str "Copying Venice JAR '" name "' to libs"))
          (io/copy-file loc target :replace true)
          (try
-           (println (str "Deleting" (count old-libs) "old Venice and jansi jars"))
-           (apply io/delete-file old-libs)
+           (when-not (empty? old-libs)
+             (println "Deleting" (count old-libs) "old Venice and jansi jars")
+             (apply io/delete-file old-libs))
            (catch :Exception ignore))
          (catch :Exception e
            (if (io/exists-file? target)
