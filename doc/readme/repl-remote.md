@@ -344,7 +344,10 @@ grade security level.
 
 ### Demo
 
-The remote REPL Hybrid Encryption requires the following file setup:
+To keep the demo simple, colocated client and server REPLs are used. But the client REPL and
+the server application with the remote REPL can run on different hosts. 
+
+The remote REPL Hybrid Encryption demo requires the following file setup:
 
 ``` text
 demo
@@ -369,12 +372,13 @@ Create the demo directory structure, download Venice and start a REPL in the `./
 directory to create all the required files step by step.
 
 ```
-mkdir ./demo ./demo/client ./demo/sever
 cd ./demo
+
+mkdir ./client ./server
 
 curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.13.0/venice-1.13.0.jar
 
-java -jar ./venice-1.13.0.jar -repl
+java -jar ./venice-1.13.0.jar -repl -colors
 ```
 
 
@@ -416,7 +420,7 @@ run this script in the started REPL:
 ``` clojure
 (do
   (io/copy-file (io/file "server/server-public.pem") (io/file "client/server-public.pem"))
-  (io/copy-file (io/file "client/client-public.pem") (io/file "server/client-public.pem"))
+  (io/copy-file (io/file "client/client-public.pem") (io/file "server/client-public.pem")))
 ```
 
 
@@ -472,7 +476,7 @@ run this script in the started REPL:
   
   (->> (json/write-str config)
        (json/pretty-print)
-       (io/spit (io/file "./demo/server/server-config.json"))))
+       (io/spit (io/file "./server/server-config.json"))))
 ```
 
 ### 4. Start the server application
