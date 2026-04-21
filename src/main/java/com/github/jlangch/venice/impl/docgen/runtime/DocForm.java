@@ -68,7 +68,7 @@ public class DocForm {
                     "List available modules:           " + bold("(doc modules)") + "\n" +
                     "Find loaded symbols:              " + bold("(doc finder)")  + "\n" +
                     "Find loaded name spaces:          " + bold("(doc ns-list)") + "\n" +
-                    "Help for a function (e.g.: map):  " + bold("(doc map)"));
+                    "Help for a function (e.g.: map):  " + bold("(doc map), (doc +)"));
         }
         else if (Types.isVncSymbol(ref)) {
             return docForSymbol((VncSymbol)ref, env);
