@@ -391,12 +391,23 @@ demo
     └── client-public.pem
 ```
 
+**Client**
+
 The client requires the keys:
 - *client-public.pem*
 - *client-private.pem*
 - *server-public.pem*
 
-The client remote REPL demo config `./demo/server/client-config.json`:
+*Create client remote REPL demo config `./demo/server/client-config.json`*
+
+Start a REPL in `./demo` ...
+
+```
+cd ./demo
+java -jar ./venice-1.13.0.jar -repl
+```
+
+... and run this script:
 
 ``` clojure
 (do
@@ -412,12 +423,24 @@ The client remote REPL demo config `./demo/server/client-config.json`:
        (io/spit (io/file "./client/client-config.json"))))
 ```
 
+**Server**
+
 The server requires the keys:
 - *server-public.pem*
 - *server-private.pem*
 - *client-public.pem*
 
-The server remote REPL demo config `demo/server/server-config.json`:
+*Create server remote REPL demo config `./demo/server/server-config.json`*
+
+Start a REPL in `./demo` ...
+
+```
+cd ./demo
+java -jar ./venice-1.13.0.jar -repl
+```
+
+... and run this script:
+
 
 ``` clojure
 (do
