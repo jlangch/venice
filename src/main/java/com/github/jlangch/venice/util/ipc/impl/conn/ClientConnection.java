@@ -132,7 +132,7 @@ public class ClientConnection implements AutoCloseable {
             if (dhRsaSign && config.getDhRsaSigningClientKeyPair() == null) {
                 throw new IpcException(
                         "Server requires signed Diffie-Hellman key exchange but "
-                        + "no RSA keys for signing supplied!");
+                        + "no client-side RSA keys for signing supplied!");
             }
 
             // [4] Establish encryption through Diffie-Hellman key exchange

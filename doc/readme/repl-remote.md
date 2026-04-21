@@ -442,6 +442,7 @@ run this script in the started REPL:
   (def config (ordered-map "port"                  33334
                            "host"                  "localhost"
                            "password"              "123"
+                           "signKeyExchange"       true
                            "clientPublicKeyFile"  "./client/client-public.pem"
                            "clientPrivateKeyFile" "./client/client-private.pem"
                            "serverPublicKeyFile"  "./server/server-public.pem"))
@@ -496,6 +497,10 @@ run this script in the started REPL:
              (defn stop [] 
                (reset! stop? true)
                (println "Stopping demo server..."))
+
+             (defn sum [x y] 
+               (println "Function 'sum' called")
+               (+ x y))
 
              (println "Started demo server")
 

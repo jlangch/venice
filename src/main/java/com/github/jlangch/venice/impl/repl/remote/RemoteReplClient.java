@@ -54,7 +54,8 @@ public class RemoteReplClient implements AutoCloseable  {
         this.sessionId = uuid;
         this.ipcClient = createIpcClient(
                             remoteConfig,
-                            RemoteRepl.PRINCIPAL, uuid);
+                            RemoteRepl.PRINCIPAL,
+                            uuid);
     }
 
 

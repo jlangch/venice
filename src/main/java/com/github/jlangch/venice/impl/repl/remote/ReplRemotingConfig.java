@@ -136,6 +136,7 @@ public class ReplRemotingConfig {
         return "ReplRemotingConfig [\n"
                 + "host=" + host + ", \n"
                 + "port=" + port + ", \n"
+                + "password=" + (StringUtil.isEmpty(password) ? "" : "*******") + ", \n"
                 + "encrypt=" + encrypt + ", \n"
                 + "compress=" + compress + ", \n"
                 + "password=" + password + ", \n"

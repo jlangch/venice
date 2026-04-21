@@ -1242,7 +1242,7 @@ public class REPL implements IRepl {
                 printer.println("error", "The config file \"" + cfgFile + "\" does not exist!");
                 return;
             }
-            printer.println("stdout", "Loading config from \"" + cfgFile + "\"");
+            printer.println("stdout", "Loading config from file \"" + cfgFile + "\"");
             remoteConfig = ReplRemotingConfig.load(cfgFile);
         }
         else if (params.size() == 3) {
@@ -1251,8 +1251,14 @@ public class REPL implements IRepl {
         }
         else {
             // host, port, password, and config file
+            final File cfgFile = new File(params.get(3));
+            if (!cfgFile.isFile()) {
+                printer.println("error", "The config file \"" + cfgFile + "\" does not exist!");
+                return;
+            }
+            printer.println("stdout", "Loading RSA keys from config file \"" + cfgFile + "\"");
             remoteConfig = ReplRemotingConfig
-                            .load(new File(params.get(3)))
+                            .load(cfgFile)
                             .with(params.get(0), parsePort(params.get(1)), params.get(2));
         }
 
@@ -1268,6 +1274,7 @@ public class REPL implements IRepl {
             printer.println("stdout", String.format("Connecting to REPL @ host: %s, port: %d",
                                                     remoteConfig.getHost(),
                                                     remoteConfig.getPort()));
+            printer.println("stdout", "Sign Key Exchange: " + remoteConfig.isSignKeyExchange());
             printer.println("stdout", "Starting remote REPL client...");
 
             final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(remoteConfig);
