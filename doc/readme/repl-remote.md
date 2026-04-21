@@ -514,7 +514,7 @@ run this script in the started REPL:
   (io/spit (io/file "./server/remote-repl-demo.venice") app))
 ```
 
-ii) Start the remote application with remote REPL enabled
+ii) Start the remote application with remote REPL enabled in new terminal
 
 ```
 cd ./demo
