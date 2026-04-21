@@ -1265,7 +1265,11 @@ public class REPL implements IRepl {
 
         try {
             // [2] Open a new remote REPL client
+            printer.println("stdout", String.format("Connecting to REPL @ host: %s, port: %d",
+                                                    remoteConfig.getHost(),
+                                                    remoteConfig.getPort()));
             printer.println("stdout", "Starting remote REPL client...");
+
             final RemoteVeniceAdapter rexec = new RemoteVeniceAdapter(remoteConfig);
 
             // Give feedback on the established security level
