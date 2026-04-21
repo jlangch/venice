@@ -443,7 +443,7 @@ run this script in the started REPL:
                            "host"                  "localhost"
                            "password"              "123"
                            "clientPublicKeyFile"  "./client/client-public.pem"
-                           "clientPrivateKeyFile" "./client/client-public.pem"
+                           "clientPrivateKeyFile" "./client/client-private.pem"
                            "serverPublicKeyFile"  "./server/server-public.pem"))
   
   (->> (json/write-str config)
