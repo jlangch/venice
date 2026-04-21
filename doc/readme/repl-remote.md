@@ -412,14 +412,14 @@ The server remote REPL demo config `demo/server/server-config.json`:
 
 ```json
 { "port": 33334,
-  "password": "123", 
+  "password": "123",
   "encrypt": true,
   "compress": true,
   "sessionTimeoutMinutes": 30,
   "signKeyExchange": true,
-  "serverPublicKeyFile": "./demo/server/server-public.pem",  
-  "serverPrivateKeyFile": "./demo/server/server-private.pem", 
-  "clientPublicKeyFile": ./demo/client/client-public.pem"
+  "serverPublicKeyFile": "./demo/server/server-public.pem",
+  "serverPrivateKeyFile": "./demo/server/server-private.pem",
+  "clientPublicKeyFile": "./demo/client/client-public.pem"
 }
 ```
 
