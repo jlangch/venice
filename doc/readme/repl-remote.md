@@ -567,7 +567,7 @@ remote> !local
 venice>
 ```
 
-### 7. Protocol
+### 7. Protocol Hybrid Encryption Demo
 
 Standard out/err text produced by the remote functions are routed back to the REPL
 client and displayed in the according REPL colors.
