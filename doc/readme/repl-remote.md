@@ -345,7 +345,8 @@ grade security level.
 Create the RSA asymmetric key pair for the client REPL 
 - *client-public.pem*
 - *client-private.pem*
-and store the keys to the `./client` directory:
+
+... and store the keys to the `./client` directory:
 
 ``` clojure
 (do
@@ -360,7 +361,8 @@ and store the keys to the `./client` directory:
 Create the RSA asymmetric key pair for the server REPL 
 - *server-public.pem*
 - *server-private.pem*
-and store the keys to the `./server` directory:
+
+... and store the keys to the `./server` directory:
 
 ``` clojure
 (do
@@ -443,15 +445,6 @@ i) Create the remote REPL demo application `./demo/server/remote-repl-demo.venic
     (println "Stopping demo server..."))
 
 
-  ;; trace demo functions
-  (defn foo [x] (+ x 2))
-  (defn zoo [x] (foo x))
-  (defn bar [x] (zoo x))
-  (defn foo-ex [x] (/ x 0)) ;; division by zero!
-  (defn bar-ex [x] (foo-ex x))
-  (defn factorial [n] (if (= n 0) 1 (* n (factorial (- n 1)))))
-
-
   (println "Started demo server")
 
   ;; just sleep until we get stopped
@@ -483,15 +476,31 @@ In the client REPL connect to the remote server REPL:
 
 ```
 venice> !remote ./client-config.json
+
 remote>
 ```
 
-Load the trace module (in the remote REPL)
+check the remote REPL Venice version
 
 ```
-remote> (load-module :trace)
+remote> (version)
+=> 1.13.0
 ```
 
-*work in progress*
+call a remote function
+
+```
+remote> (demo/sum 3 4)
+Function 'sum' called
+=> 7
+```
+
+switch back to the local REPL environment
+
+```
+remote> !local
+
+venice>
+```
 
 
