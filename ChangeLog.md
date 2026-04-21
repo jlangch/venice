@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
   text renderer that uses ANSI styles (bold, italic, ...) when run within a 
   REPL.
   
-  E.g.: `(doc)`, `(doc doc)`, `(doc map)`
+  Examples for using the `doc` function: `(doc)`, `(doc doc)`, `(doc map)`
 
 
 
