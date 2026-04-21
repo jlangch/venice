@@ -567,4 +567,23 @@ remote> !local
 venice>
 ```
 
+### 7. Protocol
+
+Standard out/err text produced by the remote functions are routed back to the REPL
+client and displayed in the according REPL colors.
+
+<table>
+<tr>
+<td>REPL (client)</td>
+<td>Remote Application</td>
+</tr>
+<tr>
+<td>
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/remote-repl-client-rsa.png" width="500">
+</td>
+<td>
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/remote-repl-server-rsa.png" width="500">
+</td>
+</tr>
+</table>
 
