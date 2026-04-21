@@ -374,12 +374,17 @@ and store the keys to the `./server` directory:
 
 ``` text
 demo
+│
+├── venice-1.13.0.jar
+│
 ├── client
 │   ├── client-config.json
 │   ├── client-public.pem
 │   ├── client-private.pem
 │   └── server-public.pem
+│
 └── server
+    ├── remote-repl-demo.venice
     ├── server-config.json
     ├── server-public.pem
     ├── server-private.pem
@@ -393,7 +398,7 @@ The client requires the keys:
 
 The client remote REPL demo config `demo/server/client-config.json`:
 
-```json
+``` json
 { "port": 33334,
   "host": "localhost",
   "password": "123",
@@ -410,7 +415,7 @@ The server requires the keys:
 
 The server remote REPL demo config `demo/server/server-config.json`:
 
-```json
+``` json
 { "port": 33334,
   "password": "123",
   "encrypt": true,
@@ -425,14 +430,67 @@ The server remote REPL demo config `demo/server/server-config.json`:
 
 ### 4. Start the server application
 
-*work in progress*
+i) Create the remote REPL demo application `./demo/server/remote-repl-demo.venice`:
+
+``` clojure
+(do
+  (ns demo)
+
+  (def- stop? (atom false))
+
+  (defn stop [] 
+    (reset! stop? true)
+    (println "Stopping demo server..."))
+
+
+  ;; trace demo functions
+  (defn foo [x] (+ x 2))
+  (defn zoo [x] (foo x))
+  (defn bar [x] (zoo x))
+  (defn foo-ex [x] (/ x 0)) ;; division by zero!
+  (defn bar-ex [x] (foo-ex x))
+  (defn factorial [n] (if (= n 0) 1 (* n (factorial (- n 1)))))
+
+
+  (println "Started demo server")
+
+  ;; just sleep until we get stopped
+  (while (not @stop?)
+    (sleep 1000))
+
+  (println "Stopped demo server"))
+```
+
+ii) Start the remote application with remote REPL enabled
+
+``` shell
+> cd ./demo/server
+java -jar ../venice-1.13.0.jar -file ./remote-repl-trace-demo.venice -repl-server-config server-config.json
+```
+
 
 ### 5. Start the client REPL
 
-*work in progress*
+``` shell
+> cd ./demo/client
+java -jar ../venice-1.13.0.jar -repl
+```
 
 
 ### 6. Access the server REPL
+
+In the client REPL connect to the remote server REPL:
+
+```
+venice> !remote ./client-config.json
+remote>
+```
+
+Load the trace module (in the remote REPL)
+
+```
+remote> (load-module :trace)
+```
 
 *work in progress*
 
