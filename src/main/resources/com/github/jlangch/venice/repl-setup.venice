@@ -255,13 +255,19 @@
 
 
 (defn copy-venice-jar [libs-dir]
-  (let [loc    (java-source-location :com.github.jlangch.venice.Venice)
-        name   (when (some? loc) (io/file-name loc))
-        target (io/file libs-dir name)]
+  (let [old-libs (concat (io/list-files-glob libs-dir "venice-*.jar")
+                         (io/list-files-glob libs-dir "jansi-*.jar"))
+        loc      (java-source-location :com.github.jlangch.venice.Venice)
+        name     (when (some? loc) (io/file-name loc))
+        target   (io/file libs-dir name)]
     (when (str/ends-with? name ".jar")
        (try
          (println (str "Copying Venice JAR '" name "' to libs"))
          (io/copy-file loc target :replace true)
+         (try
+           (println (str "Deleting" (count old-libs) "old Venice and jansi jars"))
+           (apply io/delete-file old-libs)
+           (catch :Exception ignore))
          (catch :Exception e
            (if (io/exists-file? target)
              (println *err*
@@ -375,7 +381,7 @@
           (io/mkdirs scripts-dir))
 
         (when-not (io/exists-dir? (io/file scripts-dir "pdf"))
-        (io/mkdirs  (io/file scripts-dir "pdf")))
+          (io/mkdirs  (io/file scripts-dir "pdf")))
 
         (when-not (io/exists-dir? (io/file scripts-dir "webapp"))
           (io/mkdirs (io/file scripts-dir "webapp")))
