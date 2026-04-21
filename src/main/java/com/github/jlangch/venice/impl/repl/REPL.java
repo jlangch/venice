@@ -1237,7 +1237,13 @@ public class REPL implements IRepl {
 
         if (params.size() == 1) {
             // config file
-            remoteConfig = ReplRemotingConfig.load(new File(params.get(0)));
+            final File cfgFile = new File(params.get(0));
+            if (!cfgFile.isFile()) {
+                printer.println("error", "The config file \"" + cfgFile + "\" does not exist!");
+                return;
+            }
+            printer.println("stdout", "Loading config from \"" + cfgFile + "\"");
+            remoteConfig = ReplRemotingConfig.load(cfgFile);
         }
         else if (params.size() == 3) {
             // host, port, password
