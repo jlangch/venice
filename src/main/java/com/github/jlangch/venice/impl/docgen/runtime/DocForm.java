@@ -64,10 +64,11 @@ public class DocForm {
     public static VncString doc(final VncVal ref, final Env env) {
         if (ref == Constants.Nil) {
             return new VncString(
-                    "Help on doc itself:          " + bold("(doc doc)") + "\n" +
-                    "List available modules:      " + bold("(doc modules)") + "\n" +
-                    "Find loaded symbols:         " + bold("(doc finder)") + "\n" +
-                    "Find loaded name spaces:     " + bold("(doc ns-list)"));
+                    "Help on doc itself:               " + bold("(doc doc)")     + "\n" +
+                    "List available modules:           " + bold("(doc modules)") + "\n" +
+                    "Find loaded symbols:              " + bold("(doc finder)")  + "\n" +
+                    "Find loaded name spaces:          " + bold("(doc ns-list)") + "\n" +
+                    "Help for a function (e.g.: map):  " + bold("(doc map)"));
         }
         else if (Types.isVncSymbol(ref)) {
             return docForSymbol((VncSymbol)ref, env);
