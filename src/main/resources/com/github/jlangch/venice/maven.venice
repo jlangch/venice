@@ -759,6 +759,12 @@
 
 
 (defn- download-artifact-file [uri target-dir target-file force progress-fn]
+  (when (nil? target-dir)  
+    (throw (ex :VncExeption "The Maven artifact download dir is nil!")))
+
+  (when (io/exists-dir? target-dir)
+    (throw (ex :VncExeption "The Maven artifact download dir '~{target-dir}' does not exist!")))
+
   (let [target   (str target-dir "/" target-file)
         download (or force (not (io/exists-file? target)))]
     (if download
