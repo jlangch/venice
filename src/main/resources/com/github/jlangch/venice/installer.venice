@@ -239,9 +239,9 @@
   ([dir]
     (if (io/exists-dir? dir)
       (->> (io/list-files-glob dir "*.{jar,ttf,otf}")
-          (filter #(not (jansi-lib? %)))
-          (filter #(not (venice-lib? %)))
-          (docoll io/delete-file))
+           (filter #(not (jansi-lib? %)))
+           (filter #(not (venice-lib? %)))
+           (docoll io/delete-file))
       (throw (ex :VncException "The directory ~{dir} does not exist!")))))
 
 
@@ -472,7 +472,7 @@
   (when (and (repl?) (contains? opts :dir) (nil? (:dir opts)))
     ;; (repl-dir) is nil -> warn the user to properly install the REPL
     (let [repl-start-script  (if (os-type? :windows) "repl.bat" "./repl.sh")
-          venice-setup-cmd   "java -jar venice-~(version).jar -setup -colors"]
+          venice-setup-cmd   "java -jar venice-~(version).jar -setup -colors -dir ."]
       (throw (ex :VncException
                   """
                   Error:
