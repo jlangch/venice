@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.modules.Modules;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
+import com.github.jlangch.venice.impl.repl.ReplFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_LoadCodeMacros;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
@@ -353,6 +354,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         // tracing
         env.setGlobalDynamic(new VncSymbol("trace/*trace-depth*").asPrivate(), new VncLong(0));
         env.setGlobalDynamic(new VncSymbol("trace/*trace-str-limit*").asPrivate(),new VncLong(80));
+
+        // default REPL functions (required in absence of a REPL too)
+        ReplFunctions.registerDefault(env);
 
         if (stdOut != null) {
             env.setStdoutPrintStream(stdOut);

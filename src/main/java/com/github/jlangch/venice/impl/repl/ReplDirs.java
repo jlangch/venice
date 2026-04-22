@@ -53,7 +53,7 @@ public class ReplDirs {
     public static ReplDirs create() {
         final File homeDir = getReplHomeDir();
 
-        if (homeDir != null) {
+        if (homeDir != null && homeDir.isDirectory()) {
             final File libsDir = new File(homeDir, "libs");
             final File tmpDir = new File(homeDir, "tmp");
             final File scriptsDir = new File(homeDir, "scripts");
@@ -67,7 +67,7 @@ public class ReplDirs {
                         toolsDir.isDirectory() ? toolsDir : null);
         }
         else {
-            return new ReplDirs();
+            return notavail();
         }
     }
 
@@ -107,6 +107,11 @@ public class ReplDirs {
     public static File getReplHomeDir() {
         final String home = StringUtil.trimToNull(System.getProperty("venice.repl.home"));
         return home == null ? null : new File(home);
+    }
+
+    public static boolean hasHomeDir() {
+        final File homeDir = getReplHomeDir();
+        return homeDir != null && homeDir.isDirectory();
     }
 
 

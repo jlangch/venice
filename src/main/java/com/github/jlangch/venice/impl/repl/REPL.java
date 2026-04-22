@@ -35,10 +35,13 @@ import java.nio.file.Files;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -136,7 +139,12 @@ public class REPL implements IRepl {
             restartable = isRestartable(cli);
 
             ansiTerminal = isAnsiTerminal(cli, config);
-            replWithAnsiTerminal.set(ansiTerminal);
+
+            // REPL features
+            final Set<ReplFeatures> features = new HashSet<>();
+            features.add(ReplDirs.hasHomeDir() ? ReplFeatures.CompleteInstall : ReplFeatures.AdHoc);
+            if (ansiTerminal) features.add(ReplFeatures.AnsiTerminal);
+            replFeatures.set(features);
 
             macroexpand = isMacroexpand(cli);
 
@@ -192,7 +200,7 @@ public class REPL implements IRepl {
         }
         finally {
             replActive.set(false);
-            replWithAnsiTerminal.set(false);
+            replFeatures.set(new HashSet<>());
 
             semaphore.release();
             veniceAdapter.close();
@@ -231,7 +239,15 @@ public class REPL implements IRepl {
     }
 
     public static boolean isAnsiTerminal() {
-        return replWithAnsiTerminal.get();
+        return isActive() && replFeatures.get().contains(ReplFeatures.AnsiTerminal);
+    }
+
+    public static boolean isAdHocRepl() {
+        return isActive() && replFeatures.get().contains(ReplFeatures.AdHoc);
+    }
+
+    public static boolean isCompleteRepl() {
+        return isActive() && replFeatures.get().contains(ReplFeatures.CompleteInstall);
     }
 
     private void repl(
@@ -1422,7 +1438,7 @@ public class REPL implements IRepl {
                             .setStderrPrintStream(err)
                             .setStdinReader(in);
 
-        return ReplFunctions.register(
+        return ReplFunctions.registerAll(
                     env,
                     this, terminal, config,
                     venice.isMacroExpandOnLoad(), replDirs);
@@ -1648,7 +1664,7 @@ public class REPL implements IRepl {
 
 
     private static final AtomicBoolean replActive = new AtomicBoolean(false);
-    private static final AtomicBoolean replWithAnsiTerminal = new AtomicBoolean(false);
+    private static final AtomicReference<Set<ReplFeatures>> replFeatures = new AtomicReference<>(new HashSet<>());
 
     private final Semaphore semaphore = new Semaphore(1);
 

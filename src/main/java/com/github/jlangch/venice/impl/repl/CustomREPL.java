@@ -252,7 +252,7 @@ public class CustomREPL implements IRepl {
                      .setStderrPrintStream(err)
                      .setStdinReader(in);
 
-        return ReplFunctions.register(
+        return ReplFunctions.registerAll(
                     env,
                     this, terminal, config,
                     true, ReplDirs.create());

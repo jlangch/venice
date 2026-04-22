@@ -43,6 +43,9 @@ public class ReplSection implements ISectionBuilder {
         all.addSection(repl);
         repl.addItem(diBuilder.getDocItem("repl?", false));
         repl.addItem(diBuilder.getDocItem("repl/info", false));
+        repl.addItem(diBuilder.getDocItem("repl/ansi-terminal?", false));
+        repl.addItem(diBuilder.getDocItem("repl/ad-hoc?", false));
+        repl.addItem(diBuilder.getDocItem("repl/complete-install?", false));
 
         final DocSection term = new DocSection("Terminal", "repl.terminal");
         all.addSection(term);
@@ -53,6 +56,8 @@ public class ReplSection implements ISectionBuilder {
         all.addSection(dirs);
         dirs.addItem(diBuilder.getDocItem("repl/home-dir", false));
         dirs.addItem(diBuilder.getDocItem("repl/libs-dir", false));
+        dirs.addItem(diBuilder.getDocItem("repl/tools-dir", false));
+        dirs.addItem(diBuilder.getDocItem("repl/scripts-dir", false));
 
         final DocSection config = new DocSection("Config", "repl.config");
         all.addSection(config);

@@ -64,7 +64,19 @@ import com.github.jlangch.venice.util.OS;
 
 public class ReplFunctions {
 
-    public static Env register(
+    public static Env registerDefault(
+            final Env env
+    ) {
+        Env e = env;
+
+        e = registerFn(e,createReplRunningFn());
+        e = registerFn(e,createReplAdHocFn());
+        e = registerFn(e,createReplCompleteFn());
+
+        return e;
+    };
+
+    public static Env registerAll(
             final Env env,
             final IRepl repl,
             final Terminal terminal,
@@ -100,6 +112,9 @@ public class ReplFunctions {
         fns.add(createTermColsFn(terminal));
         fns.add(createReplHomeDirFn(replDirs));
         fns.add(createReplLibsDirFn(replDirs));
+        fns.add(createReplToolsDirFn(replDirs));
+        fns.add(createReplScriptsDirFn(replDirs));
+        fns.add(createReplAnsiTerminalFn());
         fns.add(createPromptFn(repl));
         fns.add(setHandlerFn(repl));
         fns.add(getColorTheme(config));
@@ -112,6 +127,88 @@ public class ReplFunctions {
         fns.add(exit(repl));
 
         return fns;
+    }
+
+
+    private static VncFunction createReplRunningFn(
+    ) {
+        return
+            new VncFunction(
+                    "repl?",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl?)")
+                        .doc(
+                            "Returns `true` if running a REPL else `false`." )
+                        .seeAlso(
+                            "repl/ad-hoc?", "repl/complete-install?")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return VncBoolean.of(REPL.isActive());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplAdHocFn() {
+        return
+            new VncFunction(
+                    "repl/ad-hoc?",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/ad-hoc?)")
+                        .doc(
+                            "Returns `true` if running a REPL is an *Ad hoc* REPL else `false`.\n\n" +
+                            "An *Ad hoc* REPL has very limited capabilities: no installation of 3rd " +
+                            "party libraries, no *Maven* tool, no demo scripts!\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?","repl/complete-install?")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return VncBoolean.of(REPL.isAdHocRepl());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplCompleteFn() {
+        return
+            new VncFunction(
+                    "repl/complete-install?",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/complete-install?)")
+                        .doc(
+                            "Returns `true` if running a REPL with a complete installation else `false`.\n\n" +
+                            "An complete REPL supports installation of 3rd party librarie, has " +
+                            "*Maven* tool available, and has demo scripts installed!\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?", "repl/ad-hoc?")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return VncBoolean.of(REPL.isCompleteRepl());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
     }
 
     private static VncFunction createReplInfoFn(
@@ -271,7 +368,7 @@ public class ReplFunctions {
                             "Note: This function is only available when called from " +
                             "within a REPL!")
                         .seeAlso(
-                            "repl?", "repl/libs-dir")
+                            "repl?", "repl/libs-dir", "repl/tools-dir", "repl/scripts-dir")
                         .build()
             ) {
                 @Override
@@ -299,7 +396,7 @@ public class ReplFunctions {
                             "Note: This function is only available when called from " +
                             "within a REPL!")
                         .seeAlso(
-                            "repl?", "repl/home-dir")
+                            "repl?", "repl/home-dir", "repl/tools-dir", "repl/scripts-dir")
                         .build()
             ) {
                 @Override
@@ -309,6 +406,88 @@ public class ReplFunctions {
                     return replDirs.getLibsDir() == null
                             ? Constants.Nil
                             : new VncJavaObject(replDirs.getLibsDir());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplToolsDirFn(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/tools-dir",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/tools-dir)")
+                        .doc(
+                            "Returns the REPL tools directory\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?", "repl/home-dir", "repl/libs-dir", "repl/scripts-dir")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return replDirs.getLibsDir() == null
+                            ? Constants.Nil
+                            : new VncJavaObject(replDirs.getToolsDir());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplScriptsDirFn(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/scripts-dir",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/scripts-dir)")
+                        .doc(
+                            "Returns the REPL scripts directory\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?", "repl/home-dir", "repl/libs-dir", "repl/tools-dir")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return replDirs.getLibsDir() == null
+                            ? Constants.Nil
+                            : new VncJavaObject(replDirs.getScriptsDir());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplAnsiTerminalFn() {
+        return
+            new VncFunction(
+                    "repl/ansi-terminal?",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/ansi-terminal?)")
+                        .doc(
+                            "Returns `true` if the REPL runs in an ANSI terminal else `false`\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return VncBoolean.of(REPL.isAnsiTerminal());
                 }
 
                 private static final long serialVersionUID = -1L;
