@@ -54,7 +54,7 @@ algorithm.
 Start the application with the REPL server port and password:
 
 ``` shell
-java -jar ./venice-1.12.90.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-demo.venice
+java -jar ./venice-1.13.0.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-demo.venice
 ```
 
  
@@ -223,7 +223,7 @@ The remote REPL demo application looks like:
 **i) Start the remote application**
 
 ``` shell
-java -jar ./venice-1.12.90.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-trace-demo.venice
+java -jar ./venice-1.13.0.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-trace-demo.venice
 ```
 
 **ii) Connect from a REPL**
