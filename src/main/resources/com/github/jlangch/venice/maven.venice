@@ -631,20 +631,19 @@
           Manually download Maven:
 
           ``` 
-          curl https://archive.apache.org/dist/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip 
-               --output /Users/juerg/Desktop/apache-maven-3.9.6-bin.zip
+          curl -O https://archive.apache.org/dist/maven/maven-3/3.9.15/binaries/apache-maven-3.9.15-bin.zip 
           ```
           """
      :examples '(
           """
           (do
             (load-module :maven)
-            (maven/install))  ;; installs default version 3.9.6
+            (maven/install))  ;; installs default version 3.9.15
           """
           """
           (do
             (load-module :maven)
-            (maven/install "3.9.5"))
+            (maven/install "3.9.15"))
           """)
      :see-also '(
           "maven/home-dir"
@@ -762,7 +761,7 @@
   (when (nil? target-dir)  
     (throw (ex :VncExeption "The Maven artifact download dir is nil!")))
 
-  (when (io/exists-dir? target-dir)
+  (when-not (io/exists-dir? target-dir)
     (throw (ex :VncExeption "The Maven artifact download dir '~{target-dir}' does not exist!")))
 
   (let [target   (str target-dir "/" target-file)
