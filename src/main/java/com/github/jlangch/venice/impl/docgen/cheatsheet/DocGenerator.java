@@ -172,7 +172,8 @@ public class DocGenerator {
                         "ring-util",     "server-side-events",  "pretty-print",
                         "qrcode",        "qrref",               "qrbill",             "rsa",
                         "ascii-canvas",  "ascii-charts",        "ascii-table",
-                        "aviron",        "aviron-queue",        "aviron-cycler",      "aviron-limiter"));
+                        "aviron",        "aviron-queue",        "aviron-cycler",      "aviron-limiter",
+                        "openai-java"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
