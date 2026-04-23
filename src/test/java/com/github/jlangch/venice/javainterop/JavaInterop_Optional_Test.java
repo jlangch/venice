@@ -51,6 +51,21 @@ public class JavaInterop_Optional_Test {
     }
 
     @Test
+    public void test_optional_string_orElse() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                            \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_Optional_Test$OptionalFunctions)  \n" +
+                "                                                                                               \n" +
+                "  (-> (. :JavaInterop_Optional_Test$OptionalFunctions :new)                                    \n" +
+                "      (. :optionalString)                                                                      \n" +
+                "      (java-unwrap-optional \"or-else-val\")))                                                 \n";
+
+        assertEquals("hello", venice.eval(script));
+    }
+
+    @Test
     public void test_optional_string_null() {
         final Venice venice = new Venice();
 
@@ -63,6 +78,21 @@ public class JavaInterop_Optional_Test {
                 "      (java-unwrap-optional)))                                                                 \n";
 
         assertEquals(null, venice.eval(script));
+    }
+
+    @Test
+    public void test_optional_string_null_orElse() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                            \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_Optional_Test$OptionalFunctions)  \n" +
+                "                                                                                               \n" +
+                "  (-> (. :JavaInterop_Optional_Test$OptionalFunctions :new)                                    \n" +
+                "      (. :optionalStringNull)                                                                  \n" +
+                "      (java-unwrap-optional \"or-else-val\")))                                                  \n";
+
+        assertEquals("or-else-val", venice.eval(script));
     }
 
     @Test

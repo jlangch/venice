@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -474,6 +475,11 @@ public class JavaInteropUtil {
         throw new VncException("Not a Java enum value");
     }
 
+    public static boolean isOptional(final VncVal arg) {
+        return arg instanceof VncJavaObject
+                 ? (((VncJavaObject)arg).getDelegate() instanceof Optional)
+                 : false;
+    }
 
     private static boolean isDelayOrAgentClass(final String className) {
         return (className.equals(Delay.class.getName()) || className.equals(Agent.class.getName()));

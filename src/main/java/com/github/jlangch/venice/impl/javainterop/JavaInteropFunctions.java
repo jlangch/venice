@@ -1080,7 +1080,15 @@ public class JavaInteropFunctions {
                         "This can be simplified to:                    \n\n" +
                         "```                                           \n" +
                         "(. :java.time.LocalDate :of 1994 :JANUARY 21) \n" +
-                        "```                                           \n")
+                        "```                                           \n\n" +
+                        "Equality testing *enums*                                    \n" +
+                        "```                                                         \n" +
+                        "(let [date  (. :java.time.LocalDate :of 2026 1 1)           \n" +
+                        "      month (. date :getMonth)]                             \n" +
+                        "  (enum? (class-of month))  ;; true (month is a java enum)  \n" +
+                        "  (== month :JANUARY)       ;; true (value equality)        \n" +
+                        "  (== :JANUARY month))      ;; true (value equality)        \n" +
+                        "```                                                         ")
                     .examples("(enum? :java.time.Month)")
                     .build());
         }
@@ -1466,6 +1474,29 @@ public class JavaInteropFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     }
 
+    public static class JavaOptionalQFn extends AbstractJavaFn {
+        public JavaOptionalQFn() {
+            super(
+                "java-optional?",
+                VncFunction
+                    .meta()
+                    .arglists("(java-optional? val)")
+                    .doc(
+                        "Returns true if val is a Java *Optionl<>*")
+                    .seeAlso("java-unwrap-optional")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            return VncBoolean.of(JavaInteropUtil.isOptional(args.first()));
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    }
 
     public static class JavaUnwrapOptionalFn extends AbstractJavaFn {
         public JavaUnwrapOptionalFn() {
@@ -1473,15 +1504,23 @@ public class JavaInteropFunctions {
                 "java-unwrap-optional",
                 VncFunction
                     .meta()
-                    .arglists("(java-unwrap-optional val)")
-                    .doc("Unwraps a Java :java.util.Optional to its contained value or nil")
+                    .arglists(
+                        "(java-unwrap-optional val)",
+                        "(java-unwrap-optional val elseVal)")
+                    .doc(
+                       "Unwraps a Java :java.util.Optional to its contained value. \n\n" +
+                       "Returns `nil` in the one-argument version if the value is not " +
+                       "present.\n" +
+                       "Returns the 'elseVla' in the two-argument version if the value is not " +
+                       "present.\n")
+                    .seeAlso("java-optional?")
                     .build());
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public VncVal apply(final VncList args) {
-            ArityExceptions.assertArity(this, args, 1);
+            ArityExceptions.assertArity(this, args, 1, 2);
             sandboxFunctionCallValidation();
 
             if (Types.isVncJavaObject(args.first(), java.util.Optional.class)) {
@@ -1492,7 +1531,7 @@ public class JavaInteropFunctions {
                 final Object val = optional.isPresent() ? optional.get() : null;
 
                 if (val == null) {
-                    return Constants.Nil;
+                    return args.size() == 2 ? args.second() : Constants.Nil;
                 }
                 else if (val instanceof VncVal) {
                     return (VncVal)val;
@@ -1527,7 +1566,7 @@ public class JavaInteropFunctions {
             }
             else {
                 throw new VncException(String.format(
-                        "Function 'java-unwrap-optional' does not allow %s as parameter",
+                        "Function 'java-unwrap-optional' does not allow %s as first argument",
                         Types.getType(args.first())));
             }
         }
@@ -1624,6 +1663,7 @@ public class JavaInteropFunctions {
                     .add(new JavaObjQFn())
                     .add(new JavaEnumQFn())
                     .add(new JavaEnumerationToListFn())
+                    .add(new JavaOptionalQFn())
                     .add(new JavaIterToListFn())
                     .add(new JavaStringListFn())
                     .add(new JavaIntListFn())
