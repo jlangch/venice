@@ -1,0 +1,103 @@
+================================================================================
+Venice OpenAI Java
+================================================================================
+
+
+(do
+  (load-module :openai-java)
+  (-> (openai-java/chat-completion "Say this is a test" :model :GPT_5_4)
+      (println)))
+
+
+Response{
+  id=resp_0766e8a2e0728eee0069ea6591d4c88193a2f7bfe9fc9dfd72, 
+  createdAt=1.776969105E9, 
+  error=null, 
+  incompleteDetails=null, 
+  instructions=null, 
+  metadata=Metadata{
+             additionalProperties={}
+           }, 
+  model=ResponsesModel{
+          string=gpt-5.4-2026-03-05
+        }, 
+  object_=response, 
+  output=[ResponseOutputItem{
+            message=ResponseOutputMessage{
+                      id=msg_0766e8a2e0728eee0069ea65927f588193875c98ea143fa996, 
+                      content=[Content{
+                                outputText=ResponseOutputText{
+                                             annotations=[], 
+                                             text=this is a test, 
+                                             type=output_text, 
+                                             logprobs=[], 
+                                             additionalProperties={}
+                                           }
+                               }], 
+                      role=assistant, 
+                      status=completed, 
+                      type=message, 
+                      phase=final_answer, 
+                      additionalProperties={}
+                    }
+          }], 
+  parallelToolCalls=true, 
+  temperature=1.0, 
+  toolChoice=ToolChoice{
+               options=auto
+             }, 
+  tools=[], 
+  topP=0.98, 
+  background=false, 
+  completedAt=1.776969106E9,
+  conversation=, 
+  maxOutputTokens=null, 
+  maxToolCalls=null, 
+  previousResponseId=null, 
+  prompt=, 
+  promptCacheKey=null, 
+  promptCacheRetention=in_memory, 
+  reasoning=Reasoning{
+              effort=none, 
+              generateSummary=, 
+              summary=null, 
+              additionalProperties={}
+            }, 
+  safetyIdentifier=null, 
+  serviceTier=default, 
+  status=completed, 
+  text=ResponseTextConfig{
+         format=ResponseFormatTextConfig{
+                  text=ResponseFormatText{
+                         type=text, 
+                         additionalProperties={}
+                       }
+                }, 
+         verbosity=medium, 
+         additionalProperties={}
+       }, 
+  topLogprobs=0, 
+  truncation=disabled, 
+  usage=ResponseUsage{
+          inputTokens=11, 
+          inputTokensDetails=InputTokensDetails{
+                               cachedTokens=0, 
+                               additionalProperties={}
+                             }, 
+          outputTokens=8, 
+          outputTokensDetails=OutputTokensDetails{
+                                reasoningTokens=0, 
+                                additionalProperties={}
+                              }, 
+          totalTokens=19, 
+          additionalProperties={}
+        }, 
+  user=null, 
+  additionalProperties={
+    store=true, 
+    presence_penalty=0.0, 
+    moderation=null, 
+    frequency_penalty=0.0, 
+    billing={payer=developer}
+  }
+}

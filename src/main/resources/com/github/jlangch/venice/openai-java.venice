@@ -61,25 +61,31 @@
 
           Returns a map with the response data:*
 
-          | [![width: 15%]] | [![width: 85%]]                  |
-          | :status         | The HTTP status (a long)         |
-          | :mimetype       | The content type's mimetype      |
-          | :headers        | A map of headers. key: header name, value: list \
-                              of header values |
-          | :message        | The final chat completion message if the OpenAI \
-                              server returned the HTTP status `HTTP_OK`, else `nil` |
-          | :data           | If the response HTTP status is `HTTP_OK` \
-                              the data fields contains the chat completion \
-                              message. ¶\
-                              If the response HTTP status is not `HTTP_OK` \
-                              the data fields contains an error message \
-                              formatted as plain or JSON string. |
+          | [![width: 15%]] | [![width: 85%]] |
+          | :status         | The response status { :completed, :failed, \
+                              :in_progress, :cancelled, :queued, :incomplete,
+                              :unknown }  |
+          | :elapsed-millis | The elapsed milliseconds  |
+          | :usage          | The usage data. E.g.:¶\
+                              ``` ¶\  
+                              { :input-tokens 11 ¶\
+                                :output-tokens 8 ¶\
+                                :output-tokens-detail { ¶\
+                                  :reasoning-tokens 0 ¶\
+                                 } ¶\
+                                :total-tokens 19 ¶\
+                              } ¶\
+                              ```|
+          | :output-msg     | A list response output messages. |
+          | :response       | The original response, a Java object of type \
+                              `:com.openai.models.responses.Response` |
           """ 
      :examples '(
           """
           (do
             (load-module :openai-java)
-            (openai-java/chat-completion "Say this is a test" :model :GPT_5_4))
+            (-> (openai-java/chat-completion "Say this is a test" :model :GPT_5_4)
+                (println)))
           """)
      :see-also '( ) }
 
@@ -91,15 +97,53 @@
         ;; client    (-> (. :OpenAIOkHttpClient :builder)
         ;;               (. :apiKey (openai-api-key-from-env))
         ;;               (. :build))
+        start     (current-time-millis)
         params    (-> (. :ResponseCreateParams :builder)
                       (. :input prompt)
                       (. :model (. :ChatModel model))
                       (. :build))
         response  (-> (. client :responses)
-                      (. :create params))]
-    response))
+                      (. :create params))
+        elapsed   (- (current-time-millis) start)]
+    (ordered-map  
+      :status         (-> (. response :status)
+                          (java-unwrap-optional :unknown)
+                          (. :toString)
+                          (keyword))
+      :elapsed-millis elapsed
+      :output-msg     (parse-response response)
+      :usage          (response-usage-stats response)
+      :response       response )))
 
 
+
+(defn- response-usage-stats [response]
+  (if-let [usage (java-unwrap-optional (. response :usage))]
+    (let [output-details (. usage :outputTokensDetails)]
+      (ordered-map 
+        :input-tokens (. usage :inputTokens)
+        :output-tokens (. usage :outputTokens)
+        :output-tokens-detail { :reasoning-tokens (. output-details :reasoningTokens) }
+        :total-tokens (. usage :totalTokens)))
+    {}))
+
+(defn- parse-response [response]
+  (->> (. response :output)
+       (map #(. % :message))
+       (map #(java-unwrap-optional %))
+       (filter some?)
+       (map #(response-output-message %))))
+
+(defn- response-output-message [out-msg]
+  { :content   (->> (into [] (. out-msg :content))
+                    (map #(. % :outputText))
+                    (map #(java-unwrap-optional %))
+                    (filter some?)
+                    (map #(. % :text)))
+    :status    (-> (. out-msg :status) ;; {:IN_PROGRESS, :COMPLETED, :INCOMPLETE}
+                   (. :toString)
+                   (keyword))
+  })
 
 
 (defn- openai-api-key-from-env [] 
