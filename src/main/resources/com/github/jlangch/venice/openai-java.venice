@@ -21,8 +21,7 @@
 
 ;;;; OpenAI Java API module
 
-;;;; OpenAI OpenAPI
-;;;; https://github.com/openai/openai-java
+;;;; OpenAI OpenAPI:  https://github.com/openai/openai-java
 
 
 (ns openai-java)
@@ -121,10 +120,10 @@
   (if-let [usage (java-unwrap-optional (. response :usage))]
     (let [output-details (. usage :outputTokensDetails)]
       (ordered-map 
-        :input-tokens (. usage :inputTokens)
+        :input-tokens  (. usage :inputTokens)
         :output-tokens (. usage :outputTokens)
         :output-tokens-detail { :reasoning-tokens (. output-details :reasoningTokens) }
-        :total-tokens (. usage :totalTokens)))
+        :total-tokens  (. usage :totalTokens)))
     {}))
 
 (defn- parse-response [response]
@@ -140,7 +139,7 @@
                    (map #(java-unwrap-optional %))
                    (filter some?)
                    (map #(ordered-map :type :text  :content (. % :text))))
-    :status   (-> (. out-msg :status) ;; {:IN_PROGRESS, :COMPLETED, :INCOMPLETE}
+    :status   (-> (. out-msg :status) ;; {:in_progress, :completed, :incomplete}
                   (. :toString)
                   (keyword))
   })
