@@ -135,14 +135,14 @@
        (map #(response-output-message %))))
 
 (defn- response-output-message [out-msg]
-  { :content   (->> (into [] (. out-msg :content))
-                    (map #(. % :outputText))
-                    (map #(java-unwrap-optional %))
-                    (filter some?)
-                    (map #(. % :text)))
-    :status    (-> (. out-msg :status) ;; {:IN_PROGRESS, :COMPLETED, :INCOMPLETE}
-                   (. :toString)
-                   (keyword))
+  { :content  (->> (into [] (. out-msg :content))
+                   (map #(. % :outputText))
+                   (map #(java-unwrap-optional %))
+                   (filter some?)
+                   (map #(ordered-map :type :text  :content (. % :text))))
+    :status   (-> (. out-msg :status) ;; {:IN_PROGRESS, :COMPLETED, :INCOMPLETE}
+                  (. :toString)
+                  (keyword))
   })
 
 
