@@ -1481,8 +1481,7 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(java-optional? val)")
-                    .doc(
-                        "Returns true if val is a Java *Optionl<>*")
+                    .doc("Returns `true` if 'val' is a Java `:java.util.Optional` else `false`")
                     .seeAlso("java-unwrap-optional")
                     .build());
         }
@@ -1508,10 +1507,10 @@ public class JavaInteropFunctions {
                         "(java-unwrap-optional val)",
                         "(java-unwrap-optional val elseVal)")
                     .doc(
-                       "Unwraps a Java :java.util.Optional to its contained value. \n\n" +
+                       "Unwraps a Java `:java.util.Optional` to its contained value. \n\n" +
                        "Returns `nil` in the one-argument version if the value is not " +
-                       "present.\n" +
-                       "Returns the 'elseVla' in the two-argument version if the value is not " +
+                       "present.\n\n" +
+                       "Returns the 'elseVal' in the two-argument version if the value is not " +
                        "present.\n")
                     .seeAlso("java-optional?")
                     .build());
