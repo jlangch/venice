@@ -50,20 +50,26 @@
 
           ¶*Parameter request «options»*
 
-          | [![width: 15%]]   | [![width: 85%]] |
-          | :model m          | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI,\
-                                :GPT_5_4_NANO. ¶\
-                                Defaults to :GPT_5_4|
-          | :openai-api-key k | An optional OpenAI API Key. As default the key \
-                                is read from the environment variable \
-                                "OPENAI_API_KEY". |
-          | :openai-org-id k  | An optional OpenAI organisation ID. As default  \
-                                the id is read from the environment variable  \
-                                "OPENAI_ORG_ID". |
-          | :openai-proj-id k | An optional OpenAI project ID. As default the id  \
-                                is read from the environment variable  \
-                                "OPENAI_PROJECT_ID". |
-
+          | [![width: 15%]]    | [![width: 85%]] |
+          | :model m           | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
+                                 :GPT_5_4_NANO. ¶\
+                                 Defaults to :GPT_5_4|
+          | :openai-api-key k  | An optional OpenAI API Key. As fallback the key \
+                                 is read from the environment variable \
+                                 "OPENAI_API_KEY". |
+          | :openai-org-id k   | An optional OpenAI organisation ID. As fallback \
+                                 the id is read from the environment variable \
+                                 "OPENAI_ORG_ID". |
+          | :openai-proj-id k  | An optional OpenAI project ID. As fallback the id \
+                                 is read from the environment variable  \
+                                 "OPENAI_PROJECT_ID". |
+          | :openai-base-url u | An optional OpenAI baseURL. As fallback the url \
+                                 is read from the environment variable  \
+                                 "OPENAI_BASE_URL". ¶\
+                                 OpenAI uses the standard base URL \
+                                 'https://api.openai.com/v1' if it is not \
+                                 explicitely defined. |
+ 
           ¶*Return value*
 
           Returns a map with the response data:*
@@ -189,9 +195,10 @@
   (when (exists-class? :com.openai.client.OpenAIClient) 
     throw (ex :VncException "The openai-java library is not available!"))
 
-  (let [openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
-        openai-org-id  (or (:openai-org-id opts)  (openai-org-id-from-env))
-        openai-proj-id (or (:openai-proj-id opts) (openai-proj-id-from-env))]
+  (let [openai-api-key  (or (:openai-api-key opts)  (openai-api-key-from-env))
+        openai-org-id   (or (:openai-org-id opts)   (openai-org-id-from-env))
+        openai-proj-id  (or (:openai-proj-id opts)  (openai-proj-id-from-env))
+        openai-base-url (or (:openai-base-url opts) (openai-base-url-from-env))]
     (when (nil? openai-api-key)
       (throw (ex :VncException 
                  """
@@ -200,8 +207,9 @@
                  """)))
     (let [builder (. :OpenAIOkHttpClient :builder)]
       (. builder :apiKey openai-api-key)
-      (when (some? openai-org-id) (. builder :organization openai-org-id))
-      (when (some? openai-proj-id) (. builder :project openai-proj-id))
+      (when (some? openai-org-id)   (. builder :organization openai-org-id))
+      (when (some? openai-proj-id)  (. builder :project openai-proj-id))
+      (when (some? openai-base-url) (. builder :baseUrl openai-base-url))
       (. builder :build))))
 
 
@@ -248,3 +256,8 @@
 
 (defn- openai-proj-id-from-env [] 
   (system-env "OPENAI_PROJECT_ID"))
+
+
+(defn- openai-base-url-from-env [] 
+  (system-env "OPENAI_BASE_URL"))
+
