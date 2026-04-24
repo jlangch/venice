@@ -50,11 +50,18 @@
           ¶*Parameter request «options»*
 
           | [![width: 15%]]   | [![width: 85%]] |
-          | :model            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI,\
+          | :model m          | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI,\
                                 :GPT_5_4_NANO. ¶\
                                 Defaults to :GPT_5_4|
-          | :openai-api-key   | An optional OpenAI API Key. As default the key is read \
-                                from the environment variable "OPENAI_API_KEY". |
+          | :openai-api-key k | An optional OpenAI API Key. As default the key \
+                                is read from the environment variable \
+                                "OPENAI_API_KEY". |
+          | :openai-org-id k  | An optional OpenAI organisation ID. As default  \
+                                the id is read from the environment variable  \
+                                "OPENAI_ORG_ID". |
+          | :openai-proj-id k | An optional OpenAI project ID. As default the id  \
+                                is read from the environment variable  \
+                                "OPENAI_PROJECT_ID". |
 
           ¶*Return value*
 
@@ -75,7 +82,7 @@
                                 :total-tokens 19 ¶\
                               } ¶\
                               ```|
-          | :output-msg     | A list response output messages. E.g.:¶\
+          | :output-msg     | A list of response output messages. E.g.:¶\
                               ``` ¶\  
                               [ { :status :completed  ¶\ 
                                   :content [ { :type :text  ¶\ 
@@ -94,25 +101,41 @@
             (load-module :openai-java)
             (-> (openai-java/chat-completion "Say this is a test" :model :GPT_5_4)
                 (println)))
+          """,
+          """
+          (do
+            (load-module :openai-java)
+            (let [prompt   "Say this is a test"
+                  response (openai-java/chat-completion prompt :model :GPT_5_4)
+                  result   (-> (:output-msg response)  ;; only first output item
+                               (first) 
+                               (get :content)
+                               (first)
+                               (get :content))
+                  usage     (:usage response)]
+              (println "Status: " (:status response))
+              (println)
+              (println (openai-java/format-usage usage "  " "Tokens:"))
+              (println)
+              (println "Result: ")
+              (println result)))
           """)
      :see-also '( ) }
 
   chat-completion [prompt & options]
 
-  (let [opts      (apply hash-map options)
-        model     (get opts :model :GPT_5_4)
-        client    (. :OpenAIOkHttpClient :fromEnv)
-        ;; client    (-> (. :OpenAIOkHttpClient :builder)
-        ;;               (. :apiKey (openai-api-key-from-env))
-        ;;               (. :build))
-        start     (current-time-millis)
-        params    (-> (. :ResponseCreateParams :builder)
-                      (. :input prompt)
-                      (. :model (. :ChatModel model))
-                      (. :build))
-        response  (-> (. client :responses)
-                      (. :create params))
-        elapsed   (- (current-time-millis) start)]
+  (let [opts          (apply hash-map options)
+        model         (get opts :model :GPT_5_4)
+                      ;; (. :OpenAIOkHttpClient :fromEnv)
+        client        (create-ok-http-client opts)  
+        start         (current-time-millis)
+        params        (-> (. :ResponseCreateParams :builder)
+                          (. :input prompt)
+                          (. :model (. :ChatModel model))
+                          (. :build))
+        response      (-> (. client :responses)
+                          (. :create params))
+        elapsed       (- (current-time-millis) start)]
     (ordered-map  
       :status         (-> (. response :status)
                           (java-unwrap-optional :unknown)
@@ -151,6 +174,23 @@
 ;; -----------------------------------------------------------------------------
 ;; Internal Utils
 ;; -----------------------------------------------------------------------------
+
+(defn- create-ok-http-client [opts]
+  (let [openai-api-key (or (:openai-api-key opts) (openai-api-key-from-env))
+        openai-org-id  (or (:openai-org-id opts)  (openai-org-id-from-env))
+        openai-proj-id (or (:openai-proj-id opts) (openai-proj-id-from-env))]
+    (when (nil? openai-api-key)
+      (throw (ex :VncException 
+                 """
+                 No OpenAI API key supplied. Pass the option ':openai-api-key key'
+                 or set the environemt variable "OPENAI_API_KEY"!
+                 """)))
+    (let [builder (. :OpenAIOkHttpClient :builder)]
+      (. builder :apiKey openai-api-key)
+      (when (some? openai-org-id) (. builder :organization openai-org-id))
+      (when (some? openai-proj-id) (. builder :project openai-proj-id))
+      (. builder :build))))
+
 
 (defn- response-usage-stats [response]
   (if-let [usage (java-unwrap-optional (. response :usage))]
@@ -191,5 +231,5 @@
 (defn- openai-org-id-from-env [] 
   (system-env "OPENAI_ORG_ID"))
 
-(defn- openai-project-id-from-env [] 
+(defn- openai-proj-id-from-env [] 
   (system-env "OPENAI_PROJECT_ID"))
