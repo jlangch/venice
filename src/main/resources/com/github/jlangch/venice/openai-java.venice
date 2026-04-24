@@ -115,6 +115,21 @@
       :response       response )))
 
 
+(defn format-usage 
+  ([usage]
+    (format-usage usage nil nil))
+  ([usage indent title]
+    (let [indent (coalesce indent "")
+          title  (str/trim-to-nil title)]
+      (str/format (str "%s"
+                       "%sInput:  %4d%n"
+                       "%sOutput: %4d% (Reasoning: %d)%n"
+                       "%sTotal:  %4d%n")
+                  (if (nil? title) "" (str/format "%s%n" title))
+                  indent (:input-tokens usage)
+                  indent (:output-tokens usage) (:reasoning-tokens (:output-tokens usage))
+                  indent (:total-tokens usage)))))
+
 
 (defn- response-usage-stats [response]
   (if-let [usage (java-unwrap-optional (. response :usage))]
