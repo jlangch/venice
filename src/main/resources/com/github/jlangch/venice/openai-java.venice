@@ -129,9 +129,9 @@
     (let [indent (coalesce indent "")
           title  (str/trim-to-nil title)]
       (str/format (str "%s"
-                       "%sInput:  %4d%n"
-                       "%sOutput: %4d (Reasoning: %d)%n"
-                       "%sTotal:  %4d%n")
+                       "%sInput:  %5d%n"
+                       "%sOutput: %5d (Reasoning: %d)%n"
+                       "%sTotal:  %5d%n")
                   (if (nil? title) "" (str/format "%s%n" title))
                   indent (:input-tokens usage)
                   indent (:output-tokens usage) (:reasoning-tokens (:output-tokens-detail usage))
