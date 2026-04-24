@@ -248,7 +248,7 @@
   })
 
 
-(defn- openai-api-key-from-env [] 
+(defn- openai-api-key-from-env []
   (system-env "OPENAI_API_KEY"))
 
 (defn- openai-org-id-from-env [] 
@@ -256,7 +256,6 @@
 
 (defn- openai-proj-id-from-env [] 
   (system-env "OPENAI_PROJECT_ID"))
-
 
 (defn- openai-base-url-from-env [] 
   (system-env "OPENAI_BASE_URL"))
