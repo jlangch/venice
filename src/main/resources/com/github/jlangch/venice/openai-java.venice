@@ -107,12 +107,8 @@
             (load-module :openai-java)
             (let [prompt   "Say this is a test"
                   response (openai-java/chat-completion prompt :model :GPT_5_4)
-                  result   (-> (:output-msg response)  ;; only first output item
-                               (first) 
-                               (get :content)
-                               (first)
-                               (get :content))
-                  usage     (:usage response)]
+                  result   (get-first-output-msg response) ;; only first output item
+                  usage    (:usage response)]
               (println "Status: " (:status response))
               (println)
               (println (openai-java/format-usage usage "  " "Tokens:"))
@@ -151,6 +147,14 @@
 ;; -----------------------------------------------------------------------------
 ;; Utils
 ;; -----------------------------------------------------------------------------
+
+(defn get-first-output-msg [response]
+  (-> (:output-msg response)  ;; only first output item
+      (first) 
+      (get :content)
+      (first)
+      (get :content)))
+
 
 (defn format-usage 
   ([usage]
