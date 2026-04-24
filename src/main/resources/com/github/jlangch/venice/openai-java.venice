@@ -228,10 +228,11 @@
 
 (defn- response-output-message [out-msg]
   { :pre [(instance-of? :ResponseOutputMessage out-msg)] }
-  { :content  (->> (into [] (. out-msg :content))
+  { :content  (->> (. out-msg :content)
                    (filter #(. % :isOutputText))
                    (map #(. % :asOutputText))
-                   (map #(ordered-map :type :text  :content (. % :text)))
+                   (map #(ordered-map :type    "plain/text"  
+                                      :content (. % :text)))
                    (into []))
     :status   (-> (. out-msg :status) ;; {:in_progress, :completed, :incomplete}
                   (. :toString)
