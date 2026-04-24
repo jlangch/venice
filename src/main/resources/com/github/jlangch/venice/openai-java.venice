@@ -75,7 +75,16 @@
                                 :total-tokens 19 ¶\
                               } ¶\
                               ```|
-          | :output-msg     | A list response output messages. |
+          | :output-msg     | A list response output messages. E.g.:¶\
+                              ``` ¶\  
+                              [ { :status :completed  ¶\ 
+                                  :content [ { :type :text  ¶\ 
+                                               :content "The answer..." ¶\ 
+                                             } ¶\ 
+                                           ] ¶\ 
+                                } ¶\ 
+                              ] ¶\
+                              ```|
           | :response       | The original response, a Java object of type \
                               `:com.openai.models.responses.Response` |
           """ 
@@ -159,7 +168,8 @@
        (map #(. % :message))
        (map #(java-unwrap-optional %))
        (filter some?)
-       (map #(response-output-message %))))
+       (map #(response-output-message %))
+       (into [])))
 
 
 (defn- response-output-message [out-msg]
@@ -167,7 +177,8 @@
                    (map #(. % :outputText))
                    (map #(java-unwrap-optional %))
                    (filter some?)
-                   (map #(ordered-map :type :text  :content (. % :text))))
+                   (map #(ordered-map :type :text  :content (. % :text)))
+                   (into []))
     :status   (-> (. out-msg :status) ;; {:in_progress, :completed, :incomplete}
                   (. :toString)
                   (keyword))
