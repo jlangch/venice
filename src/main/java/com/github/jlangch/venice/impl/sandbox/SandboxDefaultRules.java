@@ -155,7 +155,12 @@ public class SandboxDefaultRules {
 
     public static final Set<String> DEFAULT_SYSTEM_ENVS =
             Collections.unmodifiableSet(
-                new HashSet<>());
+                new HashSet<>(
+                    Arrays.asList(
+                        "OPENAI_API_KEY",
+                        "OPENAI_ORG_ID",
+                        "OPENAI_PROJECT_ID",
+                        "OPENAI_BASE_URL")));
 
     public static final Set<String> DEFAULT_WHITELISTED_MODULES =
             Collections.unmodifiableSet(
