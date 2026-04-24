@@ -31,6 +31,7 @@
 (import :com.openai.models.ChatModel)
 (import :com.openai.models.responses.Response)
 (import :com.openai.models.responses.ResponseCreateParams)
+(import :com.openai.models.responses.ResponseOutputMessage)
 
 
 
@@ -108,14 +109,14 @@
             (let [prompt   "Say this is a test"
                   response (openai-java/chat-completion prompt :model :GPT_5_4)
                            ;; only first output item
-                  result   (openai-java/get-first-output-msg response) 
+                  msg      (openai-java/get-first-message response) 
                   usage    (:usage response)]
               (println "Status: " (:status response))
               (println)
               (println (openai-java/format-usage usage "  " "Tokens:"))
               (println)
               (println "Result: ")
-              (println result)))
+              (println msg)))
           """)
      :see-also '( ) }
 
@@ -149,7 +150,8 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn get-first-output-msg [response]
+(defn get-first-message [response]
+  { :pre [(map? response)] }
   (-> (:output-msg response)  ;; only first output item
       (first) 
       (get :content)
@@ -163,6 +165,9 @@
   ([usage indent]
     (format-usage usage indent nil))
   ([usage indent title]
+    { :pre [(map? usage) 
+            (or (nil? indent) (string? indent))
+            (or (nil? title) (string? title))] }
     (let [indent (coalesce indent "")
           title  (str/trim-to-nil title)]
       (str/format (str "%s"
@@ -201,6 +206,7 @@
 
 
 (defn- response-usage-stats [response]
+  { :pre [(instance-of? :Response response)] }
   (if-let [usage (java-unwrap-optional (. response :usage))]
     (let [output-details (. usage :outputTokensDetails)]
       (ordered-map 
@@ -212,6 +218,7 @@
 
 
 (defn- parse-response [response]
+  { :pre [(instance-of? :Response response)] }
   (->> (. response :output)
        (filter #(. % :isMessage))
        (map #(. % :asMessage))
@@ -220,6 +227,7 @@
 
 
 (defn- response-output-message [out-msg]
+  { :pre [(instance-of? :ResponseOutputMessage out-msg)] }
   { :content  (->> (into [] (. out-msg :content))
                    (filter #(. % :isOutputText))
                    (map #(. % :asOutputText))
