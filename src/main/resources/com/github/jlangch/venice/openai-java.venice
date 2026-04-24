@@ -115,21 +115,33 @@
       :response       response )))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Utils
+;; -----------------------------------------------------------------------------
+
 (defn format-usage 
   ([usage]
     (format-usage usage nil nil))
+  ([usage indent]
+    (format-usage usage indent nil))
   ([usage indent title]
     (let [indent (coalesce indent "")
           title  (str/trim-to-nil title)]
       (str/format (str "%s"
                        "%sInput:  %4d%n"
-                       "%sOutput: %4d% (Reasoning: %d)%n"
+                       "%sOutput: %4d (Reasoning: %d)%n"
                        "%sTotal:  %4d%n")
                   (if (nil? title) "" (str/format "%s%n" title))
                   indent (:input-tokens usage)
-                  indent (:output-tokens usage) (:reasoning-tokens (:output-tokens usage))
+                  indent (:output-tokens usage) (:reasoning-tokens (:output-tokens-detail usage))
                   indent (:total-tokens usage)))))
 
+
+
+;; -----------------------------------------------------------------------------
+;; Internal Utils
+;; -----------------------------------------------------------------------------
 
 (defn- response-usage-stats [response]
   (if-let [usage (java-unwrap-optional (. response :usage))]
@@ -141,12 +153,14 @@
         :total-tokens  (. usage :totalTokens)))
     {}))
 
+
 (defn- parse-response [response]
   (->> (. response :output)
        (map #(. % :message))
        (map #(java-unwrap-optional %))
        (filter some?)
        (map #(response-output-message %))))
+
 
 (defn- response-output-message [out-msg]
   { :content  (->> (into [] (. out-msg :content))
