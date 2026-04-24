@@ -129,6 +129,8 @@ public class SandboxDefaultRules {
                 "class:java.util.Locale:*",
                 "class:java.util.Map:*",
                 "class:java.util.Set:*",
+                "class:java.util.Optional:*",
+
 
                 "class:java.util.concurrent.Semaphore:*",
                 "class:java.util.concurrent.CountDownLatch:*",
