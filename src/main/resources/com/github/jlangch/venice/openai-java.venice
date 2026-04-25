@@ -24,6 +24,8 @@
 ;;;; OpenAI OpenAPI:  https://github.com/openai/openai-java
 ;;;; Developer docs:  https://developers.openai.com/
 ;;;;                  https://developers.openai.com/api/docs
+;;;;                  https://developers.openai.com/api/reference/java
+;;;;                  https://developers.openai.com/api/docs/guides/migrate-to-responses
 
 
 (ns openai-java)
@@ -41,21 +43,22 @@
 ;; CHAT COMPLETIONS 
 ;; -----------------------------------------------------------------------------
 
+
 (defn 
   ^{ :arglists '(
-          "(chat-completion prompt & options)" )
+          "(client & options)" )
      :doc """
-          Runs a chat completion.
+          Creates an OpenAI client.
 
-          To run the request asynchronously just wrap it in a `future` and
-          deref it, when the result is required.
+          **Note:**
 
-          ¶*Parameter request «options»*
+          Don’t create more than one client in the same application. Each client 
+          has a connection pool and thread pools, which are more efficient to 
+          share between requests.
+
+          ¶*Parameter «options»*
 
           | [![width: 15%]]    | [![width: 85%]] |
-          | :model m           | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
-                                 :GPT_5_4_NANO. ¶\
-                                 Defaults to :GPT_5_4|
           | :openai-api-key k  | An optional OpenAI API Key. As fallback the key \
                                  is read from the environment variable \
                                  "OPENAI_API_KEY". |
@@ -71,6 +74,59 @@
                                  OpenAI uses the standard base URL \
                                  'https://api.openai.com/v1' if it is not \
                                  explicitely defined. |
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (openai-java/client))
+          """,
+          """
+          (do
+            (load-module :openai-java)
+            (openai-java/client :openai-api-key "sk-1234"))
+          """)
+     :see-also '() }
+
+  client [& options]
+
+  (when (exists-class? :OpenAIClient) 
+    throw (ex :VncException "The openai-java library is not available!"))
+
+  (let [opts            (apply hash-map options)
+        openai-api-key  (or (:openai-api-key opts)  (openai-api-key-from-env))
+        openai-org-id   (or (:openai-org-id opts)   (openai-org-id-from-env))
+        openai-proj-id  (or (:openai-proj-id opts)  (openai-proj-id-from-env))
+        openai-base-url (or (:openai-base-url opts) (openai-base-url-from-env))]
+    (when (nil? openai-api-key)
+      (throw (ex :VncException 
+                 """
+                 No OpenAI API key supplied. Pass the option ':openai-api-key key'
+                 or set the environemt variable "OPENAI_API_KEY"!
+                 """)))
+    (let [builder (. :OpenAIOkHttpClient :builder)]
+      (. builder :apiKey openai-api-key)
+      (when (some? openai-org-id)   (. builder :organization openai-org-id))
+      (when (some? openai-proj-id)  (. builder :project openai-proj-id))
+      (when (some? openai-base-url) (. builder :baseUrl openai-base-url))
+      (. builder :build))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(chat-completion client prompt & options)" )
+     :doc """
+          Runs a chat completion.
+
+          To run the request asynchronously just wrap it in a `future` and
+          deref it, when the result is required.
+
+          ¶*Parameter request «options»*
+
+          | [![width: 15%]]    | [![width: 85%]] |
+          | :model m           | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
+                                 :GPT_5_4_NANO. ¶\
+                                 Defaults to :GPT_5_4|
  
           ¶*Return value*
 
@@ -108,14 +164,18 @@
           """
           (do
             (load-module :openai-java)
-            (-> (openai-java/chat-completion "Say this is a test" :model :GPT_5_4)
-                (println)))
+            (let [client (openai-java/client)]
+              (-> (openai-java/chat-completion client 
+                                               "Say this is a test" 
+                                               :model :GPT_5_4)
+                  (println))))
           """,
           """
           (do
             (load-module :openai-java)
-            (let [prompt   "Say this is a test"
-                  response (openai-java/chat-completion prompt :model :GPT_5_4)
+            (let [client (openai-java/client)
+                  prompt   "Say this is a test"
+                  response (openai-java/chat-completion client prompt :model :GPT_5_4)
                            ;; only first output item
                   msg      (openai-java/get-first-message response) 
                   usage    (:usage response)]
@@ -126,14 +186,15 @@
               (println "Result: ")
               (println msg)))
           """)
-     :see-also '( ) }
+     :see-also '("openai-java/client") }
 
-  chat-completion [prompt & options]
+  chat-completion [client prompt & options]
 
+  { :pre [(instance-of? :OpenAIClient client)
+          (string? prompt)] }
+ 
   (let [opts          (apply hash-map options)
         model         (get opts :model :GPT_5_4)
-                      ;; (. :OpenAIOkHttpClient :fromEnv)
-        client        (create-ok-http-client opts)  
         start         (current-time-millis)
         params        (-> (. :ResponseCreateParams :builder)
                           (. :input prompt)
@@ -192,28 +253,6 @@
 ;; -----------------------------------------------------------------------------
 ;; Internal Utils
 ;; -----------------------------------------------------------------------------
-
-(defn- create-ok-http-client [opts]
-  (when (exists-class? :com.openai.client.OpenAIClient) 
-    throw (ex :VncException "The openai-java library is not available!"))
-
-  (let [openai-api-key  (or (:openai-api-key opts)  (openai-api-key-from-env))
-        openai-org-id   (or (:openai-org-id opts)   (openai-org-id-from-env))
-        openai-proj-id  (or (:openai-proj-id opts)  (openai-proj-id-from-env))
-        openai-base-url (or (:openai-base-url opts) (openai-base-url-from-env))]
-    (when (nil? openai-api-key)
-      (throw (ex :VncException 
-                 """
-                 No OpenAI API key supplied. Pass the option ':openai-api-key key'
-                 or set the environemt variable "OPENAI_API_KEY"!
-                 """)))
-    (let [builder (. :OpenAIOkHttpClient :builder)]
-      (. builder :apiKey openai-api-key)
-      (when (some? openai-org-id)   (. builder :organization openai-org-id))
-      (when (some? openai-proj-id)  (. builder :project openai-proj-id))
-      (when (some? openai-base-url) (. builder :baseUrl openai-base-url))
-      (. builder :build))))
-
 
 (defn- response-usage-stats [response]
   { :pre [(instance-of? :Response response)] }
