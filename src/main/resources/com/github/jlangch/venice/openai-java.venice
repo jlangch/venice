@@ -190,28 +190,26 @@
 
   chat-completion [client prompt & options]
 
-  { :pre [(instance-of? :OpenAIClient client)
-          (string? prompt)] }
+  { :pre [(instance-of? :OpenAIClient client) (string? prompt)] }
  
-  (let [opts          (apply hash-map options)
-        model         (get opts :model :GPT_5_4)
-        start         (current-time-millis)
-        params        (-> (. :ResponseCreateParams :builder)
-                          (. :input prompt)
-                          (. :model (. :ChatModel model))
-                          (. :build))
-        response      (-> (. client :responses)
-                          (. :create params))
-        elapsed       (- (current-time-millis) start)]
-    (ordered-map  
-      :status         (-> (. response :status)
-                          (java-unwrap-optional :unknown)
-                          (. :toString)
-                          (keyword))
-      :elapsed-millis elapsed
-      :output-msg     (parse-response response)
-      :usage          (response-usage-stats response)
-      :response       response )))
+  (let [opts      (apply hash-map options)
+        model     (get opts :model :GPT_5_4)
+        start     (current-time-millis)
+        params    (-> (. :ResponseCreateParams :builder)
+                      (. :input prompt)
+                      (. :model (. :ChatModel model))
+                      (. :build))
+        response  (-> (. client :responses)
+                      (. :create params))
+        elapsed   (- (current-time-millis) start)]
+    (ordered-map  :status         (-> (. response :status)
+                                      (java-unwrap-optional :unknown)
+                                      (. :toString)
+                                      (keyword))
+                  :elapsed-millis elapsed
+                  :output-msg     (parse-response response)
+                  :usage          (response-usage-stats response)
+                  :response       response )))
 
 
 
