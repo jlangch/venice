@@ -2970,29 +2970,30 @@ public class StringFunctions {
                     .arglists("(str/markdown->text markdown width)")
                     .doc("Renders markdown formatted text to raw text")
                     .examples(
-                        "(let [md \"\"\"             \n" +
-                        "         #Title             \n" +
-                        "                            \n" +
-                        "         *italic*           \n" +
-                        "                            \n" +
-                        "         **bold**           \n" +
-                        "                            \n" +
+                        "(let [md \"\"\"                   \n" +
+                        "         #Title                   \n" +
+                        "                                  \n" +
+                        "         *italic*                 \n" +
+                        "                                  \n" +
+                        "         **bold**                 \n" +
+                        "                                  \n" +
                         "         [Venice](https://github.com/jlangch/venice)  \n" +
-                        "                            \n" +
-                        "         List:              \n" +
-                        "         * Part 1           \n" +
-                        "         * Part 2           \n" +
-                        "         * Part 3           \n" +
-                        "                            \n" +
-                        "         Table:             \n" +
-                        "                            \n" +
-                        "         | JAN   | 1     |  \n" +
-                        "         | FEB   | 22    |  \n" +
-                        "         | MAR   | 333   |  \n" +
-                        "         \"\"\"]            \n" +
-                        "  (println (str/markdown->ansi md 60)))")
-                    .seeAlso("str/markdown->ansi")
-                    .build()
+                        "                                  \n" +
+                        "         List:                    \n" +
+                        "         * Part 1                 \n" +
+                        "         * Part 2                 \n" +
+                        "         * Part 3                 \n" +
+                        "                                  \n" +
+                        "         Table:                   \n" +
+                        "                                  \n" +
+                        "         | JAN   | 1     |        \n" +
+                        "         | FEB   | 22    |        \n" +
+                        "         | MAR   | 333   |        \n" +
+                        "         \"\"\"]                  \n" +
+                        "  (-> (str/markdown->text md 60)  \n" +
+                        "      (println)))                 ")
+                     .seeAlso("str/markdown->ansi")
+                .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -3025,27 +3026,28 @@ public class StringFunctions {
                     .arglists("(str/markdown->ansi markdown width)")
                     .doc("Renders markdown formatted text to ansi text")
                     .examples(
-                        "(let [md \"\"\"             \n" +
-                        "         #Title             \n" +
-                        "                            \n" +
-                        "         *italic*           \n" +
-                        "                            \n" +
-                        "         **bold**           \n" +
-                        "                            \n" +
+                        "(let [md \"\"\"                   \n" +
+                        "         #Title                   \n" +
+                        "                                  \n" +
+                        "         *italic*                 \n" +
+                        "                                  \n" +
+                        "         **bold**                 \n" +
+                        "                                  \n" +
                         "         [Venice](https://github.com/jlangch/venice)  \n" +
-                        "                            \n" +
-                        "         List:              \n" +
-                        "         * Part 1           \n" +
-                        "         * Part 2           \n" +
-                        "         * Part 3           \n" +
-                        "                            \n" +
-                        "         Table:             \n" +
-                        "                            \n" +
-                        "         | JAN   | 1     |  \n" +
-                        "         | FEB   | 22    |  \n" +
-                        "         | MAR   | 333   |  \n" +
-                        "         \"\"\"]            \n" +
-                        "  (println (str/markdown->text md 60)))")
+                        "                                  \n" +
+                        "         List:                    \n" +
+                        "         * Part 1                 \n" +
+                        "         * Part 2                 \n" +
+                        "         * Part 3                 \n" +
+                        "                                  \n" +
+                        "         Table:                   \n" +
+                        "                                  \n" +
+                        "         | JAN   | 1     |        \n" +
+                        "         | FEB   | 22    |        \n" +
+                        "         | MAR   | 333   |        \n" +
+                        "         \"\"\"]                  \n" +
+                        "  (-> (str/markdown->ansi md 60)  \n" +
+                        "      (println)))                 ")
                     .seeAlso("str/markdown->text")
                     .build()
         ) {
