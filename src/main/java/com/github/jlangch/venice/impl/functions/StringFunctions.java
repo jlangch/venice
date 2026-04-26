@@ -3045,7 +3045,7 @@ public class StringFunctions {
                         "         | FEB   | 22    |  \n" +
                         "         | MAR   | 333   |  \n" +
                         "         \"\"\"]            \n" +
-                        "  (println (str/markdown->ansi md 60)))")
+                        "  (println (str/markdown->text md 60)))")
                     .seeAlso("str/markdown->text")
                     .build()
         ) {
