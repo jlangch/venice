@@ -1707,8 +1707,8 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread each, 
 
 | Payload bytes    | 5 KB        | 50 KB       | 500 KB     | 5 MB      | 50 MB     | 200 MB    |
 | :--              | :--         | :--         | :--        | :--       | :--       | :--       |
-| Throughput msgs  | 26012 msg/s | 16065 msg/s | 3419 msg/s | 345 msg/s | 34 msg/s  | 8.5 msg/s |
-| Throughput bytes | 127 MB/s    | 784 MB/s    | 1669 MB/s  | 1727 MB/s | 1681 MB/s | 1708 MB/s |
+| Throughput msgs  | 26953 msg/s | 15985 msg/s | 3537 msg/s | 354 msg/s | 34 msg/s  | 8.5 msg/s |
+| Throughput bytes | 132 MB/s    | 781 MB/s    | 1727 MB/s  | 1769 MB/s | 1724 MB/s | 1708 MB/s |
 
  
 
@@ -1716,8 +1716,8 @@ VMWare, Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz, 2 cores with 1 thread each, 
 
 | Payload 5KB      | 1 conn      | 2 conn      | 3 conn      | 4 conn      | 10 conn     | 100 conn    |
 | :--              | :--         | :--         | :--         | :--         | :--         | :--         |
-| Throughput msgs  | 26012 msg/s | 47891 msg/s | 50588 msg/s | 48312 msg/s | 48265 msg/s | 39386 msg/s |
-| Throughput bytes | 127 MB/s    | 234 MB/s    | 247 MB/s    | 234 MB/s    | 236 MB/s    | 192 MB/s    |
+| Throughput msgs  | 26012 msg/s | 49133 msg/s | 51507 msg/s | 51924 msg/s | 50890 msg/s | 44002 msg/s |
+| Throughput bytes | 127 MB/s    | 240 MB/s    | 251 MB/s    | 254 MB/s    | 248 MB/s    | 215 MB/s    ||
 
  
 
