@@ -2977,7 +2977,7 @@ public class StringFunctions {
                         "                            \n" +
                         "         **bold**           \n" +
                         "                            \n" +
-                        "         [Venice](https://github.com/jlangch/venice)\"  \n" +
+                        "         [Venice](https://github.com/jlangch/venice)  \n" +
                         "                            \n" +
                         "         List:              \n" +
                         "         * Part 1           \n" +
@@ -3032,7 +3032,7 @@ public class StringFunctions {
                         "                            \n" +
                         "         **bold**           \n" +
                         "                            \n" +
-                        "         [Venice](https://github.com/jlangch/venice)\"  \n" +
+                        "         [Venice](https://github.com/jlangch/venice)  \n" +
                         "                            \n" +
                         "         List:              \n" +
                         "         * Part 1           \n" +
