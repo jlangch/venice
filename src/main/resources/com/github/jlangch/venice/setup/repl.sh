@@ -19,7 +19,7 @@
 # ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
-# PLEASE DO NOT MODIFY THIS REPL START SCRIPT!
+# !!!!!             PLEASE DO NOT MODIFY THIS REPL START SCRIPT            !!!!!
 # ------------------------------------------------------------------------------
 # Do not set custom variables in this script. Instead put them into the
 # {REPL_HOME}/repl.env in the REPL_HOME to keep your customizations separate.

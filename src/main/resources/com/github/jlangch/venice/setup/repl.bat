@@ -19,7 +19,7 @@ REM #    +-- repl.bat
 REM # -------------------------------------------------------------------------
 
 REM # -------------------------------------------------------------------------
-REM # PLEASE DO NOT MODIFY THIS REPL START SCRIPT!
+REM # !!!!!         PLEASE DO NOT MODIFY THIS REPL START SCRIPT           !!!!!
 REM # -------------------------------------------------------------------------
 REM # Do not set custom variables in this script. Instead put them into the
 REM # {REPL_HOME}/repl.env.bat in the REPL_HOME to keep your customizations 
@@ -71,7 +71,14 @@ if exist "%REPL_HOME%\.upgrade" (
   )
 )
 
+
 set JAVA_VM_OPTS=-server -XX:-OmitStackTraceInFastThrow %JAVA_OPTS%
+
+if "%UTF8_TERM%" == "true" (
+  REM # switch terminal to UTF-8
+  chcp 65001
+  set JAVA_VM_OPTS=-server -XX:-OmitStackTraceInFastThrow -Dfile.encoding=UTF-8 %JAVA_OPTS%
+)
 
 REM # start the REPL
 "%JAVA_HOME%\bin\java.exe" ^
