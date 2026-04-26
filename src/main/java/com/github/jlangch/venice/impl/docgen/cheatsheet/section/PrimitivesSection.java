@@ -259,10 +259,10 @@ public class PrimitivesSection implements ISectionBuilder {
         str_test_char.addItem(diBuilder.getDocItem("str/lower-case?"));
         str_test_char.addItem(diBuilder.getDocItem("str/upper-case?"));
 
-        final DocSection markdown = new DocSection("UTF", "primitives.strings.markdown");
+        final DocSection markdown = new DocSection("Markdown", "primitives.strings.markdown");
         strings.addSection(markdown);
-        markdown.addItem(diBuilder.getDocItem("str/markdown->text"));
-        markdown.addItem(diBuilder.getDocItem("str/markdown->ansi"));
+        markdown.addItem(diBuilder.getDocItem("str/markdown->text", false));
+        markdown.addItem(diBuilder.getDocItem("str/markdown->ansi", false));
 
         final DocSection utf = new DocSection("UTF", "primitives.strings.utf");
         strings.addSection(utf);
