@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.security.KeyPair;
 import java.util.ArrayList;
@@ -181,6 +182,7 @@ public class REPL implements IRepl {
             System.out.println("Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
             System.out.println("Jansi: " + (jansiVersion == null ? "not detected! (no color support)" : jansiVersion));
+            System.out.println("Charset: " + Charset.defaultCharset());
             System.out.println("Macro expansion: " + (macroexpand ? "enabled" : "disabled"));
             System.out.println("Configuration: " + config.getConfigSource());
             if (loadpaths.active()) {
