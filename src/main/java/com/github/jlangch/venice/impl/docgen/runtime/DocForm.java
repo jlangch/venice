@@ -676,18 +676,6 @@ public class DocForm {
         return isReplAnsiTerminal() ? Ansi.bold(text): text;
     }
 
-    private static String italic(final String text) {
-        return isReplAnsiTerminal() ? Ansi.italic(text): text;
-    }
-
-    private static String boldItalic(final String text) {
-        return isReplAnsiTerminal() ? Ansi.boldItalic(text): text;
-    }
-
-    private static String underline(final String text) {
-        return isReplAnsiTerminal() ? Ansi.underline(text): text;
-    }
-
 
     private static final boolean MARKDOWN_FN_DESCR = true;
 
