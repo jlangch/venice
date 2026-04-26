@@ -69,7 +69,6 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.renderer.text.LineWrap;
-import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
 import com.github.jlangch.venice.util.Base64Schema;
 
 
@@ -2965,13 +2964,34 @@ public class StringFunctions {
 
     public static VncFunction str_markdown_to_text =
         new VncFunction(
-                "str/markdown-to-text",
+                "str/markdown->text",
                 VncFunction
                     .meta()
-                    .arglists("(str/markdown-to-text text width)")
+                    .arglists("(str/markdown->text markdown width)")
                     .doc("Renders markdown formatted text to raw text")
                     .examples(
-                        "(str/markdown-to-text \"#Title\\n\\nLorem ipsum...\")")
+                        "(let [md \"\"\"             \n" +
+                        "         #Title             \n" +
+                        "                            \n" +
+                        "         *italic*           \n" +
+                        "                            \n" +
+                        "         **bold**           \n" +
+                        "                            \n" +
+                        "         [Venice](https://github.com/jlangch/venice)\"  \n" +
+                        "                            \n" +
+                        "         List:              \n" +
+                        "         * Part 1           \n" +
+                        "         * Part 2           \n" +
+                        "         * Part 3           \n" +
+                        "                            \n" +
+                        "         Table:             \n" +
+                        "                            \n" +
+                        "         | JAN   | 1     |  \n" +
+                        "         | FEB   | 22    |  \n" +
+                        "         | MAR   | 333   |  \n" +
+                        "         \"\"\"]            \n" +
+                        "  (println (str/markdown->ansi md 80)))")
+                    .seeAlso("str/markdown->ansi")
                     .build()
         ) {
             @Override
@@ -2981,11 +3001,7 @@ public class StringFunctions {
                 final String text = Coerce.toVncString(args.first()).getValue();
                 final int width = Coerce.toVncLong(args.second()).toJavaInteger();
 
-                final Markdown md = Markdown.parse(text);
-
-                String s = new TextRenderer()
-                                .softWrap(width)
-                                .render(md);
+                String s = Markdown.parse(text).renderToText(width);
 
                 s = s.replace("<table>", "")
                      .replace("</table>", "")
@@ -3000,6 +3016,60 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+    public static VncFunction str_markdown_to_ansi =
+        new VncFunction(
+                "str/markdown->ansi",
+                VncFunction
+                    .meta()
+                    .arglists("(str/markdown->ansi markdown width)")
+                    .doc("Renders markdown formatted text to ansi text")
+                    .examples(
+                        "(let [md \"\"\"             \n" +
+                        "         #Title             \n" +
+                        "                            \n" +
+                        "         *italic*           \n" +
+                        "                            \n" +
+                        "         **bold**           \n" +
+                        "                            \n" +
+                        "         [Venice](https://github.com/jlangch/venice)\"  \n" +
+                        "                            \n" +
+                        "         List:              \n" +
+                        "         * Part 1           \n" +
+                        "         * Part 2           \n" +
+                        "         * Part 3           \n" +
+                        "                            \n" +
+                        "         Table:             \n" +
+                        "                            \n" +
+                        "         | JAN   | 1     |  \n" +
+                        "         | FEB   | 22    |  \n" +
+                        "         | MAR   | 333   |  \n" +
+                        "         \"\"\"]            \n" +
+                        "  (println (str/markdown->ansi md 80)))")
+                    .seeAlso("str/markdown->text")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final String text = Coerce.toVncString(args.first()).getValue();
+                final int width = Coerce.toVncLong(args.second()).toJavaInteger();
+
+                String s = Markdown.parse(text).renderToAnsiText(width);
+
+                s = s.replace("<table>", "")
+                     .replace("</table>", "")
+                     .replace("<tr>", "\n")
+                     .replace("</tr>", "")
+                     .replace("<td>", "")
+                     .replace("</td>", "");
+
+                return new VncString(s);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction str_normalize_utf =
         new VncFunction(
@@ -3024,8 +3094,6 @@ public class StringFunctions {
                         " ;; Even though printed the same these two strings are NOT equal        \n" +
                         " ;; 1: \"ü\"          prints to \"ü\"                                   \n" +
                         " ;; 2: \"u\\u0308\"   prints to \"ü\"                                   \n" +
-                           "                                                                        \n" +
-                        "«If it looks like a duck and quacks like a duck, then it probably is a duck» is definitely WRONG here!                                                    \n" +
                         "                                                                        \n" +
                         ";; ü represented as u with combining diaresis char: \\u0308  ̈           \n" +
                         "(println \"u\\u0308\")                                                  \n" +
@@ -3202,6 +3270,7 @@ public class StringFunctions {
                     .add(str_valid_email_addr_Q)
                     .add(str_levenshtein)
                     .add(str_markdown_to_text)
+                    .add(str_markdown_to_ansi)
                     .add(str_normalize_utf)
                     .toMap();
 }
