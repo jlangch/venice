@@ -51,8 +51,8 @@
 
           **Note:**
 
-          *Download and parse the geo data only once in the same application. Its
-          just too expensive to do it multiple times.*
+          *Download and parse the geo data only once in the same application.*
+          *Its just too expensive to do it multiple times.*
           """
      :examples '(
           """
@@ -84,8 +84,8 @@
 
           **Note:**
 
-          *Download and parse the geo data only once in the same application. Its
-          just too expensive to do it multiple times.*
+          *Download and parse the geo data only once in the same application.*
+          *Its just too expensive to do it multiple times.*
           """
      :examples '(
           """
