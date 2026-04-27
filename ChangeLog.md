@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Added the functions `str/markdown->text` and `str/markdown->ansi` to render
-  markdown to pure ascii or ansi text
+  *markdown* to pure *ascii* or *ansi* text
 
 
 
