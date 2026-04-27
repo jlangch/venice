@@ -116,7 +116,7 @@
   (->> (io/load-classpath-resource resource)
        (parse)
        (reset! geo-data))
-       
+
   nil)
 
 
@@ -313,15 +313,15 @@
             (load-module :swiss-geo)
             (swiss-geo/download-geo-data)
 
-            (swiss-geo/distance (swiss-geo/find-location "Basel")
-                                (swiss-geo/find-location "Bern")))
+            (swiss-geo/distance "Basel" "Bern"))
           """,
           """
           (do 
             (load-module :swiss-geo)
             (swiss-geo/download-geo-data)
 
-            (swiss-geo/distance "Basel" "Bern"))
+            (swiss-geo/distance (swiss-geo/find-location "Basel")
+                                (swiss-geo/find-location "Bern")))
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
@@ -336,7 +336,6 @@
   
   { :pre [(or (string? location-1) (map? location-1))
           (or (string? location-2) (map? location-2)) ] }
-
 
   (let [loc-1    (if (string? location-1) (find-location location-1) location-1)
         loc-2    (if (string? location-2) (find-location location-2) location-2)
