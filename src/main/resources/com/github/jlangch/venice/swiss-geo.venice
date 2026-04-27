@@ -52,7 +52,8 @@
 
           The LV95 Swiss geo data can be renewed any time by downloading it again.
 
-          Alternatively use `swiss-geo/load-geo-data-from-classpath`.
+          Alternatively use `swiss-geo/load-geo-data-from-classpath` or
+          `swiss-geo/slurp-geo-data`.
           """
      :examples '(
           """
@@ -65,6 +66,7 @@
           """) 
       :see-also '(
         "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/loaded?"
         "swiss-geo/find-location"
         "swiss-geo/distance"
@@ -89,7 +91,7 @@
 
           The LV95 Swiss geo data can be renewed any time by reloading it again.
 
-          Alternatively use `swiss-geo/download-geo-data`.
+          Alternatively use `swiss-geo/download-geo-data` or `swiss-geo/slurp-geo-data`.
           """
      :examples '(
           """
@@ -104,6 +106,7 @@
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/loaded?"
         "swiss-geo/find-location"
         "swiss-geo/distance"
@@ -114,6 +117,50 @@
   load-geo-data-from-classpath [resource]
     
   (->> (io/load-classpath-resource resource)
+       (parse)
+       (reset! geo-data))
+
+  nil)
+
+
+(defn 
+  ^{ :arglists '("(slurp-geo-data f)")
+     :doc """
+          Loads the LV95 Swiss geo data from a file or a Java 
+          `:java.io.InputStream`, parses it and keeps it in the module for 
+          subsequent use.
+
+          The LV95 Swiss geo data can be renewed any time by reloading it again.
+
+          Alternatively use `swiss-geo/download-geo-data` or
+          `swiss-geo/load-geo-data-from-classpath`.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-geo)
+
+            (def csv "/data/ortschaftenverzeichnis_plz_2056.csv.zip")
+            (swiss-geo/slurp-geo-data (io/file csv)) 
+            
+            (swiss-geo/list-gemeinden)
+            (swiss-geo/list-ortschaften))
+          """) 
+      :see-also '(
+        "swiss-geo/download-geo-data"
+        "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/loaded?"
+        "swiss-geo/find-location"
+        "swiss-geo/distance"
+        "swiss-geo/find-by-plz"
+        "swiss-geo/list-ortschaften"
+        "swiss-geo/list-gemeinden" ) }
+
+  slurp-geo-data [f]
+    
+  { :pre [(or (string? f) (io/file? f) (instance-of :java.io.InputStream f))] }
+
+  (->> (io/slurp f :binary false)
        (parse)
        (reset! geo-data))
 
@@ -136,6 +183,7 @@
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/find-location"
         "swiss-geo/distance"
         "swiss-geo/find-by-plz"
@@ -190,6 +238,7 @@
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/loaded?"
         "swiss-geo/find-location"
         "swiss-geo/distance"
@@ -223,6 +272,7 @@
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/loaded?"
         "swiss-geo/find-location"
         "swiss-geo/distance"
@@ -256,6 +306,7 @@
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/loaded?"
         "swiss-geo/find-location"
         "swiss-geo/distance"
@@ -286,6 +337,7 @@
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/loaded?"
         "swiss-geo/find-location"
         "swiss-geo/distance"
@@ -326,6 +378,7 @@
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
         "swiss-geo/loaded?"
         "swiss-geo/find-location"
         "swiss-geo/find-by-plz"
