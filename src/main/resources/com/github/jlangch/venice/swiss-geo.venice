@@ -234,10 +234,10 @@
   { :pre [(string? name)] }
 
   (if-let [l1 (find-by-ortschaft-and-gemeinde name)]
-     l1
-     (if-let [l2 (find-by-ortschaft name)]
-       l2
-       (find-by-gemeinde name))))
+    l1
+    (if-let [l2 (find-by-ortschaft name)]
+      l2
+      (find-by-gemeinde name))))
 
 
 (defn 
