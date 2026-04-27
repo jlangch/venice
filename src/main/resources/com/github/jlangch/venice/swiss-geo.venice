@@ -86,7 +86,7 @@
 (defn 
   ^{ :arglists '("(load-geo-data-from-classpath resource)")
      :doc """
-          Loads the LV95 Swiss geo data from a classpath resource,
+          Loads the LV95 Swiss geo data (ZIP file) from a classpath resource,
           parses it and keeps it in the module for subsequent use.
 
           The LV95 Swiss geo data can be renewed any time by reloading it again.
@@ -116,7 +116,7 @@
 
   load-geo-data-from-classpath [resource]
     
-  (->> (io/load-classpath-resource resource)
+  (->> (load-from-classpath resource)
        (parse)
        (reset! geo-data))
 
@@ -126,7 +126,7 @@
 (defn 
   ^{ :arglists '("(slurp-geo-data f)")
      :doc """
-          Loads the LV95 Swiss geo data from a file or a Java 
+          Loads the LV95 Swiss geo data (ZIP file) from a file or a Java 
           `:java.io.InputStream`, parses it and keeps it in the module for 
           subsequent use.
 
@@ -160,7 +160,7 @@
     
   { :pre [(or (string? f) (io/file? f) (instance-of :java.io.InputStream f))] }
 
-  (->> (io/slurp f :binary false)
+  (->> (slurp f)
        (parse)
        (reset! geo-data))
 
@@ -409,17 +409,36 @@
 (defn- get-geo-data []
   (if-let [data (deref geo-data)]
     data
-    (throw (ex :VncException "The SwissTopo GEO CSV has not been loaded yet!"))))
+    (throw (ex :VncException "The SwissTopo GEO ZIP has not been loaded yet!"))))
 
 
 (defn- download []
   (try
     (-> (io/download download-url :binary true :user-agent "Mozilla")
-        (io/unzip "AMTOVZ_CSV_LV95/AMTOVZ_CSV_LV95.csv")
-        (bytebuf-to-string :UTF-8))
+        (unzip))
     (catch :Exception e
-      (throw (ex :VncException "Failed to download the SwissTopo GEO CSV!" e)))))
+      (throw (ex :VncException "Failed to download the SwissTopo GEO ZIP!" e)))))
 
+
+(defn- load-from-classpath [resource]
+  (try
+    (-> (io/load-classpath-resource resource)
+        (unzip))
+    (catch :Exception e
+      (throw (ex :VncException "Failed to load the SwissTopo GEO ZIP from the classpath!" e)))))
+
+
+(defn- slurp [f]
+  (try
+    (-> (io/slurp f :binary false)
+        (unzip))
+    (catch :Exception e
+      (throw (ex :VncException "Failed to slurp the SwissTopo GEO ZIP!" e)))))
+
+
+(defn- unzip [zip]
+  (-> (io/unzip zip"AMTOVZ_CSV_LV95/AMTOVZ_CSV_LV95.csv")
+      (bytebuf-to-string :UTF-8)))
 
 (defn- parse [csv]    
   { :pre [(string? csv)] }
