@@ -173,7 +173,7 @@
      :doc """
           Find all locations with the spcified plz.
 
-          Returns ta list of the matching locations.
+          Returns a list of the matching locations.
           """
      :examples '(
           """
@@ -203,7 +203,7 @@
 (defn 
   ^{ :arglists '("(find-location name)")
      :doc """
-          Fime a location (*Ortschaft* or *Gemeinde*) by name.
+          Find a location (*Ortschaft* or *Gemeinde*) by name.
 
           Returns the location's geo data or `nil` if the location has not been
           found in the data.
