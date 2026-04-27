@@ -76,7 +76,9 @@
     
   (->> (download)
        (parse)
-       (reset! geo-data)))
+       (reset! geo-data))
+       
+  nil)
 
 
 (defn 
@@ -113,7 +115,9 @@
     
   (->> (io/load-classpath-resource resource)
        (parse)
-       (reset! geo-data)))
+       (reset! geo-data))
+       
+  nil)
 
 
 (defn 
@@ -297,7 +301,7 @@
 
 
 (defn 
-  ^{ :arglists '("(distance location-1-geo-data location-2-geo-data)")
+  ^{ :arglists '("(distance location-1 location-2)")
      :doc """
           Calculate the distance in kilometers between to Swiss locations.
 
@@ -310,7 +314,14 @@
             (swiss-geo/download-geo-data)
 
             (swiss-geo/distance (swiss-geo/find-location "Basel")
-                                (swiss-geo/find-location "Bern"))
+                                (swiss-geo/find-location "Bern")))
+          """,
+          """
+          (do 
+            (load-module :swiss-geo)
+            (swiss-geo/download-geo-data)
+
+            (swiss-geo/distance "Basel" "Bern"))
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
@@ -321,14 +332,18 @@
         "swiss-geo/list-ortschaften"
         "swiss-geo/list-gemeinden" ) }
 
-  distance [location-1-geo-data location-2-geo-data]
+  distance [location-1 location-2]
   
-  { :pre [(map? location-1-geo-data) (map? location-2-geo-data)] }
+  { :pre [(or (string? location-1) (map? location-1))
+          (or (string? location-2) (map? location-2)) ] }
 
-  (let [east-1   (:east location-1-geo-data)
-        east-2   (:east location-2-geo-data)
-        north-1  (:north location-1-geo-data)
-        north-2  (:north location-2-geo-data)]
+
+  (let [loc-1    (if (string? location-1) (find-location location-1) location-1)
+        loc-2    (if (string? location-2) (find-location location-2) location-2)
+        east-1   (:east loc-1)
+        east-2   (:east loc-2)
+        north-1  (:north loc-1)
+        north-2  (:north loc-2)]
    (->> (- (square (- east-1 east-2)) (square (- north-1 north-2)))
         (abs)
         (sqrt)
