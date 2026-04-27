@@ -141,6 +141,7 @@ public class Modules {
                         "server-side-events",
                         "shell",
                         "stopwatch",
+                        "swiss-geo",
                         "test",
                         "test-support",
                         "timing",
