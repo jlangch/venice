@@ -173,7 +173,7 @@ public class DocGenerator {
                         "qrcode",        "qrref",               "qrbill",             "rsa",
                         "ascii-canvas",  "ascii-charts",        "ascii-table",
                         "aviron",        "aviron-queue",        "aviron-cycler",      "aviron-limiter",
-                        "openai-java"));
+                        "openai-java",   "swiss-geo"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
