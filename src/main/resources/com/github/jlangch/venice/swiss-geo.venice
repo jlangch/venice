@@ -29,7 +29,8 @@
 ;;;; Die Distanz zwischen zwei LV95-Koordinaten (Ost/E, Nord/N in Metern) 
 ;;;; berechnet sich mittels Satz des Pythagoras:
 ;;;; 
-;;;;     √ ((E₂ - E₁)² - (N₂ - N₁)²)        (Ost/E, Nord/N in Metern)
+;;;;      ________________________
+;;;;     √ (E₂ - E₁)² - (N₂ - N₁)²      (Ost/E, Nord/N in Metern)
 ;;;;
 ;;;; LV95 ist ein metrisches System, daher entspricht die Differenz direkt der 
 ;;;; Entfernung in Metern. Für einfache Berechnungen eignen sich GIS-Systeme wie 
@@ -202,7 +203,10 @@
 
   { :pre [(sequential? geo-data)] }
 
-  (sorted (map (fn [item] (get item :ortschaft)))))
+  (->> (map #(get % :ortschaft) geo-data)
+       (filter some?)
+       (distinct)
+       (sort)))
 
 
 (defn 
@@ -228,7 +232,10 @@
 
   { :pre [(sequential? geo-data)] }
 
-  (sorted (map (fn [item] (get item :gemeinde)))))
+  (->> (map #(get % :gemeinde) geo-data)
+       (filter some?)
+       (distinct)
+       (sort)))
 
 
 (defn 
