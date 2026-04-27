@@ -368,8 +368,10 @@ demo
     └── client-public.pem
 ```
 
-Create the demo directory structure, download Venice and start an *Ad hoc* REPL 
-in the `./demo` directory to create all the required files step by step.
+Create the demo top-level directory first.
+
+Download Venice and start an *Ad hoc* REPL 
+in the `./demo` directory to create all the required files step by step:
 
 ```
 cd ./demo
