@@ -23,16 +23,16 @@
 ;;;;
 ;;;; LV95: https://www.swisstopo.admin.ch/de/amtliches-ortschaftenverzeichnis#Download
 ;;;;       https://www.swisstopo.admin.ch/de/koordinaten-konvertieren-navref
-
-
-
+;;;;
+;;;;
+;;;;
 ;;;; Die Distanz zwischen zwei LV95-Koordinaten (Ost/E, Nord/N in Metern) 
-;;;; berechnet sich präzise mittels Satz des Pythagoras:
+;;;; berechnet sich mittels Satz des Pythagoras:
 ;;;; 
 ;;;;     √ ((E₂ - E₁)² - (N₂ - N₁)²)        (Ost/E, Nord/N in Metern)
 ;;;;
 ;;;; LV95 ist ein metrisches System, daher entspricht die Differenz direkt der 
-;;;; Entfernung in Metern. Für einfache Berechnungen eignen GIS-Systeme wie 
+;;;; Entfernung in Metern. Für einfache Berechnungen eignen sich GIS-Systeme wie 
 ;;;; map.geo.admin.ch
 
 
@@ -60,7 +60,8 @@
 
   download-geo-date []
     
-  nil)
+  (-> (io/download download-url :binary true :user-agent "Mozilla")
+      (io/unzip-first)))
 
 
 (defn 
@@ -69,7 +70,28 @@
           Parses LV95 Swiss geo data CSV to a map keyed by city holding the
           the coordinates as value (a vector of *east* and *north* coordinates)
 
-          Returns the LV95 geo data map
+          Returns a list of LV95 geo data entries.
+
+          E.g.:
+          
+          ```
+          ( { :locality "Basel"
+              :plz      "4001"
+              :city     "Basel"
+              :canton   "BS"
+              :east     2611314.0
+              :north    1267295.0
+              :validity 2008-07-01 },
+            { :locality "Uster"
+              :plz      "8610"
+              :city     "Uster"
+              :canton   "ZH"
+              :east     2696680.0
+              :north    1244979.0
+              :validity 2008-07-01 }
+            ...
+          )
+          ```
           """
      :examples '(
           """
@@ -82,21 +104,35 @@
         "swiss-geo/distance-geo-data" ) }
 
   parse-geo-data [geo-data-csv]
-  )
+    
+  (-> (csv/read geo-data-csv :separator ";")
+      (map map-geo-dataset)))
 
 
-(defn coordinates [city geo-data]
-  
-  { :pre [(string? city) (map? geo-data)] }
+(defn find-by-locality [locality geo-data]
+  { :pre [(string? locality) (sequential? geo-data)] }
+  (-> geo-data
+      (filter #(== locality (get geo-data :locality))
+      (first))))
 
-  (let [coord (get geo-data city)]
-     (when (nil?)
-       (throw (ex :VncException (str/format "No geo data avalibale for city '%s'!"
-                                            city))))))
+
+(defn find-by-city [city geo-data]
+  { :pre [(string? city) (sequential? geo-data)] }
+  (-> geo-data
+      (filter #(== city (get geo-data :city))
+      (first))))
+
+
+(defn find-by-locality-or-city [name geo-data]
+  { :pre [(string? name) (sequential? geo-data)] }
+  (-> geo-data
+      (filter #(or (== name (get geo-data :locality))
+                   (== name (get geo-data :city)))
+      (first))))
 
 
 (defn 
-  ^{ :arglists '("(distance city-1 city-2 geo-data)")
+  ^{ :arglists '("(distance city-geo-data-1 city-geo-data-2)")
      :doc """
           Calculate the distance in kilometers between to Swiss cities.
 
@@ -106,27 +142,54 @@
           """
           (do 
             (load-module :swiss-geo)
-            (let [geo-data (swiss-geo/parse-geo-data (swiss-geo/download-geo-data))]       
-              (swiss-geo/distance "Basel" "Bern" geo-data)))       
+            (let [geo-data (swiss-geo/parse-geo-data (swiss-geo/download-geo-data))
+                  city-1   (swiss-geo/find-by-locality-or-city "Basel" geo-data)     
+                  city-2   (swiss-geo/find-by-locality-or-city "Bern" geo-data)]   
+              (swiss-geo/distance city-1 city-2)))       
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/parse-geo-data" ) }
   
-  { :pre [(string? city-1) (string? city-2) (map? geo-data)] }
+  { :pre [(map? city-geo-data-1) (map? city-geo-data-2)] }
 
-  distance [city-1 city-2 geo-data]
+  distance [city-geo-data-1 city-geo-data-2]
 
-  (let [coord-1  (coordinates city-1 geo-data)
-        coord-2  (coordinates city-2 geo-data)
-        east-1   (double (first coord-1))
-        north-1  (double (second coord-1))
-        east-2   (double (first coord-2))
-        north-2  (double (second coord-2))]
+  (let [east-1   (:east city-geo-data-1)
+        north-1  (:north city-geo-data-2)
+        east-2   (:east city-geo-data-1)
+        north-2  (:north city-geo-data-2)]
    (-> (sqrt (- (square (- east-1 east-2)) (square (- north-1 north-2))))
        (m->km))))  ;; convert meter to kilometer
 
 
+(defn- map-geo-dataset [data]
+  ;; Ortschaftsname;PLZ4;Zusatzziffer;ZIP_ID;Gemeindename;BFS-Nr;Kantonskürzel;Adressenanteil;E;N;Sprache;Validity
+
+  (let [locality   (nth data 0)
+        plz        (nth data 1)
+        city       (nth data 4)
+        canton     (nth data 6)
+        east       (nth data 8)
+        north      (nth data 9)
+        lang       (nth data 10)
+        validity   (nth data 11)]
+    (ordered-map :locality locality
+                 :plz      plz
+                 :city     (strip-canton-suffix city)
+                 :canton   canton
+                 :east     (double east)
+                 :north    (double north)
+                 :validity (time/local-date validity))))
+
+
+(defn- strip-canton-suffix [city]
+  ;; "Renens (VD)" -> "Renens"
+  (let [suffix-pos ((str/index-of city "("))]
+    (if (pos? suffix-pos)
+      (str/trim (str/subs city 0 suffix-pos))
+      (str/trim city))))
+
+
 (defn- m->km [d]
   (long (/ d 1000.0)))
-
