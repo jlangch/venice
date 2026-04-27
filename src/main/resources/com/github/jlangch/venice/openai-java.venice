@@ -93,7 +93,7 @@
   client [& options]
 
   (when (exists-class? :OpenAIClient) 
-    throw (ex :VncException "The openai-java library is not available!"))
+    (throw (ex :VncException "The openai-java library is not available!")))
 
   (let [opts            (apply hash-map options)
         openai-api-key  (or (:openai-api-key opts)  (openai-api-key-from-env))
