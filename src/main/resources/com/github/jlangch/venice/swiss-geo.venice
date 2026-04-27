@@ -28,7 +28,7 @@
 ;;;;
 ;;;; Die Distanz zwischen zwei LV95-Koordinaten (Ost/E, Nord/N in Metern) 
 ;;;; berechnet sich mittels Satz des Pythagoras:
-;;;; 
+;;;;     
 ;;;;      ________________________
 ;;;;     √ (E₂ - E₁)² - (N₂ - N₁)²      (Ost/E, Nord/N in Metern)
 ;;;;

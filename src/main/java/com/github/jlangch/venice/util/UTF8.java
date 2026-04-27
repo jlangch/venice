@@ -123,6 +123,9 @@ public abstract class UTF8 {
     public static char BLACK_VERTICAL_RECTANGLE   = '\u25AE';  // ▮
     public static char WHITE_VERTICAL_RECTANGLE   = '\u25AF';  // ▯
 
+    public static char FULLWIDTH_LOW_LINE         = '\uFF3F';  // ＿
+    public static char DASHED_LOW_LINE            = '\uFE4D';  // ﹍
+
     // Arrows
     public static char LEFTARDS_ARROW             = '\u2190';  // ←
     public static char UPWARDS_ARROW              = '\u2191';  // ↑
