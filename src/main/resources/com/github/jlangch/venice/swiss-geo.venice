@@ -68,28 +68,28 @@
 (defn 
   ^{ :arglists '("(parse-geo-data geo-data-csv)")
      :doc """
-          Parses LV95 Swiss geo data CSV to a map keyed by city holding the
-          the coordinates as value (a vector of *east* and *north* coordinates)
+          Parses LV95 Swiss geo data CSV.
 
           Returns a list of LV95 geo data entries.
 
           E.g.:
           
           ```
-          ( { :locality "Basel"
-              :plz      "4001"
-              :city     "Basel"
-              :canton   "BS"
-              :east     2611314.0
-              :north    1267295.0
-              :validity 2008-07-01 },
-            { :locality "Uster"
-              :plz      "8610"
-              :city     "Uster"
-              :canton   "ZH"
-              :east     2696680.0
-              :north    1244979.0
-              :validity 2008-07-01 }
+          ( { :ortschaft "Basel"
+              :plz       "4001"
+              :gemeinde  "Basel"
+              :kanton    "BS"
+              :east      2611314.0
+              :north     1267295.0
+              :validity  2008-07-01 },
+
+            { :ortschaft "Ebmatingen"
+              :plz       "8123"
+              :gemeinde  "Maur"
+              :kanton    "ZH"
+              :east      2690799.0
+              :north     1245145.0
+              :validity  2008-07-01 }
             ...
           )
           ```
@@ -114,43 +114,53 @@
        (core/map #(map-geo-dataset %))))
 
 
-(defn find-by-locality [locality geo-data]
-  { :pre [(string? locality) (sequential? geo-data)] }
-  (first (filter (fn [item] (== locality (get item :locality)))
+(defn find-by-ortschaft [ortschaft geo-data]
+  { :pre [(string? ortschaft) (sequential? geo-data)] }
+  (first (filter (fn [item] (== ortschaft (get item :ortschaft)))
                  geo-data)))
 
 
-(defn find-by-city [city geo-data]
-  { :pre [(string? city) (sequential? geo-data)] }
-  (first (filter (fn [item] (== city (get item :city)))
+(defn find-by-gemeinde [gemeinde geo-data]
+  { :pre [(string? gemeinde) (sequential? geo-data)] }
+  (first (filter (fn [item] (== gemeinde (get item :gemeinde)))
                  geo-data)))
 
 
-(defn find-by-locality-or-city [name geo-data]
+(defn find-by-ortschaft-or-gemeinde [name geo-data]
   { :pre [(string? name) (sequential? geo-data)] }
-  (first (filter (fn [item] (or (== name (get item :locality))
-                                (== name (get item :city))))
+  (first (filter (fn [item] (or (== name (get item :ortschaft))
+                                (== name (get item :gemeinde))))
                  geo-data)))
 
-(defn find-by-locality-and-city [name geo-data]
+(defn find-by-ortschaft-and-gemeinde [name geo-data]
   { :pre [(string? name) (sequential? geo-data)] }
-  (first (filter (fn [item] (and (== name (get item :locality))
-                                 (== name (get item :city))))
+  (first (filter (fn [item] (and (== name (get item :ortschaft))
+                                 (== name (get item :gemeinde))))
                  geo-data )))
 
 (defn find-location [name geo-data]
   { :pre [(string? name) (sequential? geo-data)] }
-  (if-let [l1 (find-by-locality-and-city name geo-data)]
+  (if-let [l1 (find-by-ortschaft-and-gemeinde name geo-data)]
      l1
-     (if-let [l2 (find-by-locality name geo-data)]
+     (if-let [l2 (find-by-ortschaft name geo-data)]
        l2
-       (find-by-city name geo-data))))
+       (find-by-gemeinde name geo-data))))
+
+
+(defn list-ortschaften [geo-data]
+ { :pre [(sequential? geo-data)] }
+ (sorted (map (fn [item] (get item :ortschaft)))))
+
+
+(defn list-gemeinden [geo-data]
+ { :pre [(sequential? geo-data)] }
+ (sorted (map (fn [item] (get item :gemeinde)))))
 
 
 (defn 
-  ^{ :arglists '("(distance city-geo-data-1 city-geo-data-2)")
+  ^{ :arglists '("(distance location-1-geo-data location-2-geo-data)")
      :doc """
-          Calculate the distance in kilometers between to Swiss cities.
+          Calculate the distance in kilometers between to Swiss locations.
 
           Returns the distance as a rounded long value
           """
@@ -158,23 +168,23 @@
           """
           (do 
             (load-module :swiss-geo)
-            (let [geo-data (swiss-geo/parse-geo-data (swiss-geo/download-geo-data))
-                  city-1   (swiss-geo/find-location "Basel" geo-data)
-                  city-2   (swiss-geo/find-location "Bern" geo-data)]
-              (swiss-geo/distance city-1 city-2)))       
+            (let [geo-data   (swiss-geo/parse-geo-data (swiss-geo/download-geo-data))
+                  location-1 (swiss-geo/find-location "Basel" geo-data)
+                  location-2 (swiss-geo/find-location "Bern" geo-data)]
+              (swiss-geo/distance location-1 location-2)))       
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/parse-geo-data" ) }
 
-  distance [city-geo-data-1 city-geo-data-2]
+  distance [location-1-geo-data location-2-geo-data]
   
-  { :pre [(map? city-geo-data-1) (map? city-geo-data-2)] }
+  { :pre [(map? location-1-geo-data) (map? location-2-geo-data)] }
 
-  (let [east-1   (:east city-geo-data-1)
-        east-2   (:east city-geo-data-2)
-        north-1  (:north city-geo-data-1)
-        north-2  (:north city-geo-data-2)]
+  (let [east-1   (:east location-1-geo-data)
+        east-2   (:east location-2-geo-data)
+        north-1  (:north location-1-geo-data)
+        north-2  (:north location-2-geo-data)]
    (->> (- (square (- east-1 east-2)) (square (- north-1 north-2)))
         (abs)
         (sqrt)
@@ -186,29 +196,29 @@
 
   ;; Ortschaftsname;PLZ4;Zusatzziffer;ZIP_ID;Gemeindename;BFS-Nr;Kantonskürzel;Adressenanteil;E;N;Sprache;Validity
 
-  (let [locality   (nth data 0)
+  (let [ortschaft  (nth data 0)
         plz        (nth data 1)
-        city       (str/trim-to-empty (nth data 4))
-        canton     (nth data 6)
+        gemeinde   (str/trim-to-empty (nth data 4))
+        kanton     (nth data 6)
         east       (nth data 8)
         north      (nth data 9)
         lang       (nth data 10)
         validity   (nth data 11)]
-    (ordered-map :locality locality
-                 :plz      plz
-                 :city     (strip-canton-suffix city)
-                 :canton   canton
-                 :east     (double east)
-                 :north    (double north)
-                 :validity (time/local-date validity))))
+    (ordered-map :ortschaft ortschaft
+                 :plz       plz
+                 :gemeinde  (strip-kanton-suffix gemeinde)
+                 :kanton    kanton
+                 :east      (double east)
+                 :north     (double north)
+                 :validity  (time/local-date validity))))
 
 
-(defn- strip-canton-suffix [city]
+(defn- strip-kanton-suffix [gemeinde]
   ;; "Renens (VD)" -> "Renens"
-  (let [suffix-pos (str/index-of city "(")]
+  (let [suffix-pos (str/index-of gemeinde "(")]
     (if (nil? suffix-pos)
-      (str/trim city)
-      (str/trim (str/subs city 0 suffix-pos)))))
+      (str/trim gemeinde)
+      (str/trim (str/subs gemeinde 0 suffix-pos)))))
 
 
 (defn- m->km [d]
