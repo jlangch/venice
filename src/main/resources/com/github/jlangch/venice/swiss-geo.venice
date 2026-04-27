@@ -42,7 +42,7 @@
 
 
 (defn 
-  ^{ :arglists '("(download-geo-date)")
+  ^{ :arglists '("(download-geo-data)")
      :doc """
           Downloads the LV95 Swiss geo data from [Swiss Geo Admin](https://data.geo.admin.ch)
 
@@ -52,16 +52,17 @@
           """
           (do 
             (load-module :swiss-geo)
-            (swiss-geo/download-geo-data))      
+            (swiss-geo/download-geo-data))
           """) 
       :see-also '(
         "swiss-geo/parse-geo-data"
         "swiss-geo/distance-geo-data" ) }
 
-  download-geo-date []
+  download-geo-data []
     
   (-> (io/download download-url :binary true :user-agent "Mozilla")
-      (io/unzip-first)))
+      (io/unzip "AMTOVZ_CSV_LV95/AMTOVZ_CSV_LV95.csv")
+      (bytebuf-to-string :UTF-8)))
 
 
 (defn 
@@ -97,38 +98,53 @@
           """
           (do 
             (load-module :swiss-geo)
-            (swiss-geo/download-geo-data))      
+            (-> (swiss-geo/download-geo-data)
+                (swiss-geo/parse-geo-data)))
           """) 
       :see-also '(
         "swiss-geo/parse-geo-data"
         "swiss-geo/distance-geo-data" ) }
 
   parse-geo-data [geo-data-csv]
-    
-  (-> (csv/read geo-data-csv :separator ";")
-      (map map-geo-dataset)))
+
+  { :pre [(string? geo-data-csv)] }
+
+  (->> (csv/read geo-data-csv :separator ";")
+       (rest)
+       (core/map #(map-geo-dataset %))))
 
 
 (defn find-by-locality [locality geo-data]
   { :pre [(string? locality) (sequential? geo-data)] }
-  (-> geo-data
-      (filter #(== locality (get geo-data :locality))
-      (first))))
+  (first (filter (fn [item] (== locality (get item :locality)))
+                 geo-data)))
 
 
 (defn find-by-city [city geo-data]
   { :pre [(string? city) (sequential? geo-data)] }
-  (-> geo-data
-      (filter #(== city (get geo-data :city))
-      (first))))
+  (first (filter (fn [item] (== city (get item :city)))
+                 geo-data)))
 
 
 (defn find-by-locality-or-city [name geo-data]
   { :pre [(string? name) (sequential? geo-data)] }
-  (-> geo-data
-      (filter #(or (== name (get geo-data :locality))
-                   (== name (get geo-data :city)))
-      (first))))
+  (first (filter (fn [item] (or (== name (get item :locality))
+                                (== name (get item :city))))
+                 geo-data)))
+
+(defn find-by-locality-and-city [name geo-data]
+  { :pre [(string? name) (sequential? geo-data)] }
+  (first (filter (fn [item] (and (== name (get item :locality))
+                                 (== name (get item :city))))
+                 geo-data )))
+
+(defn find-location [name geo-data]
+  { :pre [(string? name) (sequential? geo-data)] }
+  (if-let [l1 (find-by-locality-and-city name geo-data)]
+     l1
+     (if-let [l2 (find-by-locality name geo-data)]
+       l2
+       (find-by-city name geo-data))))
 
 
 (defn 
@@ -143,32 +159,36 @@
           (do 
             (load-module :swiss-geo)
             (let [geo-data (swiss-geo/parse-geo-data (swiss-geo/download-geo-data))
-                  city-1   (swiss-geo/find-by-locality-or-city "Basel" geo-data)     
-                  city-2   (swiss-geo/find-by-locality-or-city "Bern" geo-data)]   
+                  city-1   (swiss-geo/find-location "Basel" geo-data)
+                  city-2   (swiss-geo/find-location "Bern" geo-data)]
               (swiss-geo/distance city-1 city-2)))       
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/parse-geo-data" ) }
+
+  distance [city-geo-data-1 city-geo-data-2]
   
   { :pre [(map? city-geo-data-1) (map? city-geo-data-2)] }
 
-  distance [city-geo-data-1 city-geo-data-2]
-
   (let [east-1   (:east city-geo-data-1)
-        north-1  (:north city-geo-data-2)
-        east-2   (:east city-geo-data-1)
+        east-2   (:east city-geo-data-2)
+        north-1  (:north city-geo-data-1)
         north-2  (:north city-geo-data-2)]
-   (-> (sqrt (- (square (- east-1 east-2)) (square (- north-1 north-2))))
-       (m->km))))  ;; convert meter to kilometer
+   (->> (- (square (- east-1 east-2)) (square (- north-1 north-2)))
+        (abs)
+        (sqrt)
+        (m->km))))  ;; convert meter to kilometer
 
 
 (defn- map-geo-dataset [data]
+  { :pre [(sequential? data)] }
+
   ;; Ortschaftsname;PLZ4;Zusatzziffer;ZIP_ID;Gemeindename;BFS-Nr;Kantonskürzel;Adressenanteil;E;N;Sprache;Validity
 
   (let [locality   (nth data 0)
         plz        (nth data 1)
-        city       (nth data 4)
+        city       (str/trim-to-empty (nth data 4))
         canton     (nth data 6)
         east       (nth data 8)
         north      (nth data 9)
@@ -185,11 +205,11 @@
 
 (defn- strip-canton-suffix [city]
   ;; "Renens (VD)" -> "Renens"
-  (let [suffix-pos ((str/index-of city "("))]
-    (if (pos? suffix-pos)
-      (str/trim (str/subs city 0 suffix-pos))
-      (str/trim city))))
+  (let [suffix-pos (str/index-of city "(")]
+    (if (nil? suffix-pos)
+      (str/trim city)
+      (str/trim (str/subs city 0 suffix-pos)))))
 
 
 (defn- m->km [d]
-  (long (/ d 1000.0)))
+  (long (+ (/ d 1000.0) 0.5)))
