@@ -2681,7 +2681,7 @@ public class StringFunctions {
                         "same character being required for optimality which, in turn, enables a fast " +
                         "dynamic programming solution.\n\n" +
                         "The cost of the *Damerau-Levenshtein* algorithm is `O(n*m)` where `n` is " +
-                        "the length of the source string and `m is the length of the target string. " +
+                        "the length of the source string and `m` is the length of the target string. " +
                         "This implementation consumes `O(n*m)` space.")
                     .examples(
                         "(str/levenshtein \"Tier\" \"Tor\")",
