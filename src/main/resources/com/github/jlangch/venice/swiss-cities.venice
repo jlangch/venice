@@ -517,6 +517,18 @@
 
           Returns the location's geo data or `nil` if the location has not been
           found in the data.
+
+          Example location data:
+
+          ```
+          { :ortschaft "Basel" 
+            :plz "4001" 
+            :gemeinde "Basel" 
+            :kanton "BS" 
+            :east 2611314.0 
+            :north 1267295.0 
+            :validity 2008-07-01
+          }
           """
      :examples '(
           """
@@ -599,8 +611,8 @@
      :doc """
           Returns a list of all locations.
 
-          Example data:
-          
+          Example location data:
+
           ```
           { :ortschaft "Basel" 
             :plz "4001" 
