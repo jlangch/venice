@@ -598,6 +598,19 @@
   ^{ :arglists '("(locations)")
      :doc """
           Returns a list of all locations.
+
+          Example data:
+          
+          ```
+          { :ortschaft "Basel" 
+            :plz "4001" 
+            :gemeinde "Basel" 
+            :kanton "BS" 
+            :east 2611314.0 
+            :north 1267295.0 
+            :validity 2008-07-01
+          }
+          ```
           """
      :examples '(
           """
