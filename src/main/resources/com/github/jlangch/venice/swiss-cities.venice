@@ -223,46 +223,90 @@
   (some? @geo-data))
 
 
-(defn find-by-ortschaft [ortschaft]
-  { :pre [(or (string? ortschaft) (regex/pattern? ortschaft))] }
-  (if (string? ortschaft)
-    (get (:mapped-by-ortschaft (get-city-data)) ortschaft)
-    (let [matcher (regex/matcher ortschaft "")]
-      (->> (:entries (get-city-data))
-           (filter #(regex/matches? matcher (:ortschaft %)))))))
+(defn find-by-ortschaft 
+  ([ortschaft]
+    { :pre [(or (string? ortschaft) (regex/pattern? ortschaft))] }
+    (if (string? ortschaft)
+      (get (:mapped-by-ortschaft (get-city-data)) ortschaft)
+      (let [matcher (regex/matcher ortschaft "")]
+        (->> (:entries (get-city-data))
+             (filter #(regex/matches? matcher (:ortschaft %)))))))
+  ([ortschaft kanton]
+    { :pre [(or (string? ortschaft) (regex/pattern? ortschaft))
+            (or (nil? kanton) (string? kanton))] }
+    (let [result (find-by-ortschaft ortschaft)]
+      (if (some? kanton)
+        (filter #(== kanton (get % :kanton)) result)
+        result))))
 
 
-(defn find-by-gemeinde [gemeinde]
-  { :pre [(or (string? gemeinde) (regex/pattern? gemeinde))] }
-  (if (string? gemeinde)
-    (get (:mapped-by-gemeinde (get-city-data)) gemeinde)
-    (let [matcher (regex/matcher gemeinde "")]
-      (->> (:entries (get-city-data))
-           (filter #(regex/matches? matcher (:gemeinde %)))))))
+(defn find-by-gemeinde 
+  ([gemeinde]
+    { :pre [(or (string? gemeinde) (regex/pattern? gemeinde))] }
+    (if (string? gemeinde)
+      (get (:mapped-by-gemeinde (get-city-data)) gemeinde)
+      (let [matcher (regex/matcher gemeinde "")]
+        (->> (:entries (get-city-data))
+             (filter #(regex/matches? matcher (:gemeinde %)))))))
+  ([gemeinde kanton]
+    { :pre [(or (string? gemeinde) (regex/pattern? gemeinde))
+            (or (nil? kanton) (string? kanton))] }
+    (let [result (find-by-gemeinde gemeinde)]
+      (if (some? kanton)
+        (filter #(== kanton (get % :kanton)) result)
+        result))))
 
 
-(defn find-by-ortschaft-or-gemeinde [name]
-  { :pre [(or (string? name) (regex/pattern? name))] }
-  (if (string? name)
-    (filter #(or (== name (get % :ortschaft))
-                 (== name (get % :gemeinde))))
-            (:entries (get-city-data)))
-    (let [matcher (regex/matcher name "")]
-      (->> (:entries (get-city-data))
-           (filter #(or (regex/matches? matcher (:ortschaft %))
-                        (regex/matches? matcher (:gemeinde %)))))))
+(defn find-by-ortschaft-or-gemeinde 
+  ([name]
+    { :pre [(or (string? name) (regex/pattern? name))] }
+    (if (string? name)
+      (filter #(or (== name (get % :ortschaft))
+                   (== name (get % :gemeinde))))
+              (:entries (get-city-data)))
+      (let [matcher (regex/matcher name "")]
+        (->> (:entries (get-city-data))
+             (filter #(or (regex/matches? matcher (:ortschaft %))
+                          (regex/matches? matcher (:gemeinde %)))))))
+  ([name kanton]
+    { :pre [(or (string? name) (regex/pattern? name))
+            (or (nil? kanton) (string? kanton))] }
+    (if (string? name)
+      (filter #(and (== kanton (get % :kanton))
+                    (or (== name (get % :ortschaft))
+                        (== name (get % :gemeinde)))))
+              (:entries (get-city-data)))
+      (let [matcher (regex/matcher name "")]
+        (->> (:entries (get-city-data))
+             (filter #(and (== kanton (get % :kanton))
+                           (or (regex/matches? matcher (:ortschaft %))
+                               (regex/matches? matcher (:gemeinde %)))))))))
 
 
-(defn find-by-ortschaft-and-gemeinde [name]
-  { :pre [(or (string? name) (regex/pattern? name))] }
-  (if (string? name)
-    (filter #(and (== name (get % :ortschaft))
-                  (== name (get % :gemeinde))))
-            (:entries (get-city-data)))
-    (let [matcher (regex/matcher name "")]
-      (->> (:entries (get-city-data))
-           (filter #(and (regex/matches? matcher (:ortschaft %))
-                         (regex/matches? matcher (:gemeinde %)))))))
+(defn find-by-ortschaft-and-gemeinde 
+  ([name]
+    { :pre [(or (string? name) (regex/pattern? name))] }
+    (if (string? name)
+      (filter #(and (== name (get % :ortschaft))
+                    (== name (get % :gemeinde))))
+              (:entries (get-city-data)))
+      (let [matcher (regex/matcher name "")]
+        (->> (:entries (get-city-data))
+            (filter #(and (regex/matches? matcher (:ortschaft %))
+                          (regex/matches? matcher (:gemeinde %)))))))
+  ([name kanton]
+    { :pre [(or (string? name) (regex/pattern? name))
+            (or (nil? kanton) (string? kanton))] }
+    (if (string? name)
+      (filter #(and (or (nil? kanton) (== kanton (get % :kanton)))
+                    (or (== name (get % :ortschaft))
+                        (== name (get % :gemeinde)))))
+              (:entries (get-city-data)))
+      (let [matcher (regex/matcher name "")]
+        (->> (:entries (get-city-data))
+             (filter #(and (or (nil? kanton) (== kanton (get % :kanton)))
+                           (regex/matches? matcher (:ortschaft %))
+                           (regex/matches? matcher (:gemeinde %))))))))
 
 
 (defn 
@@ -312,7 +356,7 @@
             (load-module :swiss-cities)
             (swiss-cities/download-city-data)
 
-            (swiss-cities/find-location "Basel" geo-data))
+            (swiss-cities/find-location "Basel"))
           """) 
       :see-also '(
         "swiss-cities/download-city-data"
@@ -346,7 +390,7 @@
             (load-module :swiss-cities)
             (swiss-cities/download-city-data)
 
-            (swiss-cities/find-location "Basel" geo-data))
+            (swiss-cities/find-location "Basel"))
           """) 
       :see-also '(
         "swiss-cities/download-city-data"
@@ -374,7 +418,7 @@
             (load-module :swiss-cities)
             (swiss-cities/download-city-data)
 
-            (swiss-cities/ortschaften geo-data))
+            (swiss-cities/ortschaften))
           """) 
       :see-also '(
         "swiss-cities/download-city-data"
@@ -446,7 +490,7 @@
             (swiss-cities/download-city-data)
 
             (swiss-cities/distance (swiss-cities/find-location "Basel")
-                                (swiss-cities/find-location "Bern")))
+                                   (swiss-cities/find-location "Bern")))
           """) 
       :see-also '(
         "swiss-cities/download-city-data"
