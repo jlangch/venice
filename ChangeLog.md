@@ -11,7 +11,12 @@ All notable changes to this project will be documented in this file.
 
 - Added the functions `str/markdown->text` and `str/markdown->ansi` to render
   *markdown* to pure *ascii* or *ansi* text
+  
+- Added the function `regex/pattern?`
 
+- Added module *:swiss-cities* that provides geo location and zip code data
+  for swiss cities. It uses the public LV95 data from the official Swiss Topo 
+  dataset.
 
 
 ## [1.13.0] - 2026-04-22
