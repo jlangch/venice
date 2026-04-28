@@ -24,7 +24,9 @@
 ;;;; LV95: https://www.swisstopo.admin.ch/de/amtliches-ortschaftenverzeichnis#Download
 ;;;;       https://www.swisstopo.admin.ch/de/koordinaten-konvertieren-navref
 ;;;;
-;;;;
+;;;; LV95 CSV Format "ortschaftenverzeichnis_plz_2056.csv.zip":
+;;;; Ortschaftsname;PLZ4;Zusatzziffer;ZIP_ID;Gemeindename;BFS-Nr;Kantonskürzel;Adressenanteil;E;N;Sprache;Validity
+
 ;;;;
 ;;;; Die Distanz zwischen zwei LV95-Koordinaten (Ost/E, Nord/N in Metern) 
 ;;;; berechnet sich mittels Satz des Pythagoras:
@@ -67,16 +69,21 @@
             (swiss-cities/ortschaften))
           """) 
       :see-also '(
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/close"
-        "swiss-cities/open?"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/ortschaften"
-        "swiss-cities/gemeinden" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/close"
+          "swiss-cities/open?"
+          "swiss-cities/find-location"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde"
+          "swiss-cities/find-by-plz"
+          "swiss-cities/distance"
+          "swiss-cities/locations"
+          "swiss-cities/ortschaften"
+          "swiss-cities/gemeinden" ) }
 
   download-city-data []
     
@@ -108,16 +115,21 @@
             (swiss-cities/ortschaften))
           """) 
       :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/close"
-        "swiss-cities/open?"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/ortschaften"
-        "swiss-cities/gemeinden" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/close"
+          "swiss-cities/open?"
+          "swiss-cities/find-location"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde"
+          "swiss-cities/find-by-plz"
+          "swiss-cities/distance"
+          "swiss-cities/locations"
+          "swiss-cities/ortschaften"
+          "swiss-cities/gemeinden" ) }
 
   load-city-data-from-classpath [resource]
     
@@ -151,16 +163,21 @@
             (swiss-cities/ortschaften))
           """) 
       :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/close"
-        "swiss-cities/open?"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/ortschaften"
-        "swiss-cities/gemeinden" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/close"
+          "swiss-cities/open?"
+          "swiss-cities/find-location"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde"
+          "swiss-cities/find-by-plz"
+          "swiss-cities/distance"
+          "swiss-cities/locations"
+          "swiss-cities/ortschaften"
+          "swiss-cities/gemeinden" ) }
 
   slurp-city-data [f]
     
@@ -187,10 +204,10 @@
             (swiss-cities/close))
           """) 
       :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/open?" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/open?" ) }
 
   close []
 
@@ -213,17 +230,53 @@
             (swiss-cities/open?))
           """) 
       :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/close" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/close"
+ ) }
 
   open? []
     
   (some? @geo-data))
 
 
-(defn find-by-ortschaft 
+(defn 
+  ^{ :arglists '(
+          "(find-by-ortschaft ortschaft)"
+          "(find-by-ortschaft ortschaft kanton)")
+     :doc """
+          Find all locations by an *Ortschaft* and optionally by a canton.
+
+          The argument 'ortschaft' may be a full name or a regular expression
+          to specify an *Ortschaft*.
+
+          Returns a list of the matching locations.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/find-by-ortschaft "Maur")
+            (swiss-cities/find-by-ortschaft #"Mau.*")
+
+            ;; in canton 'ZH' only
+            (swiss-cities/find-by-ortschaft "Maur"   "ZH")
+            (swiss-cities/find-by-ortschaft #"Mau.*" "ZH"))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/find-location"
+         "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde"
+          "swiss-cities/find-by-plz" ) }
+
+  find-by-ortschaft 
   
   ([ortschaft]
     { :pre [(or (string? ortschaft) (regex/pattern? ortschaft))] }
@@ -242,7 +295,42 @@
         result))))
 
 
-(defn find-by-gemeinde 
+(defn 
+  ^{ :arglists '(
+          "(find-by-gemeinde gemeinde)"
+          "(find-by-gemeinde gemeinde kanton)")
+     :doc """
+          Find all locations by a *Gemeinde* and optionally by a canton.
+
+          The argument 'gemeinde' may be a full name or a regular expression
+          to specify a political *Gemeinde*. 
+
+          Returns a list of the matching locations.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/find-by-gemeinde "Maur")
+            (swiss-cities/find-by-gemeinde #"Mau.*")
+
+            ;; in canton 'ZH' only
+            (swiss-cities/find-by-gemeinde "Maur"   "ZH")
+            (swiss-cities/find-by-gemeinde #"Mau.*" "ZH"))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/find-location"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde"
+          "swiss-cities/find-by-plz" ) }
+
+  find-by-gemeinde 
   
   ([gemeinde]
     { :pre [(or (string? gemeinde) (regex/pattern? gemeinde))] }
@@ -261,7 +349,43 @@
         result))))
 
 
-(defn find-by-ortschaft-or-gemeinde 
+(defn 
+  ^{ :arglists '(
+          "(find-by-ortschaft-or-gemeinde name)"
+          "(find-by-ortschaft-or-gemeinde name kanton)")
+     :doc """
+          Find all locations by an *Ortschaft* **or** a *Gemeinde* and 
+          optionally by a canton.
+
+          The argument 'name' may be a full name or a regular expression
+          to specify  an *Ortschaft* or a political *Gemeinde*. 
+
+          Returns a list of the matching locations.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/find-by-ortschaft-or-gemeinde "Maur")
+            (swiss-cities/find-by-ortschaft-or-gemeinde #"Mau.*")
+
+            ;; in canton 'ZH' only
+            (swiss-cities/find-by-ortschaft-or-gemeinde "Maur"   "ZH")
+            (swiss-cities/find-by-ortschaft-or-gemeinde #"Mau.*" "ZH"))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/find-location"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde"
+          "swiss-cities/find-by-plz" ) }
+
+  find-by-ortschaft-or-gemeinde 
   
   ([name]
     { :pre [(or (string? name) (regex/pattern? name))] }
@@ -289,7 +413,43 @@
                                (regex/matches? matcher (:gemeinde %)))))))))
 
 
-(defn find-by-ortschaft-and-gemeinde 
+(defn 
+  ^{ :arglists '(
+          "(find-by-ortschaft-and-gemeinde name)"
+          "(find-by-ortschaft-and-gemeinde name kanton)")
+     :doc """
+          Find all locations by an *Ortschaft* **and** a *Gemeinde* and 
+          optionally by a canton.
+
+          The argument 'name' may be a full name or a regular expression
+          to specify an *Ortschaft* or a political *Gemeinde*. 
+
+          Returns a list of the matching locations.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/find-by-ortschaft-or-gemeinde "Maur")
+            (swiss-cities/find-by-ortschaft-or-gemeinde #"Mau.*")
+
+            ;; in canton 'ZH' only
+            (swiss-cities/find-by-ortschaft-or-gemeinde "Maur"   "ZH")
+            (swiss-cities/find-by-ortschaft-or-gemeinde #"Mau.*" "ZH"))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/find-location"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-plz" ) }
+
+  find-by-ortschaft-and-gemeinde 
   
   ([name]
     { :pre [(or (string? name) (regex/pattern? name))] }
@@ -333,14 +493,14 @@
             (swiss-cities/find-by-plz 7132))
           """) 
       :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/ortschaften"
-        "swiss-cities/gemeinden" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/find-location"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde" ) }
   
   find-by-plz [plz]
   
@@ -367,14 +527,14 @@
             (swiss-cities/find-location "Basel"))
           """) 
       :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/gemeinden" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/find-by-ortschaft"
+          "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-ortschaft-or-gemeinde"
+          "swiss-cities/find-by-ortschaft-and-gemeinde"
+          "swiss-cities/find-by-plz" ) }
 
   find-location [name]
 
@@ -385,96 +545,6 @@
     (if-let [l2 (first (find-by-ortschaft name))]
       l2
       (first (find-by-gemeinde name)))))
-
-
-(defn 
-  ^{ :arglists '("(locations)")
-     :doc """
-          Returns a list of all locations.
-          """
-     :examples '(
-          """
-          (do 
-            (load-module :swiss-cities)
-            (swiss-cities/download-city-data)
-
-            (swiss-cities/find-location "Basel"))
-          """) 
-      :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/ortschaften"
-        "swiss-cities/gemeinden" ) }
-
-  locations []
-
-  (:entries (get-city-data)))
-
-
-(defn 
-  ^{ :arglists '("(ortschaften)")
-     :doc """
-          List all *Ortschaften* alphabetically.
-          """
-     :examples '(
-          """
-          (do 
-            (load-module :swiss-cities)
-            (swiss-cities/download-city-data)
-
-            (swiss-cities/ortschaften))
-          """) 
-      :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/gemeinden" ) }
-
-  ortschaften []
-
-  (->> (map #(get % :ortschaft) (:entries (get-city-data)))
-       (filter some?)
-       (distinct)
-       (sort)))
-
-
-(defn 
-  ^{ :arglists '("(gemeinden)")
-     :doc """
-          List all *Gemeinden* alphabetically.
-          """
-     :examples '(
-          """
-          (do 
-            (load-module :swiss-cities)
-            (swiss-cities/download-city-data)
-
-            (swiss-cities/gemeinden))
-          """) 
-      :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/distance"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/ortschaften" ) }
-
-  gemeinden []
-
-  (->> (map #(get % :gemeinde) (:entries (get-city-data)))
-       (filter some?)
-       (distinct)
-       (sort)))
 
 
 (defn 
@@ -501,14 +571,11 @@
                                    (swiss-cities/find-location "Bern")))
           """) 
       :see-also '(
-        "swiss-cities/download-city-data"
-        "swiss-cities/load-city-data-from-classpath"
-        "swiss-cities/slurp-city-data"
-        "swiss-cities/locations"
-        "swiss-cities/find-location"
-        "swiss-cities/find-by-plz"
-        "swiss-cities/ortschaften"
-        "swiss-cities/gemeinden" ) }
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/find-location"
+          "swiss-cities/distance" ) }
 
   distance [location-1 location-2]
   
@@ -525,6 +592,87 @@
         (abs)
         (sqrt)
         (m->km))))  ;; convert meter to kilometer
+
+
+(defn 
+  ^{ :arglists '("(locations)")
+     :doc """
+          Returns a list of all locations.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/find-location "Basel"))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/ortschaften"
+          "swiss-cities/gemeinden" ) }
+
+  locations []
+
+  (:entries (get-city-data)))
+
+
+(defn 
+  ^{ :arglists '("(ortschaften)")
+     :doc """
+          List all *Ortschaften* alphabetically.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/ortschaften))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/locations"
+          "swiss-cities/gemeinden" ) }
+
+  ortschaften []
+
+  (->> (map #(get % :ortschaft) (:entries (get-city-data)))
+       (filter some?)
+       (distinct)
+       (sort)))
+
+
+(defn 
+  ^{ :arglists '("(gemeinden)")
+     :doc """
+          List all *Gemeinden* alphabetically.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/gemeinden))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/locations"
+          "swiss-cities/ortschaften" ) }
+
+  gemeinden []
+
+  (->> (map #(get % :gemeinde) (:entries (get-city-data)))
+       (filter some?)
+       (distinct)
+       (sort)))
 
 
 ;; -----------------------------------------------------------------------------
