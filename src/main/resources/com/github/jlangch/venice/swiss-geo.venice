@@ -54,6 +54,8 @@
 
           Alternatively use `swiss-geo/load-geo-data-from-classpath` or
           `swiss-geo/slurp-geo-data`.
+
+          [Swiss Topo Ortschaften](https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/)
           """
      :examples '(
           """
