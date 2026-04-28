@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Swiss City data
+;;;; Swiss City geo location and zip code data
 ;;;;
 ;;;; LV95: https://www.swisstopo.admin.ch/de/amtliches-ortschaftenverzeichnis#Download
 ;;;;       https://www.swisstopo.admin.ch/de/koordinaten-konvertieren-navref
