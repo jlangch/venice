@@ -41,7 +41,13 @@
 
 (ns swiss-cities)
 
-(def download-url "https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz_2056.csv.zip")
+
+(defonce lv95-zip-filename "ortschaftenverzeichnis_plz_2056.csv.zip")
+
+(defonce lv95-zip-entryname "AMTOVZ_CSV_LV95/AMTOVZ_CSV_LV95.csv")
+
+(defonce download-url "https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz_2056.csv.zip")
+
 
 (def- geo-data (atom nil))
 
@@ -735,7 +741,7 @@
 
 
 (defn- unzip [zip]
-  (-> (io/unzip zip"AMTOVZ_CSV_LV95/AMTOVZ_CSV_LV95.csv")
+  (-> (io/unzip zip "AMTOVZ_CSV_LV95/AMTOVZ_CSV_LV95.csv")
       (bytebuf-to-string :UTF-8)))
 
 
