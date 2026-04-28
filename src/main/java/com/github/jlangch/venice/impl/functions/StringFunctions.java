@@ -2684,8 +2684,8 @@ public class StringFunctions {
                         "the length of the source string and `m` is the length of the target string. " +
                         "This implementation consumes `O(n*m)` space.")
                     .examples(
-                        "(str/levenshtein \"Tier\" \"Tor\")",
-                        "(str/levenshtein \"Tier\" \"tor\")")
+                        "(str/levenshtein \"Tier\" \"Tor\")  ;; => 2",
+                        "(str/levenshtein \"Tier\" \"tor\")  ;; => 3")
                     .build()
         ) {
             @Override
