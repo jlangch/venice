@@ -61,25 +61,26 @@
             (load-module :swiss-geo)
             (swiss-geo/download-geo-data) 
             
-            (swiss-geo/list-gemeinden)
-            (swiss-geo/list-ortschaften))
+            (swiss-geo/gemeinden)
+            (swiss-geo/ortschaften))
           """) 
       :see-also '(
         "swiss-geo/load-geo-data-from-classpath"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/loaded?"
+        "swiss-geo/close"
+        "swiss-geo/open?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/distance"
         "swiss-geo/find-by-plz"
-        "swiss-geo/list-ortschaften"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/ortschaften"
+        "swiss-geo/gemeinden" ) }
 
   download-geo-data []
     
   (->> (download)
        (parse)
-       (reset! geo-data))
-       
+       (reset! geo-data))     
   nil)
 
 
@@ -101,25 +102,26 @@
             (def resource "com/github/jlangch/venice/data/ortschaftenverzeichnis_plz_2056.csv.zip")
             (swiss-geo/load-geo-data-from-classpath resource) 
             
-            (swiss-geo/list-gemeinden)
-            (swiss-geo/list-ortschaften))
+            (swiss-geo/gemeinden)
+            (swiss-geo/ortschaften))
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/loaded?"
+        "swiss-geo/close"
+        "swiss-geo/open?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/distance"
         "swiss-geo/find-by-plz"
-        "swiss-geo/list-ortschaften"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/ortschaften"
+        "swiss-geo/gemeinden" ) }
 
   load-geo-data-from-classpath [resource]
     
   (->> (load-from-classpath resource)
        (parse)
        (reset! geo-data))
-
   nil)
 
 
@@ -143,18 +145,20 @@
             (def csv "/data/ortschaftenverzeichnis_plz_2056.csv.zip")
             (swiss-geo/slurp-geo-data (io/file csv)) 
             
-            (swiss-geo/list-gemeinden)
-            (swiss-geo/list-ortschaften))
+            (swiss-geo/gemeinden)
+            (swiss-geo/ortschaften))
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
-        "swiss-geo/loaded?"
+        "swiss-geo/close"
+        "swiss-geo/open?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/distance"
         "swiss-geo/find-by-plz"
-        "swiss-geo/list-ortschaften"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/ortschaften"
+        "swiss-geo/gemeinden" ) }
 
   slurp-geo-data [f]
     
@@ -163,14 +167,40 @@
   (->> (slurp f)
        (parse)
        (reset! geo-data))
-
   nil)
 
 
 (defn 
-  ^{ :arglists '("(loaded?)")
+  ^{ :arglists '("(close)")
      :doc """
-          Returns `true` if the the LV95 Swiss geo data has been else `false`.
+          Close the service and free all allocated resources.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-geo)
+
+            (swiss-geo/swiss-geo/download-geo-data) 
+            
+            (swiss-geo/close))
+          """) 
+      :see-also '(
+        "swiss-geo/download-geo-data"
+        "swiss-geo/slurp-geo-data"
+        "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/open?" ) }
+
+  close []
+
+  (reset! geo-data nil)
+  nil)
+
+
+(defn 
+  ^{ :arglists '("(open?)")
+     :doc """
+          Returns `true` if the the LV95 Swiss geo data have been successfully 
+          loaded else `false`.
           """
      :examples '(
           """
@@ -178,45 +208,41 @@
             (load-module :swiss-geo)
             (swiss-geo/download-geo-data) 
             
-            (swiss-geo/loaded?))
+            (swiss-geo/open?))
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/find-location"
-        "swiss-geo/distance"
-        "swiss-geo/find-by-plz"
-        "swiss-geo/list-ortschaften"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/close" ) }
 
-  loaded? []
+  open? []
     
   (some? @geo-data))
 
 
 (defn find-by-ortschaft [ortschaft]
   { :pre [(string? ortschaft)] }
-  (first (get (:mapped-by-ortschaft (get-geo-data)) ortschaft)))
+  (get (:mapped-by-ortschaft (get-geo-data)) ortschaft))
 
 
 (defn find-by-gemeinde [gemeinde]
   { :pre [(string? gemeinde)] }
-  (first (get (:mapped-by-gemeinde (get-geo-data)) gemeinde)))
+  (get (:mapped-by-gemeinde (get-geo-data)) gemeinde))
 
 
 (defn find-by-ortschaft-or-gemeinde [name]
   { :pre [(string? name)] }
-  (first (filter (fn [item] (or (== name (get item :ortschaft))
-                                (== name (get item :gemeinde))))
-                 (:entries (get-geo-data)))))
+  (filter (fn [item] (or (== name (get item :ortschaft))
+                         (== name (get item :gemeinde))))
+          (:entries (get-geo-data))))
 
 
 (defn find-by-ortschaft-and-gemeinde [name]
   { :pre [(string? name)] }
-  (first (filter (fn [item] (and (== name (get item :ortschaft))
-                                 (== name (get item :gemeinde))))
-                 (:entries (get-geo-data)))))
+  (filter (fn [item] (and (== name (get item :ortschaft))
+                          (== name (get item :gemeinde))))
+          (:entries (get-geo-data))))
 
 
 
@@ -239,11 +265,11 @@
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/loaded?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/distance"
-        "swiss-geo/list-ortschaften"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/ortschaften"
+        "swiss-geo/gemeinden" ) }
   
   find-by-plz [plz]
   
@@ -273,25 +299,53 @@
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/loaded?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/distance"
         "swiss-geo/find-by-plz"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/gemeinden" ) }
 
   find-location [name]
 
   { :pre [(string? name)] }
 
-  (if-let [l1 (find-by-ortschaft-and-gemeinde name)]
+  (if-let [l1 (first (find-by-ortschaft-and-gemeinde name))]
     l1
-    (if-let [l2 (find-by-ortschaft name)]
+    (if-let [l2 (first (find-by-ortschaft name))]
       l2
-      (find-by-gemeinde name))))
+      (first (find-by-gemeinde name)))))
 
 
 (defn 
-  ^{ :arglists '("(list-ortschaften)")
+  ^{ :arglists '("(locations)")
+     :doc """
+          Returns a list of all locations.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-geo)
+            (swiss-geo/download-geo-data)
+
+            (swiss-geo/find-location "Basel" geo-data))
+          """) 
+      :see-also '(
+        "swiss-geo/download-geo-data"
+        "swiss-geo/load-geo-data-from-classpath"
+        "swiss-geo/slurp-geo-data"
+        "swiss-geo/find-location"
+        "swiss-geo/distance"
+        "swiss-geo/find-by-plz"
+        "swiss-geo/ortschaften"
+        "swiss-geo/gemeinden" ) }
+
+  locations []
+
+  (:entries (get-geo-data)))
+
+
+(defn 
+  ^{ :arglists '("(ortschaften)")
      :doc """
           List all *Ortschaften* alphabetically.
           """
@@ -301,19 +355,19 @@
             (load-module :swiss-geo)
             (swiss-geo/download-geo-data)
 
-            (swiss-geo/list-ortschaften geo-data))
+            (swiss-geo/ortschaften geo-data))
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/loaded?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/distance"
         "swiss-geo/find-by-plz"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/gemeinden" ) }
 
-  list-ortschaften []
+  ortschaften []
 
   (->> (map #(get % :ortschaft) (:entries (get-geo-data)))
        (filter some?)
@@ -322,7 +376,7 @@
 
 
 (defn 
-  ^{ :arglists '("(list-gemeinden)")
+  ^{ :arglists '("(gemeinden)")
      :doc """
           List all *Gemeinden* alphabetically.
           """
@@ -332,19 +386,19 @@
             (load-module :swiss-geo)
             (swiss-geo/download-geo-data)
 
-            (swiss-geo/list-gemeinden))
+            (swiss-geo/gemeinden))
           """) 
       :see-also '(
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/loaded?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/distance"
         "swiss-geo/find-by-plz"
-        "swiss-geo/list-ortschaften" ) }
+        "swiss-geo/ortschaften" ) }
 
-  list-gemeinden []
+  gemeinden []
 
   (->> (map #(get % :gemeinde) (:entries (get-geo-data)))
        (filter some?)
@@ -379,11 +433,11 @@
         "swiss-geo/download-geo-data"
         "swiss-geo/load-geo-data-from-classpath"
         "swiss-geo/slurp-geo-data"
-        "swiss-geo/loaded?"
+        "swiss-geo/locations"
         "swiss-geo/find-location"
         "swiss-geo/find-by-plz"
-        "swiss-geo/list-ortschaften"
-        "swiss-geo/list-gemeinden" ) }
+        "swiss-geo/ortschaften"
+        "swiss-geo/gemeinden" ) }
 
   distance [location-1 location-2]
   
