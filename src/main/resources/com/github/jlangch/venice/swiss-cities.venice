@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Swiss City geo location and zip code data
+;;;; Swiss city geo location and zip code data
 ;;;;
 ;;;; LV95: https://www.swisstopo.admin.ch/de/amtliches-ortschaftenverzeichnis#Download
 ;;;;       https://www.swisstopo.admin.ch/de/koordinaten-konvertieren-navref
@@ -224,6 +224,7 @@
 
 
 (defn find-by-ortschaft 
+  
   ([ortschaft]
     { :pre [(or (string? ortschaft) (regex/pattern? ortschaft))] }
     (if (string? ortschaft)
@@ -231,6 +232,7 @@
       (let [matcher (regex/matcher ortschaft "")]
         (->> (:entries (get-city-data))
              (filter #(regex/matches? matcher (:ortschaft %)))))))
+  
   ([ortschaft kanton]
     { :pre [(or (string? ortschaft) (regex/pattern? ortschaft))
             (or (nil? kanton) (string? kanton))] }
@@ -241,6 +243,7 @@
 
 
 (defn find-by-gemeinde 
+  
   ([gemeinde]
     { :pre [(or (string? gemeinde) (regex/pattern? gemeinde))] }
     (if (string? gemeinde)
@@ -248,6 +251,7 @@
       (let [matcher (regex/matcher gemeinde "")]
         (->> (:entries (get-city-data))
              (filter #(regex/matches? matcher (:gemeinde %)))))))
+  
   ([gemeinde kanton]
     { :pre [(or (string? gemeinde) (regex/pattern? gemeinde))
             (or (nil? kanton) (string? kanton))] }
@@ -258,6 +262,7 @@
 
 
 (defn find-by-ortschaft-or-gemeinde 
+  
   ([name]
     { :pre [(or (string? name) (regex/pattern? name))] }
     (if (string? name)
@@ -268,6 +273,7 @@
         (->> (:entries (get-city-data))
              (filter #(or (regex/matches? matcher (:ortschaft %))
                           (regex/matches? matcher (:gemeinde %)))))))
+  
   ([name kanton]
     { :pre [(or (string? name) (regex/pattern? name))
             (or (nil? kanton) (string? kanton))] }
@@ -284,6 +290,7 @@
 
 
 (defn find-by-ortschaft-and-gemeinde 
+  
   ([name]
     { :pre [(or (string? name) (regex/pattern? name))] }
     (if (string? name)
@@ -294,6 +301,7 @@
         (->> (:entries (get-city-data))
             (filter #(and (regex/matches? matcher (:ortschaft %))
                           (regex/matches? matcher (:gemeinde %)))))))
+  
   ([name kanton]
     { :pre [(or (string? name) (regex/pattern? name))
             (or (nil? kanton) (string? kanton))] }
