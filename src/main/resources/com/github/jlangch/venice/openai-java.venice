@@ -43,7 +43,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; CHAT COMPLETIONS 
+;; CLIENT 
 ;; -----------------------------------------------------------------------------
 
 (defn 
@@ -81,18 +81,23 @@
           """
           (do
             (load-module :openai-java)
-            (openai-java/client))
+            (let [client (openai-java/client)]
+              ;; ...
+              (openai-java/close client)))
           """,
           """
           (do
             (load-module :openai-java)
-            (openai-java/client :openai-api-key "sk-1234"))
+            (let [client (openai-java/client :openai-api-key "sk-1234")]
+              ;; ...
+              (openai-java/close client)))
           """)
-     :see-also '() }
+     :see-also '(
+        "openai-java/close") }
 
   client [& options]
 
-  (when (exists-class? :OpenAIClient) 
+  (when-not (exists-class? :OpenAIClient) 
     (throw (ex :VncException "The openai-java library is not available!")))
 
   (let [opts            (apply hash-map options)
@@ -113,6 +118,35 @@
       (when (some? openai-base-url) (. builder :baseUrl openai-base-url))
       (. builder :build))))
 
+
+(defn 
+  ^{ :arglists '(
+          "(close client)" )
+     :doc """
+          Closes an OpenAI client.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client (openai-java/client)]
+              ;; ...
+              (openai-java/close client)))
+          """,)
+     :see-also '(
+          "openai-java/create") }
+
+  close [client]
+
+  { :pre [(instance-of? :OpenAIClient client)] }
+
+  (. client :close))
+
+
+
+;; -----------------------------------------------------------------------------
+;; CHAT COMPLETIONS 
+;; -----------------------------------------------------------------------------
 
 (defn 
   ^{ :arglists '(
