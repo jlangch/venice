@@ -102,6 +102,32 @@ public class RegexFunctions {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+
+public static VncFunction pattern_Q =
+        new VncFunction(
+                "regex/pattern?",
+                VncFunction
+                    .meta()
+                    .arglists("(regex/pattern? p)")
+                    .doc(
+                        "Returns `true` if 'p' is a regex pattern else `false`.")
+                    .examples(
+                        "(regex/pattern? (regex/pattern \"[0-9]+\"))",
+                        "(regex/pattern? #\"[0-9]+\")")
+                    .seeAlso(
+                        "match?", "regex/matcher", "regex/matches", "regex/find", "regex/find-all")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+               return VncBoolean.of(Types.isVncJavaObject(args.first(), Pattern.class));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction matcher =
         new VncFunction(
                 "regex/matcher",
@@ -713,6 +739,7 @@ public class RegexFunctions {
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(pattern)
+                    .add(pattern_Q)
                     .add(matcher)
                     .add(find)
                     .add(find_all)

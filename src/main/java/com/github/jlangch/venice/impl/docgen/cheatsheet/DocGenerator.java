@@ -88,7 +88,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSseSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleStopWatchSection;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSwissGeoSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSwissCitiesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTimingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTomcatSection;
@@ -174,7 +174,7 @@ public class DocGenerator {
                         "qrcode",        "qrref",               "qrbill",             "rsa",
                         "ascii-canvas",  "ascii-charts",        "ascii-table",
                         "aviron",        "aviron-queue",        "aviron-cycler",      "aviron-limiter",
-                        "openai-java",   "swiss-geo"));
+                        "openai-java",   "swiss-cities"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -413,7 +413,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Matrix", "modules.matrix"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
-        extmod.addSection(new DocSection("Swiss Geo", "modules.swissgeo"));
+        extmod.addSection(new DocSection("Swiss Cities", "modules.swisscities"));
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("Logger", "modules.logger"));
@@ -607,7 +607,7 @@ public class DocGenerator {
                 new ModuleHexdumpSection(diBuilder).section(),
                 new ModuleSemverSection(diBuilder).section(),
                 new ModuleGeoipSection(diBuilder).section(),
-                new ModuleSwissGeoSection(diBuilder).section(),
+                new ModuleSwissCitiesSection(diBuilder).section(),
                 new ModuleExcelSection(diBuilder).section(),
                 new ModuleFontsSection(diBuilder).section(),
                 new ModuleTestSection(diBuilder).section(),

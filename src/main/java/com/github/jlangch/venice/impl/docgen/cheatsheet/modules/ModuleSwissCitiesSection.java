@@ -26,41 +26,41 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleSwissGeoSection implements ISectionBuilder {
+public class ModuleSwissCitiesSection implements ISectionBuilder {
 
-    public ModuleSwissGeoSection(final DocItemBuilder diBuilder) {
+    public ModuleSwissCitiesSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Swiss Geo",
-                                            "Swiss Geo Data",
-                                            "modules.swissgeo");
+                                            "Swiss Cities",
+                                            "Swiss Cities Geo / ZIP Codes Data",
+                                            "modules.swisscities");
 
-        final DocSection all = new DocSection("(load-module :swiss-geo)", id());
+        final DocSection all = new DocSection("(load-module :swiss-cities)", id());
         section.addSection(all);
 
         final DocSection geoip = new DocSection("Open", id());
         all.addSection(geoip);
-        geoip.addItem(diBuilder.getDocItem("swiss-geo/download-geo-data", false));
-        geoip.addItem(diBuilder.getDocItem("swiss-geo/load-geo-data-from-classpath", false));
-        geoip.addItem(diBuilder.getDocItem("swiss-geo/slurp-geo-data", false));
-        geoip.addItem(diBuilder.getDocItem("swiss-geo/close", false));
-        geoip.addItem(diBuilder.getDocItem("swiss-geo/open?", false));
+        geoip.addItem(diBuilder.getDocItem("swiss-cities/download-city-data", false));
+        geoip.addItem(diBuilder.getDocItem("swiss-cities/load-city-data-from-classpath", false));
+        geoip.addItem(diBuilder.getDocItem("swiss-cities/slurp-city-data", false));
+        geoip.addItem(diBuilder.getDocItem("swiss-cities/close", false));
+        geoip.addItem(diBuilder.getDocItem("swiss-cities/open?", false));
 
         final DocSection db = new DocSection("Query", id());
         all.addSection(db);
-        db.addItem(diBuilder.getDocItem("swiss-geo/find-location", false));
-        db.addItem(diBuilder.getDocItem("swiss-geo/find-by-plz", false));
-        db.addItem(diBuilder.getDocItem("swiss-geo/ortschaften", false));
-        db.addItem(diBuilder.getDocItem("swiss-geo/gemeinden", false));
-        db.addItem(diBuilder.getDocItem("swiss-geo/locations", false));
+        db.addItem(diBuilder.getDocItem("swiss-cities/find-location", false));
+        db.addItem(diBuilder.getDocItem("swiss-cities/find-by-plz", false));
+        db.addItem(diBuilder.getDocItem("swiss-cities/ortschaften", false));
+        db.addItem(diBuilder.getDocItem("swiss-cities/gemeinden", false));
+        db.addItem(diBuilder.getDocItem("swiss-cities/locations", false));
 
         final DocSection dist = new DocSection("Distance", id());
         all.addSection(dist);
-        dist.addItem(diBuilder.getDocItem("swiss-geo/distance", false));
+        dist.addItem(diBuilder.getDocItem("swiss-cities/distance", false));
 
         return section;
     }
