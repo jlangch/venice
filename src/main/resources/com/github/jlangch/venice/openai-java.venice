@@ -22,6 +22,7 @@
 ;;;; OpenAI Java API module
 
 ;;;; OpenAI OpenAPI:  https://github.com/openai/openai-java
+;;;;        JavaDoc:  https://javadoc.io/doc/com.openai/openai-java/4.32.0/index.html
 ;;;; Developer docs:  https://developers.openai.com/
 ;;;;                  https://developers.openai.com/api/docs
 ;;;;                  https://developers.openai.com/api/reference/java
