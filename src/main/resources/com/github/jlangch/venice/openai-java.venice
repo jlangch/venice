@@ -384,7 +384,8 @@
         response-follow-up  (-> (. client :responses)
                                 (. :create params-follow-up))
         elapsed             (- (current-time-millis) start)
-        total-usage         (add-usage-stats usage (response-usage-stats response-follow-up))]
+        follow-up-usage     (response-usage-stats response-follow-up)
+        total-usage         (add-usage-stats usage follow-up-usage)]
     (ordered-map  :status    (response-status response-follow-up)
                   :elapsed   elapsed
                   :usage     total-usage
