@@ -322,7 +322,7 @@
             (defn function-mapper [fn-name]
               (case fn-name
                 "GetWeather"   get-weather 
-                (throw (ex :VncException "Function ~{fn-name} not available!"))))
+                nil))
 
             (let [client    (openai-java/client)
                   prompt    "What is the weather in Zurich in Celsius?"
@@ -373,7 +373,9 @@
         params              (. params-builder :build)
         response            (-> (. client :responses)
                                 (. :create params))
-        follow-up-input     [] ;; TODO
+        follow-up-input     (create-function-follow-up-inputs response function-mapper)
+        _                   (if (empty? follow-up-input)
+                              (throw (ex :VncException "No function call requested.")))
         params-follow-up    (-> (. :ResponseCreateParams :builder)
                                 (. :model (. :ChatModel model))
                                 (. :inputOfResponse follow-up-input)
@@ -544,6 +546,7 @@
     (->> (map #(ordered-map :msg % :status status) msgs)
          (into []))))
 
+
 (defn- response-output-message-without-status [out-msg]
   { :pre [(instance-of? :ResponseOutputMessage out-msg)] }
   (->> (. out-msg :content)
@@ -551,6 +554,7 @@
        (map #(. % :asOutputText))
        (map #(. % :text))
        (into [])))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -573,17 +577,34 @@
     (. builder :additionalProperties (jsonval false))
     (. builder :build)))
 
-(defn- create-function-follow-up-inputs [response]
+(defn- create-function-follow-up-inputs [response function-mapper]
   { :pre [(instance-of? :Response response)] }
   (->> (. response :output)
        (filter #(. % :isFunctionCall))
        (map #(. % :asFunctionCall))
+       (map #(create-function-follow-up-input % function-mapper))
+       (flatten)))
 
-  ))
+(defn- create-function-follow-up-input [fn-call function-mapper]
+  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)] }
+  (let [result  (call-function fn-call function-mapper)
+        call-id (. fn-call :callId)]
+    [ (. :ResponseInputItem :ofFunctionCall fn-call)
+      (. :ResponseInputItem :ofFunctionCallOutput
+                            (-> (. :FunctionCallOutput :builder)
+                                (. :callId  call-id)
+                                (. :outputAsJson result)
+                                (. :build))) ]))
 
-(defn- create-function-follow-up-input [output-item]
-  { :pre [(instance-of? :ResponseOutputItem output-item)] }
-  )
+(defn- call-function [fn-call function-mapper]
+  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)] }
+  (let [fn-name (. fn-call :name)
+        fn-args (. fn-call :arguments)
+        func    (function-mapper fn-name)]
+    (when (nil? func) 
+      (throw (ex :VncException "Function ~{fn-name} not available!")))
+
+    (func (json/read-str fn-args))))
 
 
 
