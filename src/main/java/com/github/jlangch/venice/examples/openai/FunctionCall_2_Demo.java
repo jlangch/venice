@@ -109,8 +109,20 @@ public class FunctionCall_2_Demo {
 
         Response finalResponse = client.responses().create(followUpParams);
 
-        finalResponse.output().forEach(System.out::println);
-    }
+        // finalResponse.output().forEach(System.out::println);
+
+        finalResponse
+            .output()
+            .stream()
+            .filter(outputItem -> outputItem.isMessage())
+            .map(outputItem -> outputItem.asMessage())
+            //.filter(msg -> msg.status() == Status.COMPLETED)
+            .flatMap(msg -> msg.content().stream())
+            .filter(content -> content.isOutputText())
+            .map(content -> content.asOutputText())
+            .map(outText -> outText.text())
+            .forEach(text -> System.out.println(text));
+   }
 
     private static Object callFunction(ResponseFunctionToolCall fnCall) {
         switch (fnCall.name()) {

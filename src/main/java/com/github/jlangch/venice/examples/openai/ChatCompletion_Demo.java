@@ -27,7 +27,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
-import com.openai.models.responses.ResponseOutputMessage.Status;
 import com.openai.models.responses.ResponseUsage;
 
 
@@ -59,7 +58,7 @@ public class ChatCompletion_Demo {
             .stream()
             .filter(outputItem -> outputItem.isMessage())
             .map(outputItem -> outputItem.asMessage())
-            .filter(msg -> msg.status() == Status.COMPLETED)
+            //.filter(msg -> msg.status() == Status.COMPLETED)
             .flatMap(msg -> msg.content().stream())
             .filter(content -> content.isOutputText())
             .map(content -> content.asOutputText())
