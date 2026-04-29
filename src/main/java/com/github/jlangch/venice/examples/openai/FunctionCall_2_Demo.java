@@ -42,7 +42,6 @@ import com.openai.models.responses.ResponseInputItem.FunctionCallOutput;
 import com.openai.models.responses.ResponseOutputItem;
 
 
-
 public class FunctionCall_2_Demo {
 
     public static void main(String[] args) {

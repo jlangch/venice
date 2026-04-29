@@ -54,7 +54,6 @@ public class FunctionCall_1_Demo {
             // Replace this with your real service call.
             return new WeatherResult(location, unit, 21, "Partly cloudy");
         }
-
     }
 
     public static class WeatherResult {
