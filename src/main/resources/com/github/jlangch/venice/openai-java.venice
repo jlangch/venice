@@ -315,7 +315,7 @@
                                       :conditions  "Mostly sunny" })
                   :else
                     (json/write-str { :location location
-                                      :error    (str "No weather data available " location " !" }))))
+                                      :error    (str "No weather data available " location " !") } ))))
 
             (defn function-mapper [fn-name]
               (case fn-name
@@ -372,6 +372,7 @@
         params              (. params-builder :build)
         response            (-> (. client :responses)
                                 (. :create params))
+        usage               (response-usage-stats response)
 ;;      _                   (println "RESPONSE: " (response-output-fn-calls response))
         follow-up-input     (create-function-follow-up-inputs response function-mapper)
         _                   (if (empty? follow-up-input)
@@ -382,10 +383,11 @@
                                 (. :build))  
         response-follow-up  (-> (. client :responses)
                                 (. :create params-follow-up))
-        elapsed             (- (current-time-millis) start)]
+        elapsed             (- (current-time-millis) start)
+        total-usage         (add-usage-stats usage (response-usage-stats response-follow-up))]
     (ordered-map  :status    (response-status response-follow-up)
                   :elapsed   elapsed
-                  :usage     (response-usage-stats response-follow-up)
+                  :usage     total-usage
                   :response  response-follow-up)))
 
 
@@ -619,6 +621,17 @@
 ;; -----------------------------------------------------------------------------
 ;; Internal Utils
 ;; -----------------------------------------------------------------------------
+
+(defn- add-usage-stats [u1 u2]
+  (println u1)
+  (println u2)
+  (let [r1 (->> u1 :output-tokens-detail :reasoning-tokens)
+        r2 (->> u2 :output-tokens-detail :reasoning-tokens)]
+    (ordered-map 
+      :input-tokens  (+ (:input-tokens u1) (:input-tokens u2))
+      :output-tokens (+ (:output-tokens u1) (:output-tokens u2))
+      :output-tokens-detail { :reasoning-tokens (+ r1 r2) }
+      :total-tokens  (+ (:total-tokens u1) (:total-tokens u2)))))
 
 (defn- jsonval [v]
   (. :JsonValue :from v))
