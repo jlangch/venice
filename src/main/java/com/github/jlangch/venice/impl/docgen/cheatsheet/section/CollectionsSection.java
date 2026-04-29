@@ -92,6 +92,7 @@ public class CollectionsSection implements ISectionBuilder {
         coll_process.addItem(diBuilder.getDocItem("map-indexed"));
         coll_process.addItem(diBuilder.getDocItem("filter"));
         coll_process.addItem(diBuilder.getDocItem("reduce"));
+        coll_process.addItem(diBuilder.getDocItem("tee"));
         coll_process.addItem(diBuilder.getDocItem("group-by"));
         coll_process.addItem(diBuilder.getDocItem("sort"));
         coll_process.addItem(diBuilder.getDocItem("sort-by"));

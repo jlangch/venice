@@ -917,6 +917,25 @@ public class TransducerFunctionsTest {
     }
 
     @Test
+    public void test_tee() {
+        final Venice venice = new Venice();
+
+        assertEquals("(1 2 3)", venice.eval("(pr-str (tee (fn [x] nil) '(1 2 3))) "));
+
+        assertEquals("(2 3 4)", venice.eval("(let [t (mutable-list)]   \n" +
+                                            "  (->> '(1 2 3)           \n" +
+                                            "       (tee #(conj! t %)) \n" +
+                                            "       (map inc)          \n" +
+                                            "       (pr-str)))         "));
+
+        assertEquals("(1 2 3)", venice.eval("(let [t (mutable-list)]   \n" +
+                                            "  (->> '(1 2 3)           \n" +
+                                            "       (tee #(conj! t %)) \n" +
+                                            "       (map inc))         \n" +
+                                            "  (pr-str t))             "));
+    }
+
+    @Test
     public void test_drop() {
         final Venice venice = new Venice();
 

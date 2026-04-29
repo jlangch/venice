@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -536,6 +537,108 @@ public class TransducerFunctions {
                                                     predicate.apply(VncList.of(v))));
                     }
                     return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction tee =
+        new VncFunction(
+                "tee",
+                VncFunction
+                    .meta()
+                    .arglists("(tee f coll)")
+                    .doc(
+                        "Applys f to every item of each the coll and returns the unaltered coll.¶" +
+                        "Returns a transducer when no collection is provided." )
+                    .examples(
+                        "(tee println [1 2 3 4])",
+                        "(->> [1 2 3 4] (tee println) (map inc))")
+                    .seeAlso("map", "filter", "reduce", "map-indexed")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
+
+                if (args.size() == 0) {
+                    return Nil;
+                }
+                else if (args.size() == 1) {
+                    final IVncFunction tee = Coerce.toIVncFunction(args.first());
+                    tee.sandboxFunctionCallValidation();
+
+                    final IVncFunction fn = new VncFunction(createAnonymousFuncName()) {
+                                                    @Override
+                                                    public VncVal apply(final VncList args) {
+                                                        tee.apply(args);
+                                                        return args.first();
+                                                    }
+                                                    private static final long serialVersionUID = 1L;
+                                                };
+
+                    // return a transducer
+                    return new VncFunction(createAnonymousFuncName("tee:transducer:wrapped")) {
+                        @Override
+                        public VncVal apply(final VncList args) {
+                            ArityExceptions.assertArity(this, args, 1);
+
+                            final IVncFunction rf = Coerce.toIVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
+                            return new VncFunction(createAnonymousFuncName("tee:transducer")) {
+                                @Override
+                                public VncVal apply(final VncList args) {
+                                    switch (args.size()) {
+                                        case 0:
+                                            return rf.apply(VncList.empty());
+                                        case 1:
+                                            return rf.apply(VncList.of(args.first()));
+                                        case 2:
+                                            final VncVal result = args.first();
+                                            final VncVal input = args.second();
+                                            return rf.apply(VncList.of(result, fn.apply(VncList.of(input))));
+                                        default:
+                                            ArityExceptions.assertArity(this, args, 0, 1, 2);
+                                            return Nil;
+                                    }
+                                }
+
+                                private static final long serialVersionUID = -1L;
+                            };
+                        }
+
+                        private static final long serialVersionUID = -1L;
+                    };
+                }
+                else {
+                    final IVncFunction tee = Coerce.toIVncFunction(args.first());
+                    tee.sandboxFunctionCallValidation();
+
+                    final IVncFunction fn = new VncFunction(createAnonymousFuncName()) {
+                                                    @Override
+                                                    public VncVal apply(final VncList args) {
+                                                        tee.apply(args);
+                                                        return args.first();
+                                                    }
+                                                    private static final long serialVersionUID = 1L;
+                                                };
+
+                    if (args.size() < 2) {
+                        return Nil;
+                    }
+                    else if (args.size() == 2) {
+                        // optimized mapper for a single collection
+                        VncSequence seq = VncSequence.coerceToSequence(args.second());
+                        seq = meterRegistry.enabled
+                                ? seq.map(v -> VncFunction.applyWithMeter(fn, VncList.of(v), meterRegistry))
+                                : seq.map(v -> fn.apply(VncList.of(v)));
+                        return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
+                    }
+                    else {
+                        throw new ArityException("A tee function must have arity 2!");
+                    }
                 }
             }
 
@@ -1685,6 +1788,7 @@ public class TransducerFunctions {
                     .add(map)
                     .add(map_indexed)
                     .add(filter)
+                    .add(tee)
                     .add(drop)
                     .add(drop_while)
                     .add(drop_last)
