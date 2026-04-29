@@ -100,7 +100,6 @@ public class FunctionCall_2_Demo {
         if (followUpInput.isEmpty()) {
             System.out.println("No function call requested.");
             return;
-
         }
 
         ResponseCreateParams followUpParams = ResponseCreateParams.builder()
