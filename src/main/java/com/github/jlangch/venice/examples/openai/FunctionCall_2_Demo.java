@@ -127,7 +127,8 @@ public class FunctionCall_2_Demo {
     private static Object callFunction(ResponseFunctionToolCall fnCall) {
         switch (fnCall.name()) {
             case "GetWeather":
-                String arguments = fnCall.arguments();  // {"location": "Zurich"}
+                // TODO: parse JSON {"location": "Zurich", "unit": "celsius"}
+                String arguments = fnCall.arguments();
 
                 return "{" +
                          "\"location\": \"Zurich\", " +
