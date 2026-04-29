@@ -94,7 +94,6 @@ public class FunctionCall_2_Demo {
                         .outputAsJson(functionResult)
                         .build()
             ));
-
         }
 
         if (followUpInput.isEmpty()) {
