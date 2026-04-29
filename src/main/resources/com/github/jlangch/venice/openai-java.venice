@@ -36,10 +36,14 @@
 
 (import :com.openai.client.OpenAIClient)
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
+(import :com.openai.core.JsonValue)
 (import :com.openai.models.ChatModel)
 (import :com.openai.models.responses.Response)
 (import :com.openai.models.responses.ResponseCreateParams)
+(import :com.openai.models.responses.ResponseFunctionToolCall)
+(import :com.openai.models.responses.ResponseInputItem.FunctionCallOutput)
 (import :com.openai.models.responses.ResponseOutputMessage)
+(import :com.openai.models.responses.FunctionTool.Parameters)
 
 
 
@@ -233,13 +237,154 @@
         response  (-> (. client :responses)
                       (. :create params))
         elapsed   (- (current-time-millis) start)]
-    (ordered-map  :status   (-> (. response :status)
-                                (java-unwrap-optional :unknown)
-                                (. :toString)
-                                (keyword))
+    (ordered-map  :status    (response-status response)
                   :elapsed   elapsed
                   :usage     (response-usage-stats response)
                   :response  response)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(chat-completion-fn client prompt functions & options)" )
+     :doc """
+          Runs a chat completion.
+
+          To run the request asynchronously just wrap it in a `future` and
+          deref it, when the result is required.
+
+          ¶*Parameter request functions*
+
+          ```
+          [ { :name "GetWeather"
+              :description "Gets the current weather for a city."
+              :properties  { :location { :type        "string" 
+                                         :description (str "City and country, for example: "
+                                                           "Zurich, Switzerland")  }
+                             :unit     { :type        "string"
+                                         :description (str "Temperature unit: celsius or fahrenheit. "
+                                                           "Infer this from the user's location when "
+                                                           "missing." }
+              :required    ["location" "unit"] }
+          ]
+          ```
+
+          ¶*Parameter request «options»*
+
+          | [![width: 15%]]    | [![width: 85%]] |
+          | :model m           | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
+                                 :GPT_5_4_NANO. ¶\
+                                 Defaults to :GPT_5_4|
+ 
+          ¶*Return value*
+
+          Returns a map with the response data:*
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :status         | The response status { :completed, :failed, \
+                              :in_progress, :cancelled, :queued, :incomplete, \
+                              :unknown }  |
+          | :elapsed        | The elapsed milliseconds  |
+          | :response       | The original response, a Java object of type \
+                              `:com.openai.models.responses.Response` |
+          | :usage          | The usage data. E.g.:¶\
+                              ``` ¶\  
+                              { :input-tokens 11 ¶\
+                                :output-tokens 8 ¶\
+                                :output-tokens-detail { ¶\
+                                  :reasoning-tokens 0 ¶\
+                                 } ¶\
+                                :total-tokens 19 ¶\
+                              } ¶\
+                              ```|
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (defn get-weather 
+              ([named-args] 
+                (assert map? named-args)
+                (get-weather (get named-args "location") 
+                             (get named-args "unit")))
+
+              ([location unit]
+                (case location
+                  "Zurich"  (json/write-str
+                                { :location    location
+                                  :unit        unit
+                                  :temperature 21
+                                  :conditions  "Mostly sunny" })
+
+                  (json/write-str { :location location
+                                    :error    "No weather data available for ~{location}!" }))))
+
+            (defn function-mapper [fn-name]
+              (case fn-name
+                "GetWeather"   get-weather 
+                (throw (ex :VncException "Function ~{fn-name} not available!"))))
+
+            (let [client    (openai-java/client)
+                  prompt    "What is the weather in Zurich in Celsius?"
+                  functions [ { :name "GetWeather"
+                                :description "Gets the current weather for a city."
+                                :properties  { :location { :type        "string" 
+                                                          :description (str "City and country, for example: "
+                                                                            "Zurich, Switzerland")  }
+                                               :unit     { :type        "string"
+                                                          :description (str "Temperature unit: celsius or fahrenheit. "
+                                                                            "Infer this from the user's location when "
+                                                                            "missing." }
+                                :required    ["location" "unit"] } ]
+                  result    (openai-java/chat-completion client prompt 
+                                                         functions function-mapper
+                                                         :model :GPT_5_4)
+                  response  (:response result)
+                  usage     (:usage result)
+                  status    (:status result)
+                            ;; just the first message without status
+                  msg       (first (openai-java/response-messages-without-status response))]
+              (println "Status: " status "\n")
+              (println (openai-java/format-usage usage "  " "Tokens:\n"))
+              (println "Result: \n" msg)))
+          """)
+     :see-also '(
+          "openai-java/client"
+          "openai-java/close"
+          "openai-java/response-messages-without-status"
+          "openai-java/response-messages-with-status"
+          "openai-java/format-usage") }
+
+  chat-completion-fn [client prompt functions function-mapper & options]
+
+  { :pre [(instance-of? :OpenAIClient client) 
+          (string? prompt) 
+          (and (map? functions) (not-empty? functions))
+          (and (map? function-mapper) (not-empty? function-mapper))] }
+ 
+  (let [opts                (apply hash-map options)
+        model               (get opts :model :GPT_5_4)
+        start               (current-time-millis)
+        tools               (->> (map #(create-function-tool %) functions))
+        params-builder      (-> (. :ResponseCreateParams :builder)
+                                (. :input prompt)
+                                (. :model (. :ChatModel model)))
+        _                   (doseq [t tools] (. params-builder :addTool t))
+        params              (. params-builder :build)
+        response            (-> (. client :responses)
+                                (. :create params))
+        follow-up-input     [] ;; TODO
+        params-follow-up    (-> (. :ResponseCreateParams :builder)
+                                (. :model (. :ChatModel model))
+                                (. :inputOfResponse follow-up-input)
+                                (. :build))  
+        response-follow-up  (-> (. client :responses)
+                                (. :create params-follow-up))
+        elapsed             (- (current-time-millis) start)]
+    (ordered-map  :status    (response-status response-follow-up)
+                  :elapsed   elapsed
+                  :usage     (response-usage-stats response-follow-up)
+                  :response  response-follow-up)))
 
 
 
@@ -364,7 +509,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Internal Utils
+;; Internal Response Utils
 ;; -----------------------------------------------------------------------------
 
 (defn- response-usage-stats [response]
@@ -377,6 +522,13 @@
         :output-tokens-detail { :reasoning-tokens (. output-details :reasoningTokens) }
         :total-tokens  (. usage :totalTokens)))
     {}))
+
+(defn- response-status [response]
+  { :pre [(instance-of? :Response response)] }
+  (-> (. response :status)
+      (java-unwrap-optional :unknown)
+      (. :toString)
+      (keyword)))
 
 
 (defn- response-output-message-with-status [out-msg]
@@ -400,6 +552,47 @@
        (map #(. % :text))
        (into [])))
 
+
+;; -----------------------------------------------------------------------------
+;; Internal Function Utils
+;; -----------------------------------------------------------------------------
+
+(defn- create-function-tool [function-def]
+  (let [builder (. :FunctionTool :builder)]
+    (. builder :name (:name function-def))
+    (. builder :description (:description function-def))
+    (. builder :strict true)
+    (. builder :parameters (create-function-params function-def))
+    (. builder :build)))
+
+(defn- create-function-params [function-def]
+  (let [builder (. :Parameters :builder)]
+    (. builder :putAdditionalProperty "type" (jsonval "object"))
+    (. builder :putAdditionalProperty "required" (:required function-def))
+    (. builder :putAdditionalProperty "properties" (:properties function-def))
+    (. builder :additionalProperties (jsonval false))
+    (. builder :build)))
+
+(defn- create-function-follow-up-inputs [response]
+  { :pre [(instance-of? :Response response)] }
+  (->> (. response :output)
+       (filter #(. % :isFunctionCall))
+       (map #(. % :asFunctionCall))
+
+  ))
+
+(defn- create-function-follow-up-input [output-item]
+  { :pre [(instance-of? :ResponseOutputItem output-item)] }
+  )
+
+
+
+;; -----------------------------------------------------------------------------
+;; Internal Utils
+;; -----------------------------------------------------------------------------
+
+(defn- jsonval [v]
+  (. :JsonValue :from v))
 
 (defn- openai-api-key-from-env []
   (system-env "OPENAI_API_KEY"))
