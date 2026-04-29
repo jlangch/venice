@@ -41,9 +41,11 @@
 (import :com.openai.models.responses.Response)
 (import :com.openai.models.responses.ResponseCreateParams)
 (import :com.openai.models.responses.ResponseFunctionToolCall)
-(import :com.openai.models.responses.ResponseInputItem.FunctionCallOutput)
+(import :com.openai.models.responses.ResponseInputItem)
+(import :com.openai.models.responses.ResponseInputItem$FunctionCallOutput)
 (import :com.openai.models.responses.ResponseOutputMessage)
-(import :com.openai.models.responses.FunctionTool.Parameters)
+(import :com.openai.models.responses.FunctionTool)
+(import :com.openai.models.responses.FunctionTool$Parameters)
 
 
 
@@ -309,15 +311,15 @@
                              (get named-args "unit")))
 
               ([location unit]
-                (case location
-                  "Zurich"  (json/write-str
-                                { :location    location
-                                  :unit        unit
-                                  :temperature 21
-                                  :conditions  "Mostly sunny" })
-
-                  (json/write-str { :location location
-                                    :error    "No weather data available for ~{location}!" }))))
+                (cond 
+                  (str/contains? location "Zurich")
+                    (json/write-str { :location    location
+                                      :unit        unit
+                                      :temperature 21
+                                      :conditions  "Mostly sunny" })
+                  :else
+                    (json/write-str { :location location
+                                      :error    "No weather data available for ~{location}!" }))))
 
             (defn function-mapper [fn-name]
               (case fn-name
@@ -334,11 +336,11 @@
                                                :unit     { :type        "string"
                                                           :description (str "Temperature unit: celsius or fahrenheit. "
                                                                             "Infer this from the user's location when "
-                                                                            "missing." }
+                                                                            "missing.") } }
                                 :required    ["location" "unit"] } ]
-                  result    (openai-java/chat-completion client prompt 
-                                                         functions function-mapper
-                                                         :model :GPT_5_4)
+                  result    (openai-java/chat-completion-fn client prompt 
+                                                            functions function-mapper
+                                                            :model :GPT_5_4)
                   response  (:response result)
                   usage     (:usage result)
                   status    (:status result)
@@ -359,8 +361,8 @@
 
   { :pre [(instance-of? :OpenAIClient client) 
           (string? prompt) 
-          (and (map? functions) (not-empty? functions))
-          (and (map? function-mapper) (not-empty? function-mapper))] }
+          (and (sequential? functions) (not-empty? functions))
+          (fn? function-mapper) ] }
  
   (let [opts                (apply hash-map options)
         model               (get opts :model :GPT_5_4)
@@ -373,6 +375,7 @@
         params              (. params-builder :build)
         response            (-> (. client :responses)
                                 (. :create params))
+;;      _                   (println "RESPONSE: " (response-output-fn-calls response))
         follow-up-input     (create-function-follow-up-inputs response function-mapper)
         _                   (if (empty? follow-up-input)
                               (throw (ex :VncException "No function call requested.")))
@@ -555,6 +558,12 @@
        (map #(. % :text))
        (into [])))
 
+(defn- response-output-fn-calls [response]
+  { :pre [(instance-of? :Response response)] }
+  (->> (. response :output)
+       (filter #(. % :isFunctionCall))
+       (map #(. % :asFunctionCall))))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -570,11 +579,11 @@
     (. builder :build)))
 
 (defn- create-function-params [function-def]
-  (let [builder (. :Parameters :builder)]
+  (let [builder (. :FunctionTool$Parameters :builder)]
     (. builder :putAdditionalProperty "type" (jsonval "object"))
-    (. builder :putAdditionalProperty "required" (:required function-def))
-    (. builder :putAdditionalProperty "properties" (:properties function-def))
-    (. builder :additionalProperties (jsonval false))
+    (. builder :putAdditionalProperty "required" (jsonval (:required function-def)))
+    (. builder :putAdditionalProperty "properties" (jsonval (:properties function-def)))
+    (. builder :putAdditionalProperty "additionalProperties" (jsonval false))
     (. builder :build)))
 
 (defn- create-function-follow-up-inputs [response function-mapper]
@@ -591,7 +600,7 @@
         call-id (. fn-call :callId)]
     [ (. :ResponseInputItem :ofFunctionCall fn-call)
       (. :ResponseInputItem :ofFunctionCallOutput
-                            (-> (. :FunctionCallOutput :builder)
+                            (-> (. :ResponseInputItem$FunctionCallOutput :builder)
                                 (. :callId  call-id)
                                 (. :outputAsJson result)
                                 (. :build))) ]))
@@ -604,6 +613,8 @@
     (when (nil? func) 
       (throw (ex :VncException "Function ~{fn-name} not available!")))
 
+    ;; (println "FN ARGS:   " (json/read-str fn-args))
+    ;; (println "FN RESULT: " (func (json/read-str fn-args)))
     (func (json/read-str fn-args))))
 
 
