@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -182,6 +184,102 @@ public class CollectionUtil {
 
     public static <T> List<T> toEmpty(final List<T> list) {
         return list == null ? new ArrayList<T>() : list;
+    }
+
+    /**
+     * Returns a map containing zero mappings.
+     *
+     * @param <K> the {@code Map}'s key type
+     * @param <V> the {@code Map}'s value type
+     * @return a {@code Map} containing the specified mapping
+     * @throws NullPointerException if the key or the value is {@code null}
+     */
+    public static <K, V> Map<K, V> toMap() {
+        return new HashMap<K,V>();
+    }
+
+    /**
+     * Returns a map containing a single mapping.
+     *
+     * @param <K> the {@code Map}'s key type
+     * @param <V> the {@code Map}'s value type
+     * @param k1 the mapping's key
+     * @param v1 the mapping's value
+     * @return a {@code Map} containing the specified mapping
+     * @throws NullPointerException if the key or the value is {@code null}
+     */
+    public static <K, V> Map<K, V> toMap(K k1, V v1) {
+        final HashMap<K,V> map = new HashMap<>();
+        map.put(k1, v1);
+        return map;
+    }
+
+    /**
+     * Returns a map containing two mappings.
+     *
+     * @param <K> the {@code Map}'s key type
+     * @param <V> the {@code Map}'s value type
+     * @param k1 the first mapping's key
+     * @param v1 the first mapping's value
+     * @param k2 the second mapping's key
+     * @param v2 the second mapping's value
+     * @return a {@code Map} containing the specified mappings
+     * @throws IllegalArgumentException if the keys are duplicates
+     * @throws NullPointerException if any key or value is {@code null}
+     */
+    public static <K, V> Map<K, V> toMap(K k1, V v1, K k2, V v2) {
+        final HashMap<K,V> map = new HashMap<>();
+        map.put(k1, v1);
+        map.put(k2, v2);
+        return map;
+    }
+    /**
+     * Returns a map containing three mappings.
+     *
+     * @param <K> the {@code Map}'s key type
+     * @param <V> the {@code Map}'s value type
+     * @param k1 the first mapping's key
+     * @param v1 the first mapping's value
+     * @param k2 the second mapping's key
+     * @param v2 the second mapping's value
+     * @param k3 the third mapping's key
+     * @param v3 the third mapping's value
+     * @return a {@code Map} containing the specified mappings
+     * @throws IllegalArgumentException if there are any duplicate keys
+     * @throws NullPointerException if any key or value is {@code null}
+     */
+    static <K, V> Map<K, V> toMap(K k1, V v1, K k2, V v2, K k3, V v3) {
+        final HashMap<K,V> map = new HashMap<>();
+        map.put(k1, v1);
+        map.put(k2, v2);
+        map.put(k3, v3);
+        return map;
+    }
+
+    /**
+     * Returns an map containing four mappings.
+     *
+     * @param <K> the {@code Map}'s key type
+     * @param <V> the {@code Map}'s value type
+     * @param k1 the first mapping's key
+     * @param v1 the first mapping's value
+     * @param k2 the second mapping's key
+     * @param v2 the second mapping's value
+     * @param k3 the third mapping's key
+     * @param v3 the third mapping's value
+     * @param k4 the fourth mapping's key
+     * @param v4 the fourth mapping's value
+     * @return a {@code Map} containing the specified mappings
+     * @throws IllegalArgumentException if there are any duplicate keys
+     * @throws NullPointerException if any key or value is {@code null}
+     */
+    static <K, V> Map<K, V> toMap(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        final HashMap<K,V> map = new HashMap<>();
+        map.put(k1, v1);
+        map.put(k2, v2);
+        map.put(k3, v3);
+        map.put(k4, v4);
+        return map;
     }
 
     public static <U> List<U> drop(final List<U> items, final int n) {
