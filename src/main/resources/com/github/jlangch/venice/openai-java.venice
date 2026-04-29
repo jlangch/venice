@@ -171,9 +171,11 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | :status         | The response status { :completed, :failed, \
-                              :in_progress, :cancelled, :queued, :incomplete,
+                              :in_progress, :cancelled, :queued, :incomplete, \
                               :unknown }  |
-          | :elapsed-millis | The elapsed milliseconds  |
+          | :elapsed        | The elapsed milliseconds  |
+          | :response       | The original response, a Java object of type \
+                              `:com.openai.models.responses.Response` |
           | :usage          | The usage data. E.g.:¶\
                               ``` ¶\  
                               { :input-tokens 11 ¶\
@@ -184,18 +186,6 @@
                                 :total-tokens 19 ¶\
                               } ¶\
                               ```|
-          | :output-msg     | A list of response output messages. E.g.:¶\
-                              ``` ¶\  
-                              [ { :status :completed  ¶\ 
-                                  :content [ { :type :text  ¶\ 
-                                               :content "The answer..." ¶\ 
-                                             } ¶\ 
-                                           ] ¶\ 
-                                } ¶\ 
-                              ] ¶\
-                              ```|
-          | :response       | The original response, a Java object of type \
-                              `:com.openai.models.responses.Response` |
           """ 
      :examples '(
           """
@@ -205,23 +195,22 @@
               (-> (openai-java/chat-completion client 
                                                "Say this is a test" 
                                                :model :GPT_5_4)
-                  (println))))
+                  (println))))  ;; prints the raw OpenAI response
           """,
           """
           (do
             (load-module :openai-java)
-            (let [client (openai-java/client)
+            (let [client   (openai-java/client)
                   prompt   "Say this is a test"
-                  response (openai-java/chat-completion client prompt :model :GPT_5_4)
-                           ;; only first output item
-                  msg      (openai-java/get-first-message response) 
-                  usage    (:usage response)]
-              (println "Status: " (:status response))
-              (println)
-              (println (openai-java/format-usage usage "  " "Tokens:"))
-              (println)
-              (println "Result: ")
-              (println msg)))
+                  result   (openai-java/chat-completion client prompt :model :GPT_5_4)
+                  response (:response result)
+                  usage    (:usage result)
+                  status   (:status result)
+                           ;; just the first message without status
+                  msg      (first (openai-java/response-messages-without-status response))]
+              (println "Status: " status "\n")
+              (println (openai-java/format-usage usage "  " "Tokens:\n"))
+              (println "Result: \n" msg)))
           """)
      :see-also '("openai-java/client") }
 
@@ -239,14 +228,13 @@
         response  (-> (. client :responses)
                       (. :create params))
         elapsed   (- (current-time-millis) start)]
-    (ordered-map  :status         (-> (. response :status)
-                                      (java-unwrap-optional :unknown)
-                                      (. :toString)
-                                      (keyword))
-                  :elapsed-millis elapsed
-                  :output-msg     (parse-response response)
-                  :usage          (response-usage-stats response)
-                  :response       response )))
+    (ordered-map  :status   (-> (. response :status)
+                                (java-unwrap-optional :unknown)
+                                (. :toString)
+                                (keyword))
+                  :elapsed   elapsed
+                  :usage     (response-usage-stats response)
+                  :response  response)))
 
 
 
@@ -254,13 +242,22 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn get-first-message [response]
-  { :pre [(map? response)] }
-  (-> (:output-msg response)  ;; only first output item
-      (first) 
-      (get :content)
-      (first)
-      (get :content)))
+(defn response-messages-with-status [response]
+  { :pre [(instance-of? :Response response)] }
+  (->> (. response :output)
+       (filter #(. % :isMessage))
+       (map #(. % :asMessage))
+       (map #(response-output-message-with-status %))
+       (flatten)))
+
+
+(defn response-messages-without-status [response]
+  { :pre [(instance-of? :Response response)] }
+  (->> (. response :output)
+       (filter #(. % :isMessage))
+       (map #(. % :asMessage))
+       (map #(response-output-message-without-status %))
+       (flatten)))
 
 
 (defn format-usage 
@@ -301,27 +298,26 @@
     {}))
 
 
-(defn- parse-response [response]
-  { :pre [(instance-of? :Response response)] }
-  (->> (. response :output)
-       (filter #(. % :isMessage))
-       (map #(. % :asMessage))
-       (map #(response-output-message %))
-       (into [])))
-
-
-(defn- response-output-message [out-msg]
+(defn- response-output-message-with-status [out-msg]
   { :pre [(instance-of? :ResponseOutputMessage out-msg)] }
-  { :content  (->> (. out-msg :content)
-                   (filter #(. % :isOutputText))
-                   (map #(. % :asOutputText))
-                   (map #(ordered-map :type    "plain/text"  
-                                      :content (. % :text)))
-                   (into []))
-    :status   (-> (. out-msg :status) ;; {:in_progress, :completed, :incomplete}
-                  (. :toString)
-                  (keyword))
-  })
+  (let [msgs   (->> (. out-msg :content)
+                    (filter #(. % :isOutputText))
+                    (map #(. % :asOutputText))
+                    (map #(. % :text))
+                    (into []))
+        status (-> (. out-msg :status) ;; {:in_progress, :completed, :incomplete}
+                   (. :toString)
+                   (keyword))]
+    (->> (map #(ordered-map :msg % :status status) msgs)
+         (into []))))
+
+(defn- response-output-message-without-status [out-msg]
+  { :pre [(instance-of? :ResponseOutputMessage out-msg)] }
+  (->> (. out-msg :content)
+       (filter #(. % :isOutputText))
+       (map #(. % :asOutputText))
+       (map #(. % :text))
+       (into [])))
 
 
 (defn- openai-api-key-from-env []
