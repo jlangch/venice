@@ -207,6 +207,7 @@ ext {
     jline_Version = '3.21.0'
     jupiter_Version = '5.8.2'
     openpdf_Version = '1.3.35'
+    openai_Version = '4.33.0'
     pdfbox_Version = '3.0.1'
     jbig2_imageio_Version = '3.0.4'
     poi_Version = '5.3.0' // '4.1.2'
@@ -923,6 +924,7 @@ dependencies {
     testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
     testImplementation "org.apache.poi:poi:${poi_Version}"
     testImplementation "org.apache.poi:poi-ooxml:${poi_Version}"
+    testImplementation "com.openai:openai-java:${openai_Version}"
     
     testImplementation "org.bouncycastle:bcprov-jdk18on:${bouncyCastle_Version}"
     testImplementation "org.bouncycastle:bcprov-ext-jdk15to18:${bouncyCastle_Version}"
@@ -941,6 +943,9 @@ dependencies {
     compileOnly "com.github.librepdf:pdf-toolbox:${openpdf_Version}"
     compileOnly "com.github.librepdf:openpdf-fonts-extra:${openpdf_Version}"
     compileOnly "org.knowm.xchart:xchart:${xchart_Version}"
+    
+    // OpenAI
+    compileOnly "com.openai:openai-java:${openai_Version}"
     
     // PDF text extractor
     compileOnly "org.apache.pdfbox:pdfbox:${pdfbox_Version}"
