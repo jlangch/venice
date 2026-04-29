@@ -179,19 +179,17 @@
           | :status         | The response status { :completed, :failed, \
                               :in_progress, :cancelled, :queued, :incomplete, \
                               :unknown }  |
-          | :elapsed        | The elapsed milliseconds  |
+          | :elapsed        | The elapsed milliseconds |
           | :response       | The original response, a Java object of type \
                               `:com.openai.models.responses.Response` |
           | :usage          | The usage data. E.g.:¶\
-                              ``` ¶\  
-                              { :input-tokens 11 ¶\
-                                :output-tokens 8 ¶\
-                                :output-tokens-detail { ¶\
-                                  :reasoning-tokens 0 ¶\
-                                 } ¶\
-                                :total-tokens 19 ¶\
-                              } ¶\
-                              ```|
+                              { ¶\
+                              \u00A0\u00A0:input-tokens 11 ¶\
+                              \u00A0\u00A0:output-tokens 8 ¶\
+                              \u00A0\u00A0:output-tokens-detail { ¶\
+                              \u00A0\u00A0\u00A0\u00A0:reasoning-tokens 0 } ¶\
+                              \u00A0\u00A0:total-tokens 19 ¶\
+                              } |
           """ 
      :examples '(
           """
@@ -214,11 +212,12 @@
                   status   (:status result)
                            ;; just the first message without status
                   msg      (first (openai-java/response-messages-without-status response))]
-              (println "Status: " status "\n")
-              (println (openai-java/format-usage usage "  " "Tokens:\n"))
-              (println "Result: \n" msg)))
+              (printf "Status: %s%n%n" status)
+              (printf "Tokens: %n%s%n" (openai-java/format-usage usage "  "))
+              (printf "Result: %n%s%n" msg)))
           """)
      :see-also '(
+          "openai-java/chat-completion-fn"
           "openai-java/client"
           "openai-java/close"
           "openai-java/response-messages-without-status"
@@ -265,8 +264,8 @@
                              :unit     { :type        "string"
                                          :description (str "Temperature unit: celsius or fahrenheit. "
                                                            "Infer this from the user's location when "
-                                                           "missing." }
-              :required    ["location" "unit"] }
+                                                           "missing.") }
+              :required    [ "location" "unit" ] }
           ]
           ```
 
@@ -289,16 +288,14 @@
           | :response       | The original response, a Java object of type \
                               `:com.openai.models.responses.Response` |
           | :usage          | The usage data. E.g.:¶\
-                              ``` ¶\  
-                              { :input-tokens 11 ¶\
-                                :output-tokens 8 ¶\
-                                :output-tokens-detail { ¶\
-                                  :reasoning-tokens 0 ¶\
-                                 } ¶\
-                                :total-tokens 19 ¶\
-                              } ¶\
-                              ```|
-          """ 
+                              { ¶\
+                              \u00A0\u00A0:input-tokens 11 ¶\
+                              \u00A0\u00A0:output-tokens 8 ¶\
+                              \u00A0\u00A0:output-tokens-detail { ¶\
+                              \u00A0\u00A0\u00A0\u00A0:reasoning-tokens 0 } ¶\
+                              \u00A0\u00A0:total-tokens 19 ¶\
+                              } |
+          """
      :examples '(
           """
           (do
@@ -306,7 +303,6 @@
 
             (defn get-weather 
               ([named-args] 
-                (assert map? named-args)
                 (get-weather (get named-args "location") 
                              (get named-args "unit")))
 
@@ -319,7 +315,7 @@
                                       :conditions  "Mostly sunny" })
                   :else
                     (json/write-str { :location location
-                                      :error    "No weather data available for ~{location}!" }))))
+                                      :error    (str "No weather data available " location " !" }))))
 
             (defn function-mapper [fn-name]
               (case fn-name
@@ -331,13 +327,13 @@
                   functions [ { :name "GetWeather"
                                 :description "Gets the current weather for a city."
                                 :properties  { :location { :type        "string" 
-                                                          :description (str "City and country, for example: "
-                                                                            "Zurich, Switzerland")  }
+                                                           :description (str "City and country, for example: "
+                                                                             "Zurich, Switzerland")  }
                                                :unit     { :type        "string"
-                                                          :description (str "Temperature unit: celsius or fahrenheit. "
-                                                                            "Infer this from the user's location when "
-                                                                            "missing.") } }
-                                :required    ["location" "unit"] } ]
+                                                           :description (str "Temperature unit: celsius or fahrenheit. "
+                                                                             "Infer this from the user's location when "
+                                                                             "missing.") } }
+                                :required    [ "location" "unit" ] } ]
                   result    (openai-java/chat-completion-fn client prompt 
                                                             functions function-mapper
                                                             :model :GPT_5_4)
@@ -346,11 +342,12 @@
                   status    (:status result)
                             ;; just the first message without status
                   msg       (first (openai-java/response-messages-without-status response))]
-              (println "Status: " status "\n")
-              (println (openai-java/format-usage usage "  " "Tokens:\n"))
-              (println "Result: \n" msg)))
+              (printf "Status: %s%n%n" status)
+              (printf "Tokens: %n%s%n" (openai-java/format-usage usage "  "))
+              (printf "Result: %n%s%n" msg)))
           """)
      :see-also '(
+          "openai-java/chat-completion"
           "openai-java/client"
           "openai-java/close"
           "openai-java/response-messages-without-status"
