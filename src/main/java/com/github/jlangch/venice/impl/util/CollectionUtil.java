@@ -248,7 +248,7 @@ public class CollectionUtil {
      * @throws IllegalArgumentException if there are any duplicate keys
      * @throws NullPointerException if any key or value is {@code null}
      */
-    static <K, V> Map<K, V> toMap(K k1, V v1, K k2, V v2, K k3, V v3) {
+    public static <K, V> Map<K, V> toMap(K k1, V v1, K k2, V v2, K k3, V v3) {
         final HashMap<K,V> map = new HashMap<>();
         map.put(k1, v1);
         map.put(k2, v2);
@@ -273,7 +273,7 @@ public class CollectionUtil {
      * @throws IllegalArgumentException if there are any duplicate keys
      * @throws NullPointerException if any key or value is {@code null}
      */
-    static <K, V> Map<K, V> toMap(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+    public static <K, V> Map<K, V> toMap(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         final HashMap<K,V> map = new HashMap<>();
         map.put(k1, v1);
         map.put(k2, v2);

@@ -55,9 +55,10 @@ public class FunctionCall_2_Demo {
                                                        toMap("location",
                                                              toMap("type", "string",
                                                                    "description", "City and country, for example: Zurich, Switzerland"),
+
                                                              "unit",
                                                              toMap("type", "string",
-                                                                   "description", "Temperature unit: celsius or fahrenheit"))))
+                                                                   "description", "Temperature unit: celsius or fahrenheit. Infer this from the user's location when missing."))))
                 .putAdditionalProperty("required", JsonValue.from(toList("location", "unit")))
                 .putAdditionalProperty("additionalProperties", JsonValue.from(false))
                 .build();
@@ -135,7 +136,7 @@ public class FunctionCall_2_Demo {
                          "\"unit\": \"celsius\", " +
                          "\"temperature\": 21, " +
                          "\"conditions\": \"Partly cloudy\", " +
-                        "}";
+                       "}";
 
             default:
                 throw new IllegalArgumentException("Unknown function: " + fnCall.name());
