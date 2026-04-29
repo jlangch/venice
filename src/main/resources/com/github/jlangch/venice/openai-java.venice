@@ -135,7 +135,7 @@
               (openai-java/close client)))
           """,)
      :see-also '(
-          "openai-java/create") }
+          "openai-java/client") }
 
   close [client]
 
@@ -212,7 +212,12 @@
               (println (openai-java/format-usage usage "  " "Tokens:\n"))
               (println "Result: \n" msg)))
           """)
-     :see-also '("openai-java/client") }
+     :see-also '(
+          "openai-java/client"
+          "openai-java/close"
+          "openai-java/response-messages-without-status"
+          "openai-java/response-messages-with-status"
+          "openai-java/format-usage") }
 
   chat-completion [client prompt & options]
 
@@ -242,7 +247,59 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn response-messages-with-status [response]
+(defn 
+  ^{ :arglists '(
+          "(client & options)" )
+     :doc """
+          Creates an OpenAI client.
+
+          **Note:**
+
+          Don’t create more than one client in the same application. Each client 
+          has a connection pool and thread pools, which are more efficient to 
+          share between requests.
+
+          ¶*Parameter «options»*
+
+          | [![width: 15%]]    | [![width: 85%]] |
+          | :openai-api-key k  | An optional OpenAI API Key. As fallback the key \
+                                 is read from the environment variable \
+                                 "OPENAI_API_KEY". |
+          | :openai-org-id k   | An optional OpenAI organisation ID. As fallback \
+                                 the id is read from the environment variable \
+                                 "OPENAI_ORG_ID". |
+          | :openai-proj-id k  | An optional OpenAI project ID. As fallback the id \
+                                 is read from the environment variable  \
+                                 "OPENAI_PROJECT_ID". |
+          | :openai-base-url u | An optional OpenAI baseURL. As fallback the url \
+                                 is read from the environment variable  \
+                                 "OPENAI_BASE_URL". ¶\
+                                 OpenAI uses the standard base URL \
+                                 'https://api.openai.com/v1' if it is not \
+                                 explicitely defined. |
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client (openai-java/client)]
+              ;; ...
+              (openai-java/close client)))
+          """,
+          """
+          (do
+            (load-module :openai-java)
+            (let [client (openai-java/client :openai-api-key "sk-1234")]
+              ;; ...
+              (openai-java/close client)))
+          """)
+     :see-also '(
+        "openai-java/chat-completion"
+        "openai-java/response-messages-without-status"
+        "openai-java/format-usage") }
+
+  response-messages-with-status [response]
+  
   { :pre [(instance-of? :Response response)] }
   (->> (. response :output)
        (filter #(. % :isMessage))
@@ -251,7 +308,19 @@
        (flatten)))
 
 
-(defn response-messages-without-status [response]
+(defn 
+  ^{ :arglists '(
+          "(response-messages-without-status response)" )
+     :doc """
+          Extract a list of all the messages (strings) from the raw OpenAI 'response'.
+          """
+     :see-also '(
+        "openai-java/chat-completion"
+        "openai-java/response-messages-with-status"
+        "openai-java/format-usage") }
+
+  response-messages-without-status [response]
+  
   { :pre [(instance-of? :Response response)] }
   (->> (. response :output)
        (filter #(. % :isMessage))
@@ -260,7 +329,19 @@
        (flatten)))
 
 
-(defn format-usage 
+(defn 
+  ^{ :arglists '(
+          "(format-usage usage)" )
+     :doc """
+          Formats a response's usage info to human readable multiline text.
+          """
+     :see-also '(
+        "openai-java/chat-completion"
+        "openai-java/response-messages-without-status"
+        "openai-java/response-messages-wit-status") }
+  
+  format-usage 
+  
   ([usage]
     (format-usage usage nil nil))
   ([usage indent]
