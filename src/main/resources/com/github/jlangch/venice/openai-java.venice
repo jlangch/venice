@@ -106,8 +106,7 @@
 
   client [& options]
 
-  (when-not (exists-class? :OpenAIClient) 
-    (throw (ex :VncException "The openai-java library is not available!")))
+  (validate-libs-installed)
 
   (let [opts            (apply hash-map options)
         openai-api-key  (or (:openai-api-key opts)  (openai-api-key-from-env))
@@ -233,7 +232,9 @@
 
   chat-completion [client prompt & options]
 
-  { :pre [(instance-of? :OpenAIClient client) (string? prompt)] }
+  { :pre [(validate-libs-installed) 
+          (instance-of? :OpenAIClient client) 
+          (string? prompt)] }
  
   (let [opts       (apply hash-map options)
         model      (get opts :model :GPT_5_4)
@@ -366,7 +367,8 @@
 
   chat-completion-fn [client prompt functions function-mapper & options]
 
-  { :pre [(instance-of? :OpenAIClient client) 
+  { :pre [(validate-libs-installed)
+          (instance-of? :OpenAIClient client) 
           (string? prompt) 
           (and (sequential? functions) (not-empty? functions))
           (fn? function-mapper) ] }
@@ -642,6 +644,17 @@
 ;; -----------------------------------------------------------------------------
 ;; Internal Utils
 ;; -----------------------------------------------------------------------------
+
+(defn- validate-libs-installed []
+  (when-not (exists-class? :com.openai.client.OpenAIClient) 
+    (throw (ex :VncException 
+               (str "The OpenAI Java libraries are not available! \n\n"
+                    "E.g.: Install the libraries in the REPL: \n"
+                    "(do \n"
+                    "  (load-module :openai-java-install) \n"
+                    "  (openai-java-install/install :dir (repl/libs-dir) :silent false)) "))))
+  true)
+
 
 (defn- add-usage-stats [u1 u2]
   (let [r1 (->> u1 :output-tokens-detail :reasoning-tokens)
