@@ -8,6 +8,12 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
 * [Chat Completion](openai2-chat-completion.md)
 
  
+
+> [!NOTE]
+> Requires Venice 1.13.1+
+>
+
+ 
  
  
 
