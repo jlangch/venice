@@ -55,7 +55,7 @@ A prompt
 | :status    | The response status { :completed, :failed, :in_progress, :cancelled, :queued, :incomplete, :unknown }  |
 | :elapsed   | The elapsed milliseconds |
 | :response  | The original OpenAI response, a Java object of type `:com.openai.models.responses.Response`<br>Response helpers:<br>* `response-messages-without-status`<br>* `response-messages-with-status` |
-| :usage     | The usage data. E.g.:<br>{<br>\u00A0\u00A0:input-tokens 11<br>\u00A0\u00A0:output-tokens 8<br>\u00A0\u00A0:output-tokens-detail {<br>\u00A0\u00A0\u00A0\u00A0:reasoning-tokens 0 }<br>\u00A0\u00A0:total-tokens 19<br>} |
+| :usage     | The usage data. E.g.:<br>{<br>\u00A0\u00A0:input-tokens 11<br>  :output-tokens 8<br>  :output-tokens-detail {<br>    :reasoning-tokens 0 }<br>  :total-tokens 19<br>} |
 
 
 ### Examples

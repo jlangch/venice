@@ -179,7 +179,7 @@
  
           ¶**Return value**
 
-          Returns a map with the response data:*
+          Returns a map with the response data:
 
           | [![width: 15%]] | [![width: 85%]] |
           | :status         | The response status { :completed, :failed, \
