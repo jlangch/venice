@@ -1,0 +1,77 @@
+# Functions
+
+ 
+
+This example demonstrates how to execute functions whose inputs 
+are model-generated and deliver the required knowledge to the model 
+for answering questions.
+
+
+Full example:
+
+``` clojure
+(do
+  (load-module :openai-java)
+
+  ;; The local implementation of the weather function
+  (defn get-weather 
+    ([named-args] 
+      (get-weather (get named-args "location") 
+                   (get named-args "unit")))
+
+    ([location unit]
+      (cond 
+        (str/contains? location "Zurich")
+          (json/write-str { :location    location
+                            :unit        unit
+                            :temperature 21
+                            :conditions  "Mostly sunny" })
+        :else
+          (json/write-str { :location location
+                            :error    "No weather data available ~{location}!") } ))))
+
+  ;; Map a function names known to OpenAI to a Venice functions
+  (defn function-mapper [fn-name]
+    (case fn-name
+      "GetWeather"   get-weather 
+      ;; add more mappings here
+      nil))
+
+  (let [client    (openai-java/client)
+        prompt    "What is the weather in Zurich in Celsius?"
+                  ;; Define the function meta data for OpenAI
+        functions [ { :name "GetWeather"
+                      :description "Gets the current weather for a city."
+                      :properties  { 
+                          :location { 
+                              :type "string" 
+                              :description (str "City and country, for example: "
+                                                "Zurich, Switzerland")  
+                          }
+                          :unit { 
+                              :type "string"
+                              :description (str "Temperature unit: celsius or fahrenheit. "
+                                                "Infer this from the user's location when "
+                                                "missing.") 
+                          } 
+                      }
+                      :required [ "location" "unit" ] 
+                    } 
+                  ]
+        result    (openai-java/chat-completion-fn client 
+                                                  prompt 
+                                                  functions        ;; the function's meta data
+                                                  function-mapper  ;; the mapper to function's implementation
+                                                  :model :GPT_5_4)
+        response  (:response result)
+        usage     (:usage result)
+        status    (:status result)
+                  ;; just the first message without status
+        msg       (first (openai-java/response-messages-without-status response))]
+
+    (printf "Elapsed: %dms%n%n" (:elapsed result))
+    (printf "Status: %s%n%n" (name status))
+    (printf "Tokens: %n%s%n" (openai-java/format-usage usage "  "))
+    (printf "Result: %n%s%n" msg)))
+```
+
