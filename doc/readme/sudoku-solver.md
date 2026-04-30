@@ -143,7 +143,7 @@ The Sudoku solver:
 
 ------
 
-The documentation for the functions used in the Sudoku solver can be found in the Venice [cheatsheet](https://cdn.rawgit.com/jlangch/venice/75bbe12/cheatsheet.pdf).
+The documentation for the functions used in the Sudoku solver can be found in the Venice [cheatsheet](https://cdn.rawgit.com/jlangch/venice/895236e/cheatsheet.pdf).
 
 Or use the `doc` function from within the REPL:  `(doc for)`, `(doc let)`, `(doc partition)`, ...
 
