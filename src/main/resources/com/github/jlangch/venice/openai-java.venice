@@ -166,7 +166,7 @@
           To run the request asynchronously just wrap it in a `future` and
           deref it, when the result is required.
 
-          ¶**Parameter request «options»**
+          ¶**Argument «options»**
 
           | [![width: 15%]]     | [![width: 85%]] |
           | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
@@ -267,7 +267,7 @@
           To run the request asynchronously just wrap it in a `future` and
           deref it, when the result is required.
 
-          ¶**Parameter request functions**
+          ¶**Argument «functions»**
 
           ```
           [ { :name "GetWeather"
@@ -289,7 +289,7 @@
           ]
           ```
 
-          ¶**Parameter request «options»**
+          ¶**Argument «options»**
 
           | [![width: 15%]]     | [![width: 85%]] |
           | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
@@ -396,7 +396,6 @@
  
   (let [opts                (apply hash-map options)
         model               (get opts :model :GPT_5_4)
-        reasoning           (create-reasoning (get opts :reasoning-effort))
         start               (current-time-millis)
         tools               (->> (map #(create-function-tool %) functions))
         params-b            (-> (. :ResponseCreateParams :builder)
