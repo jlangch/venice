@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [1.13.2] - 2026-05-xx
+
+### Enhancements
+
+- ...
+
+
+
 ## [1.13.1] - 2026-04-30
 
 ### Enhancements
