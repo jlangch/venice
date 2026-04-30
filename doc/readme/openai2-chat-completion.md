@@ -1,5 +1,6 @@
 # Chat Completion
 
+ 
 
 * [Completion](#completion)
     * [Sending Requests](#sending-requests)
@@ -9,10 +10,14 @@
         * [Example: Text correction](#example-text-correction)
         * [Example: Text data extraction](#example-text-data-extraction)
         * [Example: Chain of Thought Prompting](#example-chain-of-thought-prompting)
-   
-        
+
+ 
+ 
+ 
+
 ## Completion
 
+ 
 
 ### Sending Requests
 
@@ -57,6 +62,7 @@ A prompt
 | :response  | The original OpenAI response, a Java object of type `:com.openai.models.responses.Response`<br>Response helpers:<br>* `response-messages-without-status`<br>* `response-messages-with-status` |
 | :usage     | The usage data. E.g.:<br>{<br> :input-tokens 11<br> :output-tokens 8<br> :output-tokens-detail {<br>  :reasoning-tokens 0 }<br> :total-tokens 19<br>} |
 
+ 
 
 ### Examples
 
@@ -96,6 +102,9 @@ Result:
 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 ```
 
+ 
+
+
 #### Example: Text correction
 
 ``` clojure
@@ -119,6 +128,7 @@ Answer:
 She did not go to the market.
 ```
 
+ 
 
 #### Example: Text data extraction
 
@@ -161,6 +171,8 @@ Answer:
   "club": "Robotics Club"
 }
 ```
+
+ 
 
 #### Example: Chain of Thought Prompting
 

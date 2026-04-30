@@ -3,9 +3,34 @@
 
 The OpenAI client runs out-of-the-box without any dependencies on 3rd party libraries.
 
+* [Installing OpenAI 3rd party libraries](#installing-openai-3rd-party-libraries)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
 * [Chat Completion](openai2-chat-completion.md)
 
+ 
+ 
+ 
+
+### Installing OpenAI 3rd party libraries
+
+*In the REPL run:*
+```
+(do
+  (load-module :openai-java-install)
+  (openai-java-install/install :dir (repl/libs-dir) :silent false))
+```
+
+and restart the REPL
+
+*To any destination dir:*
+```
+(do
+  (load-module :openai-java-install)
+  (openai-java-install/install :dir /data/libs :silent false))
+```
+
+ 
+ 
 
 ### Configuring OpenAI API keys
 
