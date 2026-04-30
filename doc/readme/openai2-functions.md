@@ -7,7 +7,7 @@ are model-generated and deliver the required knowledge to the model
 for answering questions.
 
 
-A full example. It answers questions like *"What is the weather in Zurich in Celsius?"*:
+A full weather example. It answers questions like *"What is the weather in Zurich in Celsius?"*:
 
 ``` clojure
 (do
