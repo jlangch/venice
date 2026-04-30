@@ -389,11 +389,12 @@
                                 :required [ "location" "unit" ] 
                               } 
                             ]
-                  result    (openai-java/chat-completion-fn client 
-                                                            prompt 
-                                                            functions        ;; the function's meta data
-                                                            function-mapper  ;; the mapper to function's implementation
-                                                            :model :GPT_5_4)
+                  result    (openai-java/chat-completion-fn 
+                                  client 
+                                  prompt 
+                                  functions        ;; the function's meta data
+                                  function-mapper  ;; the mapper to function's implementation
+                                  :model :GPT_5_4)
                   response  (:response result)
                   usage     (:usage result)
                   status    (:status result)
