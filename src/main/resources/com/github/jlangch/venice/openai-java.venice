@@ -85,6 +85,16 @@
                                  OpenAI uses the standard base URL \
                                  'https://api.openai.com/v1' if it is not \
                                  explicitely defined. |
+
+          ¶**Install OpenAI Java libraries in the REPL**
+
+          ```
+          (do
+            (load-module :openai-java-install)
+            (openai-java-install/install :dir (repl/libs-dir) :silent false))
+          ```
+
+          Restart the REPL after installing the libraries!
           """ 
      :examples '(
           """
@@ -102,7 +112,7 @@
               (openai-java/close client)))
           """)
      :see-also '(
-        "openai-java/openai-java-version"
+        "openai-java/version"
         "openai-java/close") }
 
   client [& options]
@@ -169,12 +179,13 @@
           ¶**Argument «options»**
 
           | [![width: 15%]]     | [![width: 85%]] |
-          | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
-                                  :GPT_5_4_NANO. ¶\
-                                  Defaults to :GPT_5_4|
+          | :model m            | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, \
+                                  `:GPT_5_4_NANO`. ¶\
+                                  Defaults to `:GPT_5_4`|
           | :reasoning-effort e | The reasoning.effort parameter guides the model \
                                   on how much to think when performing a task. ¶\
-                                  Values: :NONE, :MINIMAL, :LOW, :MEDIUM, :HIGH, :XHIGH ¶\
+                                  Values: `:NONE`, `:MINIMAL`, `:LOW`, `:MEDIUM`, \
+                                  `:HIGH`, `:XHIGH` ¶\
                                   Default is model dependent|
  
           ¶**Return value**
@@ -182,9 +193,9 @@
           Returns a map with the response data:
 
           | [![width: 15%]] | [![width: 85%]] |
-          | :status         | The response status { :completed, :failed, \
-                              :in_progress, :cancelled, :queued, :incomplete, \
-                              :unknown }  |
+          | :status         | The response status { `:completed`, `:failed`, \
+                              `:in_progress`, `:cancelled`, `:queued`, `:incomplete`, \
+                              `:unknown` }  |
           | :elapsed        | The elapsed milliseconds |
           | :response       | The original OpenAI response, a Java object of type \
                               `:com.openai.models.responses.Response` ¶\
@@ -292,18 +303,18 @@
           ¶**Argument «options»**
 
           | [![width: 15%]]     | [![width: 85%]] |
-          | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
-                                  :GPT_5_4_NANO. ¶\
-                                  Defaults to :GPT_5_4|
+          | :model m            | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, \
+                                  `:GPT_5_4_NANO`. ¶\
+                                  Defaults to `:GPT_5_4`|
  
           ¶**Return value**
 
           Returns a map with the response data:
 
           | [![width: 15%]] | [![width: 85%]] |
-          | :status         | The response status { :completed, :failed, \
-                              :in_progress, :cancelled, :queued, :incomplete, \
-                              :unknown }  |
+          | :status         | The response status { `:completed`, `:failed`, \
+                              `:in_progress`, `:cancelled`, `:queued`, `:incomplete`, \
+                              `:unknown` }  |
           | :elapsed        | The elapsed milliseconds  |
           | :response       | The original OpenAI response, a Java object of type \
                               `:com.openai.models.responses.Response` ¶\
@@ -431,7 +442,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(openai-java-version)" )
+          "(version)" )
      :doc """
           Returns the OpenAI Java library version. E.g.: "4.32.0"
           """
@@ -439,12 +450,12 @@
           """
           (do
             (load-module :openai-java)
-            (openai-java/openai-java-version))
+            (openai-java/version))
           """ )
      :see-also '(
         "openai-java/client") }
 
-  openai-java-version []
+  version []
 
   (->> (java-package-version :com.openai.client.OpenAIClient)
        (:implementation-version)))
@@ -510,7 +521,7 @@
      :see-also '(
         "openai-java/chat-completion"
         "openai-java/response-messages-without-status"
-        "openai-java/response-messages-wit-status") }
+        "openai-java/response-messages-with-status") }
   
   format-usage 
   

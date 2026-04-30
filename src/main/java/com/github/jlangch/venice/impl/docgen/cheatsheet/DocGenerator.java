@@ -77,7 +77,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMimetypesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMultipartSection;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleOpenAiSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleOpenJavaAiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrBillSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrCodeSection;
@@ -460,7 +460,7 @@ public class DocGenerator {
         content.add(web);
 
         final DocSection llm = new DocSection("LLM", "llm");
-        llm.addSection(new DocSection("OpenAI", "modules.openai"));
+        llm.addSection(new DocSection("OpenAI", "modules.openai-java"));
         llm.addSection(new DocSection("JTokkit", "modules.jtokkit"));
         content.add(llm);
 
@@ -627,7 +627,8 @@ public class DocGenerator {
                 new ModuleMultipartSection(diBuilder).section(),
                 new ModuleSseSection(diBuilder).section(),
                 new ModuleHttpClientJ8Section(diBuilder).section(),
-                new ModuleOpenAiSection(diBuilder).section(),
+                new ModuleOpenJavaAiSection(diBuilder).section(),
+                // new ModuleOpenAiSection(diBuilder).section(),
                 new ModuleJTokkitSection(diBuilder).section(),
                 new ModuleImagesSection(diBuilder).section(),
                 new ModuleAvironQueueSection(diBuilder).section(),
