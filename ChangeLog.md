@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.13.1] - 2026-04-xx
+## [1.13.1] - 2026-04-30
 
 ### Enhancements
 
@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
   *markdown* to pure *ascii* or *ansi* text
   
 - Added the function `regex/pattern?`
+
+- Added module *:openai-java*
 
 - Added module *:swiss-cities* that provides geo location and zip code data
   for swiss cities. It uses the public LV95 data from the official Swiss Topo 
