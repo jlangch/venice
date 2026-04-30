@@ -272,14 +272,20 @@
           ```
           [ { :name "GetWeather"
               :description "Gets the current weather for a city."
-              :properties  { :location { :type        "string" 
-                                         :description (str "City and country, for example: "
-                                                           "Zurich, Switzerland")  }
-                             :unit     { :type        "string"
-                                         :description (str "Temperature unit: celsius or fahrenheit. "
-                                                           "Infer this from the user's location when "
-                                                           "missing.") }
-              :required    [ "location" "unit" ] }
+              :properties  { 
+                  :location { 
+                      :type "string" 
+                      :description (str "City and country, for example: "
+                                        "Zurich, Switzerland")
+                  }
+                  :unit {
+                      :type "string"
+                      :description (str "Temperature unit: celsius or fahrenheit. "
+                                        "Infer this from the user's location when "
+                                        "missing.") 
+                  }
+              :required    [ "location" "unit" ] 
+            }
           ]
           ```
 
@@ -343,14 +349,22 @@
                   prompt    "What is the weather in Zurich in Celsius?"
                   functions [ { :name "GetWeather"
                                 :description "Gets the current weather for a city."
-                                :properties  { :location { :type        "string" 
-                                                           :description (str "City and country, for example: "
-                                                                             "Zurich, Switzerland")  }
-                                               :unit     { :type        "string"
-                                                           :description (str "Temperature unit: celsius or fahrenheit. "
-                                                                             "Infer this from the user's location when "
-                                                                             "missing.") } }
-                                :required    [ "location" "unit" ] } ]
+                                :properties  { 
+                                    :location { 
+                                        :type "string" 
+                                        :description (str "City and country, for example: "
+                                                           "Zurich, Switzerland")  
+                                    }
+                                    :unit { 
+                                        :type "string"
+                                        :description (str "Temperature unit: celsius or fahrenheit. "
+                                                          "Infer this from the user's location when "
+                                                          "missing.") 
+                                    } 
+                                }
+                                :required [ "location" "unit" ] 
+                              } 
+                            ]
                   result    (openai-java/chat-completion-fn client prompt 
                                                             functions function-mapper
                                                             :model :GPT_5_4)
