@@ -67,7 +67,7 @@
           has a connection pool and thread pools, which are more efficient to 
           share between requests.
 
-          ¶*Parameter «options»*
+          ¶**Parameter «options»**
 
           | [![width: 15%]]    | [![width: 85%]] |
           | :openai-api-key k  | An optional OpenAI API Key. As fallback the key \
@@ -102,6 +102,7 @@
               (openai-java/close client)))
           """)
      :see-also '(
+        "openai-java/openai-java-version"
         "openai-java/close") }
 
   client [& options]
@@ -165,7 +166,7 @@
           To run the request asynchronously just wrap it in a `future` and
           deref it, when the result is required.
 
-          ¶*Parameter request «options»*
+          ¶**Parameter request «options»**
 
           | [![width: 15%]]     | [![width: 85%]] |
           | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
@@ -176,7 +177,7 @@
                                   Values: :NONE, :MINIMAL, :LOW, :MEDIUM, :HIGH, :XHIGH ¶\
                                   Default is model dependent|
  
-          ¶*Return value*
+          ¶**Return value**
 
           Returns a map with the response data:*
 
@@ -185,8 +186,11 @@
                               :in_progress, :cancelled, :queued, :incomplete, \
                               :unknown }  |
           | :elapsed        | The elapsed milliseconds |
-          | :response       | The original response, a Java object of type \
-                              `:com.openai.models.responses.Response` |
+          | :response       | The original OpenAI response, a Java object of type \
+                              `:com.openai.models.responses.Response` ¶\
+                              Response helpers: ¶\
+                              * `response-messages-without-status` ¶\
+                              * `response-messages-with-status` |
           | :usage          | The usage data. E.g.:¶\
                               { ¶\
                               \u00A0\u00A0:input-tokens 11 ¶\
@@ -263,7 +267,7 @@
           To run the request asynchronously just wrap it in a `future` and
           deref it, when the result is required.
 
-          ¶*Parameter request functions*
+          ¶**Parameter request functions**
 
           ```
           [ { :name "GetWeather"
@@ -279,24 +283,27 @@
           ]
           ```
 
-          ¶*Parameter request «options»*
+          ¶**Parameter request «options»**
 
           | [![width: 15%]]     | [![width: 85%]] |
           | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
                                   :GPT_5_4_NANO. ¶\
                                   Defaults to :GPT_5_4|
  
-          ¶*Return value*
+          ¶**Return value**
 
-          Returns a map with the response data:*
+          Returns a map with the response data:
 
           | [![width: 15%]] | [![width: 85%]] |
           | :status         | The response status { :completed, :failed, \
                               :in_progress, :cancelled, :queued, :incomplete, \
                               :unknown }  |
           | :elapsed        | The elapsed milliseconds  |
-          | :response       | The original response, a Java object of type \
-                              `:com.openai.models.responses.Response` |
+          | :response       | The original OpenAI response, a Java object of type \
+                              `:com.openai.models.responses.Response` ¶\
+                              Response helpers: ¶\
+                              * `response-messages-without-status` ¶\
+                              * `response-messages-with-status` |
           | :usage          | The usage data. E.g.:¶\
                               { ¶\
                               \u00A0\u00A0:input-tokens 11 ¶\
@@ -411,53 +418,43 @@
 
 (defn 
   ^{ :arglists '(
-          "(client & options)" )
+          "(openai-java-version)" )
      :doc """
-          Creates an OpenAI client.
-
-          **Note:**
-
-          Don’t create more than one client in the same application. Each client 
-          has a connection pool and thread pools, which are more efficient to 
-          share between requests.
-
-          ¶*Parameter «options»*
-
-          | [![width: 15%]]    | [![width: 85%]] |
-          | :openai-api-key k  | An optional OpenAI API Key. As fallback the key \
-                                 is read from the environment variable \
-                                 "OPENAI_API_KEY". |
-          | :openai-org-id k   | An optional OpenAI organisation ID. As fallback \
-                                 the id is read from the environment variable \
-                                 "OPENAI_ORG_ID". |
-          | :openai-proj-id k  | An optional OpenAI project ID. As fallback the id \
-                                 is read from the environment variable  \
-                                 "OPENAI_PROJECT_ID". |
-          | :openai-base-url u | An optional OpenAI baseURL. As fallback the url \
-                                 is read from the environment variable  \
-                                 "OPENAI_BASE_URL". ¶\
-                                 OpenAI uses the standard base URL \
-                                 'https://api.openai.com/v1' if it is not \
-                                 explicitely defined. |
-          """ 
+          Returns the OpenAI Java library version. E.g.: "4.32.0"
+          """
      :examples '(
           """
           (do
             (load-module :openai-java)
-            (let [client (openai-java/client)]
-              ;; ...
-              (openai-java/close client)))
-          """,
+            (openai-java/openai-java-version))
+          """ )
+     :see-also '(
+        "openai-java/client") }
+
+  openai-java-version []
+
+  (->> (java-package-version :com.openai.client.OpenAIClient)
+       (:implementation-version)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(response-messages-with-status response)" )
+     :doc """
+          Extract a list of all the messages (strings) from the raw OpenAI 'response'.
+
+          Returns a list of maps:
+
+          ```
+          {
+             :msg "the message"
+             :status :completed
+          }
+          ```
           """
-          (do
-            (load-module :openai-java)
-            (let [client (openai-java/client :openai-api-key "sk-1234")]
-              ;; ...
-              (openai-java/close client)))
-          """)
      :see-also '(
         "openai-java/chat-completion"
-        "openai-java/response-messages-without-status"
+        "openai-java/response-messages-with-status"
         "openai-java/format-usage") }
 
   response-messages-with-status [response]
@@ -664,6 +661,7 @@
       :output-tokens (+ (:output-tokens u1) (:output-tokens u2))
       :output-tokens-detail { :reasoning-tokens (+ r1 r2) }
       :total-tokens  (+ (:total-tokens u1) (:total-tokens u2)))))
+
 
 (defn- jsonval [v]
   (. :JsonValue :from v))
