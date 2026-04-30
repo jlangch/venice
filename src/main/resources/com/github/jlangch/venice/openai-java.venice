@@ -271,14 +271,14 @@
 
 (defn 
   ^{ :arglists '(
-          "(chat-completion-fn client prompt functions & options)" )
+          "(chat-completion-fn client prompt function-defs & options)" )
      :doc """
           Runs a chat completion.
 
           To run the request asynchronously just wrap it in a `future` and
           deref it, when the result is required.
 
-          ¶**Argument «functions»**
+          ¶**Argument «function-defs»**
 
           ```
           [ { :name "GetWeather"
@@ -414,18 +414,20 @@
           "openai-java/response-messages-with-status"
           "openai-java/format-usage") }
 
-  chat-completion-fn [client prompt functions function-mapper & options]
+  chat-completion-fn [client prompt function-defs function-mapper & options]
 
   { :pre [(validate-libs-installed)
           (instance-of? :OpenAIClient client) 
           (string? prompt) 
-          (and (sequential? functions) (not-empty? functions))
+          (and (sequential? function-defs) (not-empty? function-defs))
           (fn? function-mapper) ] }
  
   (let [opts                (apply hash-map options)
         model               (get opts :model :GPT_5_4)
         start               (current-time-millis)
-        tools               (->> (map #(create-function-tool %) functions))
+        tools               (->> (map #(create-function-tool %) function-defs))
+
+                            ;; initial chat completion call
         params-b            (-> (. :ResponseCreateParams :builder)
                                 (. :input prompt)
                                 (. :model (. :ChatModel model)))
@@ -434,20 +436,26 @@
         response            (-> (. client :responses)
                                 (. :create params))
         usage               (response-usage-stats response)
-        follow-up-input     (create-function-follow-up-inputs response function-mapper)
+
+                            ;; call functions
+        fn-calls            (list-function-calls response)
+        follow-up-input     (exec-functions fn-calls function-mapper)
+
         _                   (if (empty? follow-up-input)
                               (throw (ex :VncException "No function call requested.")))
-        params-follow-up-b  (-> (. :ResponseCreateParams :builder)
+
+                            ;; follow-up chat completion call
+        params-follow-up    (-> (. :ResponseCreateParams :builder)
                                 (. :model (. :ChatModel model))
-                                (. :inputOfResponse follow-up-input))  
-        params-follow-up    (. params-follow-up-b :build)
+                                (. :inputOfResponse follow-up-input)
+                                (. :build))  
         response-follow-up  (-> (. client :responses)
                                 (. :create params-follow-up))
-        elapsed             (- (current-time-millis) start)
         follow-up-usage     (response-usage-stats response-follow-up)
         total-usage         (add-usage-stats usage follow-up-usage)]
+        
     (ordered-map  :status    (response-status response-follow-up)
-                  :elapsed   elapsed
+                  :elapsed   (- (current-time-millis) start)
                   :usage     total-usage
                   :response  response-follow-up)))
 
@@ -646,16 +654,16 @@
     (. builder :putAdditionalProperty "additionalProperties" (jsonval false))
     (. builder :build)))
 
-(defn- create-function-follow-up-inputs [response function-mapper]
-  { :pre [(instance-of? :Response response)] }
-  (->> (. response :output)
-       (filter #(. % :isFunctionCall))
-       (map #(. % :asFunctionCall))
-       (map #(create-function-follow-up-input % function-mapper))
-       (flatten)))
+;; exec all function calls, returns a list of ResponseInputItem 
+(defn- exec-functions [fn-calls function-mapper]
+  { :pre [(sequential? fn-calls) (fn? function-mapper)] }
+  (->> (map #(exec-function % function-mapper) fn-calls)
+       (flatten)))       
 
-(defn- create-function-follow-up-input [fn-call function-mapper]
-  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)] }
+;; exec a function, returns a list of ResponseInputItem 
+(defn- exec-function [fn-call function-mapper]
+  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)
+          (fn? function-mapper)] }
   (let [result  (call-function fn-call function-mapper)
         call-id (. fn-call :callId)]
     [ (. :ResponseInputItem :ofFunctionCall fn-call)
@@ -665,14 +673,24 @@
                                 (. :outputAsJson result)
                                 (. :build))) ]))
 
+;; return a list of the function calls (:ResponseFunctionToolCall) in a response
+(defn- list-function-calls [response]
+  { :pre [(instance-of? :Response response)] }
+  (->> (. response :output)
+       (filter #(. % :isFunctionCall))
+       (map #(. % :asFunctionCall))))
+
+;; call a function
 (defn- call-function [fn-call function-mapper]
-  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)] }
+  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)
+          (fn? function-mapper)] }
   (let [fn-name (. fn-call :name)
         fn-args (. fn-call :arguments)
         func    (function-mapper fn-name)]
     (when (nil? func) 
       (throw (ex :VncException "Function ~{fn-name} not available!")))
 
+    ;; (println "FN NAME:   " fn-name)
     ;; (println "FN ARGS:   " (json/read-str fn-args))
     ;; (println "FN RESULT: " (func (json/read-str fn-args)))
     (func (json/read-str fn-args))))
