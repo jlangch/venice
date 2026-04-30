@@ -1,7 +1,6 @@
 # OpenAI Client
 
  
- 
 
 * [Installing OpenAI 3rd party libraries](#installing-openai-3rd-party-libraries)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
@@ -28,7 +27,9 @@
 
 and restart the REPL
 
-*To any destination dir:*
+ 
+
+*or install ot to any other destination dir:*
 ```
 (do
   (load-module :openai-java-install)
@@ -54,6 +55,7 @@ the OpenAI client:
     (openai-java/close client)))
 ```
 
+ 
 
 **Option 2**
 
@@ -73,6 +75,7 @@ Create a client that reads the OpenAI API key from the env var:
     (openai-java/close client)))
 ```
 
+ 
 
 **Option 3**
 
@@ -92,6 +95,8 @@ Windows:
 # OpenAI api key
 set OPENAI_API_KEY=sk-123456789
 ```
+
+ 
 
 Create a client that reads the OpenAI API key from the env var:
 
