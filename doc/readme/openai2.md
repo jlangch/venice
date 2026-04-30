@@ -1,7 +1,7 @@
 # OpenAI Client
 
-
-The OpenAI client runs out-of-the-box without any dependencies on 3rd party libraries.
+ 
+ 
 
 * [Installing OpenAI 3rd party libraries](#installing-openai-3rd-party-libraries)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
@@ -10,7 +10,7 @@ The OpenAI client runs out-of-the-box without any dependencies on 3rd party libr
  
 
 > [!NOTE]
-> Requires Venice 1.13.1+
+> Venice' OpenAi module requires Venice 1.13.1+
 >
 
  
