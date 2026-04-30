@@ -3,7 +3,7 @@
 
 <br/>
 
-* [OpenAI Client](openai.md)
+* [OpenAI Client](openai2.md)
 
 * [LangChain4J](langchain4j.md)
 
