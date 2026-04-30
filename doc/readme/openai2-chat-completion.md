@@ -41,8 +41,8 @@ A prompt
 
 | Option              | Description |
 | :---                | :---        |
-| :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, :GPT_5_4_NANO.<br>Defaults to :GPT_5_4|
-| :reasoning-effort e | The reasoning.effort parameter guides the model on how much to think when performing a task.<br>Values: :NONE, :MINIMAL, :LOW, :MEDIUM, :HIGH, :XHIGH<br>Default is model dependent|
+| :model m            | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, `:GPT_5_4_NANO`.<br>Defaults to `:GPT_5_4`|
+| :reasoning-effort e | The reasoning.effort parameter guides the model on how much to think when performing a task.<br>Values: `:NONE`, `:MINIMAL`, `:LOW`, `:MEDIUM`, `:HIGH`, `:XHIGH`<br>Default is model dependent|
 
 
  
