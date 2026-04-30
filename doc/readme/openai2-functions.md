@@ -14,6 +14,9 @@ Full example:
   (load-module :openai-java)
 
   ;; The local implementation of the weather function
+  ;; The 1-arity variant ([named-args] ..) is called by OpenAI, unpack the arguments 
+  ;; 'location' and 'unit' and dispatches to the implementation variant 
+  ;; ([location unit] ...) 
   (defn get-weather 
     ([named-args] 
       (get-weather (get named-args "location") 
@@ -30,7 +33,7 @@ Full example:
           (json/write-str { :location location
                             :error    "No weather data available ~{location}!") } ))))
 
-  ;; Map a function names known to OpenAI to a Venice functions
+  ;; Maps a function names known to OpenAI to Venice functions
   (defn function-mapper [fn-name]
     (case fn-name
       "GetWeather"   get-weather 
