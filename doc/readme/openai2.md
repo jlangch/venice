@@ -9,7 +9,7 @@
  
 
 > [!NOTE]
-> Venice' OpenAi module requires Venice 1.13.1+
+> Venice' OpenAI module requires Venice 1.13.1+
 >
 
  
@@ -62,7 +62,9 @@ the OpenAI client:
 Define an environment variable at the OS or Shell level:
 
 ```
-OPENAI_API_KEY=sk-123456789
+export OPENAI_API_KEY=sk-123456789
+# export OPENAI_ORG_ID=
+# export OPENAI_PROJECT_ID=
 ```
 
 Create a client that reads the OpenAI API key from the env var:
@@ -86,14 +88,18 @@ Linux/Mac OS:
 ```
 # OpenAI api key
 export OPENAI_API_KEY=sk-123456789
+export OPENAI_ORG_ID=
+export OPENAI_PROJECT_ID=
 ```
 
 
 Windows:
 
 ```
-# OpenAI api key
+REM OpenAI api key
 set OPENAI_API_KEY=sk-123456789
+set OPENAI_ORG_ID=
+set OPENAI_PROJECT_ID=
 ```
 
  
