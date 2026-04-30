@@ -13,10 +13,16 @@ A full example. It answers questions like *"What is the weather in Zurich in Cel
 (do
   (load-module :openai-java)
 
+  (defn celsius-to-fahrenheit [c]
+    (-> (double c) (* 9) (/ 5) (+ 32) (long)))
+
+  (defn degrees [t unit]
+    (if (str/equals-ignore-case? unit "celsius") t (celsius-to-fahrenheit t)))
+
   ;; The local implementation of the weather function
-  ;; The 1-arity variant ([named-args] ..) is called by OpenAI, unpack the arguments 
-  ;; 'location' and 'unit' and dispatches to the implementation variant 
-  ;; ([location unit] ...) 
+  ;; The 1-arity variant ([named-args] ..) is called by OpenAI, unpacks the 
+  ;; arguments 'location' and 'unit' and dispatches to the implementation  
+  ;; variant ([location unit] ...) 
   (defn get-weather 
     ([named-args] 
       (get-weather (get named-args "location") 
@@ -27,11 +33,11 @@ A full example. It answers questions like *"What is the weather in Zurich in Cel
         (str/contains? location "Zurich")
           (json/write-str { :location    location
                             :unit        unit
-                            :temperature 21
+                            :temperature (degrees 21 unit)
                             :conditions  "Mostly sunny" })
         :else
           (json/write-str { :location location
-                            :error    "No weather data available ~{location}!") } ))))
+                            :error    "No weather data available ~{location}!" } ))))
 
   ;; Maps a function names known to OpenAI to Venice functions
   (defn function-mapper [fn-name]
