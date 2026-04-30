@@ -38,6 +38,8 @@
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
 (import :com.openai.core.JsonValue)
 (import :com.openai.models.ChatModel)
+(import :com.openai.models.Reasoning)
+(import :com.openai.models.ReasoningEffort)
 (import :com.openai.models.responses.Response)
 (import :com.openai.models.responses.ResponseCreateParams)
 (import :com.openai.models.responses.ResponseFunctionToolCall)
@@ -166,10 +168,14 @@
 
           ¶*Parameter request «options»*
 
-          | [![width: 15%]]    | [![width: 85%]] |
-          | :model m           | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
-                                 :GPT_5_4_NANO. ¶\
-                                 Defaults to :GPT_5_4|
+          | [![width: 15%]]     | [![width: 85%]] |
+          | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
+                                  :GPT_5_4_NANO. ¶\
+                                  Defaults to :GPT_5_4|
+          | :reasoning-effort e | The reasoning.effort parameter guides the model \
+                                  on how much to think when performing a task. ¶\
+                                  Values: :NONE, :MINIMAL, :LOW, :MEDIUM, :HIGH, :XHIGH ¶\
+                                  Default is model dependent|
  
           ¶*Return value*
 
@@ -212,9 +218,10 @@
                   status   (:status result)
                            ;; just the first message without status
                   msg      (first (openai-java/response-messages-without-status response))]
-              (printf "Status: %s%n%n" status)
-              (printf "Tokens: %n%s%n" (openai-java/format-usage usage "  "))
-              (printf "Result: %n%s%n" msg)))
+              (printf "Elapsed: %dms%n%n" (:elapsed result))
+              (printf "Status:  %s%n%n" (name status))
+              (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
+              (printf "Result:  %n%s%n" msg)))
           """)
      :see-also '(
           "openai-java/chat-completion-fn"
@@ -228,16 +235,18 @@
 
   { :pre [(instance-of? :OpenAIClient client) (string? prompt)] }
  
-  (let [opts      (apply hash-map options)
-        model     (get opts :model :GPT_5_4)
-        start     (current-time-millis)
-        params    (-> (. :ResponseCreateParams :builder)
-                      (. :input prompt)
-                      (. :model (. :ChatModel model))
-                      (. :build))
-        response  (-> (. client :responses)
-                      (. :create params))
-        elapsed   (- (current-time-millis) start)]
+  (let [opts       (apply hash-map options)
+        model      (get opts :model :GPT_5_4)
+        reasoning  (create-reasoning (get opts :reasoning-effort))
+        start      (current-time-millis)
+        params-b   (-> (. :ResponseCreateParams :builder)
+                       (. :input prompt)
+                       (. :model (. :ChatModel model)))
+        _          (when reasoning (. params-b :reasoning reasoning))
+        params     (. params-b :build)
+        response   (-> (. client :responses)
+                       (. :create params))
+        elapsed    (- (current-time-millis) start)]
     (ordered-map  :status    (response-status response)
                   :elapsed   elapsed
                   :usage     (response-usage-stats response)
@@ -271,10 +280,10 @@
 
           ¶*Parameter request «options»*
 
-          | [![width: 15%]]    | [![width: 85%]] |
-          | :model m           | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
-                                 :GPT_5_4_NANO. ¶\
-                                 Defaults to :GPT_5_4|
+          | [![width: 15%]]     | [![width: 85%]] |
+          | :model m            | An OpenAI model. E.g.: :GPT_5_4, :GPT_5_4_MINI, \
+                                  :GPT_5_4_NANO. ¶\
+                                  Defaults to :GPT_5_4|
  
           ¶*Return value*
 
@@ -342,7 +351,8 @@
                   status    (:status result)
                             ;; just the first message without status
                   msg       (first (openai-java/response-messages-without-status response))]
-              (printf "Status: %s%n%n" status)
+              (printf "Elapsed: %dms%n%n" (:elapsed result))
+              (printf "Status: %s%n%n" (name status))
               (printf "Tokens: %n%s%n" (openai-java/format-usage usage "  "))
               (printf "Result: %n%s%n" msg)))
           """)
@@ -363,24 +373,24 @@
  
   (let [opts                (apply hash-map options)
         model               (get opts :model :GPT_5_4)
+        reasoning           (create-reasoning (get opts :reasoning-effort))
         start               (current-time-millis)
         tools               (->> (map #(create-function-tool %) functions))
-        params-builder      (-> (. :ResponseCreateParams :builder)
+        params-b            (-> (. :ResponseCreateParams :builder)
                                 (. :input prompt)
                                 (. :model (. :ChatModel model)))
-        _                   (doseq [t tools] (. params-builder :addTool t))
-        params              (. params-builder :build)
+        _                   (doseq [t tools] (. params-b :addTool t))
+        params              (. params-b :build)
         response            (-> (. client :responses)
                                 (. :create params))
         usage               (response-usage-stats response)
-;;      _                   (println "RESPONSE: " (response-output-fn-calls response))
         follow-up-input     (create-function-follow-up-inputs response function-mapper)
         _                   (if (empty? follow-up-input)
                               (throw (ex :VncException "No function call requested.")))
-        params-follow-up    (-> (. :ResponseCreateParams :builder)
+        params-follow-up-b  (-> (. :ResponseCreateParams :builder)
                                 (. :model (. :ChatModel model))
-                                (. :inputOfResponse follow-up-input)
-                                (. :build))  
+                                (. :inputOfResponse follow-up-input))  
+        params-follow-up    (. params-follow-up-b :build)
         response-follow-up  (-> (. client :responses)
                                 (. :create params-follow-up))
         elapsed             (- (current-time-millis) start)
@@ -517,6 +527,15 @@
 ;; Internal Response Utils
 ;; -----------------------------------------------------------------------------
 
+(defn- create-reasoning [effort]  ;; :NONE, :MINIMAL, :LOW, :MEDIUM, :HIGH, :XHIGH
+  { :pre [(or (nil? effort) (keyword? effort))] }
+  (if (nil? effort)
+    nil
+    (-> (. :Reasoning :builder)
+        (. :effort (. :ReasoningEffort effort))
+        (. :build))))
+
+
 (defn- response-usage-stats [response]
   { :pre [(instance-of? :Response response)] }
   (if-let [usage (java-unwrap-optional (. response :usage))]
@@ -527,6 +546,7 @@
         :output-tokens-detail { :reasoning-tokens (. output-details :reasoningTokens) }
         :total-tokens  (. usage :totalTokens)))
     {}))
+
 
 (defn- response-status [response]
   { :pre [(instance-of? :Response response)] }
@@ -624,8 +644,6 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- add-usage-stats [u1 u2]
-  (println u1)
-  (println u2)
   (let [r1 (->> u1 :output-tokens-detail :reasoning-tokens)
         r2 (->> u2 :output-tokens-detail :reasoning-tokens)]
     (ordered-map 
