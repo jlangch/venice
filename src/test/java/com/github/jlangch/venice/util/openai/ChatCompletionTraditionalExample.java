@@ -43,13 +43,16 @@ public class ChatCompletionTraditionalExample {
 
         final ChatCompletionTraditionalResponse response = request.execute();
 
+        print(response);
+    }
+
+
+    private static void print(final ChatCompletionTraditionalResponse response) {
         System.out.println("USAGE: " + response.getUsage());
         System.out.println();
 
         final List<String> messages = response.getMessages();
-
         System.out.println(messages.get(0));
-
         for(int ii=1; ii<messages.size(); ii++) {
             System.out.println("\n--------------------------------------------------\n");
             System.out.println(messages.get(ii));
