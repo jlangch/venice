@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.openai;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall;
@@ -125,9 +126,20 @@ public class ChatCompletionTraditionalResponse {
 
     private String callFunction(ChatCompletionMessageFunctionToolCall.Function function) {
         final String fnName = function.name();
-        final String argumentsJson = function.arguments();
+        final String fnArgsJson = function.arguments();
 
-        return functionDispatcher.call(fnName, argumentsJson);
+        final String result = functionDispatcher.call(fnName, fnArgsJson);
+
+        if (request.isDebug()) {
+            System.out.println();
+            System.out.println("FUNCTION CALL");
+            System.out.println("  NAME:   " + fnName);
+            System.out.println("  ARGS:   " + StringUtil.truncate(fnArgsJson, 100, "..."));
+            System.out.println("  RESULT: " + StringUtil.truncate(result, 100, "..."));
+            System.out.println();
+        }
+
+        return result;
     }
 
 

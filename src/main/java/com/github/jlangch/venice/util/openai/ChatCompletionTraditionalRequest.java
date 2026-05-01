@@ -156,6 +156,11 @@ public class ChatCompletionTraditionalRequest {
         return this;
     }
 
+    public ChatCompletionTraditionalRequest debug(final boolean on) {
+        this.debug = on;
+        return this;
+    }
+
     public OpenAIClient getClient() {
         return client;
     }
@@ -170,6 +175,10 @@ public class ChatCompletionTraditionalRequest {
 
     public ChatCompletionCreateParams.Builder getParamsBuilder() {
         return paramsBuilder;
+    }
+
+    public boolean isDebug() {
+        return debug;
     }
 
     public ChatCompletionTraditionalResponse execute() {
@@ -194,7 +203,10 @@ public class ChatCompletionTraditionalRequest {
         }
     }
 
+
     public static enum MessageType {User, Assistant, Developer, System};
+
+    private volatile boolean debug;
 
     private final OpenAIClient client;
     private final ChatModel model;

@@ -46,6 +46,7 @@ public class ChatCompletionTraditionalFunctionExample {
                 ChatCompletionTraditionalRequest
                     .of(client, ChatModel.GPT_5_4, new FunctionDispatcher())
                     .maxCompletionTokens(2048)
+                    .debug(true)
                     .addFunction(
                         "get-sdk-quality",
                         "Gets the quality of the given SDK.",
@@ -88,11 +89,6 @@ public class ChatCompletionTraditionalFunctionExample {
     private static class FunctionDispatcher implements IFunctionDispatcher {
         @Override
         public String call(String fnName, String fnArgsJson) {
-            System.out.println("FUNCTION CALL");
-            System.out.println("  NAME: " + fnName);
-            System.out.println("  ARGS: " + fnArgsJson);
-            System.out.println();
-
             if ("get-sdk-quality".equals(fnName)) {
                 JsonValue arguments;
                 try {
