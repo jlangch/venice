@@ -22,8 +22,6 @@ All notable changes to this project will be documented in this file.
   
 - Added the function `regex/pattern?`
 
-- Added module *:openai-java*
-
 - Added module *:swiss-cities* that provides geo location and zip code data
   for swiss cities. It uses the public LV95 data from the official Swiss Topo 
   dataset.
