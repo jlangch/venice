@@ -143,20 +143,20 @@ place we want for this task is `~/Library/LaunchAgents`, and the file is pretty 
 <!-- ~/Library/LaunchAgents/setenv.OPENAI.plist -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-  <plist version="1.0">
+<plist version="1.0">
   <dict>
-  <key>Label</key>
-  <string>setenv.OPENAI_API_KEY</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/bin/launchctl</string>
-    <string>setenv</string>
-    <string>OPENAI_API_KEY</string>
-    <string>sk-12345678</string>
-  </array>
-  <key>RunAtLoad</key>
-  <true/>
-</dict>
+    <key>Label</key>
+    <string>setenv.OPENAI_API_KEY</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/bin/launchctl</string>
+      <string>setenv</string>
+      <string>OPENAI_API_KEY</string>
+      <string>sk-12345678</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+  </dict>
 </plist>
 ```
 
