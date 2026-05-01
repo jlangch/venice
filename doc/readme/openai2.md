@@ -60,13 +60,17 @@ the OpenAI client:
 
 **Option 2**
 
-Define an environment variable at the OS or Shell level:
+Define an environment variable at the OS Shell level:
+
+On MacOS update the profile `~/.zprofile`
 
 ```
 export OPENAI_API_KEY=sk-123456789
 # export OPENAI_ORG_ID=
 # export OPENAI_PROJECT_ID=
 ```
+
+ 
 
 Create a client that reads the OpenAI API key from the env var:
 
