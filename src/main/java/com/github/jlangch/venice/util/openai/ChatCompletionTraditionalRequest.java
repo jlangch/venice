@@ -22,22 +22,29 @@
 package com.github.jlangch.venice.util.openai;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.openai.client.OpenAIClient;
+import com.openai.core.JsonValue;
 import com.openai.models.ChatModel;
+import com.openai.models.FunctionDefinition;
+import com.openai.models.FunctionParameters;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionFunctionTool;
 
 
 public class ChatCompletionTraditionalRequest {
 
     private ChatCompletionTraditionalRequest(
             final OpenAIClient client,
-            final ChatModel model
+            final ChatModel model,
+            final IFunctionDispatcher functionDispatcher
     ) {
         this.client = client;
         this.model = model;
+        this.functionDispatcher = functionDispatcher;
         this.paramsBuilder = ChatCompletionCreateParams
                                 .builder()
                                 .model(model);
@@ -47,10 +54,23 @@ public class ChatCompletionTraditionalRequest {
             final OpenAIClient client,
             final ChatModel model
     ) {
+        return ChatCompletionTraditionalRequest.of(client, model, null);
+    }
+
+    public static ChatCompletionTraditionalRequest of (
+            final OpenAIClient client,
+            final ChatModel model,
+            final IFunctionDispatcher functionDispatcher
+    ) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(model);
 
-        return new ChatCompletionTraditionalRequest(client, model);
+        return new ChatCompletionTraditionalRequest(
+                        client,
+                        model,
+                        functionDispatcher == null
+                            ?  new DefaultFunctionDispatcher()
+                            : functionDispatcher);
     }
 
     public ChatCompletionTraditionalRequest maxCompletionTokens(final long maxCompletionTokens) {
@@ -106,6 +126,36 @@ public class ChatCompletionTraditionalRequest {
         return this;
     }
 
+    public ChatCompletionTraditionalRequest addFunction(
+            final String name,
+            final String description,
+            final Map<String,Map<String,String>> properties,
+            final List<String> requiredProperties
+    ) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(description);
+        Objects.requireNonNull(properties);
+        Objects.requireNonNull(requiredProperties);
+
+        final FunctionParameters.Builder paramBuilder = FunctionParameters.builder();
+        paramBuilder.putAdditionalProperty("type", JsonValue.from("object"));
+        paramBuilder.putAdditionalProperty("properties", JsonValue.from(properties));
+        paramBuilder.putAdditionalProperty("required", JsonValue.from(requiredProperties));
+        paramBuilder.putAdditionalProperty("additionalProperties", JsonValue.from(false));
+
+        final FunctionDefinition.Builder fnBuilder = FunctionDefinition.builder();
+        fnBuilder.name(name);
+        fnBuilder.description(description);
+        fnBuilder.parameters(paramBuilder.build());
+
+        paramsBuilder.addTool(ChatCompletionFunctionTool
+                                .builder()
+                                .function(fnBuilder.build())
+                                .build());
+
+        return this;
+    }
+
     public OpenAIClient getClient() {
         return client;
     }
@@ -114,22 +164,40 @@ public class ChatCompletionTraditionalRequest {
         return model;
     }
 
+    public IFunctionDispatcher getIFunctionDispatcher() {
+        return functionDispatcher;
+    }
+
     public ChatCompletionCreateParams.Builder getParamsBuilder() {
         return paramsBuilder;
     }
 
     public ChatCompletionTraditionalResponse execute() {
-       final ChatCompletion completion = client.chat()
+        final ChatCompletion completion = client.chat()
                                                 .completions()
                                                 .create(paramsBuilder.build());
 
-        return new ChatCompletionTraditionalResponse(this, completion);
+        final ChatCompletionTraditionalResponse response =
+                    new ChatCompletionTraditionalResponse(this, completion);
+
+        if (response.hasToolCalls()) {
+            response.processToolCalls();
+        }
+
+        return response;
     }
 
+    private static class DefaultFunctionDispatcher implements IFunctionDispatcher {
+        @Override
+        public String call(String fnName, String fnArgsJson) {
+            throw new RuntimeException("No function available for name '" + fnName + "'");
+        }
+    }
 
     public static enum MessageType {User, Assistant, Developer, System};
 
     private final OpenAIClient client;
     private final ChatModel model;
+    private final IFunctionDispatcher functionDispatcher;
     private final ChatCompletionCreateParams.Builder paramsBuilder;
 }

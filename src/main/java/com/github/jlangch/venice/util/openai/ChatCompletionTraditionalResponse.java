@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall;
+import com.openai.models.chat.completions.ChatCompletionMessageToolCall;
+import com.openai.models.chat.completions.ChatCompletionToolMessageParam;
 import com.openai.models.completions.CompletionUsage;
 
 
@@ -34,6 +38,7 @@ public class ChatCompletionTraditionalResponse {
             final ChatCompletionTraditionalRequest request,
             final ChatCompletion completion
     ) {
+        this.functionDispatcher = request.getIFunctionDispatcher();
         this.request = request;
         this.completion = completion;
     }
@@ -78,7 +83,55 @@ public class ChatCompletionTraditionalResponse {
                         usage.totalTokens());
     }
 
+    public boolean hasToolCalls() {
+       return !getToolCalls().isEmpty();
+    }
+
+    public void processToolCalls() {
+        final ChatCompletionCreateParams.Builder paramsBuilder = request.getParamsBuilder();
+
+        // Add each assistant message onto the builder so that we keep track of the conversation
+        // for asking a follow-up question later.
+        completion.choices()
+                  .stream()
+                  .map(ChatCompletion.Choice::message)
+                  .forEach(m -> paramsBuilder.addMessage(m));
+
+        final List<ChatCompletionMessageToolCall> toolCalls = getToolCalls();
+        for(ChatCompletionMessageToolCall toolCall : toolCalls) {
+            final String fnResult = callFunction(toolCall.asFunction().function());
+
+            // Add the tool call result to the conversation.
+            paramsBuilder
+               .addMessage(ChatCompletionToolMessageParam
+                    .builder()
+                    .toolCallId(toolCall.asFunction().id())
+                    .content(fnResult)
+                    .build());
+        }
+    }
+
+
+    private List<ChatCompletionMessageToolCall> getToolCalls() {
+        return completion
+                    .choices()
+                    .stream()
+                    .map(choice -> choice.message().toolCalls())
+                    .filter(call -> call.isPresent())
+                    .map(call -> call.get())
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+    }
+
+    private String callFunction(ChatCompletionMessageFunctionToolCall.Function function) {
+        final String fnName = function.name();
+        final String argumentsJson = function.arguments();
+
+        return functionDispatcher.call(fnName, argumentsJson);
+    }
+
 
     private final ChatCompletionTraditionalRequest request;
     private final ChatCompletion completion;
+    private final IFunctionDispatcher functionDispatcher;
 }
