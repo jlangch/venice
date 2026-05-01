@@ -79,7 +79,7 @@ Create a client that reads the OpenAI API key from the env var:
 ```
 
 > [!WARNING]
-> This approach does not work for MacOS Apps not started from a *Terminal* ⇒ *Option 4*
+> This approach does not work for MacOS Apps not started from a *Terminal* ⇒ see **Option 4**
 >
 
  
