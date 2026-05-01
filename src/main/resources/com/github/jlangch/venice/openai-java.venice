@@ -36,18 +36,12 @@
 
 (import :com.openai.client.OpenAIClient)
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
-(import :com.openai.core.JsonValue)
 (import :com.openai.models.ChatModel)
-(import :com.openai.models.Reasoning)
-(import :com.openai.models.ReasoningEffort)
-(import :com.openai.models.responses.Response)
-(import :com.openai.models.responses.ResponseCreateParams)
-(import :com.openai.models.responses.ResponseFunctionToolCall)
-(import :com.openai.models.responses.ResponseInputItem)
-(import :com.openai.models.responses.ResponseInputItem$FunctionCallOutput)
-(import :com.openai.models.responses.ResponseOutputMessage)
-(import :com.openai.models.responses.FunctionTool)
-(import :com.openai.models.responses.FunctionTool$Parameters)
+
+(import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
+(import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
+(import :com.github.jlangch.venice.util.openai.IFunctionDispatcher)
+(import :com.github.jlangch.venice.util.openai.RegistryFunctionDispatcher)
 
 
 
@@ -164,300 +158,138 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; CHAT COMPLETIONS 
+;; CHAT COMPLETION REQUEST
 ;; -----------------------------------------------------------------------------
 
 (defn 
   ^{ :arglists '(
-          "(chat-completion client prompt & options)" )
+          "(chat-completion-request client model)" )
      :doc """
-          Runs a chat completion.
+          Defines a OpenAI chat completion request.
 
-          To run the request asynchronously just wrap it in a `future` and
-          deref it, when the result is required.
+          It serves as a OpenAI chat completion conversation.
 
-          ¶**Argument «options»**
+          ¶**Argument**
 
           | [![width: 15%]]     | [![width: 85%]] |
-          | :model m            | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, \
-                                  `:GPT_5_4_NANO`. ¶\
-                                  Defaults to `:GPT_5_4`|
-          | :reasoning-effort e | The reasoning.effort parameter guides the model \
-                                  on how much to think when performing a task. ¶\
-                                  Values: `:NONE`, `:MINIMAL`, `:LOW`, `:MEDIUM`, \
-                                  `:HIGH`, `:XHIGH` ¶\
-                                  Default is model dependent|
- 
-          ¶**Return value**
-
-          Returns a map with the response data:
-
-          | [![width: 15%]] | [![width: 85%]] |
-          | :status         | The response status { `:completed`, `:failed`, \
-                              `:in_progress`, `:cancelled`, `:queued`, `:incomplete`, \
-                              `:unknown` }  |
-          | :elapsed        | The elapsed milliseconds |
-          | :response       | The original OpenAI response, a Java object of type \
-                              `:com.openai.models.responses.Response` ¶\
-                              Response helpers: ¶\
-                              * `response-messages-without-status` ¶\
-                              * `response-messages-with-status` |
-          | :usage          | The usage data. E.g.:¶\
-                              { ¶\
-                              \u00A0\u00A0:input-tokens 11 ¶\
-                              \u00A0\u00A0:output-tokens 8 ¶\
-                              \u00A0\u00A0:output-tokens-detail { ¶\
-                              \u00A0\u00A0\u00A0\u00A0:reasoning-tokens 0 } ¶\
-                              \u00A0\u00A0:total-tokens 19 ¶\
-                              } |
-          """ 
+          | client | A client. ¶\
+                     Use `openai-java/client` to create a client|
+          | model  | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, \
+                     `:GPT_5_4_NANO`|
+          """
      :examples '(
           """
           (do
             (load-module :openai-java)
-            (let [client (openai-java/client)]
-              (-> (openai-java/chat-completion client 
-                                               "Say this is a test" 
-                                               :model :GPT_5_4)
-                  (println))))  ;; prints the raw OpenAI response
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/add-user-message "Say this is a test"))
+                  response (openai-java/execute chat)
+                  msg      (first (openai-java/messages response))]
+              (println msg)))
           """,
           """
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  prompt   "Say this is a test"
-                  result   (openai-java/chat-completion client prompt :model :GPT_5_4)
-                  response (:response result)
-                  usage    (:usage result)
-                  status   (:status result)
-                           ;; just the first message without status
-                  msg      (first (openai-java/response-messages-without-status response))]
-              (printf "Elapsed: %dms%n%n" (:elapsed result))
-              (printf "Status:  %s%n%n" (name status))
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/add-user-message "Say this is a test"))
+                  response (openai-java/execute chat)
+                  elapsed  (openai-java/elapsed chat)
+                  usage    (openai-java/usage response)
+                  msg      (first (openai-java/messages response))]
+              (printf "Elapsed: %dms%n%n" elapsed)
               (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
               (printf "Result:  %n%s%n" msg)))
+          """,
+          """
+          ;; conversation
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/add-user-message "Say Hello!"))
+                  response (openai-java/execute chat)]
+              (println (first (openai-java/messages response)))
+              ;; folow up question
+              (openai-java/add-assistant-message chat (openai-java/messages response))      
+              (openai-java/add-user-message chat "Can you say it more informal?")
+              (let [response (openai-java/execute chat)]
+                (println (first (openai-java/messages response))))))
           """)
      :see-also '(
           "openai-java/chat-completion-fn"
           "openai-java/client"
           "openai-java/close"
-          "openai-java/response-messages-without-status"
-          "openai-java/response-messages-with-status"
           "openai-java/format-usage") }
 
-  chat-completion [client prompt & options]
+  chat-completion [client model]
 
   { :pre [(validate-libs-installed) 
           (instance-of? :OpenAIClient client) 
-          (string? prompt)] }
- 
-  (let [opts       (apply hash-map options)
-        model      (get opts :model :GPT_5_4)
-        reasoning  (create-reasoning (get opts :reasoning-effort))
-        start      (current-time-millis)
-        params-b   (-> (. :ResponseCreateParams :builder)
-                       (. :input prompt)
-                       (. :model (. :ChatModel model)))
-        _          (when reasoning (. params-b :reasoning reasoning))
-        params     (. params-b :build)
-        response   (-> (. client :responses)
-                       (. :create params))
-        elapsed    (- (current-time-millis) start)]
-    (ordered-map  :status    (response-status response)
-                  :elapsed   elapsed
-                  :usage     (response-usage-stats response)
-                  :response  response)))
+          (keyword? model)] }
 
+  (. :ChatCompletionTraditionalRequest :of client (. :ChatModel model)))
 
-(defn 
-  ^{ :arglists '(
-          "(chat-completion-fn client prompt function-defs & options)" )
-     :doc """
-          Runs a chat completion.
+(defn max-completion-tokens [chat tokens]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (long? tokens)] }
+  (. chat :maxCompletionTokens tokens))
 
-          To run the request asynchronously just wrap it in a `future` and
-          deref it, when the result is required.
+(defn add-user-message [chat msg]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
+          (or (string? msg) (sequential? msg))] }
+  (if (string? msg)
+    (. chat :addUserMessage msg)
+    (. chat :addUserMessages msg)))
 
-          ¶**Argument «function-defs»**
+(defn add-assistant-message [chat msg]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
+          (or (string? msg) (sequential? msg))] }
+  (if (string? msg)
+    (. chat :addAssistantMessage msg)
+    (. chat :addAssistantMessages msg)))
 
-          ```
-          [ { :name "GetWeather"
-              :description "Gets the current weather for a city."
-              :properties  { 
-                  :location { 
-                      :type "string" 
-                      :description (str "City and country, for example: "
-                                        "Zurich, Switzerland")
-                  }
-                  :unit {
-                      :type "string"
-                      :description (str "Temperature unit: celsius or fahrenheit. "
-                                        "Infer this from the user's location when "
-                                        "missing.") 
-                  }
-              :required    [ "location" "unit" ] 
-            }
-          ]
-          ```
+(defn add-system-message [chat msg]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
+          (or (string? msg) (sequential? msg))] }
+  (if (string? msg)
+    (. chat :addSystemMessage msg)
+    (. chat :addSystemMessages msg)))
 
-          ¶**Argument «options»**
+(defn add-developer-message [chat msg]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
+          (or (string? msg) (sequential? msg))] }
+  (if (string? msg)
+    (. chat :addDeveloperMessage msg)
+    (. chat :addDeveloperMessages msg)))
 
-          | [![width: 15%]]     | [![width: 85%]] |
-          | :model m            | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, \
-                                  `:GPT_5_4_NANO`. ¶\
-                                  Defaults to `:GPT_5_4`|
- 
-          ¶**Return value**
+(defn add-function [chat name description properties required]
+  (. chat :addFunction name description properties required))
 
-          Returns a map with the response data:
+(defn elapsed [chat]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+  (. chat :elapsed))
 
-          | [![width: 15%]] | [![width: 85%]] |
-          | :status         | The response status { `:completed`, `:failed`, \
-                              `:in_progress`, `:cancelled`, `:queued`, `:incomplete`, \
-                              `:unknown` }  |
-          | :elapsed        | The elapsed milliseconds  |
-          | :response       | The original OpenAI response, a Java object of type \
-                              `:com.openai.models.responses.Response` ¶\
-                              Response helpers: ¶\
-                              * `response-messages-without-status` ¶\
-                              * `response-messages-with-status` |
-          | :usage          | The usage data. E.g.:¶\
-                              { ¶\
-                              \u00A0\u00A0:input-tokens 11 ¶\
-                              \u00A0\u00A0:output-tokens 8 ¶\
-                              \u00A0\u00A0:output-tokens-detail { ¶\
-                              \u00A0\u00A0\u00A0\u00A0:reasoning-tokens 0 } ¶\
-                              \u00A0\u00A0:total-tokens 19 ¶\
-                              } |
-          """
-     :examples '(
-          """
-          (do
-            (load-module :openai-java)
+(defn execute [chat]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+  (. chat :execute))
 
-            (defn celsius-to-fahrenheit [c]
-              (-> (double c) (* 9) (/ 5) (+ 32) (long)))
+(defn messages [response]
+  { :pre [(instance-of? :ChatCompletionTraditionalResponse response)] }
+  (. response :getMessages))
 
-            (defn degrees [t unit]
-              (if (str/equals-ignore-case? unit "celsius") t (celsius-to-fahrenheit t)))
-
-            ;; The local implementation of the weather function
-            ;; The 1-arity variant ([named-args] ..) is called by OpenAI, unpacks the 
-            ;; arguments 'location' and 'unit' and dispatches to the implementation  
-            ;; variant ([location unit] ...) 
-            (defn get-weather 
-              ([named-args] 
-                (get-weather (get named-args "location") 
-                            (get named-args "unit")))
-
-              ([location unit]
-                (cond 
-                  (str/contains? location "Zurich")
-                    (json/write-str { :location    location
-                                      :unit        unit
-                                      :temperature (degrees 21 unit)
-                                      :conditions  "Mostly sunny" })
-                  :else
-                    (json/write-str { :location location
-                                      :error    "No weather data available ~{location}!" } ))))
-
-            ;; Maps a function names known to OpenAI to Venice functions
-            (defn function-mapper [fn-name]
-              (case fn-name
-                "GetWeather"   get-weather 
-                ;; add more mappings here
-                nil))
-
-            (let [client    (openai-java/client)
-                  prompt    "What is the weather in Zurich in Celsius?"
-                            ;; Define the function meta data for OpenAI
-                  functions [ { :name "GetWeather"
-                                :description "Gets the current weather for a city."
-                                :properties  { 
-                                    :location { 
-                                        :type "string" 
-                                        :description (str "City and country, for example: "
-                                                          "Zurich, Switzerland")  
-                                    }
-                                    :unit { 
-                                        :type "string"
-                                        :description (str "Temperature unit: celsius or fahrenheit. "
-                                                          "Infer this from the user's location when "
-                                                          "missing.") 
-                                    } 
-                                }
-                                :required [ "location" "unit" ] 
-                              } 
-                            ]
-                  result    (openai-java/chat-completion-fn 
-                                  client 
-                                  prompt 
-                                  functions        ;; the function's meta data
-                                  function-mapper  ;; the mapper to function's implementation
-                                  :model :GPT_5_4)
-                  response  (:response result)
-                  usage     (:usage result)
-                  status    (:status result)
-                            ;; just the first message without status
-                  msg       (first (openai-java/response-messages-without-status response))]
-
-              (printf "Elapsed: %dms%n%n" (:elapsed result))
-              (printf "Status: %s%n%n" (name status))
-              (printf "Tokens: %n%s%n" (openai-java/format-usage usage "  "))
-              (printf "Result: %n%s%n" msg)))
-          """)
-     :see-also '(
-          "openai-java/chat-completion"
-          "openai-java/client"
-          "openai-java/close"
-          "openai-java/response-messages-without-status"
-          "openai-java/response-messages-with-status"
-          "openai-java/format-usage") }
-
-  chat-completion-fn [client prompt function-defs function-mapper & options]
-
-  { :pre [(validate-libs-installed)
-          (instance-of? :OpenAIClient client) 
-          (string? prompt) 
-          (and (sequential? function-defs) (not-empty? function-defs))
-          (fn? function-mapper) ] }
- 
-  (let [opts                (apply hash-map options)
-        model               (get opts :model :GPT_5_4)
-        start               (current-time-millis)
-        tools               (->> (map #(create-function-tool %) function-defs))
-
-                            ;; initial chat completion call
-        params-b            (-> (. :ResponseCreateParams :builder)
-                                (. :input prompt)
-                                (. :model (. :ChatModel model)))
-        _                   (doseq [t tools] (. params-b :addTool t))
-        params              (. params-b :build)
-        response            (-> (. client :responses)
-                                (. :create params))
-        usage               (response-usage-stats response)
-
-                            ;; call functions
-        fn-calls            (list-function-calls response)
-        follow-up-input     (exec-functions fn-calls function-mapper)
-
-        _                   (if (empty? follow-up-input)
-                              (throw (ex :VncException "No function call requested.")))
-
-                            ;; follow-up chat completion call
-        params-follow-up    (-> (. :ResponseCreateParams :builder)
-                                (. :model (. :ChatModel model))
-                                (. :inputOfResponse follow-up-input)
-                                (. :build))  
-        response-follow-up  (-> (. client :responses)
-                                (. :create params-follow-up))
-        follow-up-usage     (response-usage-stats response-follow-up)
-        total-usage         (add-usage-stats usage follow-up-usage)]
-        
-    (ordered-map  :status    (response-status response-follow-up)
-                  :elapsed   (- (current-time-millis) start)
-                  :usage     total-usage
-                  :response  response-follow-up)))
+(defn usage [response]
+  { :pre [(instance-of? :ChatCompletionTraditionalResponse response)] }
+  (let [u (. response :getUsage)]
+    {
+      :input-tokens  (. u :getInputTokens)
+      :output-tokens (. u :getOutputTokens)
+      :output-tokens-detail { :reasoning-tokens (. u :getOutputReasoningTokens) }
+      :total-tokens  (. u :getTotalTokens)
+    } ))
 
 
 
@@ -488,57 +320,6 @@
 
 (defn 
   ^{ :arglists '(
-          "(response-messages-with-status response)" )
-     :doc """
-          Extract a list of all the messages (strings) from the raw OpenAI 'response'.
-
-          Returns a list of maps:
-
-          ```
-          {
-             :msg "the message"
-             :status :completed
-          }
-          ```
-          """
-     :see-also '(
-        "openai-java/chat-completion"
-        "openai-java/response-messages-with-status"
-        "openai-java/format-usage") }
-
-  response-messages-with-status [response]
-  
-  { :pre [(instance-of? :Response response)] }
-  (->> (. response :output)
-       (filter #(. % :isMessage))
-       (map #(. % :asMessage))
-       (map #(response-output-message-with-status %))
-       (flatten)))
-
-
-(defn 
-  ^{ :arglists '(
-          "(response-messages-without-status response)" )
-     :doc """
-          Extract a list of all the messages (strings) from the raw OpenAI 'response'.
-          """
-     :see-also '(
-        "openai-java/chat-completion"
-        "openai-java/response-messages-with-status"
-        "openai-java/format-usage") }
-
-  response-messages-without-status [response]
-  
-  { :pre [(instance-of? :Response response)] }
-  (->> (. response :output)
-       (filter #(. % :isMessage))
-       (map #(. % :asMessage))
-       (map #(response-output-message-without-status %))
-       (flatten)))
-
-
-(defn 
-  ^{ :arglists '(
           "(format-usage usage)" )
      :doc """
           Formats a response's usage info to human readable multiline text.
@@ -549,7 +330,7 @@
         "openai-java/response-messages-with-status") }
   
   format-usage 
-  
+ 
   ([usage]
     (format-usage usage nil nil))
   ([usage indent]
@@ -570,131 +351,18 @@
                   indent (:total-tokens usage)))))
 
 
-
 ;; -----------------------------------------------------------------------------
-;; Internal Response Utils
-;; -----------------------------------------------------------------------------
-
-(defn- create-reasoning [effort]  ;; :NONE, :MINIMAL, :LOW, :MEDIUM, :HIGH, :XHIGH
-  { :pre [(or (nil? effort) (keyword? effort))] }
-  (if (nil? effort)
-    nil
-    (-> (. :Reasoning :builder)
-        (. :effort (. :ReasoningEffort effort))
-        (. :build))))
-
-
-(defn- response-usage-stats [response]
-  { :pre [(instance-of? :Response response)] }
-  (if-let [usage (java-unwrap-optional (. response :usage))]
-    (let [output-details (. usage :outputTokensDetails)]
-      (ordered-map 
-        :input-tokens  (. usage :inputTokens)
-        :output-tokens (. usage :outputTokens)
-        :output-tokens-detail { :reasoning-tokens (. output-details :reasoningTokens) }
-        :total-tokens  (. usage :totalTokens)))
-    {}))
-
-
-(defn- response-status [response]
-  { :pre [(instance-of? :Response response)] }
-  (-> (. response :status)
-      (java-unwrap-optional :unknown)
-      (. :toString)
-      (keyword)))
-
-
-(defn- response-output-message-with-status [out-msg]
-  { :pre [(instance-of? :ResponseOutputMessage out-msg)] }
-  (let [msgs   (->> (. out-msg :content)
-                    (filter #(. % :isOutputText))
-                    (map #(. % :asOutputText))
-                    (map #(. % :text))
-                    (into []))
-        status (-> (. out-msg :status) ;; {:in_progress, :completed, :incomplete}
-                   (. :toString)
-                   (keyword))]
-    (->> (map #(ordered-map :msg % :status status) msgs)
-         (into []))))
-
-
-(defn- response-output-message-without-status [out-msg]
-  { :pre [(instance-of? :ResponseOutputMessage out-msg)] }
-  (->> (. out-msg :content)
-       (filter #(. % :isOutputText))
-       (map #(. % :asOutputText))
-       (map #(. % :text))
-       (into [])))
-
-(defn- response-output-fn-calls [response]
-  { :pre [(instance-of? :Response response)] }
-  (->> (. response :output)
-       (filter #(. % :isFunctionCall))
-       (map #(. % :asFunctionCall))))
-
-
-
-;; -----------------------------------------------------------------------------
-;; Internal Function Utils
+;; Function registry
 ;; -----------------------------------------------------------------------------
 
-(defn- create-function-tool [function-def]
-  (let [builder (. :FunctionTool :builder)]
-    (. builder :name (:name function-def))
-    (. builder :description (:description function-def))
-    (. builder :strict true)
-    (. builder :parameters (create-function-params function-def))
-    (. builder :build)))
+(defn create-function-registry []
+  (. :RegistryFunctionDispatcher :new))
 
-(defn- create-function-params [function-def]
-  (let [builder (. :FunctionTool$Parameters :builder)]
-    (. builder :putAdditionalProperty "type" (jsonval "object"))
-    (. builder :putAdditionalProperty "required" (jsonval (:required function-def)))
-    (. builder :putAdditionalProperty "properties" (jsonval (:properties function-def)))
-    (. builder :putAdditionalProperty "additionalProperties" (jsonval false))
-    (. builder :build)))
-
-;; exec all function calls, returns a list of ResponseInputItem 
-(defn- exec-functions [fn-calls function-mapper]
-  { :pre [(sequential? fn-calls) (fn? function-mapper)] }
-  (->> (map #(exec-function % function-mapper) fn-calls)
-       (flatten)))       
-
-;; exec a function, returns a list of ResponseInputItem 
-(defn- exec-function [fn-call function-mapper]
-  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)
-          (fn? function-mapper)] }
-  (let [result  (call-function fn-call function-mapper)
-        call-id (. fn-call :callId)]
-    [ (. :ResponseInputItem :ofFunctionCall fn-call)
-      (. :ResponseInputItem :ofFunctionCallOutput
-                            (-> (. :ResponseInputItem$FunctionCallOutput :builder)
-                                (. :callId  call-id)
-                                (. :outputAsJson result)
-                                (. :build))) ]))
-
-;; return a list of the function calls (:ResponseFunctionToolCall) in a response
-(defn- list-function-calls [response]
-  { :pre [(instance-of? :Response response)] }
-  (->> (. response :output)
-       (filter #(. % :isFunctionCall))
-       (map #(. % :asFunctionCall))))
-
-;; call a function
-(defn- call-function [fn-call function-mapper]
-  { :pre [(instance-of? :ResponseFunctionToolCall fn-call)
-          (fn? function-mapper)] }
-  (let [fn-name (. fn-call :name)
-        fn-args (. fn-call :arguments)
-        func    (function-mapper fn-name)]
-    (when (nil? func) 
-      (throw (ex :VncException "Function ~{fn-name} not available!")))
-
-    ;; (println "FN NAME:   " fn-name)
-    ;; (println "FN ARGS:   " (json/read-str fn-args))
-    ;; (println "FN RESULT: " (func (json/read-str fn-args)))
-    (func (json/read-str fn-args))))
-
+(defn register-function [registry name function]
+  { :pre [(instance-of? :RegistryFunctionDispatcher registry)
+          (string? name)
+          (fn? function)] }
+  (. registry :new name function))
 
 
 ;; -----------------------------------------------------------------------------
@@ -710,20 +378,6 @@
                     "  (load-module :openai-java-install) \n"
                     "  (openai-java-install/install :dir (repl/libs-dir) :silent false)) "))))
   true)
-
-
-(defn- add-usage-stats [u1 u2]
-  (let [r1 (->> u1 :output-tokens-detail :reasoning-tokens)
-        r2 (->> u2 :output-tokens-detail :reasoning-tokens)]
-    (ordered-map 
-      :input-tokens  (+ (:input-tokens u1) (:input-tokens u2))
-      :output-tokens (+ (:output-tokens u1) (:output-tokens u2))
-      :output-tokens-detail { :reasoning-tokens (+ r1 r2) }
-      :total-tokens  (+ (:total-tokens u1) (:total-tokens u2)))))
-
-
-(defn- jsonval [v]
-  (. :JsonValue :from v))
 
 (defn- openai-api-key-from-env []
   (system-env "OPENAI_API_KEY"))

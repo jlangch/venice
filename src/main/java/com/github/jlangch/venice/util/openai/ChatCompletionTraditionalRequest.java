@@ -181,6 +181,14 @@ public class ChatCompletionTraditionalRequest {
         return debug;
     }
 
+    public long getStartTimeMillis() {
+        return startMillis;
+    }
+
+    public long elapsed() {
+        return System.currentTimeMillis() - startMillis;
+    }
+
     public ChatCompletionTraditionalResponse execute() {
         final ChatCompletion completion = client.chat()
                                                 .completions()
@@ -208,6 +216,7 @@ public class ChatCompletionTraditionalRequest {
 
     private volatile boolean debug;
 
+    private final long startMillis = System.currentTimeMillis();
     private final OpenAIClient client;
     private final ChatModel model;
     private final IFunctionDispatcher functionDispatcher;
