@@ -26,9 +26,9 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleOpenJavaAiSection implements ISectionBuilder {
+public class ModuleOpenAiJavaSection implements ISectionBuilder {
 
-    public ModuleOpenJavaAiSection(final DocItemBuilder diBuilder) {
+    public ModuleOpenAiJavaSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
@@ -50,12 +50,17 @@ public class ModuleOpenJavaAiSection implements ISectionBuilder {
         final DocSection chat = new DocSection("Chat", id());
         all.addSection(chat);
         chat.addItem(diBuilder.getDocItem("openai-java/chat-completion", false));
-        chat.addItem(diBuilder.getDocItem("openai-java/chat-completion-fn", false));
+        chat.addItem(diBuilder.getDocItem("openai-java/execute", false));
+
+        final DocSection response = new DocSection("Response", id());
+        all.addSection(response);
+        response.addItem(diBuilder.getDocItem("openai-java/messages", false));
+        response.addItem(diBuilder.getDocItem("openai-java/usage", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
-        utils.addItem(diBuilder.getDocItem("openai-java/response-messages-without-status", false));
-        utils.addItem(diBuilder.getDocItem("openai-java/response-messages-with-status", false));
+        utils.addItem(diBuilder.getDocItem("openai-java/create-function-registry", false));
+        utils.addItem(diBuilder.getDocItem("openai-java/register-function", false));
         utils.addItem(diBuilder.getDocItem("openai-java/format-usage", false));
 
         return section;

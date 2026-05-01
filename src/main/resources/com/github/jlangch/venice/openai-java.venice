@@ -216,12 +216,12 @@
                                (openai-java/add-user-message "Say Hello!"))
                   response (openai-java/execute chat)]
               (println (first (openai-java/messages response)))
-              ;; folow up question
+              ;; 1st follow up question
               (openai-java/add-assistant-message chat (openai-java/messages response))      
               (openai-java/add-user-message chat "Can you say it more informal?")
               (let [response (openai-java/execute chat)]
                 (println (first (openai-java/messages response))))
-              ;; folow up question
+              ;; 2nd follow up question
               (openai-java/add-assistant-message chat (openai-java/messages response))      
               (openai-java/add-user-message chat "Can you say it very formal?")
               (let [response (openai-java/execute chat)]
@@ -242,7 +242,7 @@
               (let [args     (json/read-str fnArgsJson)
                     location (get args "location")
                     unit     (get args "unit")]
-                (cond 
+                (cond                 ;; we just support one hard coded location
                   (str/contains? location "Zurich")
                     (json/write-str { :location    location
                                       :unit        unit
@@ -250,7 +250,7 @@
                                       :conditions  "Mostly sunny" })
                   :else
                     (json/write-str { :location location
-                                      :error    (str "No weather data available " location "!")}))))
+                                      :error    (str "No weather data available for " location "!")}))))
 
             (let [client   (openai-java/client)
                   registry (-> (openai-java/create-function-registry)
@@ -272,7 +272,7 @@
                                (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
                   response (openai-java/execute chat)]
               (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
-              ;; folow up question
+              ;; follow up question
               (openai-java/add-assistant-message chat (openai-java/messages response))      
               (openai-java/add-user-message chat "Please give the current weather in Zurich and some ideas what to do in Zurich on day like this!")
               (let [response (openai-java/execute chat)]
@@ -306,7 +306,11 @@
 
           """)
      :see-also '(
-          "openai-java/chat-completion-fn"
+          "openai-java/max-completion-tokens"
+          "openai-java/add-user-message"
+          "openai-java/add-assistant-message"
+          "openai-java/add-function"
+          "openai-java/execute"
           "openai-java/client"
           "openai-java/close"
           "openai-java/format-usage") }
@@ -325,9 +329,11 @@
             (keyword? model)] }
     (. :ChatCompletionTraditionalRequest :of client (. :ChatModel model) fn-registry)))
 
+
 (defn max-completion-tokens [chat tokens]
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (long? tokens)] }
   (. chat :maxCompletionTokens tokens))
+
 
 (defn debug [chat on]
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (boolean? on)] }
@@ -361,22 +367,95 @@
     (. chat :addDeveloperMessage msg)
     (. chat :addDeveloperMessages msg)))
 
-(defn add-function [chat name description properties required]
+
+(defn 
+  ^{ :arglists '(
+          "(add-function chat name description properties required)" )
+     :doc """
+          Add a function definition to a chat. Any number of function definitions
+          can be added to a chat.
+
+          Return the chat.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/add-function 
+                                    "GetWeather"
+                                    "Gets the current weather for a city."
+                                    { :location { 
+                                        :type "string" 
+                                        :description "A city, e.g.: Zurich" }
+                                      :unit { 
+                                        :type "string"
+                                        :description "Temperature unit: celsius or fahrenheit" } } 
+                                    '("location" "unit")))]
+              ))
+          """ )
+
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  add-function [chat name description properties required]
+
   (. chat :addFunction name description properties required))
 
-(defn elapsed [chat]
-  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
-  (. chat :elapsed))
 
-(defn execute [chat]
+(defn 
+  ^{ :arglists '(
+          "(execute chat)" )
+     :doc """
+          Execute (send) a chat completion. Returns an OpenAI response.
+
+          Return the chat.
+          """
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  execute [chat]
+
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
   (. chat :execute))
 
-(defn messages [response]
+
+(defn
+  ^{ :arglists '(
+          "(messages response)" )
+     :doc """
+          Returns a list of messages of the response.
+          """
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  messages [response]
+
   { :pre [(instance-of? :ChatCompletionTraditionalResponse response)] }
   (. response :getMessages))
 
-(defn usage [response]
+
+(defn 
+  ^{ :arglists '(
+          "(usage response)" )
+     :doc """
+          Returns the token usage statistics.
+
+          E.g:
+          ```
+          { :input-tokens 11
+            :output-tokens 8
+            :output-tokens-detail { :reasoning-tokens 0 } 
+            :total-tokens 19 } 
+          ```
+          """
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  usage [response]
+
   { :pre [(instance-of? :ChatCompletionTraditionalResponse response)] }
   (let [u (. response :getUsage)]
     {
@@ -385,6 +464,11 @@
       :output-tokens-detail { :reasoning-tokens (. u :getOutputReasoningTokens) }
       :total-tokens  (. u :getTotalTokens)
     } ))
+
+
+(defn elapsed [chat]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+  (. chat :elapsed))
 
 
 
@@ -420,9 +504,7 @@
           Formats a response's usage info to human readable multiline text.
           """
      :see-also '(
-        "openai-java/chat-completion"
-        "openai-java/response-messages-without-status"
-        "openai-java/response-messages-with-status") }
+        "openai-java/chat-completion") }
   
   format-usage 
  
@@ -450,10 +532,57 @@
 ;; Function registry
 ;; -----------------------------------------------------------------------------
 
-(defn create-function-registry []
+(defn
+  ^{ :arglists '(
+          "(create-function-registry)" )
+     :doc """
+          Create a function registry.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+  
+            (defn get-weather [fnArgsJson] "sunny, 21°C")
+
+            (let [registry (-> (openai-java/create-function-registry)
+                               (openai-java/register-function "GetWeather"
+                                                              get-weather))]
+              ))
+          """ )
+     :see-also '(
+        "openai-java/chat-completion"
+        "openai-java/register-function") }
+
+  create-function-registry []
+
   (. :RegistryFunctionDispatcher :new))
 
-(defn register-function [registry name function]
+
+(defn
+    ^{ :arglists '(
+          "(registry name function)" )
+     :doc """
+          Register a function with the registry
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+  
+            (defn get-weather [fnArgsJson] "sunny, 21°C")
+
+            (let [registry (-> (openai-java/create-function-registry)
+                               (openai-java/register-function "GetWeather"
+                                                              get-weather))]
+              ))
+          """ )
+     :see-also '(
+        "openai-java/chat-completion"
+        "openai-java/create-function-registry") }
+
+  register-function  [registry name function]
+
   { :pre [(instance-of? :RegistryFunctionDispatcher registry)
           (string? name)
           (fn? function)] }
