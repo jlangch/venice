@@ -78,6 +78,10 @@ Create a client that reads the OpenAI API key from the env var:
     (openai-java/close client)))
 ```
 
+> [!WARNING]
+> This approach does not work for MacOS Apps not started from a *Terminal* ⇒ *Option 4*
+>
+
  
 
 **Option 3**
@@ -92,7 +96,6 @@ export OPENAI_API_KEY=sk-123456789
 export OPENAI_ORG_ID=
 export OPENAI_PROJECT_ID=
 ```
-
 
 Windows:
 
@@ -118,14 +121,14 @@ Create a client that reads the OpenAI API key from the env var:
 
  
 
-**Option 4 (Mac OS, system wide env vars)**
+**Option 4 (MacOS, system wide environment vars)**
 
 The above solutions just work for *Apps* or programs that are started from a *Terminal*.
 
-*Apps* started from the Finder or the Desktop do not source `.zprofile` and thus do not 
+*Apps* started from the *Finder* or the *Desktop* do not source `.zprofile` and thus do not 
 get the environment variables defined there.
 
-To make *OPENAI_API_KEY* as an environment variable available to Apps, the `launchctl` 
+To make *OPENAI_API_KEY* as an environment variable available to MacOS *Apps*, the `launchctl` 
 program in MacOS allows us to programmatically interact with `launchd`, a 
 “System wide and per-user daemon/agent manager” and define environment variables.
 
@@ -154,5 +157,5 @@ place we want for this task is `~/Library/LaunchAgents`, and the file is pretty 
 ```
 
 Save this file in `~/Library/LaunchAgents/setenv.OPENAI.plist`! On a restart, `launchctl` 
-will arrange this to be run for us and OPENAI_API_KEY provide the OpenAI API Key to all
+will arrange this to be run for us and *OPENAI_API_KEY* provide the OpenAI API Key to all
 Apps.
