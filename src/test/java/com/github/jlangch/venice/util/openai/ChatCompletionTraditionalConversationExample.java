@@ -49,6 +49,7 @@ public class ChatCompletionTraditionalConversationExample {
         System.out.println("\n\n==================================================\n\n");
 
         request = response.getRequest();
+        request.addAssistantMessages(response.getMessages());
         request.addUserMessage("Can you express it more informal?");
         response = request.execute();
 

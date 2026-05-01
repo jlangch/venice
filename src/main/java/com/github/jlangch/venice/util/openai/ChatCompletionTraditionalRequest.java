@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.openai;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.openai.client.OpenAIClient;
@@ -63,9 +64,21 @@ public class ChatCompletionTraditionalRequest {
         return this;
     }
 
+    public ChatCompletionTraditionalRequest addUserMessages(final List<String> texts) {
+        Objects.requireNonNull(texts);
+        texts.forEach(t -> this.paramsBuilder.addUserMessage(t));
+        return this;
+    }
+
     public ChatCompletionTraditionalRequest addAssistantMessage(final String text) {
         Objects.requireNonNull(text);
         this.paramsBuilder.addAssistantMessage(text);
+        return this;
+    }
+
+    public ChatCompletionTraditionalRequest addAssistantMessages(final List<String> texts) {
+        Objects.requireNonNull(texts);
+        texts.forEach(t -> this.paramsBuilder.addAssistantMessage(t));
         return this;
     }
 
@@ -75,9 +88,21 @@ public class ChatCompletionTraditionalRequest {
         return this;
     }
 
+    public ChatCompletionTraditionalRequest addSystemMessages(final List<String> texts) {
+        Objects.requireNonNull(texts);
+        texts.forEach(t -> this.paramsBuilder.addSystemMessage(t));
+        return this;
+    }
+
     public ChatCompletionTraditionalRequest addDeveloperMessage(final String text) {
         Objects.requireNonNull(text);
         this.paramsBuilder.addDeveloperMessage(text);
+        return this;
+    }
+
+    public ChatCompletionTraditionalRequest addDeveloperMessages(final List<String> texts) {
+        Objects.requireNonNull(texts);
+        texts.forEach(t -> this.paramsBuilder.addDeveloperMessage(t));
         return this;
     }
 
