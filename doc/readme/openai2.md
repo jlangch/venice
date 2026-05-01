@@ -132,7 +132,7 @@ program in MacOS allows us to programmatically interact with `launchd`, a
 We do this by putting `plist` files in the correct places to make things happen. The 
 place we want for this task is `~/Library/LaunchAgents`, and the file is pretty simple!
 
-```
+``` xml
 <!-- ~/Library/LaunchAgents/setenv.OPENAI.plist -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
