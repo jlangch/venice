@@ -60,10 +60,12 @@ public class ChatCompletionTraditionalFunctionExample {
 
         System.out.println("\n\n==================================================\n\n");
 
+        // Note: explicitly ask to list the result of the functions calls
         request.addAssistantMessages(response.getMessages());
         request.addUserMessage("Please list the SDK valuation and explain the results!");
         response = request.execute();
 
+        // The original OpenAI example code
 //        request.addAssistantMessages(response.getMessages());
 //        request.addUserMessage("Why do you say that?");
 //        response = request.execute();
