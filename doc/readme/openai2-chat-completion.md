@@ -80,14 +80,14 @@ Chat conversation with multiple questions and answers.
       (openai-java/add-assistant-message chat    (openai-java/messages response))      
       (openai-java/add-user-message chat "Can you say it very formal?")
       (let [response (openai-java/execute chat)]
-                     (println (first (openai-java/messages response))))))
+        (println (first (openai-java/messages response))))))
 ```
 
 Answer:
 
 ```
-Hello
-Hey!
+Hello!
+Hey
 Greetings
 ```
 
