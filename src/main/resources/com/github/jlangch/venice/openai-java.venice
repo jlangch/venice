@@ -277,33 +277,6 @@
               (openai-java/add-user-message chat "Please give the current weather in Zurich and some ideas what to do in Zurich on day like this!")
               (let [response (openai-java/execute chat)]
                 (println (first (openai-java/messages response))))))
-
-              Current weather in Zurich: 21°C and mostly sunny.
-
-              Ideas for a day like this in Zurich:
-              - Walk along Lake Zurich or the Limmat River
-              - Explore the Old Town (Altstadt)
-              - Sit at an outdoor café and enjoy the sunshine
-              - Visit Lindenhof for a nice city view
-              - Take a boat cruise on Lake Zurich
-              - Go up to Uetliberg for an easy hike and panoramic views
-              - Have a picnic in a park like Zürichhorn
-              - Visit the Bahnhofstrasse area for shopping and strolling
-
-              If you want, I can also suggest a full half-day or full-day Zurich itinerary based on this weather.
-
-              Current weather in Zurich: 21°C with heavy rain.
-
-              Ideas for a day like this in Zurich:
-              - Visit the Kunsthaus Zürich for art and a dry indoor afternoon
-              - Explore the Swiss National Museum
-              - Relax in a café and try hot chocolate or pastries
-              - Spend time at Thermalbad & Spa Zürich
-              - Browse shops along Bahnhofstrasse
-              - Visit Lindt Home of Chocolate if you want something fun indoors
-
-              If you want, I can also suggest a rainy-day itinerary for Zurich for morning, afternoon, and evening.
-
           """)
      :see-also '(
           "openai-java/max-completion-tokens"
