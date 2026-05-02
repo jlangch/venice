@@ -2,19 +2,14 @@
 
  
 
-* [Completion](#completion)
-     * [Examples](#examples)
-        * [Example: Counting numbers (full model response)](#example-counting-numbers-full-model-response))
-
-        * [Example: Text correction](#example-text-correction)
-        * [Example: Text data extraction](#example-text-data-extraction)
-        * [Example: Chain of Thought Prompting](#example-chain-of-thought-prompting)
+* [Completions](#completions)
+* [Functions](#functions)
 
  
  
  
 
-## Completion
+## Completions
 
  
 
