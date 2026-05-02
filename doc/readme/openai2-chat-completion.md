@@ -72,8 +72,8 @@ Chat conversation with multiple questions and answers.
 
     ;; 1st follow up question
     (openai-java/add-assistant-message chat (openai-java/messages response))      
-(openai-java/add-user-message chat "Can you say it more informal?")
-(let [response (openai-java/execute chat)]
+    (openai-java/add-user-message chat "Can you say it more informal?")
+    (let [response (openai-java/execute chat)]
   (println (first (openai-java/messages response))))
 
     ;; 2nd follow up question
