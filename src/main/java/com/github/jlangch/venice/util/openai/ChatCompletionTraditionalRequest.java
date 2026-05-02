@@ -24,7 +24,9 @@ package com.github.jlangch.venice.util.openai;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.openai.client.OpenAIClient;
 import com.openai.core.JsonValue;
 import com.openai.models.ChatModel;
@@ -234,6 +236,15 @@ public class ChatCompletionTraditionalRequest {
 
         return response;
     }
+
+    public static List<String> models() {
+        return CollectionUtil
+                .toList(ChatModel.Value.values())
+                .stream()
+                .map(m -> m.name())
+                .collect(Collectors.toList());
+    }
+
 
     private static class DefaultFunctionDispatcher implements IFunctionDispatcher {
         @Override

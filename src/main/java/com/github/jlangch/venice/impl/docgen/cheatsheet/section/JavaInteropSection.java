@@ -47,6 +47,11 @@ public class JavaInteropSection implements ISectionBuilder {
         java.addItem(diBuilder.getDocItem("cast"));
         java.addItem(diBuilder.getDocItem("class"));
 
+        final DocSection convert = new DocSection("Java", "javainterop.convert");
+        all.addSection(convert);
+        convert.addItem(diBuilder.getDocItem("java->venice"));
+        convert.addItem(diBuilder.getDocItem("venice->java"));
+
         final DocSection coll = new DocSection("Java", "javainterop.collection");
         all.addSection(coll);
         coll.addItem(diBuilder.getDocItem("java-int-list"));

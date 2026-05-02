@@ -1422,6 +1422,73 @@ public class JavaInteropFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     };
 
+    public static class JavaConvertToVeniceFn extends AbstractJavaFn {
+        public JavaConvertToVeniceFn() {
+            super(
+                "java->venice",
+                VncFunction
+                    .meta()
+                    .arglists("(java->venice obj)")
+                    .doc("Converts a Java object to Venice data.\n\n" +
+                         "Converts scalar values and collections.")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            final VncVal arg = args.first();
+
+            if (arg == Nil) {
+                return Nil;
+             }
+             else if (Types.isVncJavaObject(arg)) {
+                 final Object obj = ((VncJavaObject)arg).getDelegate();
+                 return JavaInteropUtil.convertToVncVal(obj, true);
+             }
+             else {
+                 return arg;
+             }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    }
+
+    public static class JavaConvertFromVeniceFn extends AbstractJavaFn {
+        public JavaConvertFromVeniceFn() {
+            super(
+                "venice->java",
+                VncFunction
+                    .meta()
+                    .arglists("(venice->java val)")
+                    .doc("Converts a Venice value to a Java object.\n\n" +
+                         "Converts scalar values and collections.")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            final VncVal arg = args.first();
+
+            if (arg == Nil) {
+               return Nil;
+            }
+            else if (Types.isVncJavaObject(arg)) {
+                return arg;
+            }
+            else {
+                return new VncJavaObject(arg.convertToJavaObject());
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    }
+
     public static class JavaObjWrapFn extends AbstractJavaFn {
         public JavaObjWrapFn() {
             super(
@@ -1682,5 +1749,7 @@ public class JavaInteropFunctions {
                     .add(new JavaClassLoaderFn())
                     .add(new JavaClassLoaderOfFn())
                     .add(new JavaUnwrapOptionalFn())
+                    .add(new JavaConvertToVeniceFn())
+                    .add(new JavaConvertFromVeniceFn())
                     .toMap();
 }

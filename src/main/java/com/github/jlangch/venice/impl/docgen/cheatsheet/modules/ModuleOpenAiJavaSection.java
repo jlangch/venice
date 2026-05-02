@@ -64,6 +64,7 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
+        utils.addItem(diBuilder.getDocItem("openai-java/models", false));
         utils.addItem(diBuilder.getDocItem("openai-java/create-function-registry", false));
         utils.addItem(diBuilder.getDocItem("openai-java/register-function", false));
         utils.addItem(diBuilder.getDocItem("openai-java/format-usage", false));
