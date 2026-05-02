@@ -60,7 +60,7 @@ public class JavaInterop_convert_Test {
     }
 
     @Test
-    public void test_java2venice_2() {
+    public void test_java2venice_2a() {
         final Venice venice = new Venice();
 
         final String script =
@@ -68,6 +68,20 @@ public class JavaInterop_convert_Test {
                 "  (->> (. :com.github.jlangch.venice.javainterop.JavaInterop_convert_Test$Factory :list)     \n" +
                 "       (map java->venice)                                                                    \n" +
                 "       (map keyword)                                                                         \n" +
+                "       (pr-str)))                                                                            ";
+
+        assertEquals("(:a :b :c)", venice.eval(script));
+    }
+
+    @Test
+    public void test_java2venice_2b() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                          \n" +
+                "  (->> (. :com.github.jlangch.venice.javainterop.JavaInterop_convert_Test$Factory :list)     \n" +
+                "       (map keyword)                                                                         \n" +
+                "       (tee #(println (type %)))                                                                         \n" +
                 "       (pr-str)))                                                                            ";
 
         assertEquals("(:a :b :c)", venice.eval(script));

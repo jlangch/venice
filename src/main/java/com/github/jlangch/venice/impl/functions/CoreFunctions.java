@@ -759,6 +759,10 @@ public class CoreFunctions {
                     else if (Types.isVncString(args.first())) {
                         return new VncKeyword(((VncString)args.first()).getValue());
                     }
+                    else if (Types.isVncJavaObject(args.first(), String.class)) {
+                        final String s = (String)((VncJavaObject)args.first()).getDelegate();
+                        return new VncKeyword(s);
+                    }
                     else if (Types.isVncJavaObject(args.first()) && ((VncJavaObject)args.first()).isEnum()) {
                         final Enum<?> e = (Enum<?>)((VncJavaObject)args.first()).getDelegate();
                         return new VncKeyword(e.name());
