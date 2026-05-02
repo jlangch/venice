@@ -3,8 +3,7 @@
  
 
 * [Completion](#completion)
-    * [Sending Requests](#sending-requests)
-    * [Examples](#examples)
+     * [Examples](#examples)
         * [Example: Counting numbers (full model response)](#example-counting-numbers-full-model-response))
 
         * [Example: Text correction](#example-text-correction)
@@ -19,69 +18,27 @@
 
  
 
-### Sending Requests
-
-`(chat-completion client prompt & options)`
-
-Send a chat completion request given an OpenAI client, a prompt and options.
-
-The OpenAI api key can be provided in an environment variable "OPENAI_API_KEY" or
-explicitly passed as an option `:openai-api-key "sk-xxxxxxxxxxxxx"`.
-
-To run the request asynchronously just wrap it in a `future` and
-deref it, when the result is required.
-
-
-#### Parameter «prompt»
-
-A prompt
-
-```
-"Who won the world series in 2020?"
-```
-
-
-
-#### Parameter «options»
-
-| Option              | Description |
-| :---                | :---        |
-| :model m            | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, `:GPT_5_4_NANO`.<br>Defaults to `:GPT_5_4`|
-| :reasoning-effort e | The reasoning.effort parameter guides the model on how much to think when performing a task.<br>Values: `:NONE`, `:MINIMAL`, `:LOW`, `:MEDIUM`, `:HIGH`, `:XHIGH`<br>Default is model dependent|
-
-
- 
-#### Return value
-
-*Returns a map with the response data:*
-
-| Field      | Description |
-| :---       | :---        |
-| :status    | The response status { :completed, :failed, :in_progress, :cancelled, :queued, :incomplete, :unknown }  |
-| :elapsed   | The elapsed milliseconds |
-| :response  | The original OpenAI response, a Java object of type `:com.openai.models.responses.Response`<br>Response helpers:<br>* `response-messages-without-status`<br>* `response-messages-with-status` |
-| :usage     | The usage data. E.g.:<br>{<br> :input-tokens 11<br> :output-tokens 8<br> :output-tokens-detail {<br>  :reasoning-tokens 0 }<br> :total-tokens 19<br>} |
-
- 
-
 ### Examples
 
 #### Example: Counting numbers (full model response)
 
 ``` clojure
+"""
 (do
   (load-module :openai-java)
   (let [client   (openai-java/client)
-        prompt   (str "Count to 10, with a comma between each number "
-                      "and no newlines. E.g., 1, 2, 3, ...")
-        result   (openai-java/chat-completion client prompt :model :GPT_5_4)
-        response (:response result)
-        usage    (:usage result)
-        status   (:status result)
-                 ;; just the first message without status
-        msg      (first (openai-java/response-messages-without-status response))]
-    (printf "Elapsed: %dms%n%n" (:elapsed result))
-    (printf "Status:  %s%n%n" (name status))
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message 
+                         """
+                         Count to 10, with a comma between each number "
+                         and no newlines. E.g., 1, 2, 3, ...
+                         """ ))
+        response (openai-java/execute chat)
+        elapsed  (openai-java/elapsed chat)
+        usage    (openai-java/usage response)
+        msg      (first (openai-java/messages response))]
+    (printf "Elapsed: %dms%n%n" elapsed)
     (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
     (printf "Result:  %n%s%n" msg)))
 ```
@@ -89,13 +46,11 @@ A prompt
 Answer:
 
 ```
-Elapsed: 4800ms
-
-Status:  completed
+Elapsed: 2968ms
 
 Tokens:  
-  Input:     35
-  Output:    32 (Reasoning: 0)
+  Input:     36
+  Output:    31 (Reasoning: 0)
   Total:     67
 
 Result:  
@@ -111,16 +66,18 @@ Result:
 (do
   (load-module :openai-java)
   (let [client   (openai-java/client)
-        prompt   """
-                 Convert the following text to standard english:
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message 
+                         """
+                         Convert the following text to standard english:
                
-                 She no went to the market.
-                 """
-        result   (openai-java/chat-completion client prompt :model :GPT_5_4)
-        response (:response result)
-        msg      (first (openai-java/response-messages-without-status response))]
+                         She no went to the market.
+                         """ ))
+        response (openai-java/execute chat)
+        msg      (first (openai-java/messages response))]
     (println msg)))
- ```
+```
 
 Answer:
 
@@ -136,29 +93,31 @@ She did not go to the market.
 (do
   (load-module :openai-java)
   (let [client   (openai-java/client)
-        prompt   """
-                 Please extract the following information from the given text and 
-                 return it as a JSON:
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message 
+                         """
+                         Please extract the following information from the given text and 
+                         return it as a JSON:
 
-                 name
-                 major
-                 school
-                 grades
-                 club
+                         name
+                         major
+                         school
+                         grades
+                         club
 
-                 This is the body of text to extract the information from:
+                         This is the body of text to extract the information from:
 
-                 Peter Kilmore is a sophomore majoring in computer science at Stanford 
-                 University. He is Irish and has a 3.8 GPA. Peter is known 
-                 for his programming skills and is an active member of the 
-                 university's Robotics Club. He hopes to pursue a career in 
-                 artificial intelligence after graduating.
-                 """
-        result   (openai-java/chat-completion client prompt :model :GPT_5_4)
-        response (:response result)
-        msg      (first (openai-java/response-messages-without-status response))]
+                         Peter Kilmore is a sophomore majoring in computer science at Stanford 
+                         University. He is Irish and has a 3.8 GPA. Peter is known 
+                         for his programming skills and is an active member of the 
+                         university's Robotics Club. He hopes to pursue a career in 
+                         artificial intelligence after graduating.
+                         """ ))
+        response (openai-java/execute chat)
+        msg      (first (openai-java/messages response))]
     (println msg)))
- ```
+```
 
 Answer:
 
@@ -181,18 +140,21 @@ Chain of thought (CoT) is a method that encourages Large Language Models (LLMs) 
 
 ##### Prompt 1a
 
+
 ``` clojure
 (do
   (load-module :openai-java)
   (let [client   (openai-java/client)
-        prompt   """
-                 I am looking for a name for my new pet, a cat. The cat's fur 
-                 is reddish and light tabby. Suggest me 5 names that I could 
-                 give my cat.
-                 """
-        result   (openai-java/chat-completion client prompt :model :GPT_5_4)
-        response (:response result)
-        msg      (first (openai-java/response-messages-without-status response))]
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message 
+                         """
+                         I am looking for a name for my new pet, a cat. The cat's fur 
+                         is reddish and light tabby. Suggest me 5 names that I could 
+                         give my cat.
+                         """ ))
+        response (openai-java/execute chat)
+        msg      (first (openai-java/messages response))]
     (println msg)))
 ```
 
@@ -217,16 +179,18 @@ If you want, I can also suggest names that are **cute**, **elegant**, or **gende
 (do
   (load-module :openai-java)
   (let [client   (openai-java/client)
-        prompt   """
-                 I am looking for a name for my new pet, a cat. The cat's fur 
-                 is reddish and light tabby. Suggest me 5 names that I could 
-                 give my cat.
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message 
+                         """
+                         I am looking for a name for my new pet, a cat. The cat's fur 
+                         is reddish and light tabby. Suggest me 5 names that I could 
+                         give my cat.
                 
-                 Explain why you have chosen these names.
-                 """
-        result   (openai-java/chat-completion client prompt :model :GPT_5_4)
-        response (:response result)
-        msg      (first (openai-java/response-messages-without-status response))]
+                         Explain why you have chosen these names.
+                         """ ))
+        response (openai-java/execute chat)
+        msg      (first (openai-java/messages response))]
     (println msg)))
 ```
 
@@ -263,18 +227,20 @@ If you want, I can also suggest:
 (do
   (load-module :openai-java)
   (let [client   (openai-java/client)
-        prompt   """
-                 A farmer with a wolf, a goat, and a cabbage must cross a river 
-                 with a boat. The boat can carry only the farmer and a single item.
-                 If left unattended together, the wolf would eat the goat or the
-                 goat would eat the cabbage. How can they cross the river without
-                 anything being eaten? 
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message 
+                         """
+                         A farmer with a wolf, a goat, and a cabbage must cross a river 
+                         with a boat. The boat can carry only the farmer and a single item.
+                         If left unattended together, the wolf would eat the goat or the
+                         goat would eat the cabbage. How can they cross the river without
+                         anything being eaten? 
                   
-                 Describe your reasoning step by step.
-                 """
-        result   (openai-java/chat-completion client prompt :model :GPT_5_4)
-        response (:response result)
-        msg      (first (openai-java/response-messages-without-status response))]
+                         Describe your reasoning step by step.
+                         """ ))
+        response (openai-java/execute chat)
+        msg      (first (openai-java/messages response))]
     (println msg)))
 ```
 
@@ -315,4 +281,86 @@ Now all three—the **wolf, goat, and cabbage**—are safely across the river.
 ### Final crossing order
 **Goat over → Farmer back → Wolf over → Goat back → Cabbage over → Farmer back → Goat over**
 
+ 
+ 
+
+## Functions
+
+ 
+
+This example demonstrates how to execute functions whose inputs 
+are model-generated and deliver the required knowledge to the model 
+for answering questions.
+
+
+A full weather example. It answers questions like *"What is the weather in Zurich in Celsius?"*:
+
+``` clojure
+          (do
+            (load-module :openai-java)
+
+            (defn celsius-to-fahrenheit [c]
+              (-> (double c) (* 9) (/ 5) (+ 32) (long)))  ;; (c * 9) / 5 + 32
+
+            (defn degrees [t unit]
+              (if (str/equals-ignore-case? unit "celsius") t (celsius-to-fahrenheit t)))
+
+            (defn get-weather [fnArgsJson]
+              (let [args     (json/read-str fnArgsJson)
+                    location (get args "location")
+                    unit     (get args "unit")]
+                (cond                 ;; we just support one hard coded location
+                  (str/contains? location "Zurich")
+                    (json/write-str { :location    location
+                                      :unit        unit
+                                      :temperature (degrees 21 unit)
+                                      :conditions  "Mostly sunny" })
+                  :else
+                    (json/write-str { :location location
+                                      :error    (str "No weather data available for " location "!")}))))
+
+            (let [client   (openai-java/client)
+                  registry (-> (openai-java/create-function-registry)
+                               (openai-java/register-function "GetWeather"
+                                                              get-weather))
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/debug true)
+                               (openai-java/add-function 
+                                    "GetWeather"
+                                    "Gets the current weather for a city."
+                                    { :location { 
+                                        :type "string" 
+                                        :description "A city, e.g.: Zurich" }
+                                      :unit { 
+                                        :type "string"
+                                        :description "Temperature unit: celsius or fahrenheit" } } 
+                                    '("location" "unit"))
+                               (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
+                  response (openai-java/execute chat)]
+              (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
+              ;; follow up question
+              (openai-java/add-assistant-message chat (openai-java/messages response))      
+              (openai-java/add-user-message chat "Please give the current weather in Zurich and some ideas what to do in Zurich on day like this!")
+              (let [response (openai-java/execute chat)]
+                (println (first (openai-java/messages response))))))
+```
+
+Response
+
+```
+Current weather in Zurich: 21°C and mostly sunny.
+
+Ideas for a day like this in Zurich:
+- Walk along Lake Zurich or the Limmat River
+ - Explore the Old Town (Altstadt)
+- Sit at an outdoor café and enjoy the sunshine
+- Visit Lindenhof for a nice city view
+- Take a boat cruise on Lake Zurich
+- Go up to Uetliberg for an easy hike and panoramic views
+- Have a picnic in a park like Zürichhorn
+- Visit the Bahnhofstrasse area for shopping and strolling
+
+If you want, I can also suggest a full half-day or full-day Zurich itinerary based on this weather.
+```
 
