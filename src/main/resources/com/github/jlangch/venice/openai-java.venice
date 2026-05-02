@@ -258,7 +258,7 @@
                                                               get-weather))
                   chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
                                (openai-java/max-completion-tokens 2048)
-                               (openai-java/debug true)
+                               (openai-java/debug false)
                                (openai-java/add-function 
                                     "GetWeather"
                                     "Gets the current weather for a city."
@@ -268,7 +268,7 @@
                                       :unit { 
                                         :type "string"
                                         :description "Temperature unit: celsius or fahrenheit" } } 
-                                    '("location" "unit"))
+                                    [ "location" "unit" ])
                                (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
                   response (openai-java/execute chat)]
               (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
@@ -343,12 +343,13 @@
 
 (defn 
   ^{ :arglists '(
-          "(add-function chat name description properties required)" )
+          "(add-function chat name description properties required)"
+          "(add-function chat name description type properties required)" )
      :doc """
           Add a function definition to a chat. Any number of function definitions
           can be added to a chat.
 
-          Return the chat.
+          Returns the chat.
           """
      :examples '(
           """
@@ -360,22 +361,63 @@
                                (openai-java/add-function 
                                     "GetWeather"
                                     "Gets the current weather for a city."
+                                    "object"
                                     { :location { 
                                         :type "string" 
                                         :description "A city, e.g.: Zurich" }
                                       :unit { 
                                         :type "string"
                                         :description "Temperature unit: celsius or fahrenheit" } } 
-                                    '("location" "unit")))]
+                                    [ "location" "unit" ]))]
               ))
           """ )
 
      :see-also '(
         "openai-java/chat-completion") }
 
-  add-function [chat name description properties required]
+  add-function
 
-  (. chat :addFunction name description properties required))
+  ([chat name description properties required]
+   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+   (. chat :addFunction name description "object" properties required))
+
+  ([chat name description type properties required]
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+    (. chat :addFunction name description type properties required)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(json-response-format chat name description type properties)" )
+     :doc """
+          Sets a structured JSON response format
+
+          Returns the chat.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/json-response-format 
+                                    "employee-list"
+                                    "A list of employees"
+                                    "object"
+                                    { :employees { :items  { "type" "string" }}} )
+                               (openai-java/add-user-message ""Who works at OpenAI?""))]
+          
+              ))
+          """ )
+
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  json-response-format [chat name description type properties]
+
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+  (. chat :jsonResponseFormat name description type properties))
 
 
 (defn 

@@ -50,6 +50,7 @@ public class ChatCompletionTraditionalFunctionExample {
                     .addFunction(
                         "get-sdk-quality",
                         "Gets the quality of the given SDK.",
+                        "object",
                         toMap("name", toMap("type", "string")),
                         toList("name"))
                     .addUserMessage("How good are the following SDKs: OpenAI Java SDK, Unknown Company SDK");

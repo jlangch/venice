@@ -30,6 +30,8 @@ import com.openai.core.JsonValue;
 import com.openai.models.ChatModel;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
+import com.openai.models.ResponseFormatJsonSchema;
+import com.openai.models.ResponseFormatJsonSchema.JsonSchema;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionFunctionTool;
@@ -129,7 +131,8 @@ public class ChatCompletionTraditionalRequest {
     public ChatCompletionTraditionalRequest addFunction(
             final String name,
             final String description,
-            final Map<String,Map<String,String>> properties,
+            final String type,
+            final Map<String,Map<String,Object>> properties,
             final List<String> requiredProperties
     ) {
         Objects.requireNonNull(name);
@@ -138,7 +141,7 @@ public class ChatCompletionTraditionalRequest {
         Objects.requireNonNull(requiredProperties);
 
         final FunctionParameters.Builder paramBuilder = FunctionParameters.builder();
-        paramBuilder.putAdditionalProperty("type", JsonValue.from("object"));
+        paramBuilder.putAdditionalProperty("type", JsonValue.from(type));
         paramBuilder.putAdditionalProperty("properties", JsonValue.from(properties));
         paramBuilder.putAdditionalProperty("required", JsonValue.from(requiredProperties));
         paramBuilder.putAdditionalProperty("additionalProperties", JsonValue.from(false));
@@ -152,6 +155,34 @@ public class ChatCompletionTraditionalRequest {
                                 .builder()
                                 .function(fnBuilder.build())
                                 .build());
+
+        return this;
+    }
+
+    public ChatCompletionTraditionalRequest jsonResponseFormat(
+            final String name,
+            final String description,
+            final String type,
+            final Map<String,Map<String,Object>> properties
+    ) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(description);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(properties);
+
+        final JsonSchema.Schema.Builder schemaBuilder = JsonSchema.Schema.builder();
+        schemaBuilder.putAdditionalProperty("type", JsonValue.from(type));
+        schemaBuilder.putAdditionalProperty("properties", JsonValue.from(properties));
+
+        paramsBuilder.responseFormat(ResponseFormatJsonSchema
+                                        .builder()
+                                        .jsonSchema(JsonSchema
+                                                        .builder()
+                                                        .name(name)
+                                                        .description(description)
+                                                        .schema(schemaBuilder.build())
+                                                        .build())
+                                        .build());
 
         return this;
     }
