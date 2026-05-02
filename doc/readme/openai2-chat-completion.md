@@ -273,8 +273,9 @@ Here’s the step-by-step solution:
 
 Now all three—the **wolf, goat, and cabbage**—are safely across the river.
 
-### Final crossing order
-**Goat over → Farmer back → Wolf over → Goat back → Cabbage over → Farmer back → Goat over**
+**Final crossing order:**
+
+*Goat over → Farmer back → Wolf over → Goat back → Cabbage over → Farmer back → Goat over*
 
  
  
