@@ -162,6 +162,7 @@ venice>
 
 **Modules**
 
+* [OpenAI](doc/readme/openai2.md)
 * [Inter-Process-Communication (Messaging)](doc/readme/ipc.md)
 * [Cryptography](doc/readme/cryptography.md)
 * [Docker](doc/readme/docker.md)
