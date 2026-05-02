@@ -503,6 +503,7 @@
           "swiss-cities/download-city-data"
           "swiss-cities/load-city-data-from-classpath"
           "swiss-cities/slurp-city-data"
+          "swiss-cities/plz?"
           "swiss-cities/find-location"
           "swiss-cities/find-by-ortschaft"
           "swiss-cities/find-by-gemeinde"
@@ -535,6 +536,7 @@
           "swiss-cities/download-city-data"
           "swiss-cities/load-city-data-from-classpath"
           "swiss-cities/slurp-city-data"
+          "swiss-cities/find-by-plz"
           "swiss-cities/locations"
           "swiss-cities/ortschaften" ) }
 

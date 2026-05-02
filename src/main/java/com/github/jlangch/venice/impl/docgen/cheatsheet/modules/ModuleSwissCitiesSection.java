@@ -50,13 +50,21 @@ public class ModuleSwissCitiesSection implements ISectionBuilder {
         geoip.addItem(diBuilder.getDocItem("swiss-cities/close", false));
         geoip.addItem(diBuilder.getDocItem("swiss-cities/open?", false));
 
-        final DocSection db = new DocSection("Query", id());
-        all.addSection(db);
-        db.addItem(diBuilder.getDocItem("swiss-cities/find-location", false));
-        db.addItem(diBuilder.getDocItem("swiss-cities/find-by-plz", false));
-        db.addItem(diBuilder.getDocItem("swiss-cities/ortschaften", false));
-        db.addItem(diBuilder.getDocItem("swiss-cities/gemeinden", false));
-        db.addItem(diBuilder.getDocItem("swiss-cities/locations", false));
+        final DocSection query = new DocSection("Query", id());
+        all.addSection(query);
+        query.addItem(diBuilder.getDocItem("swiss-cities/find-location", false));
+        query.addItem(diBuilder.getDocItem("swiss-cities/find-by-ortschaft", false));
+        query.addItem(diBuilder.getDocItem("swiss-cities/find-by-gemeinde", false));
+        query.addItem(diBuilder.getDocItem("swiss-cities/find-by-ortschaft-or-gemeinde", false));
+        query.addItem(diBuilder.getDocItem("swiss-cities/find-by-ortschaft-and-gemeinde", false));
+        query.addItem(diBuilder.getDocItem("swiss-cities/ortschaften", false));
+        query.addItem(diBuilder.getDocItem("swiss-cities/gemeinden", false));
+        query.addItem(diBuilder.getDocItem("swiss-cities/locations", false));
+
+        final DocSection plz = new DocSection("PLZ", id());
+        all.addSection(plz);
+        plz.addItem(diBuilder.getDocItem("swiss-cities/find-by-plz", false));
+        plz.addItem(diBuilder.getDocItem("swiss-cities/plz?", false));
 
         final DocSection dist = new DocSection("Distance", id());
         all.addSection(dist);
