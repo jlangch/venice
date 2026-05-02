@@ -605,6 +605,28 @@
                   indent (:total-tokens usage)))))
 
 
+(defn 
+  ^{ :arglists '(
+          "(models)" )
+     :doc """
+          Returns all supported OpenAI models
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (openai-java/models))
+          """)
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  models []
+  
+  (->> (. :ChatCompletionTraditionalRequest :models) ;; java.util.ArrayList
+       (map java->venice)
+       (map keyword)))
+
+
 ;; -----------------------------------------------------------------------------
 ;; Function registry
 ;; -----------------------------------------------------------------------------
