@@ -4,6 +4,7 @@
 
 * [Completions](#completions)
 * [Functions](#functions)
+* [Structured Output](#structured-output)
 
  
  
@@ -458,3 +459,12 @@ Ideas for a day like this in Zurich:
 
 If you want, I can also suggest a full half-day or full-day Zurich itinerary based on this weather.
 ```
+
+ 
+ 
+
+
+## Structured Output
+
+
+*TODO*
