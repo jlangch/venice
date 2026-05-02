@@ -289,6 +289,67 @@ for answering questions.
 
 A full weather example. It answers questions like *"What is the weather in Zurich in Celsius?"*:
 
+#### Example 1
+
+``` clojure
+(do
+  (load-module :openai-java)
+
+  (defn celsius-to-fahrenheit [c]
+    (-> (double c) (* 9) (/ 5) (+ 32) (long)))  ;; (c * 9) / 5 + 32
+
+  (defn degrees [t unit]
+    (if (str/equals-ignore-case? unit "celsius") t (celsius-to-fahrenheit t)))
+
+  (defn get-weather [fnArgsJson]
+    (let [args     (json/read-str fnArgsJson)
+          location (get args "location")
+          unit     (get args "unit")]
+      (cond                 ;; we just support one hard coded location
+        (str/contains? location "Zurich")
+          (json/write-str { :location    location
+                            :unit        unit
+                            :temperature (degrees 21 unit)
+                            :conditions  "Mostly sunny" })
+        :else
+          (json/write-str { :location location
+                            :error    (str "No weather data available for " location "!")}))))
+
+  (let [client   (openai-java/client)
+        registry (-> (openai-java/create-function-registry)
+                     (openai-java/register-function "GetWeather"
+                                                    get-weather))
+        chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-function 
+                          "GetWeather"
+                          "Gets the current weather for a city."
+                          { :location { 
+                              :type "string" 
+                              :description "A city, e.g.: Zurich" }
+                            :unit { 
+                              :type "string"
+                              :description "Temperature unit: celsius or fahrenheit" } } 
+                          '("location" "unit"))
+                     (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
+        response (openai-java/execute chat)]
+    (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
+    ;; required follow up question (Give OpenAI weather context data on Zurich)
+    (openai-java/add-assistant-message chat (openai-java/messages response))      
+    (openai-java/add-user-message chat "What is the weather in Zurich in Celsius?")
+    (let [response (openai-java/execute chat)]
+      (println (first (openai-java/messages response))))))
+```
+
+Response
+
+```
+Zurich: 21°C, mostly sunny.
+```
+
+
+#### Example 2
+
 ``` clojure
 (do
   (load-module :openai-java)
@@ -357,4 +418,3 @@ Ideas for a day like this in Zurich:
 
 If you want, I can also suggest a full half-day or full-day Zurich itinerary based on this weather.
 ```
-
