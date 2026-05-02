@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.13.2] - 2026-05-xx
+## [1.13.2] - 2026-05-02
 
 ### Enhancements
 
-- - Added module *:openai-java*
+- Added module *:openai-java*
 
 
 
