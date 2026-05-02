@@ -286,7 +286,6 @@ Now all three—the **wolf, goat, and cabbage**—are safely across the river.
 
 ## Functions
 
- 
 
 This example demonstrates how to execute functions whose inputs 
 are model-generated and deliver the required knowledge to the model 
@@ -296,54 +295,54 @@ for answering questions.
 A full weather example. It answers questions like *"What is the weather in Zurich in Celsius?"*:
 
 ``` clojure
-  (do
-    (load-module :openai-java)
+(do
+  (load-module :openai-java)
 
-    (defn celsius-to-fahrenheit [c]
-      (-> (double c) (* 9) (/ 5) (+ 32) (long)))  ;; (c * 9) / 5 + 32
+  (defn celsius-to-fahrenheit [c]
+    (-> (double c) (* 9) (/ 5) (+ 32) (long)))  ;; (c * 9) / 5 + 32
 
-    (defn degrees [t unit]
-      (if (str/equals-ignore-case? unit "celsius") t (celsius-to-fahrenheit t)))
+  (defn degrees [t unit]
+    (if (str/equals-ignore-case? unit "celsius") t (celsius-to-fahrenheit t)))
 
-    (defn get-weather [fnArgsJson]
-      (let [args     (json/read-str fnArgsJson)
-            location (get args "location")
-            unit     (get args "unit")]
-        (cond                 ;; we just support one hard coded location
-          (str/contains? location "Zurich")
-            (json/write-str { :location    location
-                              :unit        unit
-                              :temperature (degrees 21 unit)
-                              :conditions  "Mostly sunny" })
-          :else
-            (json/write-str { :location location
-                              :error    (str "No weather data available for " location "!")}))))
+  (defn get-weather [fnArgsJson]
+    (let [args     (json/read-str fnArgsJson)
+          location (get args "location")
+          unit     (get args "unit")]
+      (cond                 ;; we just support one hard coded location
+        (str/contains? location "Zurich")
+          (json/write-str { :location    location
+                            :unit        unit
+                            :temperature (degrees 21 unit)
+                            :conditions  "Mostly sunny" })
+        :else
+          (json/write-str { :location location
+                            :error    (str "No weather data available for " location "!")}))))
 
-    (let [client   (openai-java/client)
-          registry (-> (openai-java/create-function-registry)
-                       (openai-java/register-function "GetWeather"
-                                                      get-weather))
-          chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
-                       (openai-java/max-completion-tokens 2048)
-                       (openai-java/debug true)
-                       (openai-java/add-function 
-                            "GetWeather"
-                            "Gets the current weather for a city."
-                            { :location { 
-                                :type "string" 
-                                :description "A city, e.g.: Zurich" }
-                              :unit { 
-                                :type "string"
-                                :description "Temperature unit: celsius or fahrenheit" } } 
-                            '("location" "unit"))
-                       (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
-          response (openai-java/execute chat)]
-      (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
-      ;; follow up question
-      (openai-java/add-assistant-message chat (openai-java/messages response))      
-      (openai-java/add-user-message chat "Please give the current weather in Zurich and some ideas what to do in Zurich on day like this!")
-      (let [response (openai-java/execute chat)]
-        (println (first (openai-java/messages response))))))
+  (let [client   (openai-java/client)
+        registry (-> (openai-java/create-function-registry)
+                     (openai-java/register-function "GetWeather"
+                                                    get-weather))
+        chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-function 
+                          "GetWeather"
+                          "Gets the current weather for a city."
+                          { :location { 
+                              :type "string" 
+                              :description "A city, e.g.: Zurich" }
+                            :unit { 
+                              :type "string"
+                              :description "Temperature unit: celsius or fahrenheit" } } 
+                          '("location" "unit"))
+                     (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
+        response (openai-java/execute chat)]
+    (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
+    ;; follow up question
+    (openai-java/add-assistant-message chat (openai-java/messages response))      
+    (openai-java/add-user-message chat 
+        "Please give the current weather in Zurich and some ideas what to do in Zurich on day like this!")
+    (let [response (openai-java/execute chat)]
+      (println (first (openai-java/messages response))))))
 ```
 
 Response
