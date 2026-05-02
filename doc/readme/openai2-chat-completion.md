@@ -334,6 +334,7 @@ A full weather example. It answers questions like *"What is the weather in Zuric
                      (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
         response (openai-java/execute chat)]
     (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
+
     ;; required follow up question (Give OpenAI weather context data on Zurich)
     (openai-java/add-assistant-message chat (openai-java/messages response))      
     (openai-java/add-user-message chat "What is the weather in Zurich in Celsius?")
@@ -393,6 +394,7 @@ Zurich: 21°C, mostly sunny.
                      (openai-java/add-user-message "What is the weather in Zurich in Celsius?"))
         response (openai-java/execute chat)]
     (println (coalesce (first (openai-java/messages response)) "<no message>\n"))
+
     ;; follow up question
     (openai-java/add-assistant-message chat (openai-java/messages response))      
     (openai-java/add-user-message chat 
