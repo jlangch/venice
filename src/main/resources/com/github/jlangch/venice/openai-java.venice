@@ -228,6 +228,23 @@
                 (println (first (openai-java/messages response))))))
           """,
           """
+          ;; structured output
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/json-response-format 
+                                    "employee-list"
+                                    "A list of employees"
+                                    "object"
+                                    { :employees { :items  { "type" "string" }}} )
+                               (openai-java/add-user-message "Who works at OpenAI?"))
+                  response (openai-java/execute chat)
+                  msg      (first (openai-java/messages response))]
+              (println (first (openai-java/messages response)))))
+          """,
+          """
           ;; function call
           (do
             (load-module :openai-java)
@@ -280,9 +297,10 @@
           """)
      :see-also '(
           "openai-java/max-completion-tokens"
+          "openai-java/json-response-format"
+          "openai-java/add-function"
           "openai-java/add-user-message"
           "openai-java/add-assistant-message"
-          "openai-java/add-function"
           "openai-java/execute"
           "openai-java/client"
           "openai-java/close"
