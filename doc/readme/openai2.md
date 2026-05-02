@@ -160,5 +160,5 @@ place we want for this task is `~/Library/LaunchAgents`, and the file is pretty 
 ```
 
 Save this file in `~/Library/LaunchAgents/setenv.OPENAI.plist`! On a restart, `launchctl` 
-will arrange this to be run for us and *OPENAI_API_KEY* provide the OpenAI API Key to all
+will arrange this to be run for us and provide the *OPENAI_API_KEY* env var to all
 Apps.
