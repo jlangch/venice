@@ -321,7 +321,20 @@
     (. :ChatCompletionTraditionalRequest :of client (. :ChatModel model) fn-registry)))
 
 
-(defn max-completion-tokens [chat tokens]
+(defn 
+  ^{ :arglists '(
+          "(max-completion-tokens chat tokens)" )
+     :doc """
+          Sets the max completion tokens OpenAI must use. 'tokens' must be
+          positive number.
+
+          Returns the chat.
+          """
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  max-completion-tokens [chat tokens]
+  
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (long? tokens)] }
   (. chat :maxCompletionTokens tokens))
 
@@ -330,33 +343,59 @@
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (boolean? on)] }
   (. chat :debug on))
 
-(defn add-user-message [chat msg]
-  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
-          (or (string? msg) (sequential? msg))] }
-  (if (string? msg)
-    (. chat :addUserMessage msg)
-    (. chat :addUserMessages msg)))
+(defn 
+  ^{ :arglists '(
+          "(add-user-message chat msg)" )
+     :doc """
+          Adds a *user* message or a list of *user* messages to the chat
+          completion request.
 
-(defn add-assistant-message [chat msg]
+          Returns the chat.
+          """
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  add-user-message [chat msg]
+  
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
           (or (string? msg) (sequential? msg))] }
   (if (string? msg)
-    (. chat :addAssistantMessage msg)
-    (. chat :addAssistantMessages msg)))
+    (. chat :addUserMessage (filter-msgs msg))
+    (. chat :addUserMessages (filter-msgs msg))))
+
+(defn 
+  ^{ :arglists '(
+          "(add-assistant-message chat msg)" )
+     :doc """
+          Adds an *assistant* message or a list of *assistant* messages to the 
+          chat completion request.
+
+          Returns the chat.
+          """
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  add-assistant-message [chat msg]
+  
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
+          (or (string? msg) (sequential? msg))] }
+  (if (string? msg)
+    (. chat :addAssistantMessage (filter-msgs msg))
+    (. chat :addAssistantMessages (filter-msgs msg))))
 
 (defn add-system-message [chat msg]
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
           (or (string? msg) (sequential? msg))] }
   (if (string? msg)
-    (. chat :addSystemMessage msg)
-    (. chat :addSystemMessages msg)))
+    (. chat :addSystemMessage (filter-msgs msg))
+    (. chat :addSystemMessages (filter-msgs msg))))
 
 (defn add-developer-message [chat msg]
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
           (or (string? msg) (sequential? msg))] }
   (if (string? msg)
-    (. chat :addDeveloperMessage msg)
-    (. chat :addDeveloperMessages msg)))
+    (. chat :addDeveloperMessage (filter-msgs msg))
+    (. chat :addDeveloperMessages (filter-msgs msg))))
 
 
 (defn 
@@ -396,11 +435,15 @@
   add-function
 
   ([chat name description properties required]
-   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
-   (. chat :addFunction name description "object" properties required))
+    { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)
+            (string? name) (string? description) 
+            (map? properties) (sequential? required)] }
+    (. chat :addFunction name description "object" properties required))
 
   ([chat name description type properties required]
-  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+    { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)
+            (string? name) (string? description) (string? type)
+            (map? properties) (sequential? required)] }
     (. chat :addFunction name description type properties required)))
 
 
@@ -434,7 +477,8 @@
 
   json-response-format [chat name description type properties]
 
-  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)
+          (string? name) (string? description) (string? type) (map? properties)] }
   (. chat :jsonResponseFormat name description type properties))
 
 
@@ -636,6 +680,11 @@
                     "  (load-module :openai-java-install) \n"
                     "  (openai-java-install/install :dir (repl/libs-dir) :silent false)) "))))
   true)
+
+(defn filter-msgs [m]
+  (if (sequential? m)
+    (filter #(and (some? %) (string? %)) m)
+    m))
 
 (defn- openai-api-key-from-env []
   (system-env "OPENAI_API_KEY"))
