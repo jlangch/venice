@@ -29,7 +29,7 @@ and restart the REPL
 
  
 
-*or install ot to any other destination dir:*
+*or install it to any other destination dir:*
 ```
 (do
   (load-module :openai-java-install)
