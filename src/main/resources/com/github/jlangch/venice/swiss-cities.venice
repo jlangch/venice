@@ -496,7 +496,8 @@
             (load-module :swiss-cities)
             (swiss-cities/download-city-data)
 
-            (swiss-cities/find-by-plz 7132))
+            (swiss-cities/find-by-plz 7132)
+            (swiss-cities/find-by-plz "7132"))
           """) 
       :see-also '(
           "swiss-cities/download-city-data"
@@ -514,6 +515,35 @@
   
   (let [plz (str plz)]
     (filter #(== plz (get % :plz)) (:entries (get-city-data)))))
+
+
+(defn 
+  ^{ :arglists '("(plz? plz)")
+     :doc """
+          Return `true` if the 'plz' is valid else `false`
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :swiss-cities)
+            (swiss-cities/download-city-data)
+
+            (swiss-cities/plz? 7132)
+            (swiss-cities/plz? "7132"))
+          """) 
+      :see-also '(
+          "swiss-cities/download-city-data"
+          "swiss-cities/load-city-data-from-classpath"
+          "swiss-cities/slurp-city-data"
+          "swiss-cities/locations"
+          "swiss-cities/ortschaften" ) }
+
+  plz? [plz]
+  
+  { :pre [(or (long? plz) (string? plz))] }
+
+  (let [plz (str plz)]
+    (contains? (:plz (get-city-data)) plz)))
 
 
 (defn 
@@ -706,6 +736,7 @@
        (sort)))
 
 
+
 ;; -----------------------------------------------------------------------------
 ;; Utils
 ;; -----------------------------------------------------------------------------
@@ -755,6 +786,8 @@
                              ;; cache for efficient access
         :mapped-by-ortschaft (group-by :ortschaft entries)
         :mapped-by-gemeinde  (group-by :gemeinde entries)
+        :plz                 (->> (map #(get % :plz) entries)
+                                  (apply set)) 
       })
     (catch :Exception e
       (throw (ex :VncException "Failed to parse the SwissTopo GEO CSV!" e)))))
