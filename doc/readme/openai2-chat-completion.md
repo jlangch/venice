@@ -82,7 +82,14 @@ Chat conversation with multiple questions and answers.
       (let [response (openai-java/execute chat)]
                      (println (first (openai-java/messages response))))))
 ```
- 
+
+Answer:
+
+```
+Hello
+Hey!
+Greetings
+```
 
 
 #### Example: Text correction
