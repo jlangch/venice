@@ -5,6 +5,7 @@
 * [Completions](#completions)
 * [Functions](#functions)
 * [Structured Output](#structured-output)
+* [File Completions](#file-completions)
 
  
  
@@ -463,8 +464,15 @@ If you want, I can also suggest a full half-day or full-day Zurich itinerary bas
  
  
 
-
 ## Structured Output
 
+*TODO: API ready -> document*
 
-*TODO*
+
+ 
+ 
+
+## File Completions
+
+*TODO: API ready -> document*
+
