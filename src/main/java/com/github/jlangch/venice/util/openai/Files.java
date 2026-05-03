@@ -22,7 +22,8 @@
 package com.github.jlangch.venice.util.openai;
 
 import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import com.openai.client.OpenAIClient;
@@ -34,73 +35,94 @@ import com.openai.models.files.FilePurpose;
 
 public class Files {
 
+
+    public static FileObject fileObject(
+            final OpenAIClient client,
+            final Path path,
+            final String mimetype,
+            final FilePurpose purpose,
+            final long expiresAfterSeconds
+    ) {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(path);
+
+        if (!"application/pdf".equals(mimetype)) {
+            throw new RuntimeException("OpenAI accepts only PDF files");
+        }
+
+        final FileCreateParams.Builder params = FileCreateParams.builder();
+
+        params.file(path);
+
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
+        }
+
+        return client.files().create(params.build());
+    }
+
     public static FileObject fileObject(
             final OpenAIClient client,
             final File file,
+            final String mimetype,
             final FilePurpose purpose,
             final long expiresAfterSeconds
     ) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(file);
 
-        final FileCreateParams.Builder params = FileCreateParams.builder();
-
-        params.file(file.toPath());
-
-        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
-
-        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
-        if (expiresAfter != null) {
-            params.expiresAfter(expiresAfter);
-        }
-
-        return client.files().create(params.build());
-    }
-
-    public static FileObject fileObject(
-            final OpenAIClient client,
-            final InputStream is,
-            final FilePurpose purpose,
-            final long expiresAfterSeconds
-    ) {
-        Objects.requireNonNull(client);
-        Objects.requireNonNull(is);
-
-        final FileCreateParams.Builder params = FileCreateParams.builder();
-
-        params.file(is);
-
-        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
-
-        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
-        if (expiresAfter != null) {
-            params.expiresAfter(expiresAfter);
-        }
-
-        return client.files().create(params.build());
+        return fileObject(client, file.toPath(), mimetype, purpose, expiresAfterSeconds);
     }
 
     public static FileObject fileObject(
             final OpenAIClient client,
             final byte[] data,
+            final String mimetype,
             final FilePurpose purpose,
             final long expiresAfterSeconds
     ) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(data);
 
-        final FileCreateParams.Builder params = FileCreateParams.builder();
+        // WARNING: OpenAI FileCreateParams only works with Path, passing a byte buffer
+        //          or an InputStream results in an exception!!!
+        //
+        //          And it only accepts PDF files!!
 
-        params.file(data);
-
-        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
-
-        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
-        if (expiresAfter != null) {
-            params.expiresAfter(expiresAfter);
+        if (!"application/pdf".equals(mimetype)) {
+            throw new RuntimeException("OpenAI accepts only PDF files");
         }
 
-        return client.files().create(params.build());
+        File tmp = null;
+        try {
+            // Create a temporary file
+            tmp = File.createTempFile("OpenAI", ".pdf");
+            java.nio.file.Files.write(tmp.toPath(), data);
+
+            final FileCreateParams.Builder params = FileCreateParams.builder();
+
+            params.file(tmp.toPath());
+
+            params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+            final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+            if (expiresAfter != null) {
+                params.expiresAfter(expiresAfter);
+            }
+
+            return client.files().create(params.build());
+        }
+        catch(IOException ex) {
+            throw new RuntimeException("Failed to create temporary file for upload", ex);
+        }
+        finally {
+            if (tmp != null) {
+                tmp.delete();
+            }
+        }
     }
 
     public static String id(final FileObject fileObject) {

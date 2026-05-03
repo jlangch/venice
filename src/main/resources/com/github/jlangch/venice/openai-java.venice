@@ -375,6 +375,31 @@
 
           Returns the chat.
           """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            
+            (let [client   (openai-java/client)
+                  file-obj (openai-java/create-file-object 
+                                          client 
+                                          (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")
+                                          "application/pdf"
+                                          :USER_DATA
+                                          3600)
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/add-user-message-with-files 
+                                    "Describe this image"
+                                    file-obj))
+                  response (openai-java/execute chat)
+                  elapsed  (openai-java/elapsed chat)
+                  usage    (openai-java/usage response)
+                  msg      (first (openai-java/messages response))]
+              (printf "Elapsed: %dms%n%n" elapsed)
+              (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
+              (printf "Result:  %n%s%n" msg)))
+          """)
      :see-also '(
         "openai-java/chat-completion") }
 
@@ -587,11 +612,13 @@
 
           | [![width: 15%]]       | [![width: 85%]] |
           | client                | An OpenAI client |
-          | file                  | A file, :InputStream, or byte buffer |
+          | file                  | A file or a byte buffer |
+          | mimetype              | The file's mimetype (OpenAI accepts only "application/pdf") |
           | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
                                     `:ASSISTANTS`, `:FINE_TUNE` |
           | expires-after-seconds | The file object expiry time in seconds. \
-                                    A negative value means no expiration. |
+                                    A negative value means no expiration. ¶\
+                                    Defaults to 3600s |
 
           Returns the file object.
           """
@@ -600,20 +627,21 @@
 
   create-file-object 
   
-  ([client file]
-    (create-file-object client file (. :FilePurpose :USER_DATA) 0))
+  ([client file mimetype]
+    (create-file-object client file mimetype :USER_DATA 3600))
   
-  ([client file purpose]  
-    (create-file-object client file (. :FilePurpose purpose) 0))
+  ([client file mimetype purpose]  
+    (create-file-object client file mimetype purpose 3600))
   
-  ([client file purpose expires-after-seconds] 
+  ([client file mimetype purpose expires-after-seconds] 
     { :pre [(instance-of? :OpenAIClient client) 
             (or (io/file? file)
-                (instance-of? :java.io.InputStream file)
                 (bytebuf? file))
-            (instance-of? :FilePurpose purpose) 
+            (keyword? purpose) 
             (long? expires-after-seconds)] }
-    (. :Files file purpose expires-after-seconds)))
+    (. :Files :fileObject client file mimetype 
+                          (. :FilePurpose purpose) 
+                          expires-after-seconds)))
 
 
 
