@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [1.13.3] - 2026-05-xx
+
+### Enhancements
+
+- OpenAI: Added support for structured chat completion results
+- OpenAI: Added support chat file completions
+
+
+
 ## [1.13.2] - 2026-05-02
 
 ### Enhancements
