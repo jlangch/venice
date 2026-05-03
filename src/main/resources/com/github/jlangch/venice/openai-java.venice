@@ -368,9 +368,9 @@
 
 (defn 
   ^{ :arglists '(
-          "(add-user-message-with-files chat msg & files)" )
+          "(add-user-message-with-files chat msg & file-objects)" )
      :doc """
-          Adds a *user* message with additional files to the chat
+          Adds a *user* message with additional file objects to the chat
           completion request.
 
           Returns the chat.
@@ -403,11 +403,11 @@
      :see-also '(
         "openai-java/chat-completion") }
 
-  add-user-message-with-files [chat msg & files]
+  add-user-message-with-files [chat msg & file-objects]
 
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
           (or (string? msg) (sequential? msg))] }
-  (. chat :addUserMessageWithFiles msg files))
+  (. chat :addUserMessageWithFiles msg file-objects))
 
 
 (defn 
