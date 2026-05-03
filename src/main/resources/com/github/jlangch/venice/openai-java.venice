@@ -401,6 +401,7 @@
           """)
      :see-also '(
         "openai-java/create-file-object"
+        "openai-java/create-file-object-binary"
         "openai-java/chat-completion") }
 
   add-user-message-with-files [chat msg & file-objects]
