@@ -277,7 +277,7 @@
           "swiss-cities/load-city-data-from-classpath"
           "swiss-cities/slurp-city-data"
           "swiss-cities/find-location"
-         "swiss-cities/find-by-gemeinde"
+          "swiss-cities/find-by-gemeinde"
           "swiss-cities/find-by-ortschaft-or-gemeinde"
           "swiss-cities/find-by-ortschaft-and-gemeinde"
           "swiss-cities/find-by-plz" ) }
