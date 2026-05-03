@@ -374,8 +374,6 @@
           completion request.
 
           Returns the chat.
-
-          **NOTE: OpenAI accepts only PDFs so far!**
           """
      :examples '(
           """
@@ -386,7 +384,6 @@
                   file-obj (openai-java/create-file-object 
                                           client 
                                           (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")
-                                          "application/pdf"
                                           :USER_DATA
                                           3600)
                   chat     (-> (openai-java/chat-completion client :GPT_5_4)
@@ -615,38 +612,101 @@
 
           | [![width: 15%]]       | [![width: 85%]] |
           | client                | An OpenAI client |
-          | file                  | A file or a byte buffer |
-          | mimetype              | The file's mimetype ¶\
-                                    **OpenAI accepts only PDFs (application/pdf)** |
+          | file                  | A file path. E.g.: (io/file "/data/planning.pdf") |
           | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
                                     `:ASSISTANTS`, `:FINE_TUNE` |
           | expires-after-seconds | The file object expiry time in seconds. \
                                     A negative value means no expiration. ¶\
                                     Defaults to 3600s |
 
+          Supported file types:
+
+          | PDF files	      | `.pdf` |
+          | Text and code   | `.txt`, `.md`, `.json`, `.html`, `.xml`, code files |
+          | Rich documents	| `.doc`, `.docx`, `.rtf`, `.odt` |
+          | Presentations	  | `.ppt`, `.pptx` |
+          | Spreadsheets	  | `.csv`, `.xls`, `.xlsx` |
+
           Returns the file object.
           """
      :see-also '(
-        "openai-java/client") }
+          "openai-java/create-file-object-binary"
+          "openai-java/add-user-message-with-files"
+          "openai-java/client") }
 
   create-file-object 
   
-  ([client file mimetype]
-    (create-file-object client file mimetype :USER_DATA 3600))
+  ([client file]
+    (create-file-object client file :USER_DATA 3600))
   
-  ([client file mimetype purpose]  
-    (create-file-object client file mimetype purpose 3600))
+  ([client file purpose]  
+    (create-file-object client file purpose 3600))
   
-  ([client file mimetype purpose expires-after-seconds] 
+  ([client file purpose expires-after-seconds] 
     { :pre [(instance-of? :OpenAIClient client) 
-            (or (io/file? file)
-                (bytebuf? file))
+            (io/file? file)
             (keyword? purpose) 
             (long? expires-after-seconds)] }
-    (. :Files :fileObject client file mimetype 
+    (. :Files :fileObject client 
+                          file  
                           (. :FilePurpose purpose) 
                           expires-after-seconds)))
 
+
+(defn
+  ^{ :arglists '(
+          "(create-file-object-binary client data filename)"
+          "(create-file-object-binary client data filename purpose)"
+          "(create-file-object-binary client data filename expires-after-seconds)" )
+     :doc """
+          Creates a new OpenAI binary file object.
+
+          Arguments:
+
+          | [![width: 15%]]       | [![width: 85%]] |
+          | client                | An OpenAI client |
+          | data                  | A data `bytebuf` |
+          | filename              | A filename. E.g.: "planning.pdf" |
+          | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
+                                    `:ASSISTANTS`, `:FINE_TUNE` |
+          | expires-after-seconds | The file object expiry time in seconds. \
+                                    A negative value means no expiration. ¶\
+                                    Defaults to 3600s |
+
+          Supported file types:
+
+          | PDF files	      | `.pdf` |
+          | Text and code   | `.txt`, `.md`, `.json`, `.html`, `.xml`, code files |
+          | Rich documents	| `.doc`, `.docx`, `.rtf`, `.odt` |
+          | Presentations	  | `.ppt`, `.pptx` |
+          | Spreadsheets	  | `.csv`, `.xls`, `.xlsx` |
+
+          Returns the file object.
+          """
+     :see-also '(
+          "openai-java/create-file-object"
+          "openai-java/add-user-message-with-files"
+          "openai-java/client") }
+
+  create-file-object-binary 
+  
+  ([client data filename]
+    (create-file-object-binary client data filename :USER_DATA 3600))
+  
+  ([client data filename purpose]  
+    (create-file-object client data filename purpose 3600))
+  
+  ([client data filename purpose expires-after-seconds] 
+    { :pre [(instance-of? :OpenAIClient client) 
+            (bytebuf? data)
+            (string? filename)
+            (keyword? purpose) 
+            (long? expires-after-seconds)] }
+    (. :Files :fileObject client 
+                          data 
+                          filename  
+                          (. :FilePurpose purpose) 
+                          expires-after-seconds)))
 
 
 ;; -----------------------------------------------------------------------------

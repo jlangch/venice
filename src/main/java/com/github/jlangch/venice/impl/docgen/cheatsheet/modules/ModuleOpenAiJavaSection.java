@@ -66,6 +66,7 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         final DocSection files = new DocSection("Files", id());
         all.addSection(files);
         files.addItem(diBuilder.getDocItem("openai-java/create-file-object", false));
+        files.addItem(diBuilder.getDocItem("openai-java/create-file-object-binary", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);

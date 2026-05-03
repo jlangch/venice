@@ -41,21 +41,14 @@ public class ChatCompletionTraditionalFileExample {
 
     public static void main(String[] args) throws Exception {
 
-        final Path path = Paths.get("/Users/juerg/Desktop/Tour_Eiffel_Wikimedia_Commons.pdf");
-
-        final byte[] data = java.nio.file.Files.readAllBytes(path);
+        final Path path = Paths.get("/Users/juerg/Desktop/Tour_Eiffel.pdf");
 
         final OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        // 3600s is the minimum expiry time
-        final FileObject fileObj = Files.fileObject(
-                                    client,
-                                    data,
-                                    "application/pdf",
-                                    FilePurpose.USER_DATA,
-                                    3600);
+        // final FileObject fileObj = fromPath(client, path);
 
-        System.out.println("Created FileObject with id=" + fileObj.id());
+        final FileObject fileObj = fromBinary(client, path);
+
 
         final ChatCompletionTraditionalRequest request =
                 ChatCompletionTraditionalRequest
@@ -69,6 +62,43 @@ public class ChatCompletionTraditionalFileExample {
 
         print(response);
     }
+
+
+    private static FileObject fromPath(
+            final OpenAIClient client,
+            final Path path
+    ) throws Exception{
+       // 3600s is the minimum expiry time
+        final FileObject fileObj = Files.fileObject(
+                                    client,
+                                    path.toFile(),
+                                    FilePurpose.USER_DATA,
+                                    3600);
+
+        System.out.println("Created FileObject with id=" + fileObj.id());
+
+        return fileObj;
+    }
+
+    private static FileObject fromBinary(
+            final OpenAIClient client,
+            final Path path
+    ) throws Exception{
+        final byte[] data = java.nio.file.Files.readAllBytes(path);
+
+        // 3600s is the minimum expiry time
+        final FileObject fileObj = Files.fileObject(
+                                    client,
+                                    data,
+                                    path.toFile().getName(),
+                                    FilePurpose.USER_DATA,
+                                    3600);
+
+        System.out.println("Created FileObject with id=" + fileObj.id());
+
+        return fileObj;
+    }
+
 
 
     private static void print(final ChatCompletionTraditionalResponse response) {

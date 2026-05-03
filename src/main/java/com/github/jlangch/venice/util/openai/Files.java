@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.openai.client.OpenAIClient;
 import com.openai.models.files.FileCreateParams;
 import com.openai.models.files.FileCreateParams.ExpiresAfter;
@@ -67,39 +68,43 @@ public class Files {
     public static FileObject fileObject(
             final OpenAIClient client,
             final File file,
-            final String mimetype,
             final FilePurpose purpose,
             final long expiresAfterSeconds
     ) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(file);
 
-        return fileObject(client, file.toPath(), mimetype, purpose, expiresAfterSeconds);
+        final FileCreateParams.Builder params = FileCreateParams.builder();
+
+        params.file(file.toPath());
+
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
+        }
+
+        return client.files().create(params.build());
     }
 
     public static FileObject fileObject(
             final OpenAIClient client,
             final byte[] data,
-            final String mimetype,
+            final String filename,
             final FilePurpose purpose,
             final long expiresAfterSeconds
     ) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(data);
-
-        // WARNING: OpenAI FileCreateParams only works with Path, passing a byte buffer
-        //          or an InputStream results in an exception!!!
-        //
-        //          And it only accepts PDF files!!
-
-        if (!"application/pdf".equals(mimetype)) {
-            throw new RuntimeException("OpenAI accepts only PDF files");
-        }
+        Objects.requireNonNull(filename);
 
         File tmp = null;
         try {
+            final String fileExt = "." + FileUtil.getFileExt(filename);
+
             // Create a temporary file
-            tmp = File.createTempFile("OpenAI", ".pdf");
+            tmp = File.createTempFile("OpenAI-upload", fileExt);
             java.nio.file.Files.write(tmp.toPath(), data);
 
             final FileCreateParams.Builder params = FileCreateParams.builder();
