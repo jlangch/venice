@@ -713,6 +713,7 @@
 
 (defn 
   ^{ :arglists '(
+          "(list-files client)"
           "(list-files client limit)" )
      :doc """
           List the files stored at OpenAI.
@@ -725,7 +726,7 @@
             (load-module :openai-java)
 
             (let [client  (openai-java/client)]
-              (->> (openai-java/list-files client 1000)
+              (->> (openai-java/list-files client)
                    (docoll #(prn %)))))
           """ )
      :see-also '(
@@ -733,21 +734,25 @@
         "openai-java/retrieve-file"
         "openai-java/client") }
 
-  list-files [client limit]
+  list-files 
 
-  { :pre [(instance-of? :OpenAIClient client) (long? limit)] }
-
-  (if (pos? limit)
+  ([client]
+    { :pre [(instance-of? :OpenAIClient client)] }
+    (-<> (. client :files)
+         (. <> :list)
+         (. <> :items)
+         (map java->venice <>)
+         (map file-object->map <>)))
+  
+  ([client limit]
+    { :pre [(instance-of? :OpenAIClient client) (long? limit)] }
     (let [params  (. :FileListParams :builder)]
       (. params :limit limit)
       (-<> (. client :files)
            (. <> :list (. params :build))
            (. <> :items)
-           (map file-object->map <>)))
-    (-<> (. client :files)
-         (. <> :list)
-         (. <> :items)
-         (map file-object->map <>))))
+           (map java->venice <>)
+           (map file-object->map <>)))))
 
 
 (defn 
