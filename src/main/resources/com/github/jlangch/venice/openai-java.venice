@@ -40,6 +40,8 @@
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
 (import :com.openai.models.ChatModel)
 (import :com.openai.models.files.FilePurpose)
+(import :com.openai.models.files.FileObject)
+(import :com.openai.models.files.FileListParams)
 
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
@@ -710,6 +712,116 @@
                           expires-after-seconds)))
 
 
+(defn 
+  ^{ :arglists '(
+          "(list-files client limit)" )
+     :doc """
+          List the files stored at OpenAI.
+
+          Returns a list og file-object maps
+          """
+     :see-also '(
+        "openai-java/delete-file"
+        "openai-java/retrieve-file"
+        "openai-java/client") }
+
+  list-files [client limit]
+
+  { :pre [(instance-of? :OpenAIClient client) (long? limit)] }
+
+  (if (pos? limit)
+    (let [params  (. :FileListParams :builder)]
+      (. params :limit limit)
+      (-<> (. client :files)
+          (. <> :list (. params :build))
+          (map file-object->map <>)))
+    (-<> (. client :files)
+        (. <> :list)
+        (map file-object->map <>))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(delete-file client id)" )
+     :doc """
+          Delete a file stored at OpenAI
+
+          Retruns `true` if the files could be deleted else `false`
+          """
+     :see-also '(
+        "openai-java/list-files"
+        "openai-java/retrieve-file"
+        "openai-java/client") }
+
+  delete-file [client id]
+
+  { :pre [(instance-of? :OpenAIClient client) (string? limit)] }
+
+  (-> (. client :files) 
+      (. :delete id)
+      (. :deleted)))
+ 
+
+(defn 
+  ^{ :arglists '(
+          "(retrieve-file client id)" )
+     :doc """
+          Retrieve the info of file stored at OpenAI
+
+          Returns a file-object map
+          """
+     :see-also '(
+          "openai-java/list-files"
+          "openai-java/delete-file"
+          "openai-java/client") }
+
+  retrieve-file [client id]
+
+  { :pre [(instance-of? :OpenAIClient client) (string? limit)] }
+
+  (-<> (. client :files) 
+       (. <> :retrieve id)
+       (map file-object->map <>)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(file-object->map file-object)" )
+     :doc """
+          Convert an OpenAI :FileObject to a map
+          """
+     :see-also '(
+          "openai-java/client") }
+
+  file-object->map [file-object]
+
+  { :pre [(instance-of? :FileObject file-object)] }
+
+  (ordered-map
+    :id        (. file-object :id)
+    :filename  (. file-object :filename)
+    :purpose   (. file-object :purpose)
+    :bytes     (. file-object :bytes)
+    :createdAt (. file-object :createdAt)
+    :expiresAt (java-unwrap-optional (. file-object :expiresAt) -1)
+    :valid?    (. file-object :isValid)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Usage
+;; -----------------------------------------------------------------------------
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Costs
+;; -----------------------------------------------------------------------------
+
+
+
+
 ;; -----------------------------------------------------------------------------
 ;; Utils
 ;; -----------------------------------------------------------------------------
@@ -727,7 +839,7 @@
             (openai-java/version))
           """ )
      :see-also '(
-        "openai-java/client") }
+          "openai-java/client") }
 
   version []
 
@@ -742,7 +854,7 @@
           Formats a response's usage info to human readable multiline text.
           """
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
   
   format-usage 
  
