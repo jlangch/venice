@@ -52,6 +52,7 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         chat.addItem(diBuilder.getDocItem("openai-java/chat-completion", false));
         chat.addItem(diBuilder.getDocItem("openai-java/max-completion-tokens", false));
         chat.addItem(diBuilder.getDocItem("openai-java/add-user-message", false));
+        chat.addItem(diBuilder.getDocItem("openai-java/add-user-message-with-files", false));
         chat.addItem(diBuilder.getDocItem("openai-java/add-assistant-message", false));
         chat.addItem(diBuilder.getDocItem("openai-java/json-response-format", false));
         chat.addItem(diBuilder.getDocItem("openai-java/add-function", false));
@@ -61,6 +62,10 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         all.addSection(response);
         response.addItem(diBuilder.getDocItem("openai-java/messages", false));
         response.addItem(diBuilder.getDocItem("openai-java/usage", false));
+
+        final DocSection files = new DocSection("Files", id());
+        all.addSection(files);
+        files.addItem(diBuilder.getDocItem("openai-java/create-file-object", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);

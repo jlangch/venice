@@ -374,6 +374,8 @@
           completion request.
 
           Returns the chat.
+
+          **NOTE: OpenAI accepts only PDFs so far!**
           """
      :examples '(
           """
@@ -401,6 +403,7 @@
               (printf "Result:  %n%s%n" msg)))
           """)
      :see-also '(
+        "openai-java/create-file-object"
         "openai-java/chat-completion") }
 
   add-user-message-with-files [chat msg & file-objects]
