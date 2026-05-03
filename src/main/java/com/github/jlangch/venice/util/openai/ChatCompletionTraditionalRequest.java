@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.openai;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,8 +36,11 @@ import com.openai.models.FunctionParameters;
 import com.openai.models.ResponseFormatJsonSchema;
 import com.openai.models.ResponseFormatJsonSchema.JsonSchema;
 import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionContentPart;
+import com.openai.models.chat.completions.ChatCompletionContentPartText;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionFunctionTool;
+import com.openai.models.files.FileObject;
 
 
 public class ChatCompletionTraditionalRequest {
@@ -91,6 +95,40 @@ public class ChatCompletionTraditionalRequest {
     public ChatCompletionTraditionalRequest addUserMessages(final List<String> texts) {
         Objects.requireNonNull(texts);
         texts.forEach(t -> this.paramsBuilder.addUserMessage(t));
+        return this;
+    }
+
+    public ChatCompletionTraditionalRequest addUserMessageWithFiles(
+           final String text,
+           final List<FileObject> files
+    ) {
+        Objects.requireNonNull(text);
+        Objects.requireNonNull(files);
+
+        final List<ChatCompletionContentPart> parts = new ArrayList<>();
+
+        // question content part
+        final ChatCompletionContentPart questionContentPart =
+                ChatCompletionContentPart.ofText(ChatCompletionContentPartText.builder()
+                                         .text(text)
+                                         .build());
+        parts.add(questionContentPart);
+
+        // file content parts
+        for(FileObject file : files) {
+            ChatCompletionContentPart.File f =
+                    ChatCompletionContentPart.File
+                        .builder()
+                        .file(ChatCompletionContentPart.File.FileObject
+                                .builder()
+                                .fileId(file.id())
+                                .build())
+                        .build();
+
+            parts.add(ChatCompletionContentPart.ofFile(f));
+        }
+
+        this.paramsBuilder.addUserMessageOfArrayOfContentParts(parts);
         return this;
     }
 
