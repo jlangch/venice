@@ -521,7 +521,6 @@
           
               ))
           """ )
-
      :see-also '(
         "openai-java/chat-completion") }
 
@@ -720,6 +719,15 @@
 
           Returns a list og file-object maps
           """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client  (openai-java/client)]
+              (->> (openai-java/list-files client 1000)
+                   (docoll #(prn %)))))
+          """ )
      :see-also '(
         "openai-java/delete-file"
         "openai-java/retrieve-file"
@@ -733,11 +741,13 @@
     (let [params  (. :FileListParams :builder)]
       (. params :limit limit)
       (-<> (. client :files)
-          (. <> :list (. params :build))
-          (map file-object->map <>)))
+           (. <> :list (. params :build))
+           (. <> :items)
+           (map file-object->map <>)))
     (-<> (. client :files)
-        (. <> :list)
-        (map file-object->map <>))))
+         (. <> :list)
+         (. <> :items)
+         (map file-object->map <>))))
 
 
 (defn 
@@ -746,8 +756,16 @@
      :doc """
           Delete a file stored at OpenAI
 
-          Retruns `true` if the files could be deleted else `false`
+          Returns `true` if the files could be deleted else `false`
           """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client  (openai-java/client)]
+              (openai-java/delete-file client "...file-id...")))
+          """ )
      :see-also '(
         "openai-java/list-files"
         "openai-java/retrieve-file"
@@ -755,7 +773,7 @@
 
   delete-file [client id]
 
-  { :pre [(instance-of? :OpenAIClient client) (string? limit)] }
+  { :pre [(instance-of? :OpenAIClient client) (string? id)] }
 
   (-> (. client :files) 
       (. :delete id)
@@ -770,6 +788,14 @@
 
           Returns a file-object map
           """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client  (openai-java/client)]
+              (openai-java/retrieve-file client "...file-id...")))
+          """ )
      :see-also '(
           "openai-java/list-files"
           "openai-java/delete-file"
@@ -777,11 +803,11 @@
 
   retrieve-file [client id]
 
-  { :pre [(instance-of? :OpenAIClient client) (string? limit)] }
+  { :pre [(instance-of? :OpenAIClient client) (string? id)] }
 
   (-<> (. client :files) 
        (. <> :retrieve id)
-       (map file-object->map <>)))
+       (file-object->map <>)))
 
 
 (defn 
@@ -805,19 +831,6 @@
     :createdAt (. file-object :createdAt)
     :expiresAt (java-unwrap-optional (. file-object :expiresAt) -1)
     :valid?    (. file-object :isValid)))
-
-
-
-;; -----------------------------------------------------------------------------
-;; Usage
-;; -----------------------------------------------------------------------------
-
-
-
-
-;; -----------------------------------------------------------------------------
-;; Costs
-;; -----------------------------------------------------------------------------
 
 
 
