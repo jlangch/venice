@@ -613,7 +613,8 @@
           | [![width: 15%]]       | [![width: 85%]] |
           | client                | An OpenAI client |
           | file                  | A file or a byte buffer |
-          | mimetype              | The file's mimetype (OpenAI accepts only "application/pdf") |
+          | mimetype              | The file's mimetype ¶\
+                                    **OpenAI accepts only PDFs (application/pdf)** |
           | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
                                     `:ASSISTANTS`, `:FINE_TUNE` |
           | expires-after-seconds | The file object expiry time in seconds. \
