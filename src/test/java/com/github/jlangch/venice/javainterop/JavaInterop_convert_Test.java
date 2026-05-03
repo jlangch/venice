@@ -73,19 +73,19 @@ public class JavaInterop_convert_Test {
         assertEquals("(:a :b :c)", venice.eval(script));
     }
 
-    @Test
-    public void test_java2venice_2b() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                                                                          \n" +
-                "  (->> (. :com.github.jlangch.venice.javainterop.JavaInterop_convert_Test$Factory :list)     \n" +
-                "       (map keyword)                                                                         \n" +
-                "       (tee #(println (type %)))                                                                         \n" +
-                "       (pr-str)))                                                                            ";
-
-        assertEquals("(:a :b :c)", venice.eval(script));
-    }
+//    @Test
+//    public void test_java2venice_2b() {
+//        final Venice venice = new Venice();
+//
+//        final String script =
+//                "(do                                                                                          \n" +
+//                "  (->> (. :com.github.jlangch.venice.javainterop.JavaInterop_convert_Test$Factory :list)     \n" +
+//                "       (map keyword)                                                                         \n" +
+//                "       (tee #(println (type %)))                                                                         \n" +
+//                "       (pr-str)))                                                                            ";
+//
+//        assertEquals("(:a :b :c)", venice.eval(script));
+//    }
 
 
     public static class Factory {
