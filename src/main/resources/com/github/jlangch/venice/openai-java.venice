@@ -39,9 +39,11 @@
 (import :com.openai.client.OpenAIClient)
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
 (import :com.openai.models.ChatModel)
+(import :com.openai.models.files.FilePurpose)
 
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
+(import :com.github.jlangch.venice.util.openai.Files)
 (import :com.github.jlangch.venice.util.openai.IFunctionDispatcher)
 (import :com.github.jlangch.venice.util.openai.RegistryFunctionDispatcher)
 
@@ -363,6 +365,26 @@
     (. chat :addUserMessage (filter-msgs msg))
     (. chat :addUserMessages (filter-msgs msg))))
 
+
+(defn 
+  ^{ :arglists '(
+          "(add-user-message-with-files chat msg & files)" )
+     :doc """
+          Adds a *user* message with additional files to the chat
+          completion request.
+
+          Returns the chat.
+          """
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  add-user-message-with-files [chat msg & files]
+
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) 
+          (or (string? msg) (sequential? msg))] }
+  (. chat :addUserMessageWithFiles msg files))
+
+
 (defn 
   ^{ :arglists '(
           "(add-assistant-message chat msg)" )
@@ -546,6 +568,52 @@
 (defn elapsed [chat]
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
   (. chat :elapsed))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Files
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(create-file-object client file)"
+          "(create-file-object client file purpose)"
+          "(create-file-object client file expires-after-seconds)" )
+     :doc """
+          Creates a new OpenAI file object.
+
+          Arguments:
+
+          | [![width: 15%]]       | [![width: 85%]] |
+          | client                | An OpenAI client |
+          | file                  | A file, :InputStream, or byte buffer |
+          | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
+                                    `:ASSISTANTS`, `:FINE_TUNE` |
+          | expires-after-seconds | The file object expiry time in seconds. \
+                                    A negative value means no expiration. |
+
+          Returns the file object.
+          """
+     :see-also '(
+        "openai-java/client") }
+
+  create-file-object 
+  
+  ([client file]
+    (create-file-object client file (. :FilePurpose :USER_DATA) 0))
+  
+  ([client file purpose]  
+    (create-file-object client file (. :FilePurpose purpose) 0))
+  
+  ([client file purpose expires-after-seconds] 
+    { :pre [(instance-of? :OpenAIClient client) 
+            (or (io/file? file)
+                (instance-of? :java.io.InputStream file)
+                (bytebuf? file))
+            (instance-of? :FilePurpose purpose) 
+            (long? expires-after-seconds)] }
+    (. :Files file purpose expires-after-seconds)))
 
 
 

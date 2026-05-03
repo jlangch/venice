@@ -21,7 +21,8 @@
  */
 package com.github.jlangch.venice.util.openai;
 
-import java.nio.file.Path;
+import java.io.File;
+import java.io.InputStream;
 import java.util.Objects;
 
 import com.openai.client.OpenAIClient;
@@ -35,22 +36,68 @@ public class Files {
 
     public static FileObject fileObject(
             final OpenAIClient client,
-            final Path path,
+            final File file,
             final FilePurpose purpose,
             final long expiresAfterSeconds
     ) {
         Objects.requireNonNull(client);
-        Objects.requireNonNull(path);
+        Objects.requireNonNull(file);
 
         final FileCreateParams.Builder params = FileCreateParams.builder();
 
-        params.file(path);
+        params.file(file.toPath());
+
         params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
 
-        if (expiresAfterSeconds > 0) {
-            ExpiresAfter.Builder expires = ExpiresAfter.builder();
-            expires.seconds(expiresAfterSeconds);
-            params.expiresAfter(expires.build());
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
+        }
+
+        return client.files().create(params.build());
+    }
+
+    public static FileObject fileObject(
+            final OpenAIClient client,
+            final InputStream is,
+            final FilePurpose purpose,
+            final long expiresAfterSeconds
+    ) {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(is);
+
+        final FileCreateParams.Builder params = FileCreateParams.builder();
+
+        params.file(is);
+
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
+        }
+
+        return client.files().create(params.build());
+    }
+
+    public static FileObject fileObject(
+            final OpenAIClient client,
+            final byte[] data,
+            final FilePurpose purpose,
+            final long expiresAfterSeconds
+    ) {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(data);
+
+        final FileCreateParams.Builder params = FileCreateParams.builder();
+
+        params.file(data);
+
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
         }
 
         return client.files().create(params.build());
@@ -59,6 +106,18 @@ public class Files {
     public static String id(final FileObject fileObject) {
         Objects.requireNonNull(fileObject);
         return fileObject.id();
+    }
+
+
+    private static ExpiresAfter createExpiresAfter(final long expiresAfterSeconds) {
+        if (expiresAfterSeconds > 0) {
+            ExpiresAfter.Builder expires = ExpiresAfter.builder();
+            expires.seconds(expiresAfterSeconds);
+            return expires.build();
+        }
+        else {
+            return null;
+        }
     }
 
 }
