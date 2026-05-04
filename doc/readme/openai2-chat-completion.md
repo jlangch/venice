@@ -448,7 +448,7 @@ Zurich: 21°C, mostly sunny.
       (println (first (openai-java/messages response))))))
 ```
 
-Response
+Answer:
 
 ```
 Current weather in Zurich: 21°C and mostly sunny.
@@ -471,13 +471,70 @@ If you want, I can also suggest a full half-day or full-day Zurich itinerary bas
 
 ## Structured Output
 
-*TODO: API ready -> document*
+``` clojure
+(do
+  (load-module :openai-java)
+  (let [client   (openai-java/client)
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                      (openai-java/max-completion-tokens 2048)
+                      (openai-java/json-response-format 
+                          "employee-list"
+                          "A list of employees"
+                          "object"
+                          { :employees { :items  { "type" "string" }}} )
+                      (openai-java/add-user-message "Who works at OpenAI?"))
+        response (openai-java/execute chat)
+        msg      (first (openai-java/messages response))]
+    (println (first (openai-java/messages response)))))
+```
 
+Answer:
+
+```
+{"employees":["Sam Altman","Mira Murati","Greg Brockman","Ilya Sutskever","Wojciech Zaremba","Jakub Pachocki","Kevin Weil","Brad Lightcap","Sarah Friar"]}
+```
 
  
  
 
 ## File Completions
 
-*TODO: API ready -> document*
 
+``` clojure
+          (do
+            (load-module :openai-java)
+            
+            (let [client   (openai-java/client)
+                  file-obj (openai-java/create-file-object 
+                                          client 
+                                          (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")
+                                          :USER_DATA
+                                          3600)
+                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/add-user-message-with-files 
+                                    "Describe this image"
+                                    file-obj))
+                  response (openai-java/execute chat)
+                  elapsed  (openai-java/elapsed chat)
+                  usage    (openai-java/usage response)
+                  msg      (first (openai-java/messages response))]
+              (printf "Elapsed: %dms%n%n" elapsed)
+              (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
+              (printf "Result:  %n%s%n" msg)))
+```
+
+Answer:
+
+```
+Elapsed: 4909ms
+
+Tokens:  
+  Input:    499
+  Output:    79 (Reasoning: 0)
+  Total:    578
+
+Result:  
+The image shows the Eiffel Tower centered in the frame, viewed from the front on a clear day. It rises above a wide green lawn, with rows of trees on both sides leading toward the tower. The sky is bright and cloudless blue, and buildings can be seen in the distance beneath the tower’s arch. The composition is symmetrical, emphasizing the tower’s height and structure.
+
+``
