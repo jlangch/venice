@@ -24,6 +24,7 @@
 """
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                      (openai-java/max-completion-tokens 2048)
@@ -62,6 +63,7 @@ Result:
 ``` clojure
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                      (openai-java/max-completion-tokens 2048)
@@ -89,6 +91,7 @@ She did not go to the market.
 ``` clojure
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                      (openai-java/max-completion-tokens 2048)
@@ -141,6 +144,7 @@ Chain of thought (CoT) is a method that encourages Large Language Models (LLMs) 
 ``` clojure
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                      (openai-java/max-completion-tokens 2048)
@@ -175,6 +179,7 @@ If you want, I can also suggest names that are **cute**, **elegant**, or **gende
 ``` clojure
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                      (openai-java/max-completion-tokens 2048)
@@ -223,6 +228,7 @@ If you want, I can also suggest:
 ``` clojure
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                      (openai-java/max-completion-tokens 2048)
@@ -293,6 +299,7 @@ Chat conversation with multiple questions and answers.
 ;; conversation
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                      (openai-java/max-completion-tokens 2048)
@@ -476,6 +483,7 @@ Return the response in JSON format specified by a JSON schema:
 ``` clojure
 (do
   (load-module :openai-java)
+  
   (let [client   (openai-java/client)
         chat     (-> (openai-java/chat-completion client :GPT_5_4)
                       (openai-java/max-completion-tokens 2048)
@@ -487,6 +495,7 @@ Return the response in JSON format specified by a JSON schema:
                       (openai-java/add-user-message "Who works at OpenAI?"))
         response (openai-java/execute chat)
         msg      (first (openai-java/messages response))]
+        
     (println (first (openai-java/messages response)))))
 ```
 
@@ -524,6 +533,7 @@ Describe an image uploaded in the chat:
         elapsed  (openai-java/elapsed chat)
         usage    (openai-java/usage response)
         msg      (first (openai-java/messages response))]
+        
     (printf "Elapsed: %dms%n%n" elapsed)
     (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
     (printf "Result:  %n%s%n" msg)))
