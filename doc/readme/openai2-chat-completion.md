@@ -471,6 +471,8 @@ If you want, I can also suggest a full half-day or full-day Zurich itinerary bas
 
 ## Structured Output
 
+Return the response in JSON format specified by a JSON schema:
+
 ``` clojure
 (do
   (load-module :openai-java)
@@ -501,29 +503,30 @@ Answer:
 
 ## File Completions
 
+Describe an image uploaded in the chat:
 
 ``` clojure
-          (do
-            (load-module :openai-java)
-            
-            (let [client   (openai-java/client)
-                  file-obj (openai-java/create-file-object 
-                                          client 
-                                          (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")
-                                          :USER_DATA
-                                          3600)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
-                               (openai-java/max-completion-tokens 2048)
-                               (openai-java/add-user-message-with-files 
-                                    "Describe this image"
-                                    file-obj))
-                  response (openai-java/execute chat)
-                  elapsed  (openai-java/elapsed chat)
-                  usage    (openai-java/usage response)
-                  msg      (first (openai-java/messages response))]
-              (printf "Elapsed: %dms%n%n" elapsed)
-              (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
-              (printf "Result:  %n%s%n" msg)))
+(do
+  (load-module :openai-java)
+  
+  (let [client   (openai-java/client)
+        file-obj (openai-java/create-file-object 
+                                client 
+                                (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")
+                                :USER_DATA
+                                3600)
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                      (openai-java/max-completion-tokens 2048)
+                      (openai-java/add-user-message-with-files 
+                          "Describe this image"
+                          file-obj))
+        response (openai-java/execute chat)
+        elapsed  (openai-java/elapsed chat)
+        usage    (openai-java/usage response)
+        msg      (first (openai-java/messages response))]
+    (printf "Elapsed: %dms%n%n" elapsed)
+    (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
+    (printf "Result:  %n%s%n" msg)))
 ```
 
 Answer:
