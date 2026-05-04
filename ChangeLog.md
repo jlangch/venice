@@ -9,8 +9,9 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- OpenAI: Added support for structured chat completion results
-- OpenAI: Added support chat file completions
+- OpenAI: added support for structured chat completion results
+- OpenAI: added support for chat file completions
+- OpenAI: added support for `File` api
 
 
 
