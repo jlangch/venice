@@ -11,7 +11,7 @@
 
 ## List Files
 
-Returns a list of files stored at OpenAI
+Returns a list of files stored with OpenAI
 
 ```clojure
 (do
@@ -26,14 +26,14 @@ Result:
 
 ```
 { :id "file-H7...B" 
-  :filename "Eiffel-1.pdf" 
+  :filename "Tour_Eiffel_1.pdf" 
   :purpose user_data 
   :bytes 45787 
   :createdAt 1777820599 
   :expiresAt -1 
   :valid? true }
 { :id "file-By...K" 
-  :filename "Eiffel-2.pdf" 
+  :filename "Tour_Eiffel_2.pdf" 
   :purpose user_data 
   :bytes 41239 
   :createdAt 1777820466 
