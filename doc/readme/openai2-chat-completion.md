@@ -462,7 +462,7 @@ Current weather in Zurich: 21°C and mostly sunny.
 
 Ideas for a day like this in Zurich:
 - Walk along Lake Zurich or the Limmat River
- - Explore the Old Town (Altstadt)
+- Explore the Old Town (Altstadt)
 - Sit at an outdoor café and enjoy the sunshine
 - Visit Lindenhof for a nice city view
 - Take a boat cruise on Lake Zurich
