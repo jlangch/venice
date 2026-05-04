@@ -540,5 +540,4 @@ on a clear day. It rises above a wide green lawn, with rows of trees on both
 sides leading toward the tower. The sky is bright and cloudless blue, and 
 buildings can be seen in the distance beneath the tower’s arch. The composition 
 is symmetrical, emphasizing the tower’s height and structure.
-
-``
+```
