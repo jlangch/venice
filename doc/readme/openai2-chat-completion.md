@@ -491,7 +491,9 @@ If you want, I can also suggest a full half-day or full-day Zurich itinerary bas
 Answer:
 
 ```
-{"employees":["Sam Altman","Mira Murati","Greg Brockman","Ilya Sutskever","Wojciech Zaremba","Jakub Pachocki","Kevin Weil","Brad Lightcap","Sarah Friar"]}
+{ "employees": [ "Sam Altman","Mira Murati","Greg Brockman","Ilya Sutskever",
+                 "Wojciech Zaremba","Jakub Pachocki","Kevin Weil",
+                 "Brad Lightcap","Sarah Friar" ] }
 ```
 
  
