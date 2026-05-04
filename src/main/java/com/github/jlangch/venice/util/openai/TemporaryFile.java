@@ -54,7 +54,7 @@ public class TemporaryFile implements AutoCloseable {
             return new TemporaryFile(tmpDir, file);
         }
         catch (Exception ex) {
-            clear(tmpDir, file);
+            cleanup(tmpDir, file);
             throw new VncException("Failed to create TemporaryFile '" + normalizedFileName + "'");
         }
     }
@@ -73,7 +73,7 @@ public class TemporaryFile implements AutoCloseable {
             return new TemporaryFile(tmpDir, file);
         }
         catch (Exception ex) {
-            clear(tmpDir, file);
+            cleanup(tmpDir, file);
             throw new VncException("Failed to create TemporaryFile '" + fileName + "'");
         }
     }
@@ -89,11 +89,11 @@ public class TemporaryFile implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        clear(tmpDir, file);
+        cleanup(tmpDir, file);
     }
 
 
-    private static void clear(final File tmpDir, final File file) {
+    private static void cleanup(final File tmpDir, final File file) {
         try {
             if (file.exists()) {
                 file.delete();
