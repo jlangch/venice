@@ -45,7 +45,7 @@ public class ChatCompletionTraditionalFileExample {
 
         final OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-        // final FileObject fileObj = fromPath(client, path);
+        //final FileObject fileObj = fromPath(client, path);
 
         final FileObject fileObj = fromBinary(client, path);
 
@@ -86,17 +86,23 @@ public class ChatCompletionTraditionalFileExample {
     ) throws Exception{
         final byte[] data = java.nio.file.Files.readAllBytes(path);
 
-        // 3600s is the minimum expiry time
-        final FileObject fileObj = Files.fileObject(
-                                    client,
-                                    data,
-                                    path.toFile().getName(),
-                                    FilePurpose.USER_DATA,
-                                    3600);
+        // OpenAI does not support byte buffer as of now
+        // -> create a TemporaryFile
+        try (TemporaryFile tmpFile = TemporaryFile.of(data, path.toFile().getName())) {
+            // 3600s is the minimum expiry time
+            final FileObject fileObj = Files.fileObject(
+                                        client,
+                                        tmpFile,
+                                        FilePurpose.USER_DATA,
+                                        3600);
 
-        System.out.println("Created FileObject with id=" + fileObj.id());
+            System.out.println("Created FileObject with id=" + fileObj.id());
 
-        return fileObj;
+            return fileObj;
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to create temporary file for upload", ex);
+        }
     }
 
 

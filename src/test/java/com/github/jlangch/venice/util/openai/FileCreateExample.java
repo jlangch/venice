@@ -1,0 +1,51 @@
+/*   __    __         _
+ *   \ \  / /__ _ __ (_) ___ ___
+ *    \ \/ / _ \ '_ \| |/ __/ _ \
+ *     \  /  __/ | | | | (_|  __/
+ *      \/ \___|_| |_|_|\___\___|
+ *
+ *
+ * Copyright 2017-2026 Venice
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.github.jlangch.venice.util.openai;
+
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.files.FileCreateParams;
+import com.openai.models.files.FileCreateParams.ExpiresAfter;
+import com.openai.models.files.FileObject;
+import com.openai.models.files.FilePurpose;
+
+
+public final class FileCreateExample {
+    private FileCreateExample() {}
+
+    public static void main(String[] args) {
+        final OpenAIClient client = OpenAIOkHttpClient.fromEnv();
+
+        FileCreateParams params = FileCreateParams
+                                    .builder()
+                                    .file("Example data".getBytes())
+                                    .expiresAfter(ExpiresAfter
+                                                    .builder()
+                                                    .seconds(3600)
+                                                    .build())
+                                    .purpose(FilePurpose.ASSISTANTS)
+                                    .build();
+
+        FileObject fileObject = client.files().create(params);
+        System.out.println(fileObject);
+    }
+}

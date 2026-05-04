@@ -22,11 +22,9 @@
 package com.github.jlangch.venice.util.openai;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.openai.client.OpenAIClient;
 import com.openai.models.files.FileCreateParams;
 import com.openai.models.files.FileCreateParams.ExpiresAfter;
@@ -90,44 +88,28 @@ public class Files {
 
     public static FileObject fileObject(
             final OpenAIClient client,
-            final byte[] data,
-            final String filename,
+            final TemporaryFile file,
             final FilePurpose purpose,
             final long expiresAfterSeconds
     ) {
         Objects.requireNonNull(client);
-        Objects.requireNonNull(data);
-        Objects.requireNonNull(filename);
+        Objects.requireNonNull(file);
 
-        File tmp = null;
-        try {
-            final String fileExt = "." + FileUtil.getFileExt(filename);
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(file);
 
-            // Create a temporary file
-            tmp = File.createTempFile("OpenAI-upload", fileExt);
-            java.nio.file.Files.write(tmp.toPath(), data);
+        final FileCreateParams.Builder params = FileCreateParams.builder();
 
-            final FileCreateParams.Builder params = FileCreateParams.builder();
+        params.file(file.getPath());
 
-            params.file(tmp.toPath());
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
 
-            params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
-
-            final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
-            if (expiresAfter != null) {
-                params.expiresAfter(expiresAfter);
-            }
-
-            return client.files().create(params.build());
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
         }
-        catch(IOException ex) {
-            throw new RuntimeException("Failed to create temporary file for upload", ex);
-        }
-        finally {
-            if (tmp != null) {
-                tmp.delete();
-            }
-        }
+
+        return client.files().create(params.build());
     }
 
     public static String id(final FileObject fileObject) {

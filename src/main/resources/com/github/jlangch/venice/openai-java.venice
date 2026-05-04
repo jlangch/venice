@@ -42,12 +42,15 @@
 (import :com.openai.models.files.FilePurpose)
 (import :com.openai.models.files.FileObject)
 (import :com.openai.models.files.FileListParams)
+(import :com.openai.models.files.FileCreateParams)
+(import :com.openai.models.files.FileCreateParams.ExpiresAfter)
 
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
 (import :com.github.jlangch.venice.util.openai.Files)
 (import :com.github.jlangch.venice.util.openai.IFunctionDispatcher)
 (import :com.github.jlangch.venice.util.openai.RegistryFunctionDispatcher)
+(import :com.github.jlangch.venice.util.openai.TemporaryFile)
 
 
 
@@ -629,7 +632,7 @@
           | Presentations	  | `.ppt`, `.pptx` |
           | Spreadsheets	  | `.csv`, `.xls`, `.xlsx` |
 
-          Returns the file object.
+          Returns the file object `:com.openai.models.files.FileObject`.
           """
      :see-also '(
           "openai-java/create-file-object-binary"
@@ -683,7 +686,7 @@
           | Presentations	  | `.ppt`, `.pptx` |
           | Spreadsheets	  | `.csv`, `.xls`, `.xlsx` |
 
-          Returns the file object.
+          Returns the file object `:com.openai.models.files.FileObject`.
           """
      :see-also '(
           "openai-java/create-file-object"
@@ -704,11 +707,13 @@
             (string? filename)
             (keyword? purpose) 
             (long? expires-after-seconds)] }
-    (. :Files :fileObject client 
-                          data 
-                          filename  
-                          (. :FilePurpose purpose) 
-                          expires-after-seconds)))
+    (try-with [tmp (. :TemporaryFile :of data filename)] 
+      (. :Files :fileObject client 
+                            (. tmp :getPath)  
+                            (. :FilePurpose purpose) 
+                            expires-after-seconds)
+      (catch :Exception e 
+         (trow (ex :VncException "Failed to create temporary file" e))))))
 
 
 (defn 
@@ -718,7 +723,7 @@
      :doc """
           List the files stored at OpenAI.
 
-          Returns a list og file-object maps
+          Returns a list of file-object maps
           """
      :examples '(
           """
@@ -730,8 +735,10 @@
                    (docoll #(prn %)))))
           """ )
      :see-also '(
-        "openai-java/delete-file"
+        "openai-java/create-file"
+        "openai-java/create-binary-file"
         "openai-java/retrieve-file"
+        "openai-java/delete-file"
         "openai-java/client") }
 
   list-files 
@@ -757,36 +764,6 @@
 
 (defn 
   ^{ :arglists '(
-          "(delete-file client id)" )
-     :doc """
-          Delete a file stored at OpenAI
-
-          Returns `true` if the files could be deleted else `false`
-          """
-     :examples '(
-          """
-          (do
-            (load-module :openai-java)
-
-            (let [client  (openai-java/client)]
-              (openai-java/delete-file client "...file-id...")))
-          """ )
-     :see-also '(
-        "openai-java/list-files"
-        "openai-java/retrieve-file"
-        "openai-java/client") }
-
-  delete-file [client id]
-
-  { :pre [(instance-of? :OpenAIClient client) (string? id)] }
-
-  (-> (. client :files) 
-      (. :delete id)
-      (. :deleted)))
- 
-
-(defn 
-  ^{ :arglists '(
           "(retrieve-file client id)" )
      :doc """
           Retrieve the info of file stored at OpenAI
@@ -803,6 +780,8 @@
           """ )
      :see-also '(
           "openai-java/list-files"
+          "openai-java/create-file"
+          "openai-java/create-binary-file"
           "openai-java/delete-file"
           "openai-java/client") }
 
@@ -813,6 +792,188 @@
   (-<> (. client :files) 
        (. <> :retrieve id)
        (file-object->map <>)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(create-file client file)"
+          "(create-file client file purpose)"
+          "(create-file client file expires-after-seconds)" )
+     :doc """
+          Create an OpenAI file
+
+          Arguments:
+
+          | [![width: 15%]]       | [![width: 85%]] |
+          | client                | An OpenAI client |
+          | data                  | A data `bytebuf` |
+          | filename              | A filename. E.g.: "planning.pdf" |
+          | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
+                                    `:ASSISTANTS`, `:FINE_TUNE` |
+          | expires-after-seconds | The file object expiry time in seconds. \
+                                    A negative value means no expiration. ¶\
+                                    Defaults to 3600s |
+
+          Supported file types:
+
+          | PDF files	      | `.pdf` |
+          | Text and code   | `.txt`, `.md`, `.json`, `.html`, `.xml`, code files |
+          | Rich documents	| `.doc`, `.docx`, `.rtf`, `.odt` |
+          | Presentations	  | `.ppt`, `.pptx` |
+          | Spreadsheets	  | `.csv`, `.xls`, `.xlsx` |
+
+          Returns the file object.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client  (openai-java/client)
+                  file    (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")]
+              (openai-java/create-file client file :USER_DATA 3600)))
+          """ )
+     :see-also '(
+          "openai-java/list-files"
+          "openai-java/create-binary-file"
+          "openai-java/retrieve-file"
+          "openai-java/delete-file"
+          "openai-java/client") }
+
+  create-file
+
+  ([client file]
+    (create-file client file :USER_DATA 3600))
+  
+  ([client file purpose]  
+    (create-file client file purpose 3600))
+  
+  ([client file purpose expires-after-seconds] 
+    { :pre [(instance-of? :OpenAIClient client) 
+            (io/file? file)
+            (keyword? purpose) 
+            (long? expires-after-seconds)] }
+
+    (let [params (. :FileCreateParams :builder)]
+      (. params :file (io/->path file))
+      (. params :expiresAfter (-> (. :com.openai.models.files.FileCreateParams$ExpiresAfter :builder)
+                                  (. :seconds expires-after-seconds)
+                                  (. :build)))
+      (. params :purpose (. :FilePurpose purpose))
+
+      (-<> (. client :files)
+           (. <> :create (. params :build))
+           (file-object->map <>)))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(create-binary-file client data filename)"
+          "(create-binary-file client data filename purpose)"
+          "(create-binary-file client data filename expires-after-seconds)" )
+     :doc """
+          Create a binary OpenAI file
+
+          Arguments:
+
+          | [![width: 15%]]       | [![width: 85%]] |
+          | client                | An OpenAI client |
+          | data                  | A data `bytebuf` |
+          | filename              | A filename. E.g.: "planning.pdf" |
+          | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
+                                    `:ASSISTANTS`, `:FINE_TUNE` |
+          | expires-after-seconds | The file object expiry time in seconds. \
+                                    A negative value means no expiration. ¶\
+                                    Defaults to 3600s |
+
+          Supported file types:
+
+          | PDF files	      | `.pdf` |
+          | Text and code   | `.txt`, `.md`, `.json`, `.html`, `.xml`, code files |
+          | Rich documents	| `.doc`, `.docx`, `.rtf`, `.odt` |
+          | Presentations	  | `.ppt`, `.pptx` |
+          | Spreadsheets	  | `.csv`, `.xls`, `.xlsx` |
+
+          Returns the file object.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client   (openai-java/client)
+                  data     (bytebuf-from-string "Hello") 
+                  filename "demo.md"]
+              (openai-java/create-binary-file client 
+                                              data filename 
+                                              :USER_DATA 3600)))
+          """ )
+     :see-also '(
+          "openai-java/list-files"
+          "openai-java/create-file"
+          "openai-java/retrieve-file"
+          "openai-java/delete-file"
+          "openai-java/client") }
+
+  create-binary-file
+
+  ([client data filename]
+    (create-binary-file client data filename :USER_DATA 3600))
+  
+  ([client data filename purpose]  
+    (create-binary-file client data filename purpose 3600))
+  
+  ([client data filename purpose expires-after-seconds] 
+    { :pre [(instance-of? :OpenAIClient client) 
+            (bytebuf? data)
+            (string? filename)
+            (keyword? purpose) 
+            (long? expires-after-seconds)] }
+    (try-with [tmp (. :TemporaryFile :of data filename)] 
+      (let [params (. :FileCreateParams :builder)]
+        (. params :file (. tmp :getPath))
+        (. params :expiresAfter (-> (. :com.openai.models.files.FileCreateParams$ExpiresAfter :builder)
+                                    (. :seconds expires-after-seconds)
+                                    (. :build)))
+        (. params :purpose (. :FilePurpose purpose))
+
+        (-<> (. client :files)
+             (. <> :create (. params :build))
+             (file-object->map <>)))
+      (catch :Exception e 
+        (throw (ex :VncException "Failed to create binary OpenAI file" e))))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(delete-file client id)" )
+     :doc """
+          Delete a file stored at OpenAI
+
+          Returns `true` if the files could be deleted else `false`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+
+            (let [client  (openai-java/client)]
+              (openai-java/delete-file client "...file-id...")))
+          """ )
+     :see-also '(
+        "openai-java/list-files"
+        "openai-java/create-file"
+        "openai-java/create-binary-file"
+        "openai-java/retrieve-file"
+        "openai-java/client") }
+
+  delete-file [client id]
+
+  { :pre [(instance-of? :OpenAIClient client) (string? id)] }
+
+  (-> (. client :files) 
+      (. :delete id)
+      (. :deleted)))
 
 
 (defn 
