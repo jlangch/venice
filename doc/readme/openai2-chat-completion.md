@@ -3,6 +3,7 @@
  
 
 * [Completions](#completions)
+* [Conversations](#conversations)
 * [Functions](#functions)
 * [Structured Output](#structured-output)
 * [File Completions](#file-completions)
@@ -55,44 +56,6 @@ Result:
 ```
 
  
-
-
-#### Example: Conversation
-
-Chat conversation with multiple questions and answers.
-
-``` clojure
-;; conversation
-(do
-  (load-module :openai-java)
-  (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
-                     (openai-java/max-completion-tokens 2048)
-                     (openai-java/add-user-message "Say Hello!"))
-        response (openai-java/execute chat)]
-    (println (first (openai-java/messages response)))
-
-    ;; 1st follow up question
-    (openai-java/add-assistant-message chat (openai-java/messages response))      
-    (openai-java/add-user-message chat "Can you say it more informal?")
-    (let [response (openai-java/execute chat)]
-      (println (first (openai-java/messages response))))
-
-      ;; 2nd follow up question
-      (openai-java/add-assistant-message chat (openai-java/messages response))      
-      (openai-java/add-user-message chat "Can you say it very formal?")
-      (let [response (openai-java/execute chat)]
-        (println (first (openai-java/messages response))))))
-```
-
-Answer:
-
-```
-Hello!
-Hey
-Greetings
-```
-
 
 #### Example: Text correction
 
@@ -315,6 +278,48 @@ Now all three—the **wolf, goat, and cabbage**—are safely across the river.
 **Final crossing order:**
 
 *Goat over → Farmer back → Wolf over → Goat back → Cabbage over → Farmer back → Goat over*
+
+ 
+ 
+
+## Conversations
+
+
+#### Example: Conversation
+
+Chat conversation with multiple questions and answers.
+
+``` clojure
+;; conversation
+(do
+  (load-module :openai-java)
+  (let [client   (openai-java/client)
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message "Say Hello!"))
+        response (openai-java/execute chat)]
+    (println (first (openai-java/messages response)))
+
+    ;; 1st follow up question
+    (openai-java/add-assistant-message chat (openai-java/messages response))      
+    (openai-java/add-user-message chat "Can you say it more informal?")
+    (let [response (openai-java/execute chat)]
+      (println (first (openai-java/messages response))))
+
+      ;; 2nd follow up question
+      (openai-java/add-assistant-message chat (openai-java/messages response))      
+      (openai-java/add-user-message chat "Can you say it very formal?")
+      (let [response (openai-java/execute chat)]
+        (println (first (openai-java/messages response))))))
+```
+
+Answer:
+
+```
+Hello!
+Hey
+Greetings
+```
 
  
  
