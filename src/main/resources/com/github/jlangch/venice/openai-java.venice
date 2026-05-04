@@ -870,6 +870,15 @@
           "(format-usage usage)" )
      :doc """
           Formats a response's usage info to human readable multiline text.
+
+          Usage token info:
+
+          ```
+          { :input-tokens 11
+            :output-tokens 15
+            :reasoning-tokens { :output-tokens-detail 0 }
+            :total-tokens 26 }
+          ```
           """
      :see-also '(
           "openai-java/chat-completion") }
