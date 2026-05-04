@@ -25,18 +25,28 @@
 (ns fonts)
 
 
-(def fonts-family-url "https://www.fontsquirrel.com/fonts/download/")
+(def fonts-family-url "https://raw.githubusercontent.com/jlangch/venice/refs/heads/master/doc/fonts/")
 
-(def family-open-sans "open-sans")
-(def family-roboto "roboto")
-(def family-jetbrains-mono "jetbrains-mono")
+(def family-open-sans       "open-sans")
+(def family-roboto          "roboto")
+(def family-jetbrains-mono  "jetbrains-mono")
 (def family-source-code-pro "source-code-pro")
+
+(def urls { "open-sans"        (str fonts-family-url "open-sans.zip")
+            "roboto"           (str fonts-family-url "roboto.zip")
+            "jetbrains-mono"   (str fonts-family-url "jetbrains-mono.zip")
+            "source-code-pro"  (str fonts-family-url "source-code-pro.zip") })
+
+
+(defn- family-available? [name]
+   (some? (get urls name)))
+
 
 (defn
   ^{ :arglists '("(fonts/download-font-family family-name options*)")
      :doc
        """
-       Downloads a font family from the
+       Downloads a font family manuall from the
        [Font Squirrel](https://www.fontsquirrel.com/) repository
 
        Some useful font families:
@@ -96,9 +106,12 @@
         silent   (:silent opts true)
         dir      (:dir opts ".")
         glob     (:glob-pattern opts "*.ttf")
-        url      (str fonts-family-url (str/encode-url family-name))
+        url      (get urls family-name)
         log      (fn [font]
                    (when-not silent (println " Extracting '~{font}'...")))]
+
+    (when-not (family-available? family-name)
+      (println "Font family '~{family-name}' not available..."))
 
     (when-not silent
       (println "Downloading '~{family-name}' font family..."))
@@ -149,6 +162,12 @@
 
        Downloads the font families from the
        [Font Squirrel](https://www.fontsquirrel.com/) repository
+
+       URLS:
+       * https://www.fontsquirrel.com/fonts/download/open-sans
+       * https://www.fontsquirrel.com/fonts/download/roboto
+       * https://www.fontsquirrel.com/fonts/download/source-code-pro
+       * https://www.fontsquirrel.com/fonts/download/jetbrains-mono
        """
      :examples '(
        """

@@ -34,13 +34,13 @@
 
 
 ;; Venice modules with an installer for 3rdparty libraries. 
-;; E.g. :jansi -> :jansi-install
-(def- installable-modules [ :jansi
-                            :bouncycastle
+;; E.g. :pdf -> :pdf-install
+(def- installable-modules [ :bouncycastle
                             :docx4j-8
                             :excel
                             :jtokkit
                             :langchain
+                            :openai-java
                             :pdf
                             :postgresql-jdbc
                             :qdrant-client
@@ -49,6 +49,23 @@
                             :tomcat
                             :xchart
                             :yaml ])
+
+
+(def- standard-modules    [ :bouncycastle
+                            :docx4j-8
+                            :excel
+                            ;;  :jtokkit
+                            ;;  :langchain
+                            :openai-java
+                            :pdf
+                            ;;  :postgresql-jdbc
+                            ;;  :qdrant-client
+                            :qrbill
+                            :qrcode
+                            ;;  :tomcat
+                            :xchart
+                            ;;  :yaml 
+                          ])
 
 
 (defn 
@@ -322,10 +339,13 @@
     (throw (ex :VncException 
                "Internet is not available, cannot install!")))
   
-  (let [options  (default-options options)
-        opts     (apply hash-map options)
-        silent   (:silent opts true)
-        clean    (:clean opts false)]
+  (let [options   (default-options options)
+        opts      (apply hash-map options)
+        silent    (:silent opts true)
+        clean     (:clean opts false)
+        all       (:all opts false)
+        mod-names (if all installable-modules standard-modules)]
+    
     (validate-install-dir opts)
 
     (when clean
@@ -335,7 +355,7 @@
 
     ;; get the modules' libraries
     (when-not silent (println "Processing modules:"))
-    (let [libs (loop [names installable-modules, libs []]
+    (let [libs (loop [names mod-names, libs []]
                   (if-let [name (first names)] 
                     (let [module-name (installer-module-name name)]
                       (when-not silent (println "  " module-name))
