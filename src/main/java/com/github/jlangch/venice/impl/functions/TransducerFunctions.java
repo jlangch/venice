@@ -136,6 +136,7 @@ public class TransducerFunctions {
                         "               (take 2)                   \n" +
                         "               (reverse)))                \n" +
                         "  (transduce xform conj [1 2 3 4 5 6]))     ")
+                    .seeAlso("map", "filter", "reduce", "map-indexed", "tee")
                     .build()
         ) {
             @Override
@@ -246,7 +247,7 @@ public class TransducerFunctions {
                         "     (map (fn [x] [(inc x)]))  ;; map to a 'core/vector'          \n" +
                         "     (first)                                                      \n" +
                         "     (type))                                                      ")
-                    .seeAlso("filter", "reduce", "map-indexed")
+                    .seeAlso("filter", "reduce", "map-indexed", "tee")
                     .build()
         ) {
             @Override
@@ -358,7 +359,7 @@ public class TransducerFunctions {
                         "(map-indexed #(vector (inc %1) %2) [:a :b :c])",
                         "(map-indexed vector \"abcdef\")",
                         "(map-indexed hash-map [:a :b :c])")
-                    .seeAlso("map")
+                    .seeAlso("map", "filter", "reduce", "tee")
                     .build()
         ) {
             @Override
@@ -472,7 +473,7 @@ public class TransducerFunctions {
                         "(filter even? [1 2 3 4 5 6 7])",
                         "(filter #(even? (val %)) {:a 1 :b 2})",
                         "(filter even? #{1 2 3})")
-                    .seeAlso("map", "reduce")
+                    .seeAlso("map", "reduce", "map-indexed", "tee")
                     .build()
         ) {
             @Override
@@ -554,7 +555,9 @@ public class TransducerFunctions {
                         "Returns a transducer when no collection is provided." )
                     .examples(
                         "(tee println [1 2 3 4])",
-                        "(->> [1 2 3 4] (tee println) (map inc))")
+                        "(->> [1 2 3 4]     \n" +
+                        "     (tee println) \n" +
+                        "     (map inc))    ")
                     .seeAlso("map", "filter", "reduce", "map-indexed")
                     .build()
         ) {

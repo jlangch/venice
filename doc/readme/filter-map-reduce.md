@@ -102,5 +102,19 @@ flow of function calls, improving readability.
 ; => 60
 ```
 
+ 
+
+**Testing**
+
+The `tee` function is very handy for testing Filter-Map-Reduce processes. 
+It applies a function to each item in a collection and returns the 
+collection unchanged.
+
+```clojure
+(->> [1 2 3 4]
+     (filter odd?)
+     (tee println)
+     (map inc))
+```
 
 
