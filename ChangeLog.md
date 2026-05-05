@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 
 - Bumped the OpenAI Java library to V4.33.0
 
+### Bugs
+
+- Fixed an edge case in JavaInterop handling `map` / `filter` function in 
+  `VncJavaList`
+
 
 
 ## [1.13.3] - 2026-05-04

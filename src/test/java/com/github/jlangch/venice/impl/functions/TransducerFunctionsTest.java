@@ -880,8 +880,8 @@ public class TransducerFunctionsTest {
         assertEquals("core/vector", venice.eval("(type (first (map (fn [x] [1]) [1 2 3])))"));
 
         // Note: to keep java compatibility as much as possible the mapper turns the mapped data to java data structures!!
-        assertEquals("java.util.ArrayList", venice.eval("(type (first (map (fn [x] '(1)) (doto (. :java.util.ArrayList :new) (. :add 1)))))"));
-        assertEquals("java.util.ArrayList", venice.eval("(type (first (map (fn [x] [1])  (doto (. :java.util.ArrayList :new) (. :add 1)))))"));
+        assertEquals("core/list", venice.eval("(type (first (map (fn [x] '(1)) (doto (. :java.util.ArrayList :new) (. :add 1)))))"));
+        assertEquals("core/vector", venice.eval("(type (first (map (fn [x] [1])  (doto (. :java.util.ArrayList :new) (. :add 1)))))"));
     }
 
     @Test

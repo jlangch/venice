@@ -156,8 +156,8 @@ public class VncJavaList extends VncSequence implements IVncJavaObject, VncMutab
     }
 
     @Override
-    public VncJavaList filter(final Predicate<? super VncVal> predicate) {
-        return new VncJavaList(
+    public VncList filter(final Predicate<? super VncVal> predicate) {
+        return VncList.ofList(
                     stream()
                         .filter((v) -> predicate.test(v))
                         .collect(Collectors.toList()),
@@ -165,10 +165,10 @@ public class VncJavaList extends VncSequence implements IVncJavaObject, VncMutab
     }
 
     @Override
-    public VncJavaList map(final Function<? super VncVal, ? extends VncVal> mapper) {
-        return new VncJavaList(
+    public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
+        return VncList.ofList(
                     stream()
-                        .map((v) -> mapper.apply(v).convertToJavaObject())
+                        .map((v) -> mapper.apply(v))
                         .collect(Collectors.toList()),
                     getMeta());
     }

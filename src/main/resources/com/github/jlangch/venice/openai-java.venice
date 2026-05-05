@@ -748,7 +748,6 @@
     (-<> (. client :files)
          (. <> :list)
          (. <> :items)
-         (map java->venice <>)
          (map file-object->map <>)))
   
   ([client limit]
@@ -758,7 +757,6 @@
       (-<> (. client :files)
            (. <> :list (. params :build))
            (. <> :items)
-           (map java->venice <>)
            (map file-object->map <>)))))
 
 
@@ -1084,7 +1082,6 @@
   models []
   
   (->> (. :ChatCompletionTraditionalRequest :models) ;; java.util.ArrayList
-       (map java->venice)
        (map keyword)))
 
 
