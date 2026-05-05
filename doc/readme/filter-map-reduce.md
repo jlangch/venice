@@ -117,4 +117,11 @@ collection unchanged.
      (map inc))
 ```
 
+Output:
+
+```
+1
+3
+=> (2 4)
+```
 
