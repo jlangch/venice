@@ -30,7 +30,6 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionMessageFunctionToolCall;
 import com.openai.models.chat.completions.ChatCompletionMessageToolCall;
 import com.openai.models.chat.completions.ChatCompletionToolMessageParam;
-import com.openai.models.completions.CompletionUsage;
 
 
 public class ChatCompletionTraditionalResponse {
@@ -72,16 +71,8 @@ public class ChatCompletionTraditionalResponse {
         return messages.isEmpty() ? null : messages.get(messages.size()-1);
     }
 
-    public ChatCompletionUsage getUsage() {
-        final CompletionUsage usage = completion.usage().get();
-
-        return new ChatCompletionUsage(
-                        usage.promptTokens(),
-                        usage.completionTokens(),
-                        usage.completionTokensDetails().isPresent()
-                            ? usage.completionTokensDetails().get().reasoningTokens().orElse(0L)
-                            : 0,
-                        usage.totalTokens());
+    public TokenUsage getUsage() {
+        return TokenUsage.of(completion.usage().get());
     }
 
     public boolean hasToolCalls() {

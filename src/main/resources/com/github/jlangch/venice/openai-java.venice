@@ -48,6 +48,7 @@
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
 (import :com.github.jlangch.venice.util.openai.Files)
+(import :com.github.jlangch.venice.util.openai.TokenUsage)
 (import :com.github.jlangch.venice.util.openai.IFunctionDispatcher)
 (import :com.github.jlangch.venice.util.openai.RegistryFunctionDispatcher)
 (import :com.github.jlangch.venice.util.openai.TemporaryFile)
@@ -586,13 +587,7 @@
   usage [response]
 
   { :pre [(instance-of? :ChatCompletionTraditionalResponse response)] }
-  (let [u (. response :getUsage)]
-    {
-      :input-tokens  (. u :getInputTokens)
-      :output-tokens (. u :getOutputTokens)
-      :output-tokens-detail { :reasoning-tokens (. u :getOutputReasoningTokens) }
-      :total-tokens  (. u :getTotalTokens)
-    } ))
+  (. (. response :getUsage) :toVncMap))
 
 
 (defn elapsed [chat]
@@ -997,6 +992,14 @@
     :valid?    (. file-object :isValid)))
 
 
+;; -----------------------------------------------------------------------------
+;; IMAGES
+;; -----------------------------------------------------------------------------
+
+;; https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
+
+
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -1035,7 +1038,7 @@
           ```
           { :input-tokens 11
             :output-tokens 15
-            :reasoning-tokens { :output-tokens-detail 0 }
+            :output-details  { :reasoning-tokens 0 }
             :total-tokens 26 }
           ```
           """
@@ -1060,7 +1063,7 @@
                        "%sTotal:  %5d%n")
                   (if (nil? title) "" (str/format "%s%n" title))
                   indent (:input-tokens usage)
-                  indent (:output-tokens usage) (:reasoning-tokens (:output-tokens-detail usage))
+                  indent (:output-tokens usage) (:reasoning-tokens (:output-details usage))
                   indent (:total-tokens usage)))))
 
 
