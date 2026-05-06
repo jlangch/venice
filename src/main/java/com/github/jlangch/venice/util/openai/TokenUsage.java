@@ -156,9 +156,11 @@ public class TokenUsage {
     private long outputTokens;
     private long totalTokens;
 
+    // input details
     private long inputDetails_ImageTokens;
     private long inputDetails_TextTokens;
 
+    // output details
     private long outputDetails_ReasoningTokens;
     private long outputDetails_ImageTokens;
     private long outputDetails_TextTokens;
