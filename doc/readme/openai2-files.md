@@ -39,7 +39,7 @@ Result:
   :bytes 41239 
   :createdAt 1777820466 
   :expiresAt -1 
-  :valid? true}
+  :valid? true }
 ```
 
  
@@ -65,7 +65,7 @@ Result:
   :bytes 41239 
   :createdAt 1777820466 
   :expiresAt -1 
-  :valid? true}
+  :valid? true }
 ```
 
  
@@ -106,11 +106,11 @@ Create a file (requires Venice 1.13.4+)
 Result:
 
 ```
-{:id "file-P7...w" 
- :filename "Tour_Eiffel.pdf" 
- :purpose user_data 
- :bytes 45787 
- :createdAt 1778048157 
- :expiresAt 1778051757 
- :valid? true}
+{ :id "file-P7...w" 
+  :filename "Tour_Eiffel.pdf" 
+  :purpose user_data 
+  :bytes 45787 
+  :createdAt 1778048157 
+  :expiresAt 1778051757 
+  :valid? true }
 ```
