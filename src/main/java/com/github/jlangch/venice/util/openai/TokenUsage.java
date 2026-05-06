@@ -29,6 +29,8 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.openai.models.completions.CompletionUsage;
+import com.openai.models.completions.CompletionUsage.CompletionTokensDetails;
+import com.openai.models.images.ImagesResponse.Usage.OutputTokensDetails;
 
 
 public class TokenUsage {
@@ -40,25 +42,54 @@ public class TokenUsage {
             final long inputTokens,
             final long outputTokens,
             final long totalTokens,
-            final long outputDetails_ReasoningTokens
+            // input details
+            final long inputDetails_ImageTokens,
+            final long inputDetails_TextTokens,
+            // output details
+            final long outputDetails_ReasoningTokens,
+            final long outputDetails_ImageTokens,
+            final long outputDetails_TextTokens
+
     ) {
         this.inputTokens = inputTokens;
         this.outputTokens = outputTokens;
         this.totalTokens = totalTokens;
 
+        this.inputDetails_ImageTokens = inputDetails_ImageTokens;
+        this.inputDetails_TextTokens = inputDetails_TextTokens;
+
         this.outputDetails_ReasoningTokens = outputDetails_ReasoningTokens;
+        this.outputDetails_ImageTokens = outputDetails_ImageTokens;
+        this.outputDetails_TextTokens = outputDetails_TextTokens;
 }
 
     public static TokenUsage of(final CompletionUsage usage) {
         Objects.requireNonNull(usage);
 
+        final CompletionTokensDetails details = usage.completionTokensDetails().get();
+
+        final long reasoningTokens = details == null ? 0L : details.reasoningTokens().orElse(0L);
+
         return new TokenUsage(
                 usage.promptTokens(),
                 usage.completionTokens(),
                 usage.totalTokens(),
-                usage.completionTokensDetails().isPresent()
-                    ? usage.completionTokensDetails().get().reasoningTokens().orElse(0L)
-                    : 0);
+                0, 0, reasoningTokens, 0, 0);
+    }
+
+    public static TokenUsage of(final com.openai.models.images.ImagesResponse.Usage usage) {
+        Objects.requireNonNull(usage);
+
+        final OutputTokensDetails details = usage.outputTokensDetails().get();
+
+        final long imageTokens = details == null ? 0 : details.imageTokens();
+        final long textTokens = details == null ? 0 : details.textTokens();
+
+        return new TokenUsage(
+                usage.inputTokens(),
+                usage.outputTokens(),
+                usage.totalTokens(),
+                0, 0, 0, imageTokens, textTokens);
     }
 
     public long getInputTokens() {
