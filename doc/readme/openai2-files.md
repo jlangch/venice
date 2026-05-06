@@ -108,7 +108,8 @@ Result:
 ```
 {:id "file-P7...w" 
  :filename "Tour_Eiffel.pdf" 
- :purpose user_data :bytes 45787 
+ :purpose user_data 
+ :bytes 45787 
  :createdAt 1778048157 
  :expiresAt 1778051757 
  :valid? true}
