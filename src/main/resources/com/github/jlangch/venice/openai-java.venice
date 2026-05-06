@@ -1007,7 +1007,7 @@
      :doc """
           Generates an image.
 
-          ¶**Parameter «options»**
+          ¶**Parameters**
 
           | [![width: 15%]] | [![width: 85%]] |
           | :client c   | A client.¶ Use `openai-java/client` to create a client |
@@ -1034,7 +1034,7 @@
                               Requests with background set to transparent will return an \
                               error for these models; use opaque or auto instead.¶\
                               If transparent, the output format needs to support transparency, \
-                              so it should be set to either `:PNG` (default value) or `:WEBP`.
+                              so it should be set to either `:PNG` (default value) or `:WEBP`. |
           | :number n       | The number of images to generate. Must be between 1 and 10. For \
                               `:DALL_E_3`, only `n=1` is supported.¶\
                               minimum: 1, maximum: 10 |
@@ -1045,12 +1045,12 @@
                               This parameter is only supported for the GPT image models. \
                               Must be one of `:PNG`, `:JPEG`, or `:WEBP`.  |
           | :quality f      | The quality of the image that will be generated.¶\
-                              * `:AUTO` (default value) will automatically select the \
-                                best quality for the given model.¶\
-                              * `:HIGH`, `:MEDIUM` and `:LOW` are supported for the \
-                                GPT image models.¶\
-                              * `:HD` and `:STANDARD` are supported for `:DALL_E_3`.¶\
-                              * `:STANDARD`is the only option for dall-e-2. |
+                              \u00A0 • `:AUTO` (default value) will automatically select the \
+                              best quality for the given model.¶\
+                              \u00A0 • `:HIGH`, `:MEDIUM` and `:LOW` are supported for the \
+                              GPT image models.¶\
+                              \u00A0 • `:HD` and `:STANDARD` are supported for `:DALL_E_3`.¶\
+                              \u00A0 • `:STANDARD`is the only option for `:DALL_E_2`. |
           | :size f         | The size of the generated images.¶\
                               For `:GPT_IMAGE_2`, arbitrary resolutions are supported as \
                               WIDTHxHEIGHT strings, for example `1536x864`. Width and height \
@@ -1068,13 +1068,13 @@
                               Vivid causes the model to lean towards generating hyper-real \
                               and dramatic images. Natural causes the model to produce \
                               more natural, less hyper-real looking images. |
-          | :response-format f | The format in which generated images with dall-e-2 \
-                                 and dall-e-3 are returned. Must be one of `:URL` or `:B64_JSON`. \
+          | :response-format f | The format in which generated images with `:DALL_E_2` \
+                                 and `:DALL_E_3` are returned. Must be one of `:URL` or `:B64_JSON`. \
                                  URLs are only valid for 60 minutes after the image has been \
                                  generated. This parameter isn’t supported for the GPT image \
-                                 models, which always return base64-encoded images.
+                                 models, which always return base64-encoded images.|
 
-          Returns an `:ImagesResponse`
+          Returns an OpenAi image response
           """ 
      :examples '(
           """
@@ -1089,16 +1089,16 @@
                                 :number 1
                                 :size "1024x1024")
                   usage    (openai-java/usage response)
-                  images   (openai-java/images response)
-                  image-1  (:data (first (openai-java/images response)))]
+                  image-1  (first (openai-java/image-binaries response))]
               (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
-              (printf "Result:  %d image(s)%n" (count images))
               (io/spit (io/file "./image-1.png") image-1)
-              (println)
-              (println "Image saved to ./image-1.png")))
+              (println "Image #1 saved to ./image-1.png")))
           """)
      :see-also '(
-        "openai-java/client") }
+        "openai-java/client"
+        "openai-java/usage"
+        "openai-java/image-binaries"
+        "openai-java/image-urls") }
 
   generate-image [client prompt & options]
 
@@ -1132,24 +1132,38 @@
 
 (defn
   ^{ :arglists '(
-          "(images response)" )
+          "(image-binaries response)" )
      :doc """
-          Returns a list of image data maps of the response.
-
-          [ { :data [34 67 ...]  :url nil}
-            { :data [89 12 ...]  :url nil} ]
+          Returns a list of image binaries of the response.
           """
      :see-also '(
-        "openai-java/generate-image") }
+        "openai-java/generate-image"
+        "openai-java/image-urls") }
 
-  images [response]
+  image-binaries [response]
+
+  { :pre [(instance-of? :ImagesResponse response)] }
+  
+  (if-let [images (java-unwrap-optional (. response :data) (list))]
+    (map #(decode-b64 (. % :b64Json)) images)))
+
+
+(defn
+  ^{ :arglists '(
+          "(image-urls response)" )
+     :doc """
+          Returns a list of image URLs of the response.
+         """
+     :see-also '(
+        "openai-java/generate-image"
+        "openai-java/image-binaries") }
+
+  image-urls [response]
 
   { :pre [(instance-of? :ImagesResponse response)] }
   
   (if-let [images  (java-unwrap-optional (. response :data) (list))]
-    (map #(ordered-map :data (decode-b64 (. % :b64Json))
-                       :url  (java-unwrap-optional (. % :url)))
-         images)))
+    (map #(java-unwrap-optional (. % :url)) images)))
 
 
 (defn- decode-b64 [b64]

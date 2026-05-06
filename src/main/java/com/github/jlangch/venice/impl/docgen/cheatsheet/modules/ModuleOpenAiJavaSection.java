@@ -65,7 +65,8 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         final DocSection response = new DocSection("Response", id());
         all.addSection(response);
         response.addItem(diBuilder.getDocItem("openai-java/messages", false));
-        response.addItem(diBuilder.getDocItem("openai-java/images", false));
+        response.addItem(diBuilder.getDocItem("openai-java/image-binaries", false));
+        response.addItem(diBuilder.getDocItem("openai-java/image-urls", false));
         response.addItem(diBuilder.getDocItem("openai-java/usage", false));
 
         final DocSection files = new DocSection("Files", id());
