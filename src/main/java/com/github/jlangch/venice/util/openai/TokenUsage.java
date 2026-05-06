@@ -70,7 +70,7 @@ public class TokenUsage {
 
         final CompletionUsage usage = response.getUsage();
 
-        final CompletionTokensDetails details = usage.completionTokensDetails().get();
+        final CompletionTokensDetails details = usage.completionTokensDetails().orElse(null);
 
         final long reasoningTokens = details == null ? 0L : details.reasoningTokens().orElse(0L);
 
@@ -84,13 +84,13 @@ public class TokenUsage {
     public static TokenUsage of(final ImagesResponse response) {
         Objects.requireNonNull(response);
 
-        final ImagesResponse.Usage usage = response.usage().get();
+        final ImagesResponse.Usage usage = response.usage().orElse(null);
 
         if (usage == null) {
             return new TokenUsage();
         }
         else {
-            final OutputTokensDetails details = usage.outputTokensDetails().get();
+            final OutputTokensDetails details = usage.outputTokensDetails().orElse(null);
 
             final long imageTokens = details == null ? 0 : details.imageTokens();
             final long textTokens = details == null ? 0 : details.textTokens();

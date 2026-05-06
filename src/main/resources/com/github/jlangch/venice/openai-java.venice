@@ -1047,7 +1047,7 @@
           | :quality f      | The quality of the image that will be generated.¶\
                               * `:AUTO` (default value) will automatically select the \
                                 best quality for the given model.¶\
-                              * `:higHIGHh`, `:MEDIUM` and `:LOW` are supported for the \
+                              * `:HIGH`, `:MEDIUM` and `:LOW` are supported for the \
                                 GPT image models.¶\
                               * `:HD` and `:STANDARD` are supported for `:DALL_E_3`.¶\
                               * `:STANDARD`is the only option for dall-e-2. |
@@ -1080,16 +1080,22 @@
           """
           (do
             (load-module :openai-java)
-            (let [client (openai-java/client)]
-              ;; ...
-              (openai-java/close client)))
-          """,
-          """
-          (do
-            (load-module :openai-java)
-            (let [client (openai-java/client :openai-api-key "sk-1234")]
-              ;; ...
-              (openai-java/close client)))
+            (let [client   (openai-java/client)
+                  response (openai-java/generate-image 
+                                client 
+                                "A cat on bicycle"
+                                :model :GPT_IMAGE_1_MINI
+                                :format :PNG
+                                :number 1
+                                :size "1024x1024")
+                  usage    (openai-java/usage response)
+                  images   (openai-java/images response)
+                  image-1  (:data (first (openai-java/images response)))]
+              (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
+              (printf "Result:  %d image(s)%n" (count images))
+              (io/spit (io/file "./image-1.png") image-1)
+              (println)
+              (println "Image saved to ./image-1.png")))
           """)
      :see-also '(
         "openai-java/client") }
@@ -1112,11 +1118,11 @@
       (. params :prompt prompt)
       (when model (. params :model (. :ImageModel model)))
       (when background (. params :background (. :ImageGenerateParams$Background background)))
-      (when number (. params :number number))
+      (when number (. params :n number))
       (when compression (. params :outputCompression compression))
       (when format (. params :outputFormat (. :ImageGenerateParams$OutputFormat format)))
       (when quality (. params :quality (. :ImageGenerateParams$Quality quality)))
-      (when size (. params :size (. :ImageGenerateParams$Size size)))
+      (when size (. params :size (. :ImageGenerateParams$Size :of size)))
       (when style (. params :style (. :ImageGenerateParams$Style style)))
       (when response-format (. params :responseFormat (. :ImageGenerateParams$ResponseFormat response-format)))
 
@@ -1128,7 +1134,10 @@
   ^{ :arglists '(
           "(images response)" )
      :doc """
-          Returns a list of images of the response.
+          Returns a list of image data maps of the response.
+
+          [ { :data [34 67 ...]  :url nil}
+            { :data [89 12 ...]  :url nil} ]
           """
      :see-also '(
         "openai-java/generate-image") }
@@ -1136,8 +1145,17 @@
   images [response]
 
   { :pre [(instance-of? :ImagesResponse response)] }
-  (. response :data))
+  
+  (if-let [images  (java-unwrap-optional (. response :data) (list))]
+    (map #(ordered-map :data (decode-b64 (. % :b64Json))
+                       :url  (java-unwrap-optional (. % :url)))
+         images)))
 
+
+(defn- decode-b64 [b64]
+  (if-let [base64 (if (java-optional? b64) (java-unwrap-optional b64) b64)]
+    (str/decode-base64 base64)
+    nil))
 
 
 

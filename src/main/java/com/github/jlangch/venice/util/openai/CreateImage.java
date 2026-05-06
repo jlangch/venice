@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.openai;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,9 +32,7 @@ import com.openai.models.images.ImageGenerateParams;
 import com.openai.models.images.ImageGenerateParams.Background;
 import com.openai.models.images.ImageGenerateParams.OutputFormat;
 import com.openai.models.images.ImageGenerateParams.Quality;
-import com.openai.models.images.ImageGenerateParams.ResponseFormat;
 import com.openai.models.images.ImageGenerateParams.Size;
-import com.openai.models.images.ImageGenerateParams.Style;
 import com.openai.models.images.ImageModel;
 import com.openai.models.images.ImagesResponse;
 import com.openai.models.images.ImagesResponse.Usage;
@@ -45,26 +44,34 @@ public class CreateImage {
     public static void main(String[] args) {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
-         ImageGenerateParams params = ImageGenerateParams.builder()
-            .prompt("A cute baby sea otter")
-            .background(Background.AUTO)
-            .model(ImageModel.GPT_IMAGE_1_5)
-            .n(1)  // 1..10
-            .outputCompression(20)  // 0..100%
-            .outputFormat(OutputFormat.PNG)
-            .quality(Quality.STANDARD)
-            .responseFormat(ResponseFormat.B64_JSON) // or URL
-            .size(Size.of("1024x1024"))
-            .style(Style.NATURAL)
-            .build();
+        ImageGenerateParams params = ImageGenerateParams.builder()
+                .prompt("A cute baby sea otter")
+                .background(Background.AUTO)
+                .model(ImageModel.GPT_IMAGE_1_MINI)
+                .n(1)  // 1..10
+//                .outputCompression(20)  // 0..100%
+                .outputFormat(OutputFormat.PNG)
+                .quality(Quality.AUTO)
+//                .responseFormat(ResponseFormat.B64_JSON) // or URL
+                .size(Size.of("1024x1024"))
+//                .style(Style.NATURAL)
+                .build();
 
-        final ImagesResponse imagesResponse = client.images().generate(params);
-        final Optional<Usage> usage = imagesResponse.usage();
-        final Optional<List<Image>> images = imagesResponse.data();
+            final ImagesResponse imagesResponse = client.images().generate(params);
+            final Optional<Usage> usage = imagesResponse.usage();
+            final List<Image> images = imagesResponse.data().orElse(new ArrayList<>());
 
-        final Image image = images.get().get(0);
+            if (images.isEmpty()) {
+                System.out.println("<no image>");
+            }
+            else {
+                final Image image = images.get(0);
+                final String b64Json = image.b64Json().orElse(null);
+                final String url = image.url().orElse(null);
 
-        final String b64Json = image.b64Json().get();
-        final String url = image.url().get();
+                System.out.println(String.format("Images: %d", images.size()));
+                System.out.println(String.format("Base64: %d", b64Json == null ? 0 : b64Json.length()));
+                System.out.println(String.format("URL:    %s", url));
+            }
     }
 }
