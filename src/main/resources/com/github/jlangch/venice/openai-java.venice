@@ -38,12 +38,35 @@
 
 (import :com.openai.client.OpenAIClient)
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
+
 (import :com.openai.models.ChatModel)
+
 (import :com.openai.models.files.FilePurpose)
 (import :com.openai.models.files.FileObject)
 (import :com.openai.models.files.FileListParams)
 (import :com.openai.models.files.FileCreateParams)
-(import :com.openai.models.files.FileCreateParams.ExpiresAfter)
+(import :com.openai.models.files.FileCreateParams$ExpiresAfter)
+
+(import :com.openai.models.images.Image)
+(import :com.openai.models.images.ImageModel)
+(import :com.openai.models.images.ImagesResponse)
+(import :com.openai.models.images.ImagesResponse.Usage)
+
+(import :com.openai.models.images.ImageGenerateParams)
+(import :com.openai.models.images.ImageGenerateParams$Background)
+(import :com.openai.models.images.ImageGenerateParams$OutputFormat)
+(import :com.openai.models.images.ImageGenerateParams$Quality)
+(import :com.openai.models.images.ImageGenerateParams$ResponseFormat)
+(import :com.openai.models.images.ImageGenerateParams$Size)
+(import :com.openai.models.images.ImageGenerateParams$Style)
+
+(import :com.openai.models.images.ImageEditParams)
+(import :com.openai.models.images.ImageEditParams$Background)
+(import :com.openai.models.images.ImageEditParams$InputFidelity)
+(import :com.openai.models.images.ImageEditParams$OutputFormat)
+(import :com.openai.models.images.ImageEditParams$Quality)
+(import :com.openai.models.images.ImageEditParams$ResponseFormat)
+(import :com.openai.models.images.ImageEditParams$Size)
 
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
@@ -849,7 +872,7 @@
 
     (let [params (. :FileCreateParams :builder)]
       (. params :file (io/->path file))
-      (. params :expiresAfter (-> (. :com.openai.models.files.FileCreateParams$ExpiresAfter :builder)
+      (. params :expiresAfter (-> (. :FileCreateParams$ExpiresAfter :builder)
                                   (. :seconds expires-after-seconds)
                                   (. :build)))
       (. params :purpose (. :FilePurpose purpose))
@@ -925,7 +948,7 @@
     (try-with [tmp (. :TemporaryFile :of data filename)] 
       (let [params (. :FileCreateParams :builder)]
         (. params :file (. tmp :getPath))
-        (. params :expiresAfter (-> (. :com.openai.models.files.FileCreateParams$ExpiresAfter :builder)
+        (. params :expiresAfter (-> (. :FileCreateParams$ExpiresAfter :builder)
                                     (. :seconds expires-after-seconds)
                                     (. :build)))
         (. params :purpose (. :FilePurpose purpose))
