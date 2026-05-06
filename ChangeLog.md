@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Bumped the OpenAI Java library to V4.33.0
+- OpenAI: added support for `Files` api *create*
 
 ### Bugs
 
@@ -24,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 - OpenAI: added support for structured chat completion results
 - OpenAI: added support for chat file completions
-- OpenAI: added support for `Files` api
+- OpenAI: added support for `Files` api (list, delete, retrieve)
 
 
 
