@@ -5,6 +5,7 @@
 * [List Files](#list-files)
 * [Retrieve File](#retrieve-file)
 * [Delete File](#delete-file)
+* [Create File](#create-file)
 
  
  
@@ -85,4 +86,30 @@ Result:
 
 ```
 => true
+```
+
+ 
+
+## Create File
+
+Create a file (requires Venice 1.13.4+)
+
+```
+(do
+  (load-module :openai-java)
+
+  (let [client  (openai-java/client)
+        file    (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")]
+    (openai-java/create-file client file :USER_DATA 3600)))
+```
+
+Result:
+
+```
+{:id "file-P7tzt8P1tuabzqibtExhyw" 
+ :filename "Tour_Eiffel.pdf" 
+ :purpose user_data :bytes 45787 
+ :createdAt 1778048157 
+ :expiresAt 1778051757 
+ :valid? true}
 ```
