@@ -30,6 +30,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.openai.models.completions.CompletionUsage;
 import com.openai.models.completions.CompletionUsage.CompletionTokensDetails;
+import com.openai.models.images.ImagesResponse;
 import com.openai.models.images.ImagesResponse.Usage.OutputTokensDetails;
 
 
@@ -63,8 +64,11 @@ public class TokenUsage {
         this.outputDetails_TextTokens = outputDetails_TextTokens;
 }
 
-    public static TokenUsage of(final CompletionUsage usage) {
-        Objects.requireNonNull(usage);
+
+    public static TokenUsage of(final ChatCompletionTraditionalResponse response) {
+        Objects.requireNonNull(response);
+
+        final CompletionUsage usage = response.getUsage();
 
         final CompletionTokensDetails details = usage.completionTokensDetails().get();
 
@@ -77,19 +81,26 @@ public class TokenUsage {
                 0, 0, reasoningTokens, 0, 0);
     }
 
-    public static TokenUsage of(final com.openai.models.images.ImagesResponse.Usage usage) {
-        Objects.requireNonNull(usage);
+    public static TokenUsage of(final ImagesResponse response) {
+        Objects.requireNonNull(response);
 
-        final OutputTokensDetails details = usage.outputTokensDetails().get();
+        final ImagesResponse.Usage usage = response.usage().get();
 
-        final long imageTokens = details == null ? 0 : details.imageTokens();
-        final long textTokens = details == null ? 0 : details.textTokens();
+        if (usage == null) {
+            return new TokenUsage();
+        }
+        else {
+            final OutputTokensDetails details = usage.outputTokensDetails().get();
 
-        return new TokenUsage(
-                usage.inputTokens(),
-                usage.outputTokens(),
-                usage.totalTokens(),
-                0, 0, 0, imageTokens, textTokens);
+            final long imageTokens = details == null ? 0 : details.imageTokens();
+            final long textTokens = details == null ? 0 : details.textTokens();
+
+            return new TokenUsage(
+                    usage.inputTokens(),
+                    usage.outputTokens(),
+                    usage.totalTokens(),
+                    0, 0, 0, imageTokens, textTokens);
+        }
     }
 
     public long getInputTokens() {
