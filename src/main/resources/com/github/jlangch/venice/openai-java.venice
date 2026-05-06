@@ -1134,7 +1134,7 @@
   ^{ :arglists '(
           "(image-binaries response)" )
      :doc """
-          Returns a list of image binaries of the response.
+          Returns a list of image binaries in the response.
           """
      :see-also '(
         "openai-java/generate-image"
@@ -1145,14 +1145,16 @@
   { :pre [(instance-of? :ImagesResponse response)] }
   
   (if-let [images (java-unwrap-optional (. response :data) (list))]
-    (map #(decode-b64 (. % :b64Json)) images)))
+    (->> images
+         (map #(decode-b64 (. % :b64Json)))
+         (filter some?))))
 
 
 (defn
   ^{ :arglists '(
           "(image-urls response)" )
      :doc """
-          Returns a list of image URLs of the response.
+          Returns a list of image URLs in the response.
          """
      :see-also '(
         "openai-java/generate-image"
@@ -1163,7 +1165,9 @@
   { :pre [(instance-of? :ImagesResponse response)] }
   
   (if-let [images  (java-unwrap-optional (. response :data) (list))]
-    (map #(java-unwrap-optional (. % :url)) images)))
+    (->> images
+         (map #(java-unwrap-optional (. % :url)))
+         (filter some?))))
 
 
 (defn- decode-b64 [b64]
