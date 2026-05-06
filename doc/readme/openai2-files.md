@@ -106,7 +106,7 @@ Create a file (requires Venice 1.13.4+)
 Result:
 
 ```
-{:id "file-P7tzt8P1tuabzqibtExhyw" 
+{:id "file-P7...w" 
  :filename "Tour_Eiffel.pdf" 
  :purpose user_data :bytes 45787 
  :createdAt 1778048157 
