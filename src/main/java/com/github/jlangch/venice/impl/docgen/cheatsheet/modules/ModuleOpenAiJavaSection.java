@@ -62,6 +62,10 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         all.addSection(img);
         img.addItem(diBuilder.getDocItem("openai-java/generate-image", false));
 
+        final DocSection audio = new DocSection("Audio", id());
+        all.addSection(audio);
+        audio.addItem(diBuilder.getDocItem("openai-java/create-speech", false));
+
         final DocSection response = new DocSection("Response", id());
         all.addSection(response);
         response.addItem(diBuilder.getDocItem("openai-java/messages", false));

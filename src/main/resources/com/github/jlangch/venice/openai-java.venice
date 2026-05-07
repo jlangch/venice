@@ -76,6 +76,10 @@
 (import :com.github.jlangch.venice.util.openai.RegistryFunctionDispatcher)
 (import :com.github.jlangch.venice.util.openai.TemporaryFile)
 
+(import :com.openai.models.audio.speech.SpeechCreateParams)
+(import :com.openai.models.audio.speech.SpeechCreateParams$ResponseFormat)
+(import :com.openai.models.audio.speech.SpeechModel)
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -140,7 +144,10 @@
           """)
      :see-also '(
         "openai-java/version"
-        "openai-java/close") }
+        "openai-java/close"
+        "openai-java/chat-completion"
+        "openai-java/generate-image"
+        "openai-java/create-speech") }
 
   client [& options]
 
@@ -196,7 +203,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(chat-completion-request client model)" )
+          "(chat-completiont client model)" )
      :doc """
           Defines a OpenAI chat completion request.
 
@@ -999,11 +1006,9 @@
 ;; IMAGES
 ;; -----------------------------------------------------------------------------
 
-;; https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide
-
 (defn 
   ^{ :arglists '(
-          "(generate-image client prompt & options)" )
+          "(generate-image client model prompt & options)" )
      :doc """
           Generates an image.
 
@@ -1011,6 +1016,11 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | :client c   | A client.¶ Use `openai-java/client` to create a client |
+          | :model m    | The model to use for image generation. One of \
+                          `:DALL_E_2`, `:DALL_E_3`, or a GPT image model (`:GPT_IMAGE_1`, \
+                          `:GPT_IMAGE_1_MINI`, `:GPT_IMAGE_1_5`, or `:GPT_IMAGE_2`). \
+                          Defaults to `:DALL_E_2` unless a parameter specific to \
+                          the GPT image models is used.|
           | :prompt p   | A text description of the desired image(s). The maximum \
                           length is 32000 characters for the GPT image models, 1000 \
                           characters for dall-e-2 and 4000 characters for dall-e-3. |
@@ -1019,11 +1029,6 @@
           ¶**Parameter «options»**
 
           | [![width: 15%]] | [![width: 85%]] |
-          | :model m        | The model to use for image generation. One of \
-                              `:DALL_E_2`, `:DALL_E_3`, or a GPT image model (`:GPT_IMAGE_1`, \
-                              `:GPT_IMAGE_1_MINI`, `:GPT_IMAGE_1_5`, or `:GPT_IMAGE_2`). \
-                              Defaults to `:DALL_E_2` unless a parameter specific to \
-                              the GPT image models is used.|
           | :background b   | Allows to set transparency for the background of the \
                               generated image(s). This parameter is only supported \
                               for GPT image models that support transparent backgrounds. \
@@ -1075,6 +1080,8 @@
                                  models, which always return base64-encoded images.|
 
           Returns an OpenAi image response
+
+          [Image Prompting Guide](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
           """ 
      :examples '(
           """
@@ -1083,8 +1090,8 @@
             (let [client   (openai-java/client)
                   response (openai-java/generate-image 
                                 client 
+                                :GPT_IMAGE_1_MINI
                                 "A cat on bicycle"
-                                :model :GPT_IMAGE_1_MINI
                                 :format :PNG
                                 :number 1
                                 :size "1024x1024")
@@ -1100,12 +1107,11 @@
         "openai-java/image-binaries"
         "openai-java/image-urls") }
 
-  generate-image [client prompt & options]
+  generate-image [client model prompt & options]
 
-  { :pre [(instance-of? :OpenAIClient client) (string? prompt)] }
+  { :pre [(instance-of? :OpenAIClient client) (keyword? model) (string? prompt)] }
 
   (let [opts            (apply hash-map options)
-        model           (:model opts)
         background      (:background opts)
         number          (:number opts)
         compression     (:compression opts)
@@ -1174,6 +1180,92 @@
   (if-let [base64 (if (java-optional? b64) (java-unwrap-optional b64) b64)]
     (str/decode-base64 base64)
     nil))
+
+
+
+;; -----------------------------------------------------------------------------
+;; AUDIO
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(create-speech client model input & options)" )
+     :doc """
+          Generates audio from the input text.
+
+          ¶**Parameters**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :client c   | A client.¶ Use `openai-java/client` to create a client |
+          | :model m    | The model to use for audio generation. One of \
+                              `:TTS_1`, `:TTS_1_HD`, or a GPT image model \
+                              (`:GPT_4O_MINI_TTS`). |
+          | :input s    | The text to generate audio for. The maximum length is \
+                          4096 characters. |
+
+
+          ¶**Parameter «options»**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :instructions s   | Control the voice of your generated audio with \
+                                additional instructions. Does not work with `:TTS_1` \
+                                or `:TTS_1_HD`.¶\
+                                maxLength: 4096¶\
+                                You can prompt the model to control aspects of speech, \
+                                including:¶\
+                                \u00A0 • Accent¶\
+                                \u00A0 • Emotional range¶\
+                                \u00A0 • Intonation¶\
+                                \u00A0 • Impressions¶\
+                                \u00A0 • Speed of speech¶\
+                                \u00A0 • Tone¶\
+                                \u00A0 • Whispering |
+          | :format f        | The audio format. Supported formats are `:MP3`, `:OPIS`, \
+                               `:AAC`, `:FLAC`, `:WAV`, `:PCM`|
+          | :voice v         | The voice (string) to use when generating the audio.¶\
+                               E.g: "marin", "cedar", ...|
+
+          Returns an `:InputStream` with the created audio
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  is       (openai-java/create-speech
+                                client 
+                                :GPT_4O_MINI_TTS
+                                "Today is a wonderful day to build something people love!"
+                                :format :WAV
+                                :voice "cedar")]
+              (->> (io/slurp-stream is :binary true)
+                   (io/spit (io/file "./audio.wav")))
+              (println "Audio saved to ./audio.wav")))
+          """)
+     :see-also '(
+        "openai-java/client") }
+
+  create-speech [client model input & options]
+
+  { :pre [(instance-of? :OpenAIClient client) 
+          (keyword? model) 
+          (string? input)] }
+
+  (let [opts            (apply hash-map options)
+        instructions    (:instructions opts)
+        format          (:format opts)
+        voice           (:voice opts)]
+    (let [params (. :SpeechCreateParams :builder)]
+      (. params :model (. :SpeechModel model))
+      (. params :input input)
+      (when instructions (. params :instructions instructions))
+      (when format (. params :responseFormat (. :SpeechCreateParams$ResponseFormat format)))
+      (when voice (. params :voice voice))
+
+      (-> (. client :audio)
+          (. :speech)
+          (. :create (. params :build))
+          (. :body)))))
 
 
 
