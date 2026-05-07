@@ -1088,7 +1088,7 @@
                                  generated. This parameter isn’t supported for the GPT image \
                                  models, which always return base64-encoded images.|
 
-          Returns an OpenAi image response
+          Returns an OpenAI image response
 
           [OpenAI Image Prompting Guide](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
           """ 
