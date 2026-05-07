@@ -222,6 +222,9 @@
                      `:GPT_5_4_NANO`|
 
           Returns the chat completion result
+
+          [OpenAI Text Prompting Guide](https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide)
+          [OpenAI Text Cookbook](https://developers.openai.com/cookbook/topic/text)
           """
      :examples '(
           """
@@ -1087,7 +1090,7 @@
 
           Returns an OpenAi image response
 
-          [Image Prompting Guide](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
+          [OpenAI Image Prompting Guide](https://developers.openai.com/cookbook/examples/multimodal/image-gen-models-prompting-guide)
           """ 
      :examples '(
           """
