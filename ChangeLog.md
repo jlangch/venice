@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 
 - Bumped the OpenAI Java library to V4.33.0
 - OpenAI: added support for `Files` api *create*
+- OpenAI: added support for `Images` api *create*
+- OpenAI: added support for `Audio` api *create*
 
 ### Bugs
 
