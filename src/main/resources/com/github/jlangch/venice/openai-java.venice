@@ -1257,12 +1257,13 @@
                                 "Today is a wonderful day to build something people love!"
                                 :format :MP3
                                 :voice "cedar")]
-              (println "Downloading audio ...")
-              (->> (io/slurp-stream is :binary true)
-                   (io/spit (io/file "./audio.mp3")))
-              (println "Playing audio ...")
-              (sh "afplay" "./audio.mp3")
-              nil))
+              (let [audio-file (io/file "./audio.mp3")]
+                (println "Downloading audio ...")
+                (->> (io/slurp-stream is :binary true)
+                     (io/spit audio-file))
+                (println "Playing audio ...")
+                (sh "afplay" (io/file-path audio-file))
+                nil)))
           """)
      :see-also '(
         "openai-java/client") }
