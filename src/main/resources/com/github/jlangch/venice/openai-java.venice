@@ -660,6 +660,8 @@
             (io/file? file)
             (keyword? purpose) 
             (long? expires-after-seconds)] }
+    (when-not (io/exists-file? file)
+      (throw (ex :VncException "The file ~{file} does not exist")))
     (. :Files :fileObject client 
                           file  
                           (. :FilePurpose purpose) 
@@ -1214,20 +1216,22 @@
           | :instructions s   | Control the voice of your generated audio with \
                                 additional instructions. Does not work with `:TTS_1` \
                                 or `:TTS_1_HD`.¶\
-                                maxLength: 4096¶\
+                                max length: 4096 characters¶\
                                 You can prompt the model to control aspects of speech, \
                                 including:¶\
-                                \u00A0 • Accent¶\
-                                \u00A0 • Emotional range¶\
-                                \u00A0 • Intonation¶\
-                                \u00A0 • Impressions¶\
-                                \u00A0 • Speed of speech¶\
-                                \u00A0 • Tone¶\
-                                \u00A0 • Whispering |
+                                \u00A0 • *Accent*¶\
+                                \u00A0 • *Emotional range*¶\
+                                \u00A0 • *Intonation*¶\
+                                \u00A0 • *Impressions*¶\
+                                \u00A0 • *Speed of speech*¶\
+                                \u00A0 • *Tone*¶\
+                                \u00A0 • *Whispering* |
           | :format f        | The audio format. Supported formats are `:MP3`, `:OPIS`, \
                                `:AAC`, `:FLAC`, `:WAV`, `:PCM`|
           | :voice v         | The voice (string) to use when generating the audio.¶\
-                               E.g: "marin", "cedar", ...|
+                               High quality voices:¶\
+                               \u00A0 • "marin" (en_US, female)¶\
+                               \u00A0 • "cedar" (en_US, male)|
 
           Returns an `:InputStream` with the created audio
           """ 
@@ -1261,9 +1265,13 @@
                 (println "Downloading audio ...")
                 (->> (io/slurp-stream is :binary true)
                      (io/spit audio-file))
-                (println "Playing audio ...")
-                (sh "afplay" (io/file-path audio-file))
-                nil)))
+                (println "Saved audio to" audio-file)
+                (if (os-type? :mac-osx)
+                  (do
+                    (println "Playing audio ...")
+                    (sh "afplay" (io/file-path audio-file))
+                    nil)
+                  (println "Playing audio supported on MacOS only!")))))
           """)
      :see-also '(
         "openai-java/client") }
