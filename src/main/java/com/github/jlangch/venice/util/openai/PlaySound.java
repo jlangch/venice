@@ -32,12 +32,13 @@ public class PlaySound {
 
     public static void main(String[] args) {
         try {
-           final File file = new File("/Users/juerg/Desktop/venice/audio.mp3");
+            final File file = new File("/Users/foo/Desktop/venice/audio.mp3");
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file.getAbsoluteFile());
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
-        } catch(Exception ex) {
+        }
+        catch(Exception ex) {
             System.out.println("Error with playing sound.");
             ex.printStackTrace();
         }
