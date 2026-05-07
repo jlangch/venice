@@ -36,6 +36,10 @@
 
 (load-module :java)
 
+(import :javax.sound.sampled.AudioInputStream)
+(import :javax.sound.sampled.AudioSystem)
+(import :javax.sound.sampled.Clip)
+
 (import :com.openai.client.OpenAIClient)
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
 
@@ -1236,11 +1240,29 @@
                                 client 
                                 :GPT_4O_MINI_TTS
                                 "Today is a wonderful day to build something people love!"
-                                :format :WAV
+                                :format :MP3
                                 :voice "cedar")]
               (->> (io/slurp-stream is :binary true)
-                   (io/spit (io/file "./audio.wav")))
-              (println "Audio saved to ./audio.wav")))
+                   (io/spit (io/file "./audio.mp3")))
+              (println "Audio saved to ./audio.mp3")))
+          """,
+          """
+          ;; MacOS only!!
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  is       (openai-java/create-speech
+                                client 
+                                :GPT_4O_MINI_TTS
+                                "Today is a wonderful day to build something people love!"
+                                :format :MP3
+                                :voice "cedar")]
+              (println "Downloading audio ...")
+              (->> (io/slurp-stream is :binary true)
+                   (io/spit (io/file "./audio.mp3")))
+              (println "Playing audio ...")
+              (sh "afplay" "./audio.mp3")
+              nil))
           """)
      :see-also '(
         "openai-java/client") }
@@ -1380,6 +1402,30 @@
   
   (->> (. :ChatCompletionTraditionalRequest :models) ;; java.util.ArrayList
        (map keyword)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(play-sound is)" )
+     :doc """
+          Plays audio from an :InputStream
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (openai-java/models))
+          """)
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  play-sound [is]
+  
+  (let [data         (io/slurp-stream is :binary true)
+        audio-stream (. :AudioSystem :getAudioInputStream (io/bytebuf-in-stream data))
+        clip         (. :AudioSystem :getClip)]
+    (. clip :open audio-stream)
+    (. clip :start)))
 
 
 
