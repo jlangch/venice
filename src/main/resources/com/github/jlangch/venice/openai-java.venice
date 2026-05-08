@@ -78,7 +78,7 @@
 
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
-(import :com.github.jlangch.venice.util.openai.Files)
+(import :com.github.jlangch.venice.util.openai.FileObjects)
 (import :com.github.jlangch.venice.util.openai.Multiparts)
 (import :com.github.jlangch.venice.util.openai.TokenUsage)
 (import :com.github.jlangch.venice.util.openai.IFunctionDispatcher)
@@ -666,10 +666,10 @@
             (long? expires-after-seconds)] }
     (when-not (io/exists-file? file)
       (throw (ex :VncException "The file ~{file} does not exist")))
-    (. :Files :fileObject client 
-                          file  
-                          (. :FilePurpose purpose) 
-                          expires-after-seconds)))
+    (. :FileObjects :fileObject client 
+                                file  
+                                (. :FilePurpose purpose) 
+                                expires-after-seconds)))
 
 
 (defn
@@ -722,10 +722,10 @@
             (keyword? purpose) 
             (long? expires-after-seconds)] }
     (try-with [tmp (. :TemporaryFile :of data filename)] 
-      (. :Files :fileObject client 
-                            (. tmp :getPath)  
-                            (. :FilePurpose purpose) 
-                            expires-after-seconds)
+      (. :FileObjects :fileObject client 
+                                  (. tmp :getPath)  
+                                  (. :FilePurpose purpose) 
+                                   expires-after-seconds)
       (catch :Exception e 
          (trow (ex :VncException "Failed to create temporary file" e))))))
 

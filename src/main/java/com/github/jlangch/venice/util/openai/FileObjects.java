@@ -32,7 +32,7 @@ import com.openai.models.files.FileObject;
 import com.openai.models.files.FilePurpose;
 
 
-public class Files {
+public class FileObjects {
 
 
     public static FileObject fileObject(

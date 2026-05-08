@@ -69,7 +69,7 @@ public class ChatCompletionTraditionalFileExample {
             final Path path
     ) throws Exception{
        // 3600s is the minimum expiry time
-        final FileObject fileObj = Files.fileObject(
+        final FileObject fileObj = FileObjects.fileObject(
                                     client,
                                     path.toFile(),
                                     FilePurpose.USER_DATA,
@@ -90,7 +90,7 @@ public class ChatCompletionTraditionalFileExample {
         // -> create a TemporaryFile
         try (TemporaryFile tmpFile = TemporaryFile.of(data, path.toFile().getName())) {
             // 3600s is the minimum expiry time
-            final FileObject fileObj = Files.fileObject(
+            final FileObject fileObj = FileObjects.fileObject(
                                         client,
                                         tmpFile,
                                         FilePurpose.USER_DATA,
