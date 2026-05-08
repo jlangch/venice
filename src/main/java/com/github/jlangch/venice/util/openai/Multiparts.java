@@ -93,4 +93,64 @@ public class Multiparts {
         }
     }
 
+
+    // ------------------------------------------------------------------------
+    // Generic InputStrem
+    // ------------------------------------------------------------------------
+
+    public static MultipartField<InputStream> multipartField_InputStream(
+            final File file,
+            final String contentType,   // "image/png"
+            final String fileName       // "sea-otter.png"
+    ) throws IOException, FileNotFoundException{
+        Objects.requireNonNull(file);
+        Objects.requireNonNull(contentType);
+        Objects.requireNonNull(fileName);
+
+        try (InputStream is = new FileInputStream(file)) {
+            return MultipartField
+                    .<InputStream>builder()
+                    .value(is)
+                    .contentType(contentType)
+                    .filename(fileName)
+                    .build();
+        }
+    }
+
+    public static MultipartField<InputStream> multipartField_InputStream(
+            final InputStream is,
+            final String contentType,   // "image/png"
+            final String fileName       // "sea-otter.png"
+    ) {
+        Objects.requireNonNull(is);
+        Objects.requireNonNull(contentType);
+        Objects.requireNonNull(fileName);
+
+        return MultipartField
+                .<InputStream>builder()
+                .value(is)
+                .contentType(contentType)
+                .filename(fileName)
+                .build();
+    }
+
+    public static MultipartField<InputStream> multipartField_InputStream(
+            final byte[] data,
+            final String contentType,   // "image/png"
+            final String fileName       // "sea-otter.png"
+    ) throws IOException {
+        Objects.requireNonNull(data);
+        Objects.requireNonNull(contentType);
+        Objects.requireNonNull(fileName);
+
+        try (InputStream is = new ByteArrayInputStream(data)) {
+            return MultipartField
+                    .<InputStream>builder()
+                    .value(is)
+                    .contentType(contentType)
+                    .filename(fileName)
+                    .build();
+        }
+    }
+
 }
