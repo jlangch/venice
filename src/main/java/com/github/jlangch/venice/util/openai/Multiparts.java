@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import com.openai.client.OpenAIClient;
 import com.openai.core.MultipartField;
 
 
@@ -40,31 +39,29 @@ public class Multiparts {
     // ------------------------------------------------------------------------
 
     public static MultipartField<com.openai.models.images.ImageEditParams.Image> multipartField_EditImage(
-            final OpenAIClient client,
             final File file,
-            final String contentType   // "image/png"
+            final String contentType,   // "image/png"
+            final String fileName       // "sea-otter.png"
     ) throws IOException, FileNotFoundException{
-        Objects.requireNonNull(client);
         Objects.requireNonNull(file);
         Objects.requireNonNull(contentType);
+        Objects.requireNonNull(fileName);
 
         try (InputStream is = new FileInputStream(file)) {
             return MultipartField
                     .<com.openai.models.images.ImageEditParams.Image>builder()
                     .value(com.openai.models.images.ImageEditParams.Image.ofInputStream(is))
                     .contentType(contentType)
-                    .filename(file.getName())
+                    .filename(fileName)
                     .build();
         }
     }
 
     public static MultipartField<com.openai.models.images.ImageEditParams.Image> multipartField_EditImage(
-            final OpenAIClient client,
             final InputStream is,
             final String contentType,   // "image/png"
-            final String fileName       // "image.png"
+            final String fileName       // "sea-otter.png"
     ) {
-        Objects.requireNonNull(client);
         Objects.requireNonNull(is);
         Objects.requireNonNull(contentType);
         Objects.requireNonNull(fileName);
@@ -78,12 +75,10 @@ public class Multiparts {
     }
 
     public static MultipartField<com.openai.models.images.ImageEditParams.Image> multipartField_EditImage(
-            final OpenAIClient client,
             final byte[] data,
             final String contentType,   // "image/png"
-            final String fileName       // "image.png"
+            final String fileName       // "sea-otter.png"
     ) throws IOException {
-        Objects.requireNonNull(client);
         Objects.requireNonNull(data);
         Objects.requireNonNull(contentType);
         Objects.requireNonNull(fileName);
