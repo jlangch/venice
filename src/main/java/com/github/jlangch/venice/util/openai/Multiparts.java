@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import com.github.jlangch.venice.VncException;
 import com.openai.core.MultipartField;
 
 
@@ -102,7 +103,7 @@ public class Multiparts {
             final File file,
             final String contentType,   // "image/png"
             final String fileName       // "sea-otter.png"
-    ) throws IOException, FileNotFoundException{
+    ) {
         Objects.requireNonNull(file);
         Objects.requireNonNull(contentType);
         Objects.requireNonNull(fileName);
@@ -114,6 +115,12 @@ public class Multiparts {
                     .contentType(contentType)
                     .filename(fileName)
                     .build();
+        }
+        catch (FileNotFoundException ex) {
+            throw new VncException("The file '" + file + "' does not exist!");
+        }
+        catch (Exception ex) {
+            throw new VncException("Failed to read data from file " + file);
         }
     }
 
@@ -138,7 +145,7 @@ public class Multiparts {
             final byte[] data,
             final String contentType,   // "image/png"
             final String fileName       // "sea-otter.png"
-    ) throws IOException {
+    ) {
         Objects.requireNonNull(data);
         Objects.requireNonNull(contentType);
         Objects.requireNonNull(fileName);
@@ -150,6 +157,9 @@ public class Multiparts {
                     .contentType(contentType)
                     .filename(fileName)
                     .build();
+        }
+        catch (Exception ex) {
+            throw new VncException("Failed to read data from byte buffer");
         }
     }
 

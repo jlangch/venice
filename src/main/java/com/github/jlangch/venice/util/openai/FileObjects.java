@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.openai;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -102,6 +103,84 @@ public class FileObjects {
 
         params.file(file.getPath());
 
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
+        }
+
+        return client.files().create(params.build());
+    }
+
+    public static FileObject fileObject(
+            final OpenAIClient client,
+            final File file,
+            final String contentType,   // "image/png"
+            final String fileName,       // "sea-otter.png"
+            final FilePurpose purpose,
+            final long expiresAfterSeconds
+    ) {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(file);
+        Objects.requireNonNull(contentType);
+        Objects.requireNonNull(fileName);
+
+        final FileCreateParams.Builder params = FileCreateParams.builder();
+
+        params.file(Multiparts.multipartField_InputStream(file, contentType, fileName));
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
+        }
+
+        return client.files().create(params.build());
+    }
+
+    public static FileObject fileObject(
+            final OpenAIClient client,
+            final byte[] data,
+            final String contentType,   // "image/png"
+            final String fileName,       // "sea-otter.png"
+            final FilePurpose purpose,
+            final long expiresAfterSeconds
+    ) {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(data);
+        Objects.requireNonNull(contentType);
+        Objects.requireNonNull(fileName);
+
+        final FileCreateParams.Builder params = FileCreateParams.builder();
+
+        params.file(Multiparts.multipartField_InputStream(data, contentType, fileName));
+        params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
+
+        final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
+        if (expiresAfter != null) {
+            params.expiresAfter(expiresAfter);
+        }
+
+        return client.files().create(params.build());
+    }
+
+    public static FileObject fileObject(
+            final OpenAIClient client,
+            final InputStream is,
+            final String contentType,   // "image/png"
+            final String fileName,       // "sea-otter.png"
+            final FilePurpose purpose,
+            final long expiresAfterSeconds
+    ) {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(is);
+        Objects.requireNonNull(contentType);
+        Objects.requireNonNull(fileName);
+
+        final FileCreateParams.Builder params = FileCreateParams.builder();
+
+        params.file(Multiparts.multipartField_InputStream(is, contentType, fileName));
         params.purpose(purpose == null ? FilePurpose.USER_DATA : purpose);
 
         final ExpiresAfter expiresAfter = createExpiresAfter(expiresAfterSeconds);
