@@ -1247,10 +1247,13 @@
               (io/spit (io/file "./sea-otter.png") image-1-gen)
               (println "Image #1 saved to ./sea-otter.png")
 
+              (println)
               (println "Editing image...")
               (let [response-edt (openai-java/edit-image 
                                     client 
                                     (io/bytebuf-in-stream image-1-gen)
+                                    "image/png"
+                                    "sea-otter.png"
                                     :GPT_IMAGE_1_MINI
                                     "A cute baby sea otter wearing a beret"
                                     :format :PNG
@@ -1260,7 +1263,7 @@
                     usage-edt    (openai-java/usage response-edt)
                     image-1-edt  (first (openai-java/image-binaries response-edt))]
                 (printf "Tokens:  %n%s%n" (openai-java/format-usage usage-edt  "  "))
-                (io/spit (io/file "./sea-otter-edited.png") image-1)
+                (io/spit (io/file "./sea-otter-edited.png") image-1-edt)
                 (println "Image #1 saved to ./sea-otter-edited.png"))))
           """)
      :see-also '(
