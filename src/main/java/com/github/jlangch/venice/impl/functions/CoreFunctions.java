@@ -25,10 +25,12 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilVa
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10717,6 +10719,30 @@ public class CoreFunctions {
         };
 
 
+    public static VncFunction retire =
+        new VncFunction(
+                "retire",
+                VncFunction
+                    .meta()
+                    .arglists("(retire)")
+                    .doc("Returns the days until retirement at 65\n\n" +
+                         "Unoffical :-)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                final LocalDate retireDate = LocalDate.of(2027, 5, 8);
+                final LocalDate now = LocalDate.now();
+
+                final long days = DAYS.between(now, retireDate);
+                return new VncString(String.format("%d days", days));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -11113,6 +11139,8 @@ public class CoreFunctions {
                 .add(ns_alias)
                 .add(ns_aliases)
                 .add(ns_unalias)
+
+                .add(retire)
 
                 .toMap();
 }
