@@ -70,8 +70,3 @@
       (io/spit (io/file "./sea-otter-edited.png") image-1-edt)
       (println "Image #1 saved to ./sea-otter-edited.png"))))
 ```
-
-Result:
-
-```
-```
