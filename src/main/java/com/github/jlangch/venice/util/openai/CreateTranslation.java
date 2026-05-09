@@ -40,7 +40,7 @@ import com.openai.models.audio.translations.TranslationCreateResponse;
 public final class CreateTranslation {
     private CreateTranslation() {}
 
-    // See https://developers.openai.com/api/reference/java/resources/audio/subresources/transcriptions/methods/create
+    // See https://developers.openai.com/api/reference/java/resources/audio/subresources/translations/methods/create
 
     public static void main(String[] args)  throws Exception {
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
