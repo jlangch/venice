@@ -667,7 +667,7 @@
     (when-not (io/exists-file? file)
       (throw (ex :VncException "The file ~{file} does not exist")))
     (. :FileObjects :fileObject client 
-                                file  
+                                file
                                 (. :FilePurpose purpose) 
                                 expires-after-seconds)))
 
