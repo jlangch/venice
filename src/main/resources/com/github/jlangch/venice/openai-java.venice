@@ -523,6 +523,7 @@
                                         :type "string"
                                         :description "Temperature unit: celsius or fahrenheit" } } 
                                     [ "location" "unit" ]))]
+                ;; ...
               ))
           """ )
 
@@ -565,7 +566,7 @@
                                     "object"
                                     { :employees { :items  { "type" "string" }}} )
                                (openai-java/add-user-message ""Who works at OpenAI?""))]
-          
+              ;; ...
               ))
           """ )
      :see-also '(
@@ -868,6 +869,8 @@
             (io/file? file)
             (keyword? purpose) 
             (long? expires-after-seconds)] }
+    (when-not (io/exists-file? file)
+      (throw (ex :VncException "The file ~{file} does not exist")))
 
     (let [params (. :FileCreateParams :builder)]
       (. params :file (io/->path file))
