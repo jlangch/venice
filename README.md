@@ -165,12 +165,12 @@ venice>
 * [OpenAI](doc/readme/openai2.md)
 * [Inter-Process-Communication (Messaging)](doc/readme/ipc.md)
 * [Cryptography](doc/readme/cryptography.md)
-* [Docker](doc/readme/docker.md)
 * [Kira Templates](doc/readme/ext-kira.md)
 * [Parsifal Parser Combinator](doc/readme/ext-parsifal.md)
 * [HTTP Client (Java 8+)](doc/readme/http-client-j8.md)
 * [Venice meets LLMs](doc/readme/venice-meets-llms.md)
 * [Database (JDBC)](doc/readme/database.md)
+* [Docker](doc/readme/docker.md)
 * [More Extension modules](doc/readme/extension-modules.md)
 
 **/etc**
