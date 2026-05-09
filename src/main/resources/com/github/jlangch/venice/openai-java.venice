@@ -1690,12 +1690,13 @@
                             ["Audio"     (:audio-tokens     (:output-details usage))]
                             ["Text"      (:text-tokens      (:output-details usage))] ]
           input-details   (format-usage-details in-details)
-          output-details  (format-usage-details out-details)]
+          output-details  (format-usage-details out-details)
+          title-formatted (if (nil? title) "" (str/format "%s%n" title))]
       (str/format (str "%s"
                        "%sInput:  %5d%s%n"
                        "%sOutput: %5d%s%n"
                        "%sTotal:  %5d%n")
-                  (if (nil? title) "" (str/format "%s%n" title))
+                  title-formatted
                   indent (:input-tokens usage)   input-details
                   indent (:output-tokens usage)  output-details 
                   indent (:total-tokens usage)))))
