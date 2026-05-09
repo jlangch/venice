@@ -1689,22 +1689,22 @@
                             ["Image"     (:image-tokens     (:output-details usage))]
                             ["Audio"     (:audio-tokens     (:output-details usage))]
                             ["Text"      (:text-tokens      (:output-details usage))] ]
-          input-details   (let [items (->> (filter #(pos? (second %)) in-details)
-                                           (map #(str (first %) ": " (second %)))
-                                           (str/join ", "))]
-                            (if (empty? items) "" (str "  (" items ")")))
-          output-details  (let [items (->> (filter #(pos? (second %)) out-details)
-                                           (map #(str (first %) ": " (second %)))
-                                           (str/join ", "))]
-                            (if (empty? items) "" (str "  (" items ")")))]
+          input-details   (format-usage-details in-details)
+          output-details  (format-usage-details out-details)]
       (str/format (str "%s"
                        "%sInput:  %5d%s%n"
                        "%sOutput: %5d%s%n"
                        "%sTotal:  %5d%n")
                   (if (nil? title) "" (str/format "%s%n" title))
-                  indent (:input-tokens usage)   input-details 
+                  indent (:input-tokens usage)   input-details
                   indent (:output-tokens usage)  output-details 
                   indent (:total-tokens usage)))))
+
+(defn- format-usage-details [detail-items]
+  (let [items (->> (filter #(pos? (second %)) detail-items)
+                   (map #(str (first %) ": " (second %)))
+                   (str/join ", "))]
+    (if (empty? items) "" (str "  (" items ")"))))
 
 
 (defn 
