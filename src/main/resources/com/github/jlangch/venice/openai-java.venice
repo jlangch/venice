@@ -1672,21 +1672,38 @@
  
   ([usage]
     (format-usage usage nil nil))
+
   ([usage indent]
     (format-usage usage indent nil))
+
   ([usage indent title]
     { :pre [(map? usage) 
             (or (nil? indent) (string? indent))
             (or (nil? title) (string? title))] }
-    (let [indent (coalesce indent "")
-          title  (str/trim-to-nil title)]
+    (let [indent          (coalesce indent "")
+          title           (str/trim-to-nil title)
+          in-details      [ ["Image"     (:image-tokens     (:input-details usage))]
+                            ["Audio"     (:audio-tokens     (:input-details usage))]
+                            ["Text"      (:text-tokens      (:input-details usage))] ]
+          out-details     [ ["Reasoning" (:reasoning-tokens (:output-details usage))]
+                            ["Image"     (:image-tokens     (:output-details usage))]
+                            ["Audio"     (:audio-tokens     (:output-details usage))]
+                            ["Text"      (:text-tokens      (:output-details usage))] ]
+          input-details   (let [items (->> (filter #(pos? (second %)) in-details)
+                                           (map #(str (first %) ": " (second %)))
+                                           (str/join ", "))]
+                            (if (empty? items) "" (str "  (" items ")")))
+          output-details  (let [items (->> (filter #(pos? (second %)) out-details)
+                                           (map #(str (first %) ": " (second %)))
+                                           (str/join ", "))]
+                            (if (empty? items) "" (str "  (" items ")")))]
       (str/format (str "%s"
-                       "%sInput:  %5d%n"
-                       "%sOutput: %5d (Reasoning: %d)%n"
+                       "%sInput:  %5d%s%n"
+                       "%sOutput: %5d%s%n"
                        "%sTotal:  %5d%n")
                   (if (nil? title) "" (str/format "%s%n" title))
-                  indent (:input-tokens usage)
-                  indent (:output-tokens usage) (:reasoning-tokens (:output-details usage))
+                  indent (:input-tokens usage)   input-details 
+                  indent (:output-tokens usage)  output-details 
                   indent (:total-tokens usage)))))
 
 
