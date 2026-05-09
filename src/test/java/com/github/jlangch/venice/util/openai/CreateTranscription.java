@@ -22,7 +22,10 @@
 package com.github.jlangch.venice.util.openai;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.openai.client.OpenAIClient;
@@ -38,12 +41,15 @@ import com.openai.models.audio.transcriptions.TranscriptionCreateParams;
 import com.openai.models.audio.transcriptions.TranscriptionCreateResponse;
 
 
-public final class CreateTranscription {
+public  class CreateTranscription {
     private CreateTranscription() {}
 
     // See https://developers.openai.com/api/reference/java/resources/audio/subresources/transcriptions/methods/create
 
     public static void main(String[] args)  throws Exception {
+        File veniceHomeDir = new File(System.getProperty("user.home"), "Desktop/venice");
+        File audioFile = new File(veniceHomeDir, "audio.wav");
+
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         SpeechCreateParams paramsSpeech = SpeechCreateParams.builder()
@@ -58,10 +64,17 @@ public final class CreateTranscription {
         byte[] audio;
         try (final InputStream is = speech.body()) {
             audio = IOStreamUtil.copyIStoByteArray(is);
+
+            Files.write(audioFile.toPath(), audio);
+            System.out.println("Created audio file " + audioFile);
         }
 
+        System.out.println("Transcribing audio file " + audioFile);
+
         TranscriptionCreateParams paramsTranscribe = TranscriptionCreateParams.builder()
-            .file(audio)
+            .file(audioFile.toPath())
+                .language("en")
+                .temperature(0.2)
             .model(AudioModel.GPT_4O_TRANSCRIBE)
             .responseFormat(AudioResponseFormat.TEXT)
             .build();
@@ -69,15 +82,17 @@ public final class CreateTranscription {
         TranscriptionCreateResponse response = client.audio().transcriptions().create(paramsTranscribe);
 
 
-        Transcription transcription = response.asTranscription();
+        Transcription transcription = response.transcription().orElse(null);
         if (transcription == null) {
             System.out.println("<no transcription>");
         }
         else {
-            Transcription.Usage usage = transcription.usage().orElseGet(null);
-            Transcription.Usage.Duration duration =  usage.asDuration();
-            Transcription.Usage.Tokens tokens = usage.asTokens();
-
+            Transcription.Usage usage = transcription.usage().orElse(null);
+            if (usage != null) {
+                Transcription.Usage.Duration duration = usage.duration().orElse(null);
+                Transcription.Usage.Tokens tokens = usage.tokens().orElse(null);
+            }
+            System.out.println("\nTranscription:");
             System.out.println(transcription.text());
         }
     }

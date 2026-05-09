@@ -1531,24 +1531,27 @@
           """
           (do
             (load-module :openai-java)
-            (let [client   (openai-java/client)
-                  is       (openai-java/create-speech
+            (let [demo-file  (io/file "./audio.wav")
+                  client     (openai-java/client)
+                  is         (openai-java/create-speech
                                 client 
                                 :GPT_4O_MINI_TTS
                                 "Today is a wonderful day to build something people love!"
-                                :format :MP3
+                                :format :WAV
                                 :voice "cedar")]
               (->> (io/slurp-stream is :binary true)
-                   (io/spit (io/file "./audio.mp3")))
-              (println "Audio saved to ./audio.mp3")
+                   (io/spit demo-file))
+              (println "Audio saved to" demo-file)
               
-              (openai-java/transcribe client
-                                      :GTP_4O_TRANSCRIBE
-                                      (io/file "./audio.mp3")
+              (println "Transcribing" demo-file)
+              (let [response  (openai-java/transcribe client
+                                      :GPT_4O_TRANSCRIBE
+                                      demo-file
                                       :language  "en"
                                       :temperature 0.1
-                                      :response-format :TEXT)
-              ))
+                                      :response-format :TEXT)]
+                (println "Transcription:")
+                (println (openai-java/transcription-text response)))))
           """)
      :see-also '(
         "openai-java/transcription-text"
@@ -1559,7 +1562,7 @@
 
   { :pre [(instance-of? :OpenAIClient client) 
           (keyword? model) 
-          (io/file? file)] }
+          (or (io/file? file) (bytebuf? file) (io/in-stream? file))] }
 
   (let [opts                   (apply hash-map options)
         chunking-strategy      (:chunking-strategy opts)
@@ -1567,12 +1570,12 @@
         prompt                 (:prompt opts)
         response-format        (:response-format opts)
         temperature            (:temperature opts)]
-    (let [params (. :SpeechCreateParams :builder)]
-      (. params :model (. :SpeechModel model))
+    (let [params (. :TranscriptionCreateParams :builder)]
+      (. params :model (. :AudioModel model))
       (. params :file (io/->path file))
       (when language (. params :language language))
       (when prompt (. params :prompt prompt))
-      (when response-format (. params :responseFormat (. :SpeechCreateParams$ResponseFormat response-format)))
+      (when response-format (. params :responseFormat (. :AudioResponseFormat response-format)))
       (when temperature (. params :temperature temperature))
 
       (-> (. client :audio)
@@ -1592,7 +1595,7 @@
   transcription-text [response]
 
   { :pre [(instance-of? :TranscriptionCreateResponse response) ] }
-  (if-let [transcription (. response :asTranscription)]
+  (if-let [transcription (java-unwrap-optional (. response :transcription))]
     (. transcription :text)
     nil))
 

@@ -22,7 +22,9 @@
 package com.github.jlangch.venice.util.openai;
 
 
+import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.openai.client.OpenAIClient;
@@ -33,10 +35,14 @@ import com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat;
 import com.openai.models.audio.speech.SpeechModel;
 
 
-public final class CreateSpeech {
+public class CreateSpeech {
+
     private CreateSpeech() {}
 
     public static void main(String[] args) {
+        File veniceHomeDir = new File(System.getProperty("user.home"), "Desktop/venice");
+        File audioFile = new File(veniceHomeDir, "audio.wav");
+
         OpenAIClient client = OpenAIOkHttpClient.fromEnv();
 
         SpeechCreateParams params = SpeechCreateParams.builder()
@@ -50,9 +56,12 @@ public final class CreateSpeech {
         HttpResponse speech = client.audio().speech().create(params);
         try (final InputStream is = speech.body()) {
             final byte[] audio = IOStreamUtil.copyIStoByteArray(is);
+
+            Files.write(audioFile.toPath(), audio);
+            System.out.println("Created audio file " + audioFile);
         }
         catch(Exception ex) {
-
+            ex.printStackTrace();
         }
     }
 }

@@ -33,7 +33,8 @@ import com.github.jlangch.venice.impl.util.io.FileUtil;
 
 public class TemporaryFile implements AutoCloseable {
 
-    public TemporaryFile(final File tmpDir, final File file) {
+    public TemporaryFile(final Mode mode, final File tmpDir, final File file) {
+        this.mode = mode;
         this.tmpDir = tmpDir;
         this.file = file;
     }
@@ -41,6 +42,8 @@ public class TemporaryFile implements AutoCloseable {
     public static TemporaryFile of(final byte[] data, final String fileName) {
         Objects.requireNonNull(data);
         Objects.requireNonNull(fileName);
+
+        final Mode mode = Mode.DataMapping;
 
         final String normalizedFileName = new File(fileName).getName();
 
@@ -51,10 +54,10 @@ public class TemporaryFile implements AutoCloseable {
             tmpDir = Files.createTempDirectory("openai-upload").toFile();
             file = new File(tmpDir, normalizedFileName);
             FileUtil.save(data, file, true);
-            return new TemporaryFile(tmpDir, file);
+            return new TemporaryFile(mode, tmpDir, file);
         }
         catch (Exception ex) {
-            cleanup(tmpDir, file);
+            cleanup(mode, tmpDir, file);
             throw new VncException("Failed to create TemporaryFile '" + normalizedFileName + "'");
         }
     }
@@ -63,6 +66,8 @@ public class TemporaryFile implements AutoCloseable {
         Objects.requireNonNull(is);
         Objects.requireNonNull(fileName);
 
+        final Mode mode = Mode.DataMapping;
+
         File tmpDir = null;
         File file = null;
 
@@ -70,14 +75,19 @@ public class TemporaryFile implements AutoCloseable {
             tmpDir = Files.createTempDirectory("openai-upload").toFile();
             file = new File(tmpDir, fileName);
             FileUtil.save(is, file, true);
-            return new TemporaryFile(tmpDir, file);
+            return new TemporaryFile(mode, tmpDir, file);
         }
         catch (Exception ex) {
-            cleanup(tmpDir, file);
+            cleanup(mode, tmpDir, file);
             throw new VncException("Failed to create TemporaryFile '" + fileName + "'");
         }
     }
 
+    public static TemporaryFile of(final File file) {
+        Objects.requireNonNull(file);
+
+        return new TemporaryFile(Mode.Passthrough, null, file);
+    }
 
     public File getFile() {
         return file;
@@ -89,24 +99,29 @@ public class TemporaryFile implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        cleanup(tmpDir, file);
+        cleanup(mode, tmpDir, file);
     }
 
 
-    private static void cleanup(final File tmpDir, final File file) {
+    private static void cleanup(final Mode mode, final File tmpDir, final File file) {
         try {
-            if (file.exists()) {
-                file.delete();
-            }
-            if (tmpDir.exists()) {
-                tmpDir.delete();
+            if (mode == Mode.DataMapping) {
+                if (file.exists()) {
+                    file.delete();
+                }
+                if (tmpDir.exists()) {
+                    tmpDir.delete();
+                }
             }
         }
         catch (Exception ignore) {
         }
     }
 
+    private static enum Mode { Passthrough, DataMapping }
 
+
+    private final Mode mode;
     private final File tmpDir;
     private final File file;
 }

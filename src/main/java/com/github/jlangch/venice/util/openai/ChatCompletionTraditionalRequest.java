@@ -77,7 +77,7 @@ public class ChatCompletionTraditionalRequest {
                         client,
                         model,
                         functionDispatcher == null
-                            ?  new DefaultFunctionDispatcher()
+                            ? new DefaultFunctionDispatcher()
                             : functionDispatcher);
     }
 
