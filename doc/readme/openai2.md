@@ -4,8 +4,9 @@
 
 * [Installing OpenAI 3rd party libraries](#installing-openai-3rd-party-libraries)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
- 
- 
+
+
+
 * [Chat Completion](openai2-chat-completion.md)
 * [Files](openai2-files.md)
 * [Images](openai2-images.md)
