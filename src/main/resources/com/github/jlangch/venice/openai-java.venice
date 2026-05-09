@@ -21,13 +21,16 @@
 
 ;;;; OpenAI Java API module
 
-;;;; OpenAI OpenAPI:  https://github.com/openai/openai-java
-;;;;        JavaDoc:  https://javadoc.io/doc/com.openai/openai-java/4.32.0/index.html
-;;;; Developer docs:  https://developers.openai.com/
-;;;;                  https://developers.openai.com/api/docs
-;;;;                  https://developers.openai.com/api/reference/java
-;;;;                  https://developers.openai.com/api/docs/guides/migrate-to-responses
-;;;;
+;;;;  OpenAI OpenAPI:  https://github.com/openai/openai-java
+;;;;         JavaDoc:  https://javadoc.io/doc/com.openai/openai-java/4.32.0/index.html
+;;;;  Developer docs:  https://developers.openai.com/
+;;;;                   https://developers.openai.com/api/docs
+;;;;                   https://developers.openai.com/api/reference/java
+;;;;                   https://developers.openai.com/api/docs/guides/migrate-to-responses
+;;;;     Using Tools:  https://developers.openai.com/api/docs/guides/tools
+;;;; Prompting Guide:  https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide
+;;;;   Text Cookbook:  https://developers.openai.com/cookbook/topic/text
+ 
 ;;;; Structured output example: https://github.com/openai/openai-java/blob/main/openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsStreamingExample.java
 
 
