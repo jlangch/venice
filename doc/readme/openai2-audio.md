@@ -28,7 +28,7 @@ Example:
 ```
 
 
-Example with playing created audio (MacOS only):
+Example with playing the created audio (MacOS only):
 
 ```clojure
 (do
