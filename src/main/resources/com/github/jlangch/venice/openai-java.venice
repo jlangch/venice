@@ -1525,7 +1525,7 @@
                                    probability to automatically increase the temperature \
                                    until certain thresholds are hit.|
 
-          Returns an `:InputStream` with the created audio
+          Returns the audio transcription response.
           """ 
      :examples '(
           """
@@ -1586,7 +1586,7 @@
   ^{ :arglists '(
           "(transcription-text response)" )
      :doc """
-          Returns the transcription text of transcription response.
+          Returns the transcription text of a transcription response.
           """
      :see-also '(
           "openai-java/transcribe") }
@@ -1594,6 +1594,7 @@
   transcription-text [response]
 
   { :pre [(instance-of? :TranscriptionCreateResponse response) ] }
+
   (if-let [transcription (java-unwrap-optional (. response :transcription))]
     (. transcription :text)
     nil))
