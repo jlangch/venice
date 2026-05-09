@@ -33,6 +33,7 @@ import com.openai.models.audio.transcriptions.TranscriptionCreateResponse;
 import com.openai.models.completions.CompletionUsage;
 import com.openai.models.completions.CompletionUsage.CompletionTokensDetails;
 import com.openai.models.images.ImagesResponse;
+import com.openai.models.images.ImagesResponse.Usage.InputTokensDetails;
 import com.openai.models.images.ImagesResponse.Usage.OutputTokensDetails;
 
 
@@ -98,17 +99,21 @@ public class TokenUsage {
             return new TokenUsage();
         }
         else {
-            final OutputTokensDetails details = usage.outputTokensDetails().orElse(null);
+            final InputTokensDetails in_details = usage.inputTokensDetails();
+            final OutputTokensDetails out_details = usage.outputTokensDetails().orElse(null);
 
-            final long imageTokens = details == null ? 0 : details.imageTokens();
-            final long textTokens = details == null ? 0 : details.textTokens();
+            final long in_imageTokens = out_details == null ? 0 : in_details.imageTokens();
+            final long in_textTokens = out_details == null ? 0 : in_details.textTokens();
+
+            final long out_imageTokens = out_details == null ? 0 : out_details.imageTokens();
+            final long out_textTokens = out_details == null ? 0 : out_details.textTokens();
 
             return new TokenUsage(
                     usage.inputTokens(),
                     usage.outputTokens(),
                     usage.totalTokens(),
-                    0, 0, 0,
-                    0, imageTokens, 0, textTokens);
+                    in_imageTokens, 0, in_textTokens,
+                    0, out_imageTokens, 0, out_textTokens);
         }
     }
 
@@ -137,8 +142,8 @@ public class TokenUsage {
                     tokens.inputTokens(),
                     tokens.outputTokens(),
                     tokens.totalTokens(),
-                    0, 0, 0,
-                    0, 0, audioTokens, textTokens);
+                    0, audioTokens, textTokens,
+                    0, 0, 0, 0);
         }
     }
 

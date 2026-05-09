@@ -987,11 +987,11 @@
               (openai-java/delete-file client "...file-id...")))
           """ )
      :see-also '(
-        "openai-java/list-files"
-        "openai-java/create-file"
-        "openai-java/create-binary-file"
-        "openai-java/retrieve-file"
-        "openai-java/client") }
+          "openai-java/list-files"
+          "openai-java/create-file"
+          "openai-java/create-binary-file"
+          "openai-java/retrieve-file"
+          "openai-java/client") }
 
   delete-file [client id]
 
@@ -1126,11 +1126,11 @@
               (println "Image #1 saved to ./image-1.png")))
           """)
      :see-also '(
-        "openai-java/client"
-        "openai-java/edit-image"
-        "openai-java/usage"
-        "openai-java/image-binaries"
-        "openai-java/image-urls") }
+          "openai-java/client"
+          "openai-java/edit-image"
+          "openai-java/usage"
+          "openai-java/image-binaries"
+          "openai-java/image-urls") }
 
   generate-image [client model prompt & options]
 
@@ -1281,11 +1281,11 @@
                 (println "Image #1 saved to ./sea-otter-edited.png"))))
           """)
      :see-also '(
-        "openai-java/client"
-        "openai-java/generate-image"
-        "openai-java/usage"
-        "openai-java/image-binaries"
-        "openai-java/image-urls") }
+          "openai-java/client"
+          "openai-java/generate-image"
+          "openai-java/usage"
+          "openai-java/image-binaries"
+          "openai-java/image-urls") }
 
   edit-image [client image mimetype name model prompt & options]
 
@@ -1330,8 +1330,8 @@
           Returns a list of image binaries in the response.
           """
      :see-also '(
-        "openai-java/generate-image"
-        "openai-java/image-urls") }
+          "openai-java/generate-image"
+          "openai-java/image-urls") }
 
   image-binaries [response]
 
@@ -1348,10 +1348,10 @@
           "(image-urls response)" )
      :doc """
           Returns a list of image URLs in the response.
-         """
+          """
      :see-also '(
-        "openai-java/generate-image"
-        "openai-java/image-binaries") }
+          "openai-java/generate-image"
+          "openai-java/image-binaries") }
 
   image-urls [response]
 
@@ -1455,7 +1455,7 @@
                   (println "Playing audio supported on MacOS only!")))))
           """)
      :see-also '(
-        "openai-java/client") }
+          "openai-java/client") }
 
   create-speech [client model input & options]
 
@@ -1554,9 +1554,9 @@
                 (println (openai-java/transcription-text response)))))
           """)
      :see-also '(
-        "openai-java/transcription-text"
-        "openai-java/usage"
-        "openai-java/client") }
+          "openai-java/transcription-text"
+          "openai-java/usage"
+          "openai-java/client") }
 
   transcribe [client model file & options]
 
@@ -1577,7 +1577,6 @@
       (when prompt (. params :prompt prompt))
       (when response-format (. params :responseFormat (. :AudioResponseFormat response-format)))
       (when temperature (. params :temperature temperature))
-
       (-> (. client :audio)
           (. :transcriptions)
           (. :create (. params :build))))))
@@ -1590,7 +1589,7 @@
           Returns the transcription text of transcription response.
           """
      :see-also '(
-        "openai-java/transcribe") }
+          "openai-java/transcribe") }
 
   transcription-text [response]
 
@@ -1620,8 +1619,8 @@
           ```
           """
      :see-also '(
-        "openai-java/chat-completion"
-        "openai-java/generate-image") }
+          "openai-java/chat-completion"
+          "openai-java/generate-image") }
 
   usage [response]
 
@@ -1722,7 +1721,7 @@
             (openai-java/models))
           """)
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   models []
   
@@ -1778,8 +1777,8 @@
               ))
           """ )
      :see-also '(
-        "openai-java/chat-completion"
-        "openai-java/register-function") }
+          "openai-java/chat-completion"
+          "openai-java/register-function") }
 
   create-function-registry []
 
@@ -1805,8 +1804,8 @@
               ))
           """ )
      :see-also '(
-        "openai-java/chat-completion"
-        "openai-java/create-function-registry") }
+          "openai-java/chat-completion"
+          "openai-java/create-function-registry") }
 
   register-function  [registry name function]
 
