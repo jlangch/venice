@@ -10738,18 +10738,17 @@ public class CoreFunctions {
 
                 final Period period = Period.between(now, retireDate);
 
-                int years = period.getYears();
-                int months = period.getMonths();
-                int days = period.getDays();
+                final int years = period.getYears();
+                final int months = period.getMonths();
+                final int days = period.getDays();
 
-                int totalMonths = years * 12 + months;
+                final int totalMonths = years * 12 + months;
 
-                if (totalMonths > 0) {
-                    System.out.println(String.format("%d months %d days", totalMonths, days));
-                }
-                else {
-                    System.out.println(String.format("%d days", days));
-                }
+                final String info = totalMonths > 0
+                                    ? String.format("%d months %d days", totalMonths, days)
+                                    : String.format("%d days", days);
+
+                System.out.println(info);
 
                 return Nil;
             }
