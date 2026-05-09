@@ -25,12 +25,12 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilVa
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10725,7 +10725,7 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists("(retire)")
-                    .doc("Returns the days until retirement at 65\n\n" +
+                    .doc("Returns the months and days until retirement at 65\n\n" +
                          "Unoffical :-)")
                     .build()
         ) {
@@ -10736,8 +10736,22 @@ public class CoreFunctions {
                 final LocalDate retireDate = LocalDate.of(2027, 5, 8);
                 final LocalDate now = LocalDate.now();
 
-                final long days = DAYS.between(now, retireDate);
-                return new VncString(String.format("%d days", days));
+                final Period period = Period.between(now, retireDate);
+
+                int years = period.getYears();
+                int months = period.getMonths();
+                int days = period.getDays();
+
+                int totalMonths = years * 12 + months;
+
+                if (totalMonths > 0) {
+                    System.out.println(String.format("%d months %d days", totalMonths, days));
+                }
+                else {
+                    System.out.println(String.format("%d days", days));
+                }
+
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
