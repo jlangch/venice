@@ -29,6 +29,7 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.core.http.HttpResponse;
 import com.openai.models.audio.AudioModel;
+import com.openai.models.audio.AudioResponseFormat;
 import com.openai.models.audio.speech.SpeechCreateParams;
 import com.openai.models.audio.speech.SpeechCreateParams.ResponseFormat;
 import com.openai.models.audio.speech.SpeechModel;
@@ -61,8 +62,8 @@ public final class CreateTranscription {
 
         TranscriptionCreateParams paramsTranscribe = TranscriptionCreateParams.builder()
             .file(audio)
-            // many more parameters
             .model(AudioModel.GPT_4O_TRANSCRIBE)
+            .responseFormat(AudioResponseFormat.TEXT)
             .build();
 
         TranscriptionCreateResponse response = client.audio().transcriptions().create(paramsTranscribe);

@@ -59,14 +59,6 @@
 (import :com.openai.models.images.ImagesResponse)
 (import :com.openai.models.images.ImagesResponse.Usage)
 
-(import :com.openai.models.images.ImageGenerateParams)
-(import :com.openai.models.images.ImageGenerateParams$Background)
-(import :com.openai.models.images.ImageGenerateParams$OutputFormat)
-(import :com.openai.models.images.ImageGenerateParams$Quality)
-(import :com.openai.models.images.ImageGenerateParams$ResponseFormat)
-(import :com.openai.models.images.ImageGenerateParams$Size)
-(import :com.openai.models.images.ImageGenerateParams$Style)
-
 (import :com.openai.models.images.ImageEditParams)
 (import :com.openai.models.images.ImageEditParams$Background)
 (import :com.openai.models.images.ImageEditParams$InputFidelity)
@@ -75,9 +67,25 @@
 (import :com.openai.models.images.ImageEditParams$ResponseFormat)
 (import :com.openai.models.images.ImageEditParams$Size)
 
+(import :com.openai.models.images.ImageGenerateParams)
+(import :com.openai.models.images.ImageGenerateParams$Background)
+(import :com.openai.models.images.ImageGenerateParams$OutputFormat)
+(import :com.openai.models.images.ImageGenerateParams$Quality)
+(import :com.openai.models.images.ImageGenerateParams$ResponseFormat)
+(import :com.openai.models.images.ImageGenerateParams$Size)
+(import :com.openai.models.images.ImageGenerateParams$Style)
+
+(import :com.openai.models.audio.AudioModel)
+(import :com.openai.models.audio.AudioResponseFormat)
 (import :com.openai.models.audio.speech.SpeechCreateParams)
 (import :com.openai.models.audio.speech.SpeechCreateParams$ResponseFormat)
 (import :com.openai.models.audio.speech.SpeechModel)
+(import :com.openai.models.audio.transcriptions.TranscriptionCreateParams)
+(import :com.openai.models.audio.transcriptions.TranscriptionCreateResponse)
+(import :com.openai.models.audio.transcriptions.Transcription)
+(import :com.openai.models.audio.transcriptions.Transcription$Usage)
+(import :com.openai.models.audio.transcriptions.Transcription$Usage$Duration)
+(import :com.openai.models.audio.transcriptions.Transcription$Tokens)
 
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
@@ -1470,6 +1478,123 @@
           (. :speech)
           (. :create (. params :build))
           (. :body)))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(transcribe client model file & options)" )
+     :doc """
+          Transcribes audio from the input file.
+
+          Returns a transcription object in json, diarized_json, or verbose_json 
+          format, or a stream of transcript events.
+
+          ¶**Parameters**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :client c   | A client.¶ Use `openai-java/client` to create a client |
+          | :model m    | The model to use for transcription. One of \
+                              `:GTP_4O_TRANSCRIBE`, `:GTP_4O_MINI_TRANSCRIBE`, or a \
+                              `:WHISPER_1`, or `:GTP_4O_TRANSCRIBE_DIARIZE` |
+          | :file f     | The audio file object (not file name) to transcribe, in one \
+                          of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, \
+                          or webm. |
+
+
+          ¶**Parameter «options»**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :language l          | The language of the input audio. Supplying the input \
+                                   language in ISO-639-1 (e.g. "en", "de", "fr", "it", ...) \
+                                   format will improve accuracy and latency.|
+          | :prompt p            | An optional text to guide the model’s style or continue \
+                                   a previous audio segment. The prompt should match the \
+                                   audio language. This field is not supported when using \
+                                   `:GTP_4O_TRANSCRIBE_DIARIZE`.|
+          | :response-format f   | The format of the output, in one of these options: \
+                                   `:JSON`, `:TEXT`, `:SRT`, `:VERBOSE_JSON`, `:VTT`, or \
+                                   `:DIARIZED_JSON`. For `:GTP_4O_TRANSCRIBE` and \
+                                   `:GTP_4O_MINI_TRANSCRIBE`, the only supported format is \
+                                   `:JSON`. For `:GTP_4O_TRANSCRIBE_DIARIZE`, the supported \
+                                   formats are `:JSON`, `:TEXT`, and `:DIARIZED_JSON`, with \
+                                   `:DIARIZED_JSON` required to receive speaker annotations.|
+          | :temperature t       | The sampling temperature, between 0.0 and 1.0. Higher \
+                                   values like 0.8 will make the output more random, while \
+                                   lower values like 0.2 will make it more focused and \
+                                   deterministic. If set to 0, the model will use log \
+                                   probability to automatically increase the temperature \
+                                   until certain thresholds are hit.|
+
+          Returns an `:InputStream` with the created audio
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  is       (openai-java/create-speech
+                                client 
+                                :GPT_4O_MINI_TTS
+                                "Today is a wonderful day to build something people love!"
+                                :format :MP3
+                                :voice "cedar")]
+              (->> (io/slurp-stream is :binary true)
+                   (io/spit (io/file "./audio.mp3")))
+              (println "Audio saved to ./audio.mp3")
+              
+              (openai-java/transcribe client
+                                      :GTP_4O_TRANSCRIBE
+                                      (io/file "./audio.mp3")
+                                      :language  "en"
+                                      :temperature 0.1
+                                      :response-format :TEXT)
+              ))
+          """)
+     :see-also '(
+        "openai-java/transcription-text"
+        "openai-java/usage"
+        "openai-java/client") }
+
+  transcribe [client model file & options]
+
+  { :pre [(instance-of? :OpenAIClient client) 
+          (keyword? model) 
+          (io/file? file)] }
+
+  (let [opts                   (apply hash-map options)
+        chunking-strategy      (:chunking-strategy opts)
+        language               (:language opts)
+        prompt                 (:prompt opts)
+        response-format        (:response-format opts)
+        temperature            (:temperature opts)]
+    (let [params (. :SpeechCreateParams :builder)]
+      (. params :model (. :SpeechModel model))
+      (. params :file (io/->path file))
+      (when language (. params :language language))
+      (when prompt (. params :prompt prompt))
+      (when response-format (. params :responseFormat (. :SpeechCreateParams$ResponseFormat response-format)))
+      (when temperature (. params :temperature temperature))
+
+      (-> (. client :audio)
+          (. :transcriptions)
+          (. :create (. params :build))))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(transcription-text response)" )
+     :doc """
+          Returns the transcription text of transcription response.
+          """
+     :see-also '(
+        "openai-java/transcribe") }
+
+  transcription-text [response]
+
+  { :pre [(instance-of? :TranscriptionCreateResponse response) ] }
+  (if-let [transcription (. response :asTranscription)]
+    (. transcription :text)
+    nil))
 
 
 

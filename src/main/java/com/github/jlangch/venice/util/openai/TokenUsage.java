@@ -28,6 +28,8 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.openai.models.audio.transcriptions.Transcription;
+import com.openai.models.audio.transcriptions.TranscriptionCreateResponse;
 import com.openai.models.completions.CompletionUsage;
 import com.openai.models.completions.CompletionUsage.CompletionTokensDetails;
 import com.openai.models.images.ImagesResponse;
@@ -45,10 +47,12 @@ public class TokenUsage {
             final long totalTokens,
             // input details
             final long inputDetails_ImageTokens,
+            final long inputDetails_AudioTokens,
             final long inputDetails_TextTokens,
             // output details
             final long outputDetails_ReasoningTokens,
             final long outputDetails_ImageTokens,
+            final long outputDetails_AudioTokens,
             final long outputDetails_TextTokens
 
     ) {
@@ -57,10 +61,12 @@ public class TokenUsage {
         this.totalTokens = totalTokens;
 
         this.inputDetails_ImageTokens = inputDetails_ImageTokens;
+        this.inputDetails_AudioTokens = inputDetails_AudioTokens;
         this.inputDetails_TextTokens = inputDetails_TextTokens;
 
         this.outputDetails_ReasoningTokens = outputDetails_ReasoningTokens;
         this.outputDetails_ImageTokens = outputDetails_ImageTokens;
+        this.outputDetails_AudioTokens = outputDetails_AudioTokens;
         this.outputDetails_TextTokens = outputDetails_TextTokens;
 }
 
@@ -78,8 +84,10 @@ public class TokenUsage {
                 usage.promptTokens(),
                 usage.completionTokens(),
                 usage.totalTokens(),
-                0, 0, reasoningTokens, 0, 0);
+                0, 0, 0,
+                reasoningTokens, 0, 0, 0);
     }
+
 
     public static TokenUsage of(final ImagesResponse response) {
         Objects.requireNonNull(response);
@@ -99,7 +107,37 @@ public class TokenUsage {
                     usage.inputTokens(),
                     usage.outputTokens(),
                     usage.totalTokens(),
-                    0, 0, 0, imageTokens, textTokens);
+                    0, 0, 0,
+                    0, imageTokens, 0, textTokens);
+        }
+    }
+
+
+    public static TokenUsage of(final TranscriptionCreateResponse response) {
+        Objects.requireNonNull(response);
+
+        final Transcription transcription = response.asTranscription();
+        if (transcription == null) {
+            return new TokenUsage();
+        }
+        else {
+            final Transcription.Usage usage = transcription.usage().orElseGet(null);
+            if (usage == null) {
+                return new TokenUsage();
+            }
+            Transcription.Usage.Tokens tokens = usage.asTokens();
+
+            Transcription.Usage.Tokens.InputTokenDetails details = tokens.inputTokenDetails().orElse(null);
+
+            final long audioTokens = details == null ? 0 : details.audioTokens().orElse(0L);
+            final long textTokens = details == null ? 0 : details.textTokens().orElse(0L);
+
+            return new TokenUsage(
+                    tokens.inputTokens(),
+                    tokens.outputTokens(),
+                    tokens.totalTokens(),
+                    0, 0, 0,
+                    0, 0, audioTokens, textTokens);
         }
     }
 
@@ -144,12 +182,14 @@ public class TokenUsage {
 
         final LinkedHashMap<String,Object> inputDetails = new LinkedHashMap<>();
         inputDetails.put("imageTokens", inputDetails_ImageTokens);
+        inputDetails.put("audioTokens", inputDetails_AudioTokens);
         inputDetails.put("textTokens", inputDetails_TextTokens);
         tokens.put("inputDetails", inputDetails);
 
         final LinkedHashMap<String,Object> outputDetails = new LinkedHashMap<>();
         outputDetails.put("reasoningTokens", outputDetails_ReasoningTokens);
-        outputDetails.put("mageTokens", outputDetails_ImageTokens);
+        outputDetails.put("imageTokens", outputDetails_ImageTokens);
+        outputDetails.put("audioTokens", outputDetails_AudioTokens);
         outputDetails.put("textTokens", outputDetails_TextTokens);
         tokens.put("outputDetails", outputDetails);
 
@@ -167,12 +207,14 @@ public class TokenUsage {
         VncOrderedMap inputDetails = new VncOrderedMap();
         inputDetails = inputDetails.assoc(
                 new VncKeyword("image-tokens"), new VncLong(inputDetails_ImageTokens),
+                new VncKeyword("audio-tokens"), new VncLong(inputDetails_AudioTokens),
                 new VncKeyword("text-tokens"), new VncLong(inputDetails_TextTokens));
 
         VncOrderedMap outputDetails = new VncOrderedMap();
         outputDetails = outputDetails.assoc(
                 new VncKeyword("reasoning-tokens"), new VncLong(outputDetails_ReasoningTokens),
                 new VncKeyword("image-tokens"), new VncLong(outputDetails_ImageTokens),
+                new VncKeyword("audio-tokens"), new VncLong(outputDetails_AudioTokens),
                 new VncKeyword("text-tokens"), new VncLong(outputDetails_TextTokens));
 
         tokens = tokens.assoc(new VncKeyword("input-details"), inputDetails);
@@ -187,9 +229,11 @@ public class TokenUsage {
                "outputTokens: " + outputTokens + ", " +
                "totalTokens: " + totalTokens + ", " +
                "inputDetails_ImageTokens: " + inputDetails_ImageTokens + ", " +
+               "inputDetails_AudioTokens: " + inputDetails_AudioTokens + ", " +
                "inputDetails_TextTokens: " + inputDetails_TextTokens + ", " +
                "outputDetails_ReasoningTokens: " + outputDetails_ReasoningTokens + ", " +
                "outputDetails_ImageTokens: " + outputDetails_ImageTokens + ", " +
+               "outputDetails_AudioTokens: " + outputDetails_AudioTokens + ", " +
                "outputDetails_TextTokens: " + outputDetails_TextTokens;
     }
 
@@ -200,10 +244,12 @@ public class TokenUsage {
 
     // input details
     private long inputDetails_ImageTokens;
+    private long inputDetails_AudioTokens;
     private long inputDetails_TextTokens;
 
     // output details
     private long outputDetails_ReasoningTokens;
     private long outputDetails_ImageTokens;
+    private long outputDetails_AudioTokens;
     private long outputDetails_TextTokens;
 }
