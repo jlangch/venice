@@ -92,7 +92,7 @@ Result:
 
 ## Create File
 
-Create a file (requires Venice 1.13.4+)
+Create a file
 
 ```
 (do

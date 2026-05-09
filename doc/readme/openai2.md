@@ -7,12 +7,13 @@
 * [Chat Completion](openai2-chat-completion.md)
 * [Files](openai2-files.md)
 * [Images](openai2-images.md)
+* [Audio](openai2-audio.md)
 
  
  
 
 > [!NOTE]
-> Venice' OpenAI module requires Venice 1.13.3+
+> Venice' OpenAI module requires Venice 1.13.4+
 >
 
  
