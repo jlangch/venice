@@ -1626,6 +1626,7 @@
   usage [response]
 
   { :pre [(or (instance-of? :ChatCompletionTraditionalResponse response)
+              (instance-of? :TranscriptionCreateResponse response)
               (instance-of? :ImagesResponse response))] }
   
   (-<> (. :TokenUsage :of response)

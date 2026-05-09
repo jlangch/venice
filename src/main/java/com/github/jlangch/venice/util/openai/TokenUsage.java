@@ -116,18 +116,19 @@ public class TokenUsage {
     public static TokenUsage of(final TranscriptionCreateResponse response) {
         Objects.requireNonNull(response);
 
-        final Transcription transcription = response.asTranscription();
+        final Transcription transcription = response.transcription().orElse(null);
         if (transcription == null) {
             return new TokenUsage();
         }
         else {
-            final Transcription.Usage usage = transcription.usage().orElseGet(null);
-            if (usage == null) {
+            final Transcription.Usage usage = transcription.usage().orElse(null);
+            if (usage == null || !usage.isTokens()) {
                 return new TokenUsage();
             }
-            Transcription.Usage.Tokens tokens = usage.asTokens();
 
-            Transcription.Usage.Tokens.InputTokenDetails details = tokens.inputTokenDetails().orElse(null);
+            final Transcription.Usage.Tokens tokens = usage.asTokens();
+
+            final Transcription.Usage.Tokens.InputTokenDetails details = tokens.inputTokenDetails().orElse(null);
 
             final long audioTokens = details == null ? 0 : details.audioTokens().orElse(0L);
             final long textTokens = details == null ? 0 : details.textTokens().orElse(0L);
