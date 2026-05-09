@@ -1682,15 +1682,8 @@
             (or (nil? title) (string? title))] }
     (let [indent          (coalesce indent "")
           title           (str/trim-to-nil title)
-          in-details      [ ["Image"     (:image-tokens     (:input-details usage))]
-                            ["Audio"     (:audio-tokens     (:input-details usage))]
-                            ["Text"      (:text-tokens      (:input-details usage))] ]
-          out-details     [ ["Reasoning" (:reasoning-tokens (:output-details usage))]
-                            ["Image"     (:image-tokens     (:output-details usage))]
-                            ["Audio"     (:audio-tokens     (:output-details usage))]
-                            ["Text"      (:text-tokens      (:output-details usage))] ]
-          input-details   (format-usage-details in-details)
-          output-details  (format-usage-details out-details)
+          input-details   (format-usage-details (:input-details usage))
+          output-details  (format-usage-details (:output-details usage))
           title-formatted (if (nil? title) "" (str/format "%s%n" title))]
       (str/format (str "%s"
                        "%sInput:  %5d%s%n"
@@ -1701,11 +1694,15 @@
                   indent (:output-tokens usage)  output-details 
                   indent (:total-tokens usage)))))
 
-(defn- format-usage-details [detail-items]
-  (let [items (->> (filter #(pos? (second %)) detail-items)
-                   (map #(str (first %) ": " (second %)))
-                   (str/join ", "))]
-    (if (empty? items) "" (str "  (" items ")"))))
+(defn- format-usage-details [io-usage]
+  (let [detail-items    [ ["Reasoning" (:reasoning-tokens io-usage 0)]
+                          ["Image"     (:image-tokens     io-usage 0)]
+                          ["Audio"     (:audio-tokens     io-usage 0)]
+                          ["Text"      (:text-tokens      io-usage 0)] ]
+        effective-items (->> (filter #(pos? (second %)) detail-items)
+                             (map #(str (first %) ": " (second %)))
+                             (str/join ", "))]
+    (if (empty? effective-items) "" (str "  (" effective-items ")"))))
 
 
 (defn 
