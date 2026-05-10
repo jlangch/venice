@@ -35,7 +35,7 @@
 
 
 (defn libraries []
-  [ "io.qdrant:client:1.9.0" ] )
+  [ "io.qdrant:client:1.17.0" ] )
 
 
 (defn dependencies []
