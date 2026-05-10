@@ -696,7 +696,7 @@
 
           | [![width: 15%]]       | [![width: 85%]] |
           | client                | An OpenAI client |
-          | data                  | A data `bytebuf` |
+          | data                  | The data. A `bytebuf` or a Java `:InputStream`|
           | filename              | A filename. E.g.: "planning.pdf" |
           | purpose               | A purpose: `:USER_DATA`, `:VISION`, `:BATCH`, \
                                     `:ASSISTANTS`, `:FINE_TUNE` |
@@ -729,7 +729,7 @@
   
   ([client data filename purpose expires-after-seconds] 
     { :pre [(instance-of? :OpenAIClient client) 
-            (bytebuf? data)
+            (or (bytebuf? data) (io/in-stream? data))
             (string? filename)
             (keyword? purpose) 
             (long? expires-after-seconds)] }
@@ -1482,9 +1482,10 @@
 
 (defn 
   ^{ :arglists '(
-          "(transcribe client model file & options)" )
+          "(transcribe client model audio & options)" )
      :doc """
-          Transcribes audio from the input file.
+          Transcribes audio data. The data data can be supplied as an
+          `io/file`, a `bytebuf`, or a Java `:InputStream`.
 
           Returns a transcription object in json, diarized_json, or verbose_json 
           format, or a stream of transcript events.
@@ -1496,14 +1497,20 @@
           | :model m    | The model to use for transcription. One of \
                               `:GTP_4O_TRANSCRIBE`, `:GTP_4O_MINI_TRANSCRIBE`, or a \
                               `:WHISPER_1`, or `:GTP_4O_TRANSCRIBE_DIARIZE` |
-          | :file f     | The audio file object (not file name) to transcribe, in one \
+          | :audio a     | The audio data to transcribe, in one \
                           of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, \
-                          or webm. |
+                          or webm.¶\
+                          The data data can be supplied as an `io/file`, a `bytebuf`, \
+                          or a Java `:InputStream`. |
 
 
           ¶**Parameter «options»**
 
           | [![width: 15%]] | [![width: 85%]] |
+          | :filename f          | If the passed audio is a `bytebuf` or a Java `:InputStream` \
+                                   an explicit file name must be passed. E.g.: 'audio.wav' \
+                                   The filename's extensions must match the audio type \
+                                   `wav`, `mp3`, ... |
           | :language l          | The language of the input audio. Supplying the input \
                                    language in ISO-639-1 (e.g. "en", "de", "fr", "it", ...) \
                                    format will improve accuracy and latency.|
@@ -1552,34 +1559,72 @@
                                       :response-format :TEXT)]
                 (println "Transcription:")
                 (println (openai-java/transcription-text response)))))
+          """,
+          """
+          (do
+            (load-module :openai-java)
+            (let [client     (openai-java/client)
+                  is         (openai-java/create-speech
+                                client 
+                                :GPT_4O_MINI_TTS
+                                "Today is a wonderful day to build something people love!"
+                                :format :WAV
+                                :voice "cedar")]
+              
+              (println "Transcribing..." )
+              (let [response  (openai-java/transcribe client
+                                      :GPT_4O_TRANSCRIBE
+                                      is
+                                      :filename "audio.wav"
+                                      :language  "en"
+                                      :temperature 0.1
+                                      :response-format :TEXT)]
+                (println "Transcription:")
+                (println (openai-java/transcription-text response)))))
           """)
      :see-also '(
           "openai-java/transcription-text"
           "openai-java/usage"
           "openai-java/client") }
 
-  transcribe [client model file & options]
+  transcribe [client model audio & options]
 
   { :pre [(instance-of? :OpenAIClient client) 
           (keyword? model) 
-          (or (io/file? file) (bytebuf? file) (io/in-stream? file))] }
+          (or (io/file? audio) (bytebuf? audio) (io/in-stream? audio))] }
 
   (let [opts                   (apply hash-map options)
+        filename               (:filename opts)
         chunking-strategy      (:chunking-strategy opts)
         language               (:language opts)
         prompt                 (:prompt opts)
         response-format        (:response-format opts)
         temperature            (:temperature opts)]
-    (let [params (. :TranscriptionCreateParams :builder)]
-      (. params :model (. :AudioModel model))
-      (. params :file (io/->path file))
-      (when language (. params :language language))
-      (when prompt (. params :prompt prompt))
-      (when response-format (. params :responseFormat (. :AudioResponseFormat response-format)))
-      (when temperature (. params :temperature temperature))
-      (-> (. client :audio)
-          (. :transcriptions)
-          (. :create (. params :build))))))
+    (when (and (not (io/file? audio)) (nil? filename))
+       (throw (ex :VncException 
+                  """
+                  If the passed audio data is a `bytebuf` or a Java 
+                  `:InputStream` an explicit 'filename' option must be passed!
+                  The filename's extensions must match the audio 
+                  type `wav`, `mp3`, ... 
+                  E.g.: `:filename "audio.wav"`.
+                  """)))
+    ;; :TranscriptionCreateParams :file method throws exception when
+    ;; when passing a byte array or an input stream.
+    ;; The :TemporaryFile is a workaround until OpenAI fixes the API
+    (try-with [audio-file (if (io/file? audio)
+                            (. :TemporaryFile :of audio)
+                            (. :TemporaryFile :of audio filename))]
+      (let [params (. :TranscriptionCreateParams :builder)]
+        (. params :model (. :AudioModel model))
+        (. params :file (. audio-file :getPath))
+        (when language (. params :language language))
+        (when prompt (. params :prompt prompt))
+        (when response-format (. params :responseFormat (. :AudioResponseFormat response-format)))
+        (when temperature (. params :temperature temperature))
+        (-> (. client :audio)
+            (. :transcriptions)
+            (. :create (. params :build)))))))
 
 
 (defn 
