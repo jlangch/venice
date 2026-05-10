@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - OpenAI: added support for `Audio` api *transcribe*
+- Bumped the OpenAI Java library to V4.35.0
 
 
 

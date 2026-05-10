@@ -30,6 +30,7 @@
 ;;;;     Using Tools:  https://developers.openai.com/api/docs/guides/tools
 ;;;; Prompting Guide:  https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide
 ;;;;   Text Cookbook:  https://developers.openai.com/cookbook/topic/text
+;;;;   Release Notes:  https://github.com/openai/openai-java/releases
  
 ;;;; Structured output example: https://github.com/openai/openai-java/blob/main/openai-java-example/src/main/java/com/openai/example/ResponsesStructuredOutputsStreamingExample.java
 
