@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- OpenAI: added support for `Audio` api *transcribe*
 
 
 
