@@ -28,6 +28,10 @@
 ;;;; Note: This not a package manager. The module provides functions to
 ;;;;       download Java libraries to a directory. 
 
+;;;; Quadrant:  https://qdrant.tech/documentation/quickstart
+;;;;   Github:  https://github.com/qdrant/java-client
+;;;;  API Ref:  https://api.qdrant.tech/api-reference
+
 
 (ns qdrant-client-install)
 

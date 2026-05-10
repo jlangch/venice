@@ -28,6 +28,13 @@
 ;;;; Note: This not a package manager. The module provides functions to
 ;;;;       download Java libraries to a directory. 
 
+;;;; PostgreSQL Pgvector and RAG
+;;;; https://encore.dev/blog/you-probably-dont-need-a-vector-database
+;;;; https://medium.com/@levi_stringer/rag-with-pg-vector-with-sql-alchemy-d08d96bfa293
+;;;; https://danubedata.ro/blog/pgvector-rag-managed-postgres-2026
+;;;; https://www.pgedge.com/blog/building-a-rag-server-with-postgresql-part-1-loading-your-content
+
+
 
 (ns postgresql-jdbc-install)
 
@@ -35,7 +42,7 @@
 
 
 (defn libraries []
-  [ "org.postgresql:postgresql:42.7.3" ] )
+  [ "org.postgresql:postgresql:42.7.11" ] )
 
 
 (defn dependencies []
