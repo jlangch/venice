@@ -315,7 +315,7 @@
             (defn degrees [t unit]
               (if (str/equals-ignore-case? unit "celsius") t (celsius-to-fahrenheit t)))
 
-            (defn get-weather [fnArgsJson]
+            (defn get-current-weather [fnArgsJson]
               (let [args     (json/read-str fnArgsJson)
                     location (get args "location")
                     unit     (get args "unit")]
@@ -331,13 +331,13 @@
 
             (let [client   (openai-java/client)
                   registry (-> (openai-java/create-function-registry)
-                               (openai-java/register-function "GetWeather"
-                                                              get-weather))
+                               (openai-java/register-function "weather_get_current"
+                                                              get-current-weather))
                   chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/debug false)
                                (openai-java/add-function 
-                                    "GetWeather"
+                                    "weather_get_current"
                                     "Gets the current weather for a city."
                                     { :location { 
                                         :type "string" 
@@ -513,16 +513,37 @@
           can be added to a chat.
 
           Returns the chat.
+
+          Convention for function names: `<namespace>_<verb>_<object>`
+
+          Examples:
+
+          * `calendar_create_event`
+          * `calendar_delete_event`
+          * `crm_lookup_customer`
+          * `billing_create_invoice`
+          * `weather_get_current`
           """
      :examples '(
           """
           (do
             (load-module :openai-java)
 
+            (defn get-current-weather [fnArgsJson]
+              (let [args  (json/read-str fnArgsJson)]
+                ;; generic answer for brevity
+                (json/write-str { :location    (get args "location")
+                                  :unit        (get args "unit")
+                                  :temperature 21
+                                  :conditions  "Mostly sunny" })))
+  
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                 registry  (-> (openai-java/create-function-registry)
+                               (openai-java/register-function "weather_get_current"
+                                                              get-current-weather))                  
+                 chat     (-> (openai-java/chat-completion client :GPT_5_4)
                                (openai-java/add-function 
-                                    "GetWeather"
+                                    "weather_get_current"
                                     "Gets the current weather for a city."
                                     "object"
                                     { :location { 
