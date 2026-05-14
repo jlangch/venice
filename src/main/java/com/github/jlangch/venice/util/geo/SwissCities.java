@@ -81,6 +81,10 @@ public class SwissCities {
         return Collections.unmodifiableList(cities);
     }
 
+    public int size() {
+        return cities.size();
+    }
+
     public List<String> ortschaften() {
         return cities
                 .stream()
