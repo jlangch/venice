@@ -204,18 +204,19 @@ public class SwissCities {
         return zipCodes.contains(plz);
     }
 
-    public double distance(final String location1, final String location2) {
-        // Note: can be dangerous, because there may be locations with same name in different
-        //       kantons -> thus this function is ambiguous
+    public double distanceByPlz(final String plz1, final String plz2) {
+        Objects.requireNonNull(plz1);
+        Objects.requireNonNull(plz2);
 
-        final List<City> city1 = findByLocation(location1);
-        final List<City> city2 = findByLocation(location2);
+
+        final List<City> city1 = findByPlz(plz1);
+        final List<City> city2 = findByPlz(plz2);
 
         if (city1.isEmpty()) {
-            throw new VncException("The location '" + location1 + "' does not exist");
+            throw new VncException("The PLZ '" + plz1 + "' does not exist");
         }
         if (city2.isEmpty()) {
-            throw new VncException("The location '" + location2 + "' does not exist");
+            throw new VncException("The PLZ '" + plz2 + "' does not exist");
         }
 
         return distance(city1.get(0), city2.get(0));
