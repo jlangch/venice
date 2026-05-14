@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.junit.EnableOnMac;
+import com.github.jlangch.venice.util.geo.SwissCities.City;
 
 
 @Disabled
@@ -35,10 +36,13 @@ public class SwissCitiesTest {
     public void test_load() {
         final SwissCities data = SwissCities.downloadFromSwissTopo();
 
-        final double dist = data.distance(
-                              data.findByOrtschaft("Maur").get(0),
-                              data.findByOrtschaft("Dübendorf").get(0));
+        final City maur =  data.findByOrtschaft("Maur").get(0);
+        final City dubi =  data.findByOrtschaft("Dübendorf").get(0);
 
-        System.out.println((long)dist + " km");
+        final double dist1 = data.distance(maur, dubi);
+        final double dist2 = data.distanceByPlz("8124", "8600");
+
+        System.out.println((long)dist1 + " km");
+        System.out.println((long)dist2 + " km");
     }
 }

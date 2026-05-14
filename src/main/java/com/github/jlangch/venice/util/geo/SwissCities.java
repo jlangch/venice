@@ -193,7 +193,7 @@ public class SwissCities {
 
         return cities
                 .stream()
-                .filter(it -> plz.equals(plz))
+                .filter(it -> plz.equals(it.plz))
                 .collect(Collectors.toList());
     }
 
