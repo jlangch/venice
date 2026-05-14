@@ -54,7 +54,7 @@ algorithm.
 Start the application with the REPL server port and password:
 
 ``` shell
-java -jar ./venice-1.13.4.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-demo.venice
+java -jar ./venice-1.13.5.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-demo.venice
 ```
 
  
@@ -223,7 +223,7 @@ The remote REPL demo application looks like:
 **i) Start the remote application**
 
 ``` shell
-java -jar ./venice-1.13.4.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-trace-demo.venice
+java -jar ./venice-1.13.5.jar -repl-port 33334 -repl-pwd 123 -file ./remote-repl-trace-demo.venice
 ```
 
 **ii) Connect from a REPL**
@@ -352,7 +352,7 @@ The remote REPL Hybrid Encryption demo requires the following file setup:
 ``` text
 demo
 │
-├── venice-1.13.4.jar
+├── venice-1.13.5.jar
 │
 ├── client
 │   ├── client-config.json
@@ -378,9 +378,9 @@ cd ./demo
 
 mkdir ./client ./server
 
-curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.13.0/venice-1.13.4.jar
+curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.13.0/venice-1.13.5.jar
 
-java -jar ./venice-1.13.4.jar -repl -colors
+java -jar ./venice-1.13.5.jar -repl -colors
 ```
 
 
@@ -521,7 +521,7 @@ ii) Start the remote application with the remote REPL enabled in a new terminal
 ```
 cd ./demo
 
-java -jar ./venice-1.13.4.jar \
+java -jar ./venice-1.13.5.jar \
      -file ./server/remote-repl-demo.venice \
      -repl-server-config ./server/server-config.json
 ```
@@ -532,7 +532,7 @@ java -jar ./venice-1.13.4.jar \
 ```
 cd ./demo
 
-java -jar ./venice-1.13.4.jar -repl
+java -jar ./venice-1.13.5.jar -repl
 ```
 
 

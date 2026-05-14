@@ -22,8 +22,8 @@
 
 ;;;; Install  QR Bill 3rd party libraries:
 ;;;;
-;;;;   (load-module :qrbill-install)
-;;;;   (qrbill-install/install :dir (repl/libs-dir) :silent false)
+;;;;   (load-module :qrcode-install)
+;;;;   (qrcode-install/install :dir (repl/libs-dir) :silent false)
 ;;;;
 ;;;; Note: This not a package manager. The module provides functions to
 ;;;;       download Java libraries to a directory. 
