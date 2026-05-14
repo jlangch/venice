@@ -13,7 +13,7 @@
  
 
 > [!NOTE]
-> Venice' OpenAI module requires Venice 1.13.4+
+> Venice' OpenAI module requires Venice 1.13.5+
 >
 
  
@@ -130,7 +130,7 @@ Create a client that reads the OpenAI API key from the env var:
 
 **Option 4 (MacOS, system wide environment vars)**
 
-The above solutions just work for *Apps* or programs that are started from a *Terminal*.
+The above solutions just work for *MacOS* Apps or programs that are started from a *Terminal*.
 
 *Apps* started from the *Finder* or the *Desktop* do not source `.zprofile` and thus do not 
 get the environment variables defined there.
