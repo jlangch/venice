@@ -40,7 +40,7 @@ public class SwissCitiesTest {
         final City dubi =  data.findByOrtschaft("Dübendorf").get(0);
 
         final double dist1 = data.distance(maur, dubi);
-        final double dist2 = data.distanceByPlz("8124", "8600");
+        final double dist2 = data.distanceByPlz(maur.getPlz(), dubi.getPlz());
 
         System.out.println((long)dist1 + " km");
         System.out.println((long)dist2 + " km");
