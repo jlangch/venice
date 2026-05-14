@@ -234,8 +234,8 @@ public class SwissCities {
         final double deltaNorth= north1 - north2;
 
         final double distanceInMeters = Math.sqrt(
-                                         Math.abs(
-                                         deltaEast * deltaEast - deltaNorth * deltaNorth));
+                                          Math.abs(
+                                            deltaEast * deltaEast - deltaNorth * deltaNorth));
 
         return distanceInMeters / 1000.0; // convert to km
     }
