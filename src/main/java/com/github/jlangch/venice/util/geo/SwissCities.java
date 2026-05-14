@@ -208,7 +208,6 @@ public class SwissCities {
         Objects.requireNonNull(plz1);
         Objects.requireNonNull(plz2);
 
-
         final List<City> city1 = findByPlz(plz1);
         final List<City> city2 = findByPlz(plz2);
 
