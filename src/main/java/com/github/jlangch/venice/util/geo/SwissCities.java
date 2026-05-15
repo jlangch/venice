@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.geo;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.isBlank;
+import static com.github.jlangch.venice.impl.util.StringUtil.nullToEmpty;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -39,7 +42,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.csv.CSVReader;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
@@ -54,7 +56,7 @@ public class SwissCities {
         // map by ortschaft
         this.mappedByOrtschaft = cities
                                   .stream()
-                                  .filter(it -> !StringUtil.isBlank(it.ortschaft))
+                                  .filter(it -> !isBlank(it.ortschaft))
                                   .collect(Collectors.groupingBy(
                                                City::getOrtschaft,
                                                Collectors.mapping(si -> si, Collectors.toList())));
@@ -63,7 +65,7 @@ public class SwissCities {
         // map by gemeinde
         this.mappedByGemeinde = cities
                                  .stream()
-                                 .filter(it -> !StringUtil.isBlank(it.gemeinde))
+                                 .filter(it -> !isBlank(it.gemeinde))
                                  .collect(Collectors.groupingBy(
                                               City::getGemeinde,
                                               Collectors.mapping(si -> si, Collectors.toList())));
@@ -71,7 +73,7 @@ public class SwissCities {
         // zip codes
         this.zipCodes = cities
                          .stream()
-                         .filter(it -> !StringUtil.isBlank(it.plz))
+                         .filter(it -> !isBlank(it.plz))
                          .map(it -> it.plz)
                          .collect(Collectors.toSet());
     }
@@ -299,14 +301,13 @@ public class SwissCities {
 
 
     public static class City {
-
         // LV95 CSV Format "ortschaftenverzeichnis_plz_2056.csv.zip":
         // Ortschaftsname;PLZ4;Zusatzziffer;ZIP_ID;Gemeindename;BFS-Nr;Kantonskürzel;Adressenanteil;E;N;Sprache;Validity
 
         public City(final List<String> entry) {
             ortschaft = entry.get(0);
             plz = entry.get(1);
-            gemeinde = StringUtil.nullToEmpty(entry.get(4));
+            gemeinde = stripKantonSuffix(nullToEmpty(entry.get(4)));
             kanton = entry.get(6);
             east = Double.parseDouble(entry.get(8));
             north = Double.parseDouble(entry.get(9));
@@ -337,6 +338,14 @@ public class SwissCities {
     private static byte[] unpackCsvData(final InputStream is) throws Exception {
         final byte[] zip = IOStreamUtil.copyIStoByteArray(is);
         return Zipper.unzip(zip, LV95_ZIP_ENTRYNAME);
+    }
+
+    private static String stripKantonSuffix(final String location) {
+        // "Renens (VD)" -> "Renens"
+        final int pos = location.indexOf('(');
+        return pos > 0
+                ? location.substring(0, pos).trim()
+                : location.trim();
     }
 
     private static SwissCities parse(final InputStream is) throws Exception {
