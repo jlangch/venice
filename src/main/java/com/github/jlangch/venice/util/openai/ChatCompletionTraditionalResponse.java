@@ -21,9 +21,13 @@
  */
 package com.github.jlangch.venice.util.openai;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
@@ -101,6 +105,17 @@ public class ChatCompletionTraditionalResponse {
                     .toolCallId(toolCall.asFunction().id())
                     .content(fnResult)
                     .build());
+        }
+    }
+
+    public static Map<String,Object> parseJson(final String json) {
+        try {
+            return new ObjectMapper().readValue(
+                            json,
+                            new TypeReference<HashMap<String,Object>>() {});
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to parse JSON data", ex);
         }
     }
 
