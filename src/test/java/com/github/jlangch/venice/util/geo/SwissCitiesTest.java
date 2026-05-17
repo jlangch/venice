@@ -34,7 +34,7 @@ public class SwissCitiesTest {
     @Test
     @EnableOnMac
     public void test_load() {
-        final SwissCities data = SwissCities.downloadFromSwissTopo();
+        final SwissCities data = SwissCities.downloadFromSwissTopo(true);
 
         final City maur =  data.findByOrtschaft("Maur").get(0);
         final City dubi =  data.findByOrtschaft("Dübendorf").get(0);

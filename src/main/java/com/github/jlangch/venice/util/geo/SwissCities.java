@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,18 +80,29 @@ public class SwissCities {
     }
 
 
+    public int size() {
+        return cities.size();
+    }
+
     public List<City> locations() {
         return Collections.unmodifiableList(cities);
     }
 
-    public int size() {
-        return cities.size();
+    public List<String> kantons() {
+        return cities
+                .stream()
+                .map(c -> c.kanton)
+                .filter(it -> !isBlank(it))
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public List<String> ortschaften() {
         return cities
                 .stream()
                 .map(it -> it.ortschaft)
+                .filter(it -> !isBlank(it))
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
@@ -100,6 +112,7 @@ public class SwissCities {
         return cities
                 .stream()
                 .map(it -> it.gemeinde)
+                .filter(it -> !isBlank(it))
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
@@ -247,29 +260,37 @@ public class SwissCities {
     }
 
 
-    public static SwissCities loadFromClasspath(final String lv95Resource) {
+    public static SwissCities loadFromClasspath(
+            final String lv95Resource,
+            final boolean stripLocationKantonSuffix
+    ) {
         Objects.requireNonNull(lv95Resource);
 
         try (InputStream is = new ClassPathResource(lv95Resource).getInputStream()) {
-            return parse(is);
+            return parse(is, stripLocationKantonSuffix);
         }
         catch(Exception ex) {
             throw new VncException("Failed to load Swiss cities dataset from classpath", ex);
         }
     }
 
-    public static SwissCities load(final File lv95Zip) {
+    public static SwissCities load(
+            final File lv95Zip,
+            final boolean stripLocationKantonSuffix
+    ) {
         Objects.requireNonNull(lv95Zip);
 
         try (InputStream is = new FileInputStream(lv95Zip)) {
-            return parse(is);
+            return parse(is, stripLocationKantonSuffix);
         }
         catch(Exception ex) {
             throw new VncException("Failed to load Swiss cities dataset from file", ex);
         }
     }
 
-    public static SwissCities downloadFromSwissTopo() {
+    public static SwissCities downloadFromSwissTopo(
+            final boolean stripLocationKantonSuffix
+    ) {
         try {
             final URL url = new URL(DOWNLOAD_URL);
 
@@ -281,7 +302,7 @@ public class SwissCities {
                 final int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
-                       return parse(is);
+                       return parse(is, stripLocationKantonSuffix);
                     }
                 }
                 else {
@@ -304,25 +325,37 @@ public class SwissCities {
         // LV95 CSV Format "ortschaftenverzeichnis_plz_2056.csv.zip":
         // Ortschaftsname;PLZ4;Zusatzziffer;ZIP_ID;Gemeindename;BFS-Nr;Kantonskürzel;Adressenanteil;E;N;Sprache;Validity
 
-        public City(final List<String> entry) {
-            ortschaft = entry.get(0);
+        public City(
+                final List<String> entry,
+                final boolean stripLocationKantonSuffix
+        ) {
+            ortschaft = stripLocationKantonSuffix
+                           ? stripKantonSuffix(nullToEmpty(entry.get(0)))
+                           : nullToEmpty(entry.get(0));
             plz = entry.get(1);
-            gemeinde = stripKantonSuffix(nullToEmpty(entry.get(4)));
+            gemeinde = stripLocationKantonSuffix
+                            ? stripKantonSuffix(nullToEmpty(entry.get(4)))
+                            : nullToEmpty(entry.get(4));
             kanton = entry.get(6);
             east = Double.parseDouble(entry.get(8));
             north = Double.parseDouble(entry.get(9));
             language = entry.get(10);
-            validity = entry.get(11);
+            validity = LocalDate.parse(entry.get(11));
         }
 
-        public String getOrtschaft() { return ortschaft; }
-        public String getPlz() { return plz; }
-        public String getGemeinde() { return gemeinde; }
-        public String getKanton() { return kanton; }
-        public double getEast() { return east; }
-        public double getNorth() { return north; }
-        public String getLanguage() { return language; }
-        public String getValidity() { return validity; }
+        public String getOrtschaft() { return ortschaft; }    // Oberbipp
+        public String getPlz() { return plz; }                // 4538
+        public String getGemeinde() { return gemeinde; }      // Oberbipp
+        public String getKanton() { return kanton; }          // ZH, BE, SO, ...
+        public double getEast() { return east; }              // 2616871.0
+        public double getNorth() { return north; }            // 1234407.0
+        public String getLanguage() { return language; }      // de, it, fr
+        public LocalDate getValidity() { return validity; }   // 2008-07-01
+
+        @Override
+        public String toString() {
+            return ortschaft + "," + plz + "," + gemeinde + "," + kanton;
+        }
 
         private final String ortschaft;
         private final String plz;
@@ -331,7 +364,7 @@ public class SwissCities {
         private final double east;
         private final double north;
         private final String language;
-        private final String validity;
+        private final LocalDate validity;
     }
 
 
@@ -348,7 +381,10 @@ public class SwissCities {
                 : location.trim();
     }
 
-    private static SwissCities parse(final InputStream is) throws Exception {
+    private static SwissCities parse(
+            final InputStream is,
+            final boolean stripLocationKantonSuffix
+    ) throws Exception {
         final byte[] csv = unpackCsvData(is);
 
         // skip first entry: header line
@@ -357,7 +393,7 @@ public class SwissCities {
                     CollectionUtil
                         .drop(new CSVReader(';', '"').parse(iscd, StandardCharsets.UTF_8), 1)
                         .stream()
-                        .map(it -> new City(it))
+                        .map(it -> new City(it, stripLocationKantonSuffix))
                         .collect(Collectors.toList()));
         }
     }
