@@ -42,7 +42,7 @@ public class SwissCitiesTest {
         final double dist1 = data.distance(maur, dubi);
         final double dist2 = data.distanceByPlz(maur.getPlz(), dubi.getPlz());
 
-        System.out.println((long)dist1 + " km");
-        System.out.println((long)dist2 + " km");
+        System.out.println(Math.round(dist1) + " km");
+        System.out.println(Math.round(dist2) + " km");
     }
 }

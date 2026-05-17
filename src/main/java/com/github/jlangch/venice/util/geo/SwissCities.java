@@ -256,7 +256,7 @@ public class SwissCities {
                                           Math.abs(
                                             deltaEast * deltaEast - deltaNorth * deltaNorth));
 
-        return (distanceInMeters + 500D) / 1000D; // convert to km, round half-up
+        return distanceInMeters / 1000.0D;  // convert to km
     }
 
 
