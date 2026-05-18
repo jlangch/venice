@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -121,34 +123,72 @@ public class SwissCities {
     public List<City> findByOrtschaft(final String ortschaft) {
         Objects.requireNonNull(ortschaft);
 
-        return mappedByOrtschaft.getOrDefault(ortschaft, new ArrayList<>());
+        if (ortschaft.contains("*")) {
+            final Matcher m = globPatternToRegex(ortschaft);
+            return cities
+                    .stream()
+                    .filter(it -> m.reset(it.ortschaft).matches())
+                    .collect(Collectors.toList());
+        }
+        else {
+            return mappedByOrtschaft.getOrDefault(ortschaft, new ArrayList<>());
+        }
     }
 
     public List<City> findByOrtschaftAndKanton(final String ortschaft, final String kanton) {
         Objects.requireNonNull(ortschaft);
         Objects.requireNonNull(kanton);
 
-        return findByOrtschaft(ortschaft)
-                .stream()
-                .filter(it -> kanton.equals(it.kanton))
-                .collect(Collectors.toList());
+        if (ortschaft.contains("*")) {
+            final Matcher m = globPatternToRegex(ortschaft);
+            return cities
+                    .stream()
+                    .filter(it -> kanton.equals(it.kanton))
+                    .filter(it -> m.reset(it.ortschaft).matches())
+                    .collect(Collectors.toList());
+        }
+        else {
+            return findByOrtschaft(ortschaft)
+                    .stream()
+                    .filter(it -> kanton.equals(it.kanton))
+                    .collect(Collectors.toList());
+        }
     }
 
 
     public List<City> findByGemeinde(final String gemeinde) {
         Objects.requireNonNull(gemeinde);
 
-        return mappedByGemeinde.getOrDefault(gemeinde, new ArrayList<>());
+        if (gemeinde.contains("*")) {
+            final Matcher m = globPatternToRegex(gemeinde);
+            return cities
+                    .stream()
+                    .filter(it -> m.reset(it.gemeinde).matches())
+                    .collect(Collectors.toList());
+        }
+        else {
+            return mappedByGemeinde.getOrDefault(gemeinde, new ArrayList<>());
+        }
     }
 
     public List<City> findByGemeindeAndKanton(final String gemeinde, final String kanton) {
         Objects.requireNonNull(gemeinde);
         Objects.requireNonNull(kanton);
 
-        return findByGemeinde(gemeinde)
-                .stream()
-                .filter(it -> kanton.equals(it.kanton))
-                .collect(Collectors.toList());
+        if (gemeinde.contains("*")) {
+            final Matcher m = globPatternToRegex(gemeinde);
+            return cities
+                    .stream()
+                    .filter(it -> kanton.equals(it.kanton))
+                    .filter(it ->  m.reset(it.gemeinde).matches())
+                    .collect(Collectors.toList());
+        }
+        else {
+            return findByGemeinde(gemeinde)
+                    .stream()
+                    .filter(it -> kanton.equals(it.kanton))
+                    .collect(Collectors.toList());
+        }
     }
 
 
@@ -397,6 +437,13 @@ public class SwissCities {
                         .collect(Collectors.toList()));
         }
     }
+
+    private static Matcher globPatternToRegex(final String glob) {
+        final String pattern = glob.replaceAll("[.]", "[.]")
+                                   .replaceAll("[*]", ".*");
+        return Pattern.compile(pattern).matcher("");
+    }
+
 
 
     private static final String LV95_ZIP_FILENAME = "ortschaftenverzeichnis_plz_2056.csv.zip";
