@@ -439,8 +439,7 @@ public class SwissCities {
     }
 
     private static Matcher globPatternToRegex(final String glob) {
-        final String pattern = glob.replaceAll("[.]", "[.]")
-                                   .replaceAll("[*]", ".*");
+        final String pattern = glob.replaceAll("[*]", ".*");
         return Pattern.compile(pattern).matcher("");
     }
 
