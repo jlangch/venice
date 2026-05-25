@@ -23,7 +23,7 @@
 ;;;; Install OpenAI API 3rd party libraries: 
 ;;;;
 ;;;;   (load-module :pdf-install)
-;;;;   (pdf-install/install :dir (repl/libs-dir) :silent false)
+;;;;   (openai-java-install/install :dir (repl/libs-dir) :silent false)
 ;;;;
 ;;;; See:  https://github.com/openai/openai-java
 ;;;;
