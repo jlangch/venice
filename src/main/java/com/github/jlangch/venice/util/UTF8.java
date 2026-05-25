@@ -117,6 +117,10 @@ public abstract class UTF8 {
     public static char LEFT_ONE_EIGHTH_BLOCK      = '\u258F';  // ▏
     public static char RIGHT_HALF_BLOCK           = '\u2589';  // ▐
 
+    public static char WHITE_MEDIUM_SQUARE        = '\u25FB';  // ◻
+    public static char BLACK_MEDIUM_SQUARE        = '\u25FC';  // ◼
+
+
     public static char UPPER_ONE_EIGHTH_BLOCK     = '\u2594';  // ▔
     public static char RIGHT_ONE_EIGHTH_BLOCK     = '\u2595';  // ▕
 
