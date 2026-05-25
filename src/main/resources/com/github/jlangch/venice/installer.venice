@@ -127,12 +127,15 @@
        | :dir path             | download dir, defaults to "." except when run \
                                  in a REPL where it defaults to the value of \
                                  `(repl/libs-dir)` |
-       | :silent {true,false}  | if silent is true does not show a progress \
-                                 bar, defaults to true |
+       | :silent {true,false}  | if silent is true does not show a progress bar. ¶\
+                                 Defaults to `true` |
        | :force {true,false}   | if force is true download the artifact \
                                  even if it exist already on the download \
-                                 dir, else skip the download if it exists. \
-                                 Defaults to true. |
+                                 dir, else skip the download if it exists.¶\
+                                 Defaults to `true`. |
+       |:dry-run {true,false}  | just list the artifact dependencies without \
+                                 actually installing them.¶\
+                                 Defaults to `true`. |
        """
      :examples '(
        """
@@ -158,7 +161,8 @@
 
   (let [options  (default-options options)
         opts     (apply hash-map options)
-        silent   (:silent opts true)]
+        silent   (:silent opts true)
+        dry-run  (:dry-run opts false)]
     (validate-install-dir opts)
 
     (when-not silent
@@ -172,12 +176,13 @@
         (doseq [lib deps] (printf "   %s%n" lib))
         (println))
 
-      ;; Download the Maven artifacts
-      (doseq [lib deps] (apply maven/download lib options)) 
+      (when-not dry-run
+        ;; Download the Maven artifacts
+        (doseq [lib deps] (apply maven/download lib options)) 
 
-      (when-not silent
-        (println)
-        (printf "Installed %d artefact%s.%n" cnt (if (== cnt 1) "" "s"))))))
+        (when-not silent
+          (println)
+          (printf "Installed %d artefact%s.%n" cnt (if (== cnt 1) "" "s")))))))
 
 
 (defn 
