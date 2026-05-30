@@ -113,6 +113,8 @@
     :cursor-hide           "[?25l"
     :cursor-show           "[?25h"
 
+    :cursor-col-0          "[0G"
+
     :cursor-left-1         "[1D"
     :cursor-left-2         "[2D"
     :cursor-left-3         "[3D"
@@ -411,8 +413,8 @@
                 value     (formatter percent)
                 elapsedMS (if (neg? elapsed) "?ms" (str elapsed "ms"))]
             (if (and percent-mode? (= status :progress) (pos? percent))
-              (print (ansi/style "" :cursor-left-1000))
-              (print (ansi/style "" :clear-line :cursor-left-1000)))
+              (print (ansi/style "" :cursor-col-0))
+              (print (ansi/style "" :clear-line :cursor-col-0)))
             (case status
               :start    (print start-msg)
               :progress (print (str caption
@@ -509,8 +511,8 @@
         (let [percent   (max 0 (min 100 (long percent)))
               elapsedMS (if (neg? elapsed) "?ms" (str elapsed "ms"))]
           (if (and (= status :progress) (pos? percent))
-            (print (ansi/style "" :cursor-left-1000))
-            (print (ansi/style "" :clear-line :cursor-left-1000)))
+            (print (ansi/style "" :cursor-col-0))
+            (print (ansi/style "" :clear-line :cursor-col-0)))
           (case status
             :start    (print start-msg)
             :progress (print (bar percent))
