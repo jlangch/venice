@@ -905,23 +905,19 @@ dependencies {
 
     compileOnly "org.openjdk.jmh:jmh-core:${jmh_Version}"
     compileOnly "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
-    compileOnly "org.jline:jline:${jline_Version}"
 
  
     // Unit tests
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiter_Version}"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:${jupiter_Version}"
-    testImplementation "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
-    testImplementation "org.xhtmlrenderer:flying-saucer-pdf:${flyingSaucer_Version}"
-    testImplementation "com.github.librepdf:openpdf:${openpdf_Version}"
-    testImplementation "com.github.librepdf:pdf-toolbox:${openpdf_Version}"
-    testImplementation "com.github.librepdf:openpdf-fonts-extra:${openpdf_Version}"
-    testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
     testImplementation "org.apache.poi:poi:${poi_Version}"
     testImplementation "org.apache.poi:poi-ooxml:${poi_Version}"
-    testImplementation "com.openai:openai-java:${openai_Version}"
+    testImplementation "org.jline:jline:${jline_Version}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiter_Version}"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:${jupiter_Version}"
+    testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
+    testImplementation "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
+    testImplementation "org.xhtmlrenderer:flying-saucer-pdf:${flyingSaucer_Version}"
     
     testImplementation "org.bouncycastle:bcprov-jdk18on:${bouncyCastle_Version}"
     testImplementation "org.bouncycastle:bcprov-ext-jdk15to18:${bouncyCastle_Version}"
@@ -929,9 +925,14 @@ dependencies {
     testImplementation "org.bouncycastle:bcpkix-jdk18on:${bouncyCastle_Version}"
     testImplementation "org.bouncycastle:bctls-jdk18on:${bouncyCastle_Version}" 
 
+    testImplementation "com.github.librepdf:openpdf:${openpdf_Version}"
+    testImplementation "com.github.librepdf:pdf-toolbox:${openpdf_Version}"
+    testImplementation "com.github.librepdf:openpdf-fonts-extra:${openpdf_Version}"
+    testImplementation "com.openai:openai-java:${openai_Version}"
     testImplementation "com.kohlschutter.junixsocket:junixsocket-common:${junixsocket_Version}"
     testImplementation "com.kohlschutter.junixsocket:junixsocket-native-common:${junixsocket_Version}"
 
+    compileOnly "org.jline:jline:${jline_Version}"
 
     // Cheatsheet generation
     compileOnly "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
