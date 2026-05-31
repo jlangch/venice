@@ -165,23 +165,9 @@ public class REPL implements IRepl {
                 }
             }
 
-            final String jansiVersion = config.getJansiVersion();
-
-            if (OSUtils.IS_WINDOWS && jansiVersion == null) {
-                System.out.print(
-                    "--------------------------------------------------------------------\n" +
-                    "The Venice REPL requires the Jansi library on Windows.              \n" +
-                    "Please download the jar artifact 'org.fusesource.jansi:jansi:2.4.1' \n" +
-                    "from a Maven repo and put it on the REPL classpath.                 \n" +
-                    "                                                                    \n" +
-                    "> curl -O https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/2.4.1/jansi-2.4.1.jar \n" +
-                    "--------------------------------------------------------------------\n\n");
-            }
-
             System.out.println("Venice REPL: " + Venice.getVersion());
             System.out.println("Home: " + new File(".").getCanonicalPath());
             System.out.println("Java: " + System.getProperty("java.version"));
-            System.out.println("Jansi: " + (jansiVersion == null ? "not detected! (no color support)" : jansiVersion));
             System.out.println("Charset: " + Charset.defaultCharset());
             System.out.println("Macro expansion: " + (macroexpand ? "enabled" : "disabled"));
             System.out.println("Configuration: " + config.getConfigSource());
@@ -1501,11 +1487,8 @@ public class REPL implements IRepl {
             final CommandLineArgs cli,
             final ReplConfig config
     ) {
-        final String jansiVersion = config.getJansiVersion();
-
-        final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
-                                        || cli.switchPresent("-dumb")
-                                        || config.isJLineDumbTerminal();
+        final boolean dumbTerminal = cli.switchPresent("-dumb")
+                                     || config.isJLineDumbTerminal();
 
         return !dumbTerminal;
     }

@@ -113,6 +113,7 @@
     :cursor-hide           "[?25l"
     :cursor-show           "[?25h"
 
+    :cursor-home           "[H"
     :cursor-col-0          "[0G"
 
     :cursor-left-1         "[1D"
@@ -145,6 +146,18 @@
 (defn cursor-hide [] "[?25l")
 (defn cursor-show [] "[?25h")
 
+
+;; -----------------------------------------------------------------------------
+;; Clear
+;; -----------------------------------------------------------------------------
+
+(defn clear-screen [] "[2J")
+(defn clear-screen-to-start [] "[1J")
+(defn clear-screen-to-end [] "[0J")
+
+(defn clear-line [] "[2K")
+(defn clear-line-to-start [] "[1K")
+(defn clear-line-to-end [] "[0K")
 
 
 ;; -----------------------------------------------------------------------------

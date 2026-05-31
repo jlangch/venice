@@ -259,23 +259,6 @@ public class ReplConfig {
         return jlineDumbTerminal;
     }
 
-    public String getJansiVersion() {
-        try (InputStream is = getClass()
-                                .getClassLoader()
-                                .getResourceAsStream("org/fusesource/jansi/jansi.properties")
-        ) {
-            if (is != null) {
-                final Properties props = new Properties();
-                props.load(is);
-                return props.getProperty("version");
-            }
-        }
-        catch (IOException e) {
-            // Ignore
-        }
-        return null;
-    }
-
     public boolean isClearCommandHistoryOnExit() {
         return clearCmdHistoryOnExit;
     }
