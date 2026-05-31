@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Bumped the OpenAI Java library to v4.37.0
-- [#11](https://github.com/jlangch/venice/issues/11): Migrated to JLine 3.25.1. 
+- [#16](https://github.com/jlangch/venice/issues/16): Migrated to JLine 3.25.1. 
   JLine 3.25.1 includes JAnsi
 
 
