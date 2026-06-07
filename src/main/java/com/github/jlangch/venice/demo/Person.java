@@ -90,7 +90,12 @@ public class Person {
 
     @Override
     public String toString() {
-        return String.format("%s %s, %d", firstName, lastName, getAge());
+        return String.format(
+        		"%s %s, %s, %s",
+        		firstName == null ? "?" : firstName,
+        		lastName == null ? "?" : lastName,
+        		gender == null ? "?" : gender.name().toLowerCase(),
+        		birthdate == null ? "?" : birthdate.toString());
     }
 
 
