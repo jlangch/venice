@@ -422,9 +422,12 @@ _Note:_  this is not the fastest way to filter/map collections
 
    (def users [
         (. :Person :new "John" "Smith" (. :LocalDate :of 1994 7 21) :Male)
+        (. :Person :new "Peter" "Myers" (. :LocalDate :of 20020 10 4) :Male)
         (. :Person :new "Mary" "Johnson" (. :LocalDate :of 1970 1 12) :Female) ])
 
-   (str (filter #(> (:age %) 30) users)))
+   (->> (filter #(> (:age %) 30) users)
+        (tee println))
+   nil) 
 ```
 
  
