@@ -113,7 +113,6 @@ Note: requires Venice 1.13.7+ for Java demo `:com.github.jlangch.venice.demo.Per
 ``` clojure
 (do
    (import :com.github.jlangch.venice.demo.Person)
-   (import :java.time.LocalDate)
 
    ;; constructor
    (def p1 (. :Person :new "John" "Smith" (time/local-date 1994 7 21) :Male))
