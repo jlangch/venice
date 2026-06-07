@@ -116,20 +116,20 @@ Note: requires Venice 1.13.7+ for Java demo `:com.github.jlangch.venice.demo.Per
    (import :java.time.LocalDate)
 
    ;; constructor
-   (def p1 (. :Person :new "John" "Smith" (. :LocalDate :of 1994 7 21) :Male))
+   (def p1 (. :Person :new "John" "Smith" (time/local-date 1994 7 21) :Male))
 
    ;; setters
    (def p2 (doto (. :Person :new)
                  (. :setFirstName "John")
                  (. :setLastName "Smith")
-                 (. :setBirthdate (. :LocalDate :of 1994 7 21))
+                 (. :setBirthdate (time/local-date 1994 7 21))
                  (. :setGender :Male)))
 
    ;; builder
    (def p3 (-> (. :Person :builder)
                (. :firstName "John")
                (. :lastName "Smith")
-               (. :birthdate (. :LocalDate :of 1994 7 21))
+               (. :birthdate (time/local-date 1994 7 21))
                (. :gender :Male)
                (. :build)))
                
