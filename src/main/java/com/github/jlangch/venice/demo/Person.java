@@ -25,7 +25,7 @@ import java.time.LocalDate;
 
 
 /**
- * Util class used for some examples.
+ * Util class used for some examples and demos.
  */
 public class Person {
 
@@ -63,13 +63,43 @@ public class Person {
     }
 
 
+
+
     @Override
     public String toString() {
         return String.format("%s %s, %d", firstName, lastName, getAge());
     }
 
 
-    public static enum Gender {Male, Female};
+    public static class Builder {
+    	public Builder() {
+    	}
+
+    	public Builder firstName(final String firstName) {
+    		this.firstName = firstName;
+    		return this;
+    	}
+    	public Builder lastName(final String lastName) {
+    		this.lastName = lastName;
+    		return this;
+    	}
+    	public Builder birthdate(final LocalDate birthdate) {
+    		this.birthdate = birthdate;
+    		return this;
+    	}
+    	public Builder gender(final Gender gender) {
+    		this.gender = gender;
+    		return this;
+    	}
+
+    	private String firstName;
+        private String lastName;
+        private LocalDate birthdate;
+        private Gender gender;
+    }
+
+
+    public static enum Gender { Male, Female };
 
     private final String firstName;
     private final String lastName;
