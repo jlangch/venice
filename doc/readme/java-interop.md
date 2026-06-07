@@ -106,7 +106,7 @@ can be sorted and Java types can be used with sets and maps.
 ```
 
 
-Java Constructor vs Setters and Builder 
+**Java Constructor vs Setters and Builder**
 
 Note: requires Venice 1.13.7+ for Java demo `:com.github.jlangch.venice.demo.Person` class to support all creation patterns
 
