@@ -415,10 +415,10 @@ _Note:_  this is not the fastest way to filter/map collections
    (import :java.time.LocalDate)
 
    ;; get the first item of a Java list
-   (first
-      (doto (. :java.util.ArrayList :new)
-            (. :add 1)
-            (. :add 2)))
+   (println (first
+              (doto (. :java.util.ArrayList :new)
+                    (. :add 1)
+                    (. :add 2))))
 
    (def users [
         (. :Person :new "John" "Smith" (. :LocalDate :of 1994 7 21) :Male)
