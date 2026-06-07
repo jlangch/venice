@@ -90,7 +90,7 @@ Java calls follow these patterns:
 
 
 Java types support hash codes, equals, and compare. Thereby Venice sequences with Java types
-can be sorted and Java types can be used with sets and maps.
+can be sorted and Java types can be used with Venice sets and maps.
 
 ``` clojure
 (do
