@@ -29,6 +29,9 @@ import java.time.LocalDate;
  */
 public class Person {
 
+    public Person() {
+    }
+
     public Person(
             final String firstName,
             final String lastName,
@@ -42,26 +45,46 @@ public class Person {
     }
 
 
+
     public String getFirstName() {
-        return firstName;
-    }
+		return firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public void setFirstName(final String firstName) {
+		this.firstName = firstName;
+	}
 
-    public LocalDate getBirthdate() {
-        return birthdate;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public Gender getGender() {
-        return gender;
-    }
+	public void setLastName(final String lastName) {
+		this.lastName = lastName;
+	}
 
-    public int getAge() {
+	public LocalDate getBirthdate() {
+		return birthdate;
+	}
+
+	public void setBirthdate(final LocalDate birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(final Gender gender) {
+		this.gender = gender;
+	}
+
+	public int getAge() {
         return LocalDate.now().getYear() - birthdate.getYear();
     }
 
+	public static Builder builder() {
+		return new Builder();
+	}
 
 
 
@@ -91,6 +114,9 @@ public class Person {
     		this.gender = gender;
     		return this;
     	}
+    	public Person build() {
+    		return new Person(firstName, lastName, birthdate, gender);
+    	}
 
     	private String firstName;
         private String lastName;
@@ -101,8 +127,8 @@ public class Person {
 
     public static enum Gender { Male, Female };
 
-    private final String firstName;
-    private final String lastName;
-    private final LocalDate birthdate;
-    private final Gender gender;
+    private String firstName;
+    private String lastName;
+    private LocalDate birthdate;
+    private Gender gender;
 }

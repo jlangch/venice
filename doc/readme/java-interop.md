@@ -105,7 +105,38 @@ can be sorted and Java types can be used with sets and maps.
       (hash-map b1 1 b2 2 b3 3)))
 ```
 
- 
+
+Java Constructor vs Setters and Builder 
+
+Note: requires Venice 1.13.7+ for Java demo `:com.github.jlangch.venice.demo.Person` class to support all creation patterns
+
+``` clojure
+(do
+   (import :com.github.jlangch.venice.demo.Person)
+   (import :java.time.LocalDate)
+
+   ;; constructor
+   (def p1 (. :Person :new "John" "Smith" (. :LocalDate :of 1994 7 21) :Male))
+
+   ;; setters
+   (def p2 (doto (. :Person :new)
+                 (. :setFirstName "John")
+                 (. :setLastName "Smith")
+                 (. :setBirthdate (. :LocalDate :of 1994 7 21))
+                 (. :setGender :Male)))
+
+   ;; builder
+   (def p3 (-> (. :Person :builder)
+               (. :firstName "John")
+               (. :lastName "Smith")
+               (. :birthdate (. :LocalDate :of 1994 7 21))
+               (. :gender :Male)
+               (. :build)))
+               
+   (println "p1:" p1)
+   (println "p2:" p2)
+   (println "p3:" p3))
+```
  
 
 ## Enum types
