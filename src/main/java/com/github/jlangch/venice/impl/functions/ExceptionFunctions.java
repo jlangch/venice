@@ -203,6 +203,21 @@ public class ExceptionFunctions {
                             "Function 'ex' expects a 'class' arg as a subtype of :java.lang.Exception!");
                 }
 
+                // Handle two special cases: ValueException should get a Venice value
+                if (ValueException.class.isAssignableFrom(excClass)) {
+                    if (args.size() == 2) {
+                        return new VncJavaObject(new ValueException(args.second()));
+                    }
+                    else if (args.size() == 3) {
+                        final VncVal excause = args.third();
+                        if (Types.isVncJavaObject(excause, Exception.class))
+                        return new VncJavaObject(
+                                new ValueException(
+                                        args.second(),
+                                        (Exception)((VncJavaObject)excause).getDelegate()));
+                    }
+                }
+
 
                 // No sandbox checking for creating an exception!
                 final VncList newExArgs = VncList
