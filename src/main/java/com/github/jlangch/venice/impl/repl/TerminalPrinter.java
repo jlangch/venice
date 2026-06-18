@@ -98,8 +98,8 @@ public class TerminalPrinter {
         synchronized (lock) {
             try {
                 if (ex instanceof ValueException) {
-                    final ValueException vex = (ValueException)ex;
-                    final Object value = vex.getValue();
+                    final ValueException e = (ValueException)ex;
+                    final Object value = e.getValue();
                     final String fmtVal;
                     if (value == null) {
                         fmtVal = "null";
@@ -111,19 +111,16 @@ public class TerminalPrinter {
                         fmtVal = value.toString();
                     }
 
-                    print(colorID, t -> vex.printVeniceStackTrace(t.writer()));
+                    print(colorID, t -> e.printVeniceStackTrace(t.writer()));
                     println(colorID,"\nThrown value: " + truncate(fmtVal, 200, "...(skipped)"));
                 }
                 else if (ex instanceof VncException) {
+                    final VncException e = (VncException)ex;
                     if (printJavaEx) {
-                        print(
-                            colorID,
-                            t -> ex.printStackTrace(t.writer()));
+                        print(colorID, t -> e.printStackTrace(t.writer()));
                     }
                     else {
-                        print(
-                            colorID,
-                            t -> ((VncException)ex).printVeniceStackTrace(t.writer()));
+                        print(colorID, t -> e.printVeniceStackTrace(t.writer()));
                     }
                 }
                 else {
