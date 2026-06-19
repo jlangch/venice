@@ -204,6 +204,7 @@ ext {
     jaxb_Version = '2.3.1'
     jmh_Version = '1.32'
     jline_Version = '3.25.1'
+    tamboui_Version = '0.4.0'
     jupiter_Version = '5.8.2'
     openpdf_Version = '1.3.35'
     openai_Version = '4.39.1'
@@ -398,7 +399,7 @@ jar {
 }
 
 shadowJar {
-    dependsOn 'downloadJline'
+    dependsOn 'copyTamboui'
 
     // https://github.com/johnrengelman/shadow/
     // https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Jar.html
@@ -434,8 +435,14 @@ shadowJar {
     //
     //       Therefore the JLine JAR is simply merged into the target
     //       Venice JAR without relocation!
-    def jarJline = file("${buildDir}/libs/jline-${jline_Version}.jar") 
-    from(zipTree(jarJline))
+    from(zipTree(file("${buildDir}/tamboui/jline-${jline_Version}.jar")))
+
+    from(zipTree(file("${buildDir}/tamboui/tamboui-core-${tamboui_Version}.jar")))
+    from(zipTree(file("${buildDir}/tamboui/tamboui-css-${tamboui_Version}.jar")))
+    from(zipTree(file("${buildDir}/tamboui/tamboui-jline3-backend-${tamboui_Version}.jar")))
+    from(zipTree(file("${buildDir}/tamboui/tamboui-toolkit-${tamboui_Version}.jar")))
+    from(zipTree(file("${buildDir}/tamboui/tamboui-tui-${tamboui_Version}.jar")))
+    from(zipTree(file("${buildDir}/tamboui/tamboui-widgets-${tamboui_Version}.jar")))
 }
 
 /*
@@ -506,6 +513,19 @@ signing {
     sign publishing.publications.MavenCustom
 }
 
+
+
+configurations {
+    tamboui
+}
+
+
+task copyTamboui(type: Copy) {
+    from configurations.tamboui
+    into "$buildDir/tamboui"
+}
+
+
 tasks.register('sonatypeBundle') {
     // Tech info:         https://central.sonatype.org/publish/publish-portal-upload/
     //                    https://central.sonatype.org/publish/publish-portal-api/
@@ -548,19 +568,6 @@ task sonatypePublish(type: Exec, dependsOn: [sonatypeBundle]) {
             throw new GradleException("Rejected publishing with bad version format!")
         }
         println "Publishing to Central Sonatype (mode=${sonatypePublishType})"
-    }
-}
-
-
-task downloadJline(type: Exec) {
-    commandLine "/bin/sh",
-                "-c",
-                "curl -s -o ${buildDir}/libs/jline-${jline_Version}.jar " + 
-                "https://repo1.maven.org/maven2/org/jline/jline/${jline_Version}/jline-${jline_Version}.jar"
-
-    doFirst {
-        new File("${buildDir}/libs").mkdirs()
-        println "Downloading jline ${jline_Version}..."
     }
 }
 
@@ -906,7 +913,7 @@ dependencies {
     compileOnly "org.openjdk.jmh:jmh-core:${jmh_Version}"
     compileOnly "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
 
- 
+
     // Unit tests
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     
@@ -988,4 +995,11 @@ dependencies {
     implementation "net.lingala.zip4j:zip4j:${zip4j_Version}"
     implementation "com.github.jlangch:aviron:${aviron_Version}"
     implementation "io.timeandspace:cron-scheduler:${cronScheduler_Version}"
+
+    tamboui "org.jline:jline:${jline_Version}"
+    tamboui "dev.tamboui:tamboui-css:${tamboui_Version}"
+    tamboui "dev.tamboui:tamboui-toolkit:${tamboui_Version}"
+    tamboui "dev.tamboui:tamboui-tui:${tamboui_Version}"
+    tamboui "dev.tamboui:tamboui-jline3-backend:${tamboui_Version}"
  }
+ 
