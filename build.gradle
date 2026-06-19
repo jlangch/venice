@@ -322,6 +322,11 @@ repositories {
 }
 
 
+configurations {
+    tamboui
+}
+
+
 sourceSets {
     jmh {
         java.srcDirs = ['src/jmh/java']
@@ -511,12 +516,6 @@ signing {
     useGpgCmd()  // use the local GPG agent to sign the artefacts
 
     sign publishing.publications.MavenCustom
-}
-
-
-
-configurations {
-    tamboui
 }
 
 
