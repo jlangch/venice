@@ -217,9 +217,9 @@ conditions of the following licenses.
 
 
 VAVR 1.0.0 (io.vavr:vavr:1.0.0)                                LICENSE-Vavr.txt
-JLine3 3.21.0 (org.jline:jline:3.21.0)                       LICENSE-JLine3.txt
-JAnsi 2.4.1 (org..fusesource.jansi:jansi:2.4.1)               LICENSE-JAnsi.txt
 NanoJson 1.6 (com.grack:nanojson:1.6)                      LICENSE-nanojson.txt
+JLine3 3.25.0 (org.jline:jline:3.25.0)                       LICENSE-JLine3.txt
+TamboUI 0.4.0 (dev.tamboui:tamboui-tui:0.4.0)               LICENSE-TamboUI.txt
 Zip4j 2.11.5 (net.lingala.zip4j:zip4j:2.11.5)                 LICENSE-Zip4J.txt
 Aviron 1.9.1 (com.github.jlangch:aviron:1.9.1)               LICENSE-Aviron.txt
 CronSched 0.1 (io.timeandspace:cron-scheduler:0.1)    LICENSE-CronScheduler.txt
