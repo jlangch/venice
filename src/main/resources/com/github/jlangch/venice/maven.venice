@@ -597,9 +597,9 @@
           print-pom    (:print-pom opts false)
           managed-deps (:managed-dependencies opts [])
           excludes     (:excludes opts [])
-          excludes     (if (and (empty? excludes) (not (= :test scope)))
-                         maven/exludes-junit  ;; implicite excludes
-                         [])]
+          excludes     (if (not (= :test scope))
+                         (concat excludes maven/exludes-junit)  ;; implicite excludes
+                         excludes)]
 
       (assert (#{:compile :runtime :test :provided} scope))
       (assert (boolean? verbose))
