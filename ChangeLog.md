@@ -20,7 +20,10 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Bumped the OpenAI Java library to v4.41.0
-- [#17](https://github.com/jlangch/venice/issues/17): Printing ValueException in the REPL 
+
+### Bugs
+
+- [#17](https://github.com/jlangch/venice/issues/17): Fixed printing *ValueException* in the REPL 
 
 
 
