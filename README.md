@@ -253,5 +253,6 @@ This code is licensed under the [Apache License v2](LICENSE).
  
 
 ## Stargazers over time
-[Stargazers](https://api.star-history.com/svg?repos=jlangch/venice&type=Date)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jlangch/venice&type=Date)](https://star-history.com/#jlangch/venice&Date)
 
