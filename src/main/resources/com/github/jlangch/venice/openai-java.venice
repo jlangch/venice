@@ -162,6 +162,7 @@
      :see-also '(
         "openai-java/version"
         "openai-java/close"
+        "openai-java/models"
         "openai-java/chat-completion"
         "openai-java/generate-image"
         "openai-java/create-speech") }
@@ -364,6 +365,7 @@
           "openai-java/execute"
           "openai-java/client"
           "openai-java/close"
+          "openai-java/models"
           "openai-java/format-usage") }
 
   chat-completion 
@@ -1669,6 +1671,45 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Models
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(models client)" )
+     :doc """
+          Returns all supported OpenAI models
+
+          Returns a lis of models maps:
+
+          `{ :id "gpt-5" :onwned-by "system" :created 2025-08-05T20:29:37 }`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (openai-java/models (openai-java/client)))
+          """)
+     :see-also '(
+          "openai-java/chat-completion") }
+
+  models [client]
+
+  { :pre [(instance-of? :OpenAIClient client)] }
+ 
+  (-<> (. client :models)
+       (. <> :list)
+       (. <> :data)
+       (flatten <>)
+       (map (fn [m] (ordered-map 
+                      :id        (. m :id) 
+                      :onwned-by (. m :ownedBy) 
+                      :created   (-> (. m :created)
+                                     (time/unix-timestamp-to-local-date-time)))) <>)))
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
@@ -1774,27 +1815,6 @@
                              (map #(str (first %) ": " (second %)))
                              (str/join ", "))]
     (if (empty? effective-items) "" (str "  (" effective-items ")"))))
-
-
-(defn 
-  ^{ :arglists '(
-          "(models)" )
-     :doc """
-          Returns all supported OpenAI models
-          """
-     :examples '(
-          """
-          (do
-            (load-module :openai-java)
-            (openai-java/models))
-          """)
-     :see-also '(
-          "openai-java/chat-completion") }
-
-  models []
-  
-  (->> (. :ChatCompletionTraditionalRequest :models) ;; java.util.ArrayList
-       (map keyword)))
 
 
 (defn 

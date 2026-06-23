@@ -47,7 +47,7 @@ public class ChatCompletionTraditionalRequest {
 
     private ChatCompletionTraditionalRequest(
             final OpenAIClient client,
-            final ChatModel model,
+            final String model,
             final IFunctionDispatcher functionDispatcher
     ) {
         this.client = client;
@@ -58,16 +58,35 @@ public class ChatCompletionTraditionalRequest {
                                 .model(model);
     }
 
-    public static ChatCompletionTraditionalRequest of (
+
+    public static ChatCompletionTraditionalRequest of(
             final OpenAIClient client,
             final ChatModel model
     ) {
         return ChatCompletionTraditionalRequest.of(client, model, null);
     }
 
-    public static ChatCompletionTraditionalRequest of (
+    public static ChatCompletionTraditionalRequest of(
+            final OpenAIClient client,
+            final String model
+    ) {
+        return ChatCompletionTraditionalRequest.of(client, model, null);
+    }
+
+    public static ChatCompletionTraditionalRequest of(
             final OpenAIClient client,
             final ChatModel model,
+            final IFunctionDispatcher functionDispatcher
+    ) {
+        Objects.requireNonNull(client);
+        Objects.requireNonNull(model);
+
+        return of(client, model.asString(), functionDispatcher);
+    }
+
+    public static ChatCompletionTraditionalRequest of(
+            final OpenAIClient client,
+            final String model,
             final IFunctionDispatcher functionDispatcher
     ) {
         Objects.requireNonNull(client);
@@ -236,7 +255,7 @@ public class ChatCompletionTraditionalRequest {
         return client;
     }
 
-    public ChatModel getModel() {
+    public String getModel() {
         return model;
     }
 
@@ -298,7 +317,7 @@ public class ChatCompletionTraditionalRequest {
 
     private final long startMillis = System.currentTimeMillis();
     private final OpenAIClient client;
-    private final ChatModel model;
+    private final String model;
     private final IFunctionDispatcher functionDispatcher;
     private final ChatCompletionCreateParams.Builder paramsBuilder;
 }
