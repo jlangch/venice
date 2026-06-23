@@ -253,5 +253,5 @@ This code is licensed under the [Apache License v2](LICENSE).
  
 
 ## Stargazers over time
-[![Stargazers](https://api.star-history.com/svg?repos=jlangch/venice&type=Date)]
+[Stargazers](https://api.star-history.com/svg?repos=jlangch/venice&type=Date)
 
