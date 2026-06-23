@@ -232,10 +232,21 @@
           | [![width: 15%]]     | [![width: 85%]] |
           | client | A client. ¶\
                      Use `openai-java/client` to create a client|
-          | model  | An OpenAI model. E.g.: `:GPT_5_4`, `:GPT_5_4_MINI`, \
-                     `:GPT_5_4_NANO`|
+          | model  | An OpenAI model. E.g.: "gpt-5.4", "gpt-5.4-mini", \
+                     "gpt-5.4-nano"|
 
-          Returns the chat completion result
+          Returns the chat completion result.
+
+          The supported models (chat, image, audio, ...) can be retrieved by: 
+
+          ```
+          (do
+            (load-module :openai-java)
+            (->> (openai-java/client)
+                 (openai-java/models)
+                 (map :id)
+                 (sort)))
+          ```
 
           [OpenAI Text Prompting Guide](https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide)
           [OpenAI Text Cookbook](https://developers.openai.com/cookbook/topic/text)
@@ -245,7 +256,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/add-user-message "Say this is a test"))
                   response (openai-java/execute chat)
@@ -256,7 +267,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/add-user-message "Say this is a test"))
                   response (openai-java/execute chat)
@@ -272,7 +283,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/add-user-message "Say Hello!"))
                   response (openai-java/execute chat)]
@@ -293,7 +304,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/json-response-format 
                                     "employee-list"
@@ -334,7 +345,7 @@
                   registry (-> (openai-java/create-function-registry)
                                (openai-java/register-function "weather_get_current"
                                                               get-current-weather))
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4" registry)
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/debug false)
                                (openai-java/add-function 
@@ -373,14 +384,19 @@
   ([client model]
     { :pre [(validate-libs-installed) 
             (instance-of? :OpenAIClient client) 
-            (keyword? model)] }
-    (. :ChatCompletionTraditionalRequest :of client (. :ChatModel model)))
+            (or (keyword? model) (string? model))] }
+    (. :ChatCompletionTraditionalRequest :of 
+            client 
+            (if (keyword? model) (. :ChatModel model) model)))
   
   ([client model fn-registry]
     { :pre [(validate-libs-installed) 
             (instance-of? :OpenAIClient client) 
-            (keyword? model)] }
-    (. :ChatCompletionTraditionalRequest :of client (. :ChatModel model) fn-registry)))
+            (or (keyword? model) (string? model))] }
+    (. :ChatCompletionTraditionalRequest :of 
+          client 
+          (if (keyword? model) (. :ChatModel model) model) 
+          fn-registry)))
 
 
 (defn 
@@ -1158,7 +1174,9 @@
 
   generate-image [client model prompt & options]
 
-  { :pre [(instance-of? :OpenAIClient client) (keyword? model) (string? prompt)] }
+  { :pre [(instance-of? :OpenAIClient client) 
+          (or (keyword? model) (string? model))
+          (string? prompt)] }
 
   (let [opts            (apply hash-map options)
         background      (:background opts)
@@ -1170,7 +1188,7 @@
         style           (:style opts)
         response-format (:response-format opts)]
     (let [params (. :ImageGenerateParams :builder)]
-      (. params :model (. :ImageModel model))
+      (. params :model (if (keyword? model) (. :ImageModel model) model))
       (. params :prompt prompt)
       (when background (. params :background (. :ImageGenerateParams$Background background)))
       (when number (. params :n number))
@@ -1317,7 +1335,7 @@
           (or (io/file? image) (bytebuf? image) (io/in-stream? image))
           (string? mimetype)
           (string? name)
-          (keyword? model) 
+          (or (keyword? model) (string? model)) 
           (string? prompt)] }
 
   (let [opts            (apply hash-map options)
@@ -1332,7 +1350,7 @@
     (let [params (. :ImageEditParams :builder)]
 
       (. params :image (. :Multiparts :multipartField_EditImage image mimetype name))
-      (. params :model (. :ImageModel model))
+      (. params :model (if (keyword? model) (. :ImageModel model) model))
       (. params :prompt prompt)
       (when background (. params :background (. :ImageEditParams$Background background)))
       (when number (. params :n number))
@@ -1484,7 +1502,7 @@
   create-speech [client model input & options]
 
   { :pre [(instance-of? :OpenAIClient client) 
-          (keyword? model) 
+          (or (keyword? model) (string? model)) 
           (string? input)] }
 
   (let [opts            (apply hash-map options)
@@ -1492,7 +1510,7 @@
         format          (:format opts)
         voice           (:voice opts)]
     (let [params (. :SpeechCreateParams :builder)]
-      (. params :model (. :SpeechModel model))
+      (. params :model (if (keyword? model) (. :SpeechModel model) model))
       (. params :input input)
       (when instructions (. params :instructions instructions))
       (when format (. params :responseFormat (. :SpeechCreateParams$ResponseFormat format)))
@@ -1614,7 +1632,7 @@
   transcribe [client model audio & options]
 
   { :pre [(instance-of? :OpenAIClient client) 
-          (keyword? model) 
+          (or (keyword? model) (string? model))
           (or (io/file? audio) (bytebuf? audio) (io/in-stream? audio))] }
 
   (let [opts                   (apply hash-map options)
@@ -1640,7 +1658,7 @@
                             (. :TemporaryFile :of audio)
                             (. :TemporaryFile :of audio filename))]
       (let [params (. :TranscriptionCreateParams :builder)]
-        (. params :model (. :AudioModel model))
+        (. params :model (if (keyword? model) (. :AudioModel model) model))
         (. params :file (. audio-file :getPath))
         (when language (. params :language language))
         (when prompt (. params :prompt prompt))
