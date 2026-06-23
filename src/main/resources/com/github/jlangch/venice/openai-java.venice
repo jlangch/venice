@@ -227,13 +227,11 @@
 
           It serves as a OpenAI chat completion conversation.
 
-          ¶**Argument**
+          ¶**Arguments**
 
-          | [![width: 15%]]     | [![width: 85%]] |
-          | client | A client. ¶\
-                     Use `openai-java/client` to create a client|
-          | model  | An OpenAI model. E.g.: "gpt-5.4", "gpt-5.4-mini", \
-                     "gpt-5.4-nano"|
+          | [![width: 15%]] | [![width: 85%]] |
+          | client | A client.¶Use `openai-java/client` to create a client |
+          | model  | An OpenAI model. E.g.: "gpt-5.4", "gpt-5.4-mini", "gpt-5.4-nano" |
 
           Returns the chat completion result.
 
@@ -1539,7 +1537,7 @@
           | :model m    | The model to use for transcription. One of \
                               `:GTP_4O_TRANSCRIBE`, `:GTP_4O_MINI_TRANSCRIBE`, or a \
                               `:WHISPER_1`, or `:GTP_4O_TRANSCRIBE_DIARIZE` |
-          | :audio a     | The audio data to transcribe, in one \
+          | :audio a    | The audio data to transcribe, in one \
                           of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, \
                           or webm.¶\
                           The data data can be supplied as an `io/file`, a `bytebuf`, \
