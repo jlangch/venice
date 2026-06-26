@@ -33,12 +33,15 @@ import com.openai.core.JsonValue;
 import com.openai.models.ChatModel;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
+import com.openai.models.ReasoningEffort;
 import com.openai.models.ResponseFormatJsonSchema;
 import com.openai.models.ResponseFormatJsonSchema.JsonSchema;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionContentPart;
 import com.openai.models.chat.completions.ChatCompletionContentPartText;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.chat.completions.ChatCompletionCreateParams.WebSearchOptions;
+import com.openai.models.chat.completions.ChatCompletionCreateParams.WebSearchOptions.SearchContextSize;
 import com.openai.models.chat.completions.ChatCompletionFunctionTool;
 import com.openai.models.files.FileObject;
 
@@ -215,6 +218,22 @@ public class ChatCompletionTraditionalRequest {
                                 .function(fnBuilder.build())
                                 .build());
 
+        return this;
+    }
+
+    public ChatCompletionTraditionalRequest reasoningEffort(final ReasoningEffort effort) {
+        Objects.requireNonNull(effort);
+        this.paramsBuilder.reasoningEffort(effort);
+        return this;
+    }
+
+    public ChatCompletionTraditionalRequest webSearchContextSize(final SearchContextSize ctxSize) {
+        Objects.requireNonNull(ctxSize);
+        this.paramsBuilder.webSearchOptions(
+                WebSearchOptions
+                	.builder()
+                	.searchContextSize(ctxSize)
+                	.build());
         return this;
     }
 

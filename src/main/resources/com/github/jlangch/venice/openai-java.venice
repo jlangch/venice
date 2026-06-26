@@ -48,6 +48,8 @@
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
 
 (import :com.openai.models.ChatModel)
+(import :com.openai.models.ReasoningEffort)
+(import :com.openai.models.chat.completions.ChatCompletionCreateParams$WebSearchOptions$SearchContextSize)
 
 (import :com.openai.models.files.FilePurpose)
 (import :com.openai.models.files.FileObject)
@@ -256,6 +258,7 @@
             (let [client   (openai-java/client)
                   chat     (-> (openai-java/chat-completion client "gpt-5.4")
                                (openai-java/max-completion-tokens 2048)
+                               (openai-java/reasoning-effort :MEDIUM)
                                (openai-java/add-user-message "Say this is a test"))
                   response (openai-java/execute chat)
                   msg      (first (openai-java/messages response))]
@@ -368,6 +371,7 @@
      :see-also '(
           "openai-java/max-completion-tokens"
           "openai-java/json-response-format"
+          "openai-java/reasoning-effort"
           "openai-java/add-function"
           "openai-java/add-user-message"
           "openai-java/add-assistant-message"
@@ -413,6 +417,80 @@
   
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (long? tokens)] }
   (. chat :maxCompletionTokens tokens))
+
+
+(defn 
+  ^{ :arglists '(
+          "(reasoning-effort chat effort)" )
+     :doc """
+          Sets a reasoning effort.
+
+          One of: `:NONE`, `:MINIMAL`, `:LOW`, `:MEDIUM`, `:HIGH`, `:XHIGH`
+
+          Reducing reasoning effort can result in faster responses and fewer 
+          tokens used on reasoning in a response.
+
+          Returns the chat.
+
+          [reasoning models](https://platform.openai.com/docs/guides/reasoning).
+          """
+      :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/reasoning-effort :MEDIUM)
+                               (openai-java/add-user-message "Say this is a test"))
+                  response (openai-java/execute chat)
+                  msg      (first (openai-java/messages response))]
+              (println msg)))
+          """)
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  reasoning-effort  [chat effort]
+  
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (keyword? effort)] }
+  (. chat :reasoningEffort (. :ReasoningEffort effort)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(web-search-context-size chat context-size)" )
+     :doc """
+          Sets the web search context size.
+
+          One of: `:LOW`, `:MEDIUM`, `:HIGH`
+
+          Returns the chat.
+
+          The Chat Completions API supports web search through the specialized 
+          *gpt-5-search-api*. This model always performs a web search before 
+          answering.
+          """
+      :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client "gpt-5-search-api")
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/web-search-context-size :MEDIUM)
+                               (openai-java/add-user-message 
+                                  "Summarize today's most important news from the UK."))
+                  response (openai-java/execute chat)
+                  msg      (first (openai-java/messages response))]
+              (println msg)))
+          """)
+     :see-also '(
+        "openai-java/chat-completion") }
+
+  web-search-context-size  [chat context-size]
+  
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat) (keyword? context-size)] }
+  (. chat :webSearchContextSize (. :ChatCompletionCreateParams$WebSearchOptions$SearchContextSize context-size)))
 
 
 (defn debug [chat on]
