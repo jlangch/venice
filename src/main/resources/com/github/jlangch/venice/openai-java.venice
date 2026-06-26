@@ -462,12 +462,16 @@
      :doc """
           Sets the web search context size.
 
-          One of: `:LOW`, `:MEDIUM`, `:HIGH`
+          Search context size:
+
+          * `:LOW`: Minimal context. Best for simple lookups or fast responses; may reduce answer quality.
+          * `:MEDIUM`: The default setting. Provides a balanced baseline of context and response latency.
+          * `:HIGH`: Largest context consumption. Best for complex, multi-faceted research queries, but can increase latency.
 
           Returns the chat.
 
           The Chat Completions API supports web search through the specialized 
-          *gpt-5-search-api*. This model always performs a web search before 
+          *gpt-5-search-api* model. This model always performs a web search before 
           answering.
           """
       :examples '(
