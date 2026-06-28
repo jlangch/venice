@@ -44,6 +44,8 @@
 (import :javax.sound.sampled.AudioSystem)
 (import :javax.sound.sampled.Clip)
 
+(import :com.openai.core.Timeout)
+
 (import :com.openai.client.OpenAIClient)
 (import :com.openai.client.okhttp.OpenAIOkHttpClient)
 
@@ -177,7 +179,8 @@
         openai-api-key  (or (:openai-api-key opts)  (openai-api-key-from-env))
         openai-org-id   (or (:openai-org-id opts)   (openai-org-id-from-env))
         openai-proj-id  (or (:openai-proj-id opts)  (openai-proj-id-from-env))
-        openai-base-url (or (:openai-base-url opts) (openai-base-url-from-env))]
+        openai-base-url (or (:openai-base-url opts) (openai-base-url-from-env))
+        max-retries     (get opts :max-retries)]
     (when (nil? openai-api-key)
       (throw (ex :VncException 
                  """
@@ -189,6 +192,7 @@
       (when (some? openai-org-id)   (. builder :organization openai-org-id))
       (when (some? openai-proj-id)  (. builder :project openai-proj-id))
       (when (some? openai-base-url) (. builder :baseUrl openai-base-url))
+      (when (some? max-retries)     (. builder :maxRetries max-retries))
       (. builder :build))))
 
 
@@ -376,6 +380,7 @@
           "openai-java/add-user-message"
           "openai-java/add-assistant-message"
           "openai-java/execute"
+          "openai-java/stream"
           "openai-java/client"
           "openai-java/close"
           "openai-java/models"
@@ -411,7 +416,7 @@
           Returns the chat.
           """
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   max-completion-tokens [chat tokens]
   
@@ -448,7 +453,7 @@
               (println msg)))
           """)
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   reasoning-effort  [chat effort]
   
@@ -489,7 +494,7 @@
               (println msg)))
           """)
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   web-search-context-size  [chat context-size]
   
@@ -511,7 +516,7 @@
           Returns the chat.
           """
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   add-user-message [chat msg]
   
@@ -556,9 +561,9 @@
               (printf "Result:  %n%s%n" msg)))
           """)
      :see-also '(
-        "openai-java/create-file-object"
-        "openai-java/create-file-object-binary"
-        "openai-java/chat-completion") }
+          "openai-java/create-file-object"
+          "openai-java/create-file-object-binary"
+          "openai-java/chat-completion") }
 
   add-user-message-with-files [chat msg & file-objects]
 
@@ -577,7 +582,7 @@
           Returns the chat.
           """
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   add-assistant-message [chat msg]
   
@@ -656,7 +661,7 @@
           """ )
 
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   add-function
 
@@ -698,7 +703,7 @@
               ))
           """ )
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   json-response-format [chat name description type properties]
 
@@ -715,13 +720,60 @@
 
           Return the chat.
           """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/reasoning-effort :MEDIUM)
+                               (openai-java/add-user-message "Say this is a test"))
+                  response (openai-java/execute chat)
+                  msg      (first (openai-java/messages response))]
+              (println msg)))
+          """)
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/stream"
+          "openai-java/chat-completion") }
 
   execute [chat]
 
   { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)] }
   (. chat :execute))
+
+
+(defn 
+  ^{ :arglists '(
+          "(stream chat handler)" )
+     :doc """
+          Stream chat completion response chunks.
+
+          Return the chat.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/reasoning-effort :MEDIUM)
+                               (openai-java/add-user-message "Say this is a test"))]
+              (openai-java/stream chat prn)))
+          """)
+     :see-also '(
+          "openai-java/exec"
+          "openai-java/chat-completion") }
+
+  stream [chat handler]
+
+  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)
+          (fn? handler)] }
+
+  (let [streamer (fn [r] (handler { :delta      (. r :getDelta) 
+                                    :terminated (. r :isTerminated) }))]
+    (. chat :stream (java/as-consumer streamer))))
 
 
 (defn
@@ -731,7 +783,7 @@
           Returns a list of messages of the response.
           """
      :see-also '(
-        "openai-java/chat-completion") }
+          "openai-java/chat-completion") }
 
   messages [response]
 

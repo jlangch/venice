@@ -6,12 +6,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.13.8] - 2026-06-xx
+## [1.13.8] - 2026-06-28
 
 ### Enhancements
 
-- ...
-
+- OpenAI: added support streaming chat completion responses
 
 
 

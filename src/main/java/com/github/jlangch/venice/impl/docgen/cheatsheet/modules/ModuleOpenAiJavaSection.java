@@ -59,6 +59,7 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         chat.addItem(diBuilder.getDocItem("openai-java/web-search-context-size", false));
         chat.addItem(diBuilder.getDocItem("openai-java/json-response-format", false));
         chat.addItem(diBuilder.getDocItem("openai-java/execute", false));
+        chat.addItem(diBuilder.getDocItem("openai-java/stream", false));
 
         final DocSection img = new DocSection("Images", id());
         all.addSection(img);

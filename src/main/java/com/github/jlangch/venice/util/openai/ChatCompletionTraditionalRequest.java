@@ -25,11 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.openai.client.OpenAIClient;
 import com.openai.core.JsonValue;
+import com.openai.core.http.StreamResponse;
 import com.openai.models.ChatModel;
 import com.openai.models.FunctionDefinition;
 import com.openai.models.FunctionParameters;
@@ -37,6 +39,7 @@ import com.openai.models.ReasoningEffort;
 import com.openai.models.ResponseFormatJsonSchema;
 import com.openai.models.ResponseFormatJsonSchema.JsonSchema;
 import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.chat.completions.ChatCompletionChunk;
 import com.openai.models.chat.completions.ChatCompletionContentPart;
 import com.openai.models.chat.completions.ChatCompletionContentPartText;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
@@ -311,6 +314,22 @@ public class ChatCompletionTraditionalRequest {
         }
 
         return response;
+    }
+
+    public void stream(final Consumer<ChatCompletionStreamResult> handler) {
+        try (StreamResponse<ChatCompletionChunk> streamResponse =
+                 client.chat().completions().createStreaming(paramsBuilder.build())
+        ) {
+            streamResponse
+                .stream()
+                .flatMap(completion -> completion.choices().stream())
+                .map(choice -> choice.delta().content())
+                .filter(text -> text.isPresent())
+                .map(text -> text.get())
+                .forEach(text -> handler.accept(new ChatCompletionStreamResult(text, false)));
+
+            handler.accept(new ChatCompletionStreamResult(null, true));
+         }
     }
 
     public static List<String> models() {
