@@ -21,12 +21,27 @@
  */
 package com.github.jlangch.venice.util.openai;
 
+import java.util.Objects;
 
 public class ChatCompletionStreamResult {
 
-	public ChatCompletionStreamResult(final String delta, final boolean terminated) {
+	public ChatCompletionStreamResult(
+			final String delta,
+			final boolean terminated
+	) {
 		this.delta = delta;
 		this.terminated = terminated;
+		this.exception = null;
+	}
+
+	public ChatCompletionStreamResult(
+			final Exception exception
+	) {
+		Objects.requireNonNull(exception);
+
+		this.delta = null;
+		this.terminated = true;
+		this.exception = exception;
 	}
 
 
@@ -38,7 +53,16 @@ public class ChatCompletionStreamResult {
 		return terminated;
 	}
 
+	public Exception getException() {
+		return exception;
+	}
+
+	public boolean hasException() {
+		return exception != null;
+	}
+
 
 	private final String delta;
 	private final boolean terminated;
+	private final Exception exception;
 }

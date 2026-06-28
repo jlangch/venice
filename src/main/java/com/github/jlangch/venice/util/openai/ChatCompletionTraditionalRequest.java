@@ -326,11 +326,26 @@ public class ChatCompletionTraditionalRequest {
                 .map(choice -> choice.delta().content())
                 .filter(text -> text.isPresent())
                 .map(text -> text.get())
-                .forEach(text -> handler.accept(new ChatCompletionStreamResult(text, false)));
+                .forEach(text -> safeStreaming(handler, new ChatCompletionStreamResult(text, false)));
 
-            handler.accept(new ChatCompletionStreamResult(null, true));
-         }
+            safeStreaming(handler, new ChatCompletionStreamResult(null, true));
+        }
+        catch(Exception ex) {
+            safeStreaming(handler, new ChatCompletionStreamResult(ex));
+       }
     }
+
+
+    private void safeStreaming(
+            final Consumer<ChatCompletionStreamResult> handler,
+            final ChatCompletionStreamResult result
+    ) {
+        try {
+            handler.accept(result);
+        }
+        catch(Exception ignore) { }
+    }
+
 
     public static List<String> models() {
         return CollectionUtil
