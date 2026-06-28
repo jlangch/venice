@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- OpenAI: added support streaming chat completion responses
+- OpenAI: added support for streaming chat completion responses
 
 
 
