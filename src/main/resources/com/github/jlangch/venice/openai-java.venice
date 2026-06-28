@@ -763,7 +763,7 @@
               (openai-java/stream chat prn)))
           """)
      :see-also '(
-          "openai-java/exec"
+          "openai-java/execute"
           "openai-java/chat-completion") }
 
   stream [chat handler]
