@@ -330,7 +330,7 @@ public class ChatCompletionTraditionalRequest {
 
             safeStreaming(handler, new ChatCompletionStreamResult(null, true));
         }
-        catch(Exception ex) {
+        catch(RuntimeException ex) {
             safeStreaming(handler, new ChatCompletionStreamResult(ex));
        }
     }

@@ -35,7 +35,7 @@ public class ChatCompletionStreamResult {
 	}
 
 	public ChatCompletionStreamResult(
-			final Exception exception
+			final RuntimeException exception
 	) {
 		Objects.requireNonNull(exception);
 
@@ -53,7 +53,7 @@ public class ChatCompletionStreamResult {
 		return terminated;
 	}
 
-	public Exception getException() {
+	public RuntimeException getException() {
 		return exception;
 	}
 
@@ -64,5 +64,5 @@ public class ChatCompletionStreamResult {
 
 	private final String delta;
 	private final boolean terminated;
-	private final Exception exception;
+	private final RuntimeException exception;
 }
