@@ -10,7 +10,8 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- OpenAI: chat completion streaming chunk size can now be configured
+
 
 
 
