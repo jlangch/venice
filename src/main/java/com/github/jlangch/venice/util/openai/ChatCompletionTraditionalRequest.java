@@ -317,18 +317,37 @@ public class ChatCompletionTraditionalRequest {
     }
 
     public void stream(final Consumer<ChatCompletionStreamResult> handler) {
+        stream(handler, 1);
+    }
+
+    public void stream(final Consumer<ChatCompletionStreamResult> handler, final int minChunkSize) {
+        if (minChunkSize < 1) {
+            throw new IllegalArgumentException("A streaming min chunk size must be greater than zero");
+        }
+
         try (StreamResponse<ChatCompletionChunk> streamResponse =
                  client.chat().completions().createStreaming(paramsBuilder.build())
         ) {
+            final StringBuilder sb = new StringBuilder();
+
             streamResponse
                 .stream()
                 .flatMap(completion -> completion.choices().stream())
                 .map(choice -> choice.delta().content())
                 .filter(text -> text.isPresent())
                 .map(text -> text.get())
-                .forEach(text -> safeStreaming(handler, new ChatCompletionStreamResult(text, false)));
+                .forEach(text -> {
+                    sb.append(text);
+                    if (sb.length() >= minChunkSize) {
+                        safeStreaming(handler, new ChatCompletionStreamResult(sb.toString(), false));
+                        sb.setLength(0);
+                    }});
 
-            safeStreaming(handler, new ChatCompletionStreamResult(null, true));
+            safeStreaming(
+                handler,
+                new ChatCompletionStreamResult(
+                        sb.length() == 0 ? null : sb.toString(),
+                        true));
         }
         catch(RuntimeException ex) {
             safeStreaming(handler, new ChatCompletionStreamResult(ex));

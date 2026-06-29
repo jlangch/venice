@@ -745,9 +745,13 @@
 
 (defn 
   ^{ :arglists '(
-          "(stream chat handler)" )
+          "(stream chat handler)"
+          "(stream chat handler min-chunk-size)" )
      :doc """
           Stream chat completion response chunks.
+
+          Optionally a min chunk size can be specified to reduce the number of 
+          handler callbacks. Defaults to 1 and must be greater than 0.
 
           Return the chat.
           """
@@ -766,14 +770,24 @@
           "openai-java/execute"
           "openai-java/chat-completion") }
 
-  stream [chat handler]
+  stream 
+   
+  ([chat handler]
+    { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)
+            (fn? handler)] }
 
-  { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)
-          (fn? handler)] }
+    (let [streamer (fn [r] (handler { :delta      (. r :getDelta) 
+                                      :terminated (. r :isTerminated) }))]
+      (. chat :stream (java/as-consumer streamer))))
+ 
+  ([chat handler min-chunk-size]
+    { :pre [(instance-of? :ChatCompletionTraditionalRequest chat)
+            (fn? handler)
+            (long? min-chunk-size) (pos? min-chunk-size)] }
 
-  (let [streamer (fn [r] (handler { :delta      (. r :getDelta) 
-                                    :terminated (. r :isTerminated) }))]
-    (. chat :stream (java/as-consumer streamer))))
+    (let [streamer (fn [r] (handler { :delta      (. r :getDelta) 
+                                      :terminated (. r :isTerminated) }))]
+      (. chat :stream (java/as-consumer streamer) min-chunk-size))))
 
 
 (defn
