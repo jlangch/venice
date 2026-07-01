@@ -60,7 +60,6 @@ The `-setup` option will cause the Venice setup to:
   - install Maven locally to the REPL in the `tools` dir. Maven is used to download (if required so), 
     additional 3rdParty packages with its dependencies. It's only used when you need
     additional packages like the Apache-POI libraries for dealing with Excel files.
-  - download the Jansi library from the Maven repository to the `libs` dir
   - extract some example Venice scripts to the `scripts` dir
   - create a launcher shell script `repl.bat` for Windows and `repl.sh` for all other OS
  
@@ -75,10 +74,9 @@ The `-setup` option will cause the Venice setup to:
 REPL_HOME
 ├── libs
 │   ├── venice-1.13.8.jar
-│   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
-│   └── apache-maven-3.9.6
+│   └── apache-maven-3.9.15
 │       └── ...
 ├── tmp
 │   └── ...
@@ -95,10 +93,9 @@ REPL_HOME
 REPL_HOME
 ├── libs
 │   ├── venice-1.13.8.jar
-│   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
-│   └── apache-maven-3.9.6
+│   └── apache-maven-3.9.15
 │       └── ...
 ├── tmp
 │   └── ...
@@ -124,7 +121,6 @@ This will setup a fully functional REPL but omits the demo scripts and the local
 REPL_HOME
 ├── libs
 │   ├── venice-1.13.8.jar
-│   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tmp
 ├── repl.env
