@@ -167,7 +167,6 @@ list        list*       list?       list-comp
 REPL_HOME
 ├── libs
 │   ├── venice-1.13.8.jar
-│   ├── jansi-2.4.1.jar
 │   ├── xchart-3.8.8.jar    (added jar)
 │   └── repl.json
 ├── tools
@@ -195,7 +194,6 @@ To check the new REPL classpath run the REPL `!classpath` command:
 venice> !classpath
 REPL classpath:
   libs
-  libs/jansi-2.4.1.jar
   libs/venice-1.13.8.jar
   libs/xchart-3.8.8.jar
 ```
