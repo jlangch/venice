@@ -75,7 +75,6 @@ The `-setup` option will cause the Venice setup to:
 REPL_HOME
 ├── libs
 │   ├── venice-1.13.8.jar
-│   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
 │   └── apache-maven-3.9.6
@@ -95,7 +94,6 @@ REPL_HOME
 REPL_HOME
 ├── libs
 │   ├── venice-1.13.8.jar
-│   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tools
 │   └── apache-maven-3.9.6
@@ -124,7 +122,6 @@ This will setup a fully functional REPL but omits the demo scripts and the local
 REPL_HOME
 ├── libs
 │   ├── venice-1.13.8.jar
-│   ├── jansi-2.4.1.jar
 │   └── repl.json
 ├── tmp
 ├── repl.env
