@@ -91,29 +91,51 @@ public class QueryUsageCosts {
                     return;
                 }
 
-                final OrganizationCostsResult cost = result.asOrganizationCosts();
-                final double value = cost.amount()
-                                         .flatMap(amount -> amount.value())
-                                         .orElse(0.0);
+                try {
+                    final OrganizationCostsResult cost = result.asOrganizationCosts();
 
-                final String currency = cost.amount()
-                                            .flatMap(amount -> amount.currency())
-                                            .orElse("unknown");
+                    // The JSON number parser doesn't work => we roll our own parser!
+                    final double value = Double.parseDouble(
+                                            cost.amount().isPresent()
+                                                ? cost.amount().get()._value().asString().orElse("0.0")
+                                                : "0.0");
 
-                final String projectId = cost.projectId().orElse(null);
-                final String lineItem = cost.lineItem().orElse(null);
-                final String apiKeyId = cost.apiKeyId().orElse(null);
 
-                final Map<String,Object> item = new LinkedHashMap<>();
-                item.put("bucket-start", bucketStart);
-                item.put("bucket-end", bucketEnd);
-                item.put("value", value);
-                item.put("currency", currency);
-                item.put("project-id", projectId);
-                item.put("lineitem", lineItem);
-                item.put("api-key-id", apiKeyId);
+// This throws an exception
+//                    final double value = cost.amount()
+//                                             .flatMap(amount -> amount.value())
+//                                             .orElse(0.0);
 
-                items.add(item);
+                    final String currency = cost.amount()
+                                                .flatMap(amount -> amount.currency())
+                                                .orElse("unknown");
+
+                    final String projectId = cost.projectId().orElse(null);
+                    final String lineItem = cost.lineItem().orElse(null);
+                    final String apiKeyId = cost.apiKeyId().orElse(null);
+
+                    final Map<String,Object> item = new LinkedHashMap<>();
+                    item.put("bucket-start", bucketStart);
+                    item.put("bucket-end", bucketEnd);
+                    item.put("value", value);
+                    item.put("currency", currency);
+                    item.put("project-id", projectId);
+                    item.put("lineitem", lineItem);
+                    item.put("api-key-id", apiKeyId);
+
+                    items.add(item);
+                }
+                catch(Exception ex) {
+                    // com.openai.errors.OpenAIInvalidDataException: `value` is invalid, received 0E-6176
+                    //    at com.openai.core.JsonField.getOptional$openai_java_core(Values.kt:191)
+                    //    at com.openai.models.admin.organization.usage.UsageCostsResponse$Data$Result$OrganizationCostsResult$Amount.value(UsageCostsResponse.kt:6680)
+
+                    // `value` is invalid, received 0E-6176
+                    // `value` is invalid, received 0.003627500000000000000000000000000000
+                    // `value` is invalid, received 0.007605000000000000000000000000000000
+                    // System.out.println(ex.getMessage());
+                    throw ex;
+                }
             });
         });
 
