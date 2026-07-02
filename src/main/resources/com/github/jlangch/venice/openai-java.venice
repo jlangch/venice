@@ -1916,6 +1916,38 @@
        (map #(map-keys keyword %) <>)))
 
 
+(defn 
+  ^{ :arglists '(
+          "(format-cost-item item)" )
+     :doc """
+          Format a costs items to a string.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [admin-key  "sk-admin-1234"
+                  client     (openai-java/client :openai-admin-key admin-key)]
+              (doseq [v (openai-java/costs client 30)] 
+                 (println (openai-java/format-cost-item v)))))
+          """)
+     :see-also '(
+          "openai-java/chat-completion") }
+
+  format-cost-item [item]
+
+  { :pre [(map? item)] }
+ 
+  (str/format "%s – %s | %.6f %s | project=%s | lineItem=%s | apiKey=%s"
+              (:bucket-start item)
+              (:bucket-end item)
+              (:value item)
+              (:currency item)
+              (:project-id item "-"),
+              (:lineitem item "-"),
+              (:api-key-id item "-")))
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Utils
