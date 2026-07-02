@@ -88,6 +88,10 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         files.addItem(diBuilder.getDocItem("openai-java/create-file-object", false));
         files.addItem(diBuilder.getDocItem("openai-java/create-file-object-binary", false));
 
+        final DocSection admin = new DocSection("Admin", id());
+        all.addSection(admin);
+        admin.addItem(diBuilder.getDocItem("openai-java/costs", false));
+
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
         utils.addItem(diBuilder.getDocItem("openai-java/models", false));

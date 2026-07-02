@@ -1890,7 +1890,9 @@
           """
           (do
             (load-module :openai-java)
-            (openai-java/costs (openai-java/client) 30))
+            (let [admin-key  "sk-1234"
+                  client     (openai-java/client :openai-api-key admin-key)]
+              (openai-java/costs client 30)))
           """)
      :see-also '(
           "openai-java/chat-completion") }
