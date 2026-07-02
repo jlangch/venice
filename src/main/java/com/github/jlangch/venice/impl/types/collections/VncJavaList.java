@@ -152,7 +152,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject, VncMutab
 
     @Override
     public void forEach(Consumer<? super VncVal> action) {
-        value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
+        value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v, true)));
     }
 
     @Override

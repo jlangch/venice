@@ -1910,8 +1910,10 @@
           (long? last-n-days)
           (pos? last-n-days)] }
  
-  (-> (. :QueryUsageCosts :new client)
-      (. :query last-n-days)))
+  (-<> (. :QueryUsageCosts :new client)
+       (. <> :query last-n-days)
+       (java->venice <>)
+       (map #(map-keys keyword %) <>)))
 
 
 

@@ -59,8 +59,13 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
+import com.github.jlangch.venice.impl.types.collections.VncJavaList;
+import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
+import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -1443,14 +1448,31 @@ public class JavaInteropFunctions {
 
             if (arg == Nil) {
                 return Nil;
-             }
-             else if (Types.isVncJavaObject(arg)) {
+            }
+            else if (Types.isVncJavaList(arg)) {
+                final List<VncVal> list = new ArrayList<>();
+                ((VncJavaList)arg).forEach(v -> list.add(v));
+                return VncList.ofList(list);
+            }
+            else if (Types.isVncJavaSet(arg)) {
+                final Set<VncVal> set = new HashSet<>();
+                ((VncJavaSet)arg).forEach(v -> set.add(v));
+                return VncHashSet.ofAll(set);
+            }
+            else if (Types.isVncJavaMap(arg)) {
+                VncMap map = new VncHashMap();
+                for(VncMapEntry e : ((VncJavaMap)arg).entries()) {
+                    map = map.assoc(e.getKey(), e.getValue());
+                }
+                return map;
+            }
+            else if (Types.isVncJavaObject(arg)) {
                  final Object obj = ((VncJavaObject)arg).getDelegate();
                  return JavaInteropUtil.convertToVncVal(obj, true);
-             }
-             else {
-                 return arg;
-             }
+            }
+            else {
+                return arg;
+            }
         }
 
         private static final long serialVersionUID = -1848883965231344442L;

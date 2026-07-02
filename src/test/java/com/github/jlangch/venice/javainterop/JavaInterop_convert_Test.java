@@ -24,6 +24,7 @@ package com.github.jlangch.venice.javainterop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -87,11 +88,33 @@ public class JavaInterop_convert_Test {
 //        assertEquals("(:a :b :c)", venice.eval(script));
 //    }
 
+    @Test
+    public void test_java2venice_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                              \n" +
+                "  (->> (. :com.github.jlangch.venice.javainterop.JavaInterop_convert_Test$Factory :list_of_maps) \n" +
+                "       (java->venice)                                                                        \n" +
+                "       (map #(map-keys keyword %))                                                                        \n" +
+                "       (pr-str)))                                                                                ";
+
+        assertEquals("({:a \"1\"} {:b \"2\"} {:c \"3\"})", venice.eval(script));
+    }
+
 
     public static class Factory {
 
         public static List<String>  list() {
             return CollectionUtil.toList("a", "b", "c");
         }
+
+        public static List<Map<String,Object>>  list_of_maps() {
+            return CollectionUtil.toList(
+                        CollectionUtil.toMap("a", "1"),
+                        CollectionUtil.toMap("b", "2"),
+                        CollectionUtil.toMap("c", "3"));
+        }
+
     }
 }

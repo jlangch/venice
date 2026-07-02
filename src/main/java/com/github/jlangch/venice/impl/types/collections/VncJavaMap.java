@@ -160,8 +160,8 @@ public class VncJavaMap extends VncMap implements IVncJavaObject, VncMutable {
     public VncJavaMap putAll(final VncMap map) {
         getJavaMap().entrySet().forEach(
                 e -> value.put(
-                    e.getKey().convertToJavaObject(),
-                    e.getValue().convertToJavaObject()));
+                        JavaInteropUtil.convertToVncVal(e.getKey(), true),
+                        JavaInteropUtil.convertToVncVal(e.getValue(), true)));
         return this;
     }
 

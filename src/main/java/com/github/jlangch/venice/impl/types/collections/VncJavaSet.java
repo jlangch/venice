@@ -311,7 +311,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject, VncMutable {
 
         @Override
         public VncVal next() {
-            return JavaInteropUtil.convertToVncVal(iter.next());
+            return JavaInteropUtil.convertToVncVal(iter.next(), true);
         }
 
         @Override
