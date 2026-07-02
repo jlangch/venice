@@ -91,6 +91,7 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         final DocSection admin = new DocSection("Admin", id());
         all.addSection(admin);
         admin.addItem(diBuilder.getDocItem("openai-java/costs", false));
+        admin.addItem(diBuilder.getDocItem("openai-java/format-cost-item", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);

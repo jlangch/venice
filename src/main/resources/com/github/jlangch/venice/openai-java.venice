@@ -1921,7 +1921,7 @@
   ^{ :arglists '(
           "(format-cost-item item)" )
      :doc """
-          Format a costs items to a string.
+          Format a cost item to a string.
           """
      :examples '(
           """
