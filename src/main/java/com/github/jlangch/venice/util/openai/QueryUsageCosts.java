@@ -26,7 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -104,14 +104,14 @@ public class QueryUsageCosts {
                 final String lineItem = cost.lineItem().orElse(null);
                 final String apiKeyId = cost.apiKeyId().orElse(null);
 
-                final Map<String,Object> item = new HashMap<>();
-                item.put("bucketStart", bucketStart);
-                item.put("bucketEnd", bucketEnd);
+                final Map<String,Object> item = new LinkedHashMap<>();
+                item.put("bucket-start", bucketStart);
+                item.put("bucket-end", bucketEnd);
                 item.put("value", value);
                 item.put("currency", currency);
-                item.put("projectId", projectId);
-                item.put("lineItem", lineItem);
-                item.put("apiKeyId", apiKeyId);
+                item.put("project-id", projectId);
+                item.put("lineitem", lineItem);
+                item.put("api-key-id", apiKeyId);
 
                 items.add(item);
             });
@@ -123,13 +123,13 @@ public class QueryUsageCosts {
     private String formatCostItem(final Map<String,Object> item) {
         return String.format(
                 "%s – %s | %.6f %s | project=%s | lineItem=%s | apiKey=%s%n",
-                item.get("bucketStart"),
-                item.get("bucketEnd"),
+                item.get("bucket-start"),
+                item.get("bucket-end"),
                 item.get("value"),
                 item.get("currency"),
-                item.getOrDefault("projectId", "-"),
-                item.getOrDefault("lineItem", "-"),
-                item.getOrDefault("apiKeyId", "-"));
+                item.getOrDefault("project-id", "-"),
+                item.getOrDefault("lineitem", "-"),
+                item.getOrDefault("api-key-id", "-"));
     }
 
     private LocalDateTime toLocalDateTime(final long epochSeconds) {

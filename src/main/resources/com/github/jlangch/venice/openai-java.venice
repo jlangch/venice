@@ -94,6 +94,7 @@
 
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalRequest)
 (import :com.github.jlangch.venice.util.openai.ChatCompletionTraditionalResponse)
+(import :com.github.jlangch.venice.util.openai.QueryUsageCosts)
 (import :com.github.jlangch.venice.util.openai.FileObjects)
 (import :com.github.jlangch.venice.util.openai.Multiparts)
 (import :com.github.jlangch.venice.util.openai.TokenUsage)
@@ -1844,7 +1845,7 @@
      :doc """
           Returns all supported OpenAI models
 
-          Returns a lis of models maps:
+          Returns a list of models maps:
 
           `{ :id "gpt-5" :onwned-by "system" :created 2025-08-05T20:29:37 }`
           """
@@ -1870,6 +1871,38 @@
                       :onwned-by (. m :ownedBy) 
                       :created   (-> (. m :created)
                                      (time/unix-timestamp-to-local-date-time)))) <>)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Costs
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+          "(costs client last-n-days)" )
+     :doc """
+          Returns a list of costs items for the last N days.
+
+          Note: Requires an admin API key!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (openai-java/costs (openai-java/client) 30))
+          """)
+     :see-also '(
+          "openai-java/chat-completion") }
+
+  costs [client last-n-days]
+
+  { :pre [(instance-of? :OpenAIClient client) 
+          (long? last-n-days)
+          (pos? last-n-days)] }
+ 
+  (-> (. :QueryUsageCosts :new client)
+      (. :query last-n-days)))
 
 
 
