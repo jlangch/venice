@@ -1902,6 +1902,7 @@
               (openai-java/costs client 30)))
           """)
      :see-also '(
+          "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
   costs [client last-n-days]
@@ -1932,6 +1933,7 @@
                  (println (openai-java/format-cost-item v)))))
           """)
      :see-also '(
+          "openai-java/costs"
           "openai-java/chat-completion") }
 
   format-cost-item [item]
