@@ -2038,9 +2038,9 @@
 
   { :pre [(map? item)] }
  
-  (str/format "%s – %s | %.6f %s | project=%s | lineItem=%s | apiKey=%s"
-              (:bucket-start item)
-              (:bucket-end item)
+  ;; OpenAI only supports single-day buckets
+  (str/format "%s | %.6f %s | project=%s | lineItem=%s | apiKey=%s"
+              (time/format (:bucket-start item) "yyyy-MM-dd")
               (:value item)
               (:currency item)
               (:project-id item "-"),
