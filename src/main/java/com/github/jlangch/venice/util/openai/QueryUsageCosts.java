@@ -48,7 +48,7 @@ public class QueryUsageCosts {
     public List<Map<String,Object>> query(final int lastNdays) {
         final long startTime = LocalDate
                                 .now(ZoneOffset.UTC)
-                                .minusDays(30)
+                                .minusDays(lastNdays)
                                 .atStartOfDay(ZoneOffset.UTC)
                                 .toEpochSecond();
 
