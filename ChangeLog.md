@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - OpenAI: chat completion streaming chunk size can now be configured to
   control the rate of streaming callbacks. OpenAI streams single tokens back. This
   can create a very high rate of streaming callbacks. To reduce this, Venice
-  can aggregate streaming tokens in strings of a minimal length.
+  can aggregate streaming tokens to strings of a minimal length.
 - OpenAI: added support for retrieving costs
 
 
