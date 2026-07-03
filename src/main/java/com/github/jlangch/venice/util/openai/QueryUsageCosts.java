@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.util.openai;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -76,6 +78,17 @@ public class QueryUsageCosts {
                 .stream()
                 .map(it -> formatCostItem(it))
                 .collect(Collectors.joining("\n"));
+    }
+
+    public BigDecimal aggregateCosts(final List<Map<String,Object>> costItems) {
+        return costItems.isEmpty()
+                ? new BigDecimal("0.00")
+                : costItems
+                    .stream()
+                    .map(it -> (String)it.getOrDefault("value", "0.0"))
+                    .map(it -> new BigDecimal(it))
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
+                    .setScale(2, RoundingMode.HALF_UP);
     }
 
 

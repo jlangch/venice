@@ -1902,6 +1902,7 @@
               (openai-java/costs client 30)))
           """)
      :see-also '(
+          "openai-java/aggregate-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
@@ -1934,6 +1935,7 @@
           """)
      :see-also '(
           "openai-java/costs"
+          "openai-java/aggregate-costs"
           "openai-java/chat-completion") }
 
   format-cost-item [item]
@@ -1948,6 +1950,36 @@
               (:project-id item "-"),
               (:lineitem item "-"),
               (:api-key-id item "-")))
+
+
+(defn 
+  ^{ :arglists '(
+          "(aggregate-costs items)" )
+     :doc """
+          Aggregates the costs. Returns a decimal.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [admin-key  "sk-admin-1234"
+                  client     (openai-java/client :openai-admin-key admin-key)]
+              (->> (openai-java/costs client 30)
+                   (openai-java/aggregate-cost))))
+          """)
+     :see-also '(
+          "openai-java/costs"
+          "openai-java/format-cost-item"
+          "openai-java/chat-completion") }
+
+  aggregate-costs [costs]
+
+  { :pre [(list? costs)] }
+ 
+  (-<> (map #(get % :value "0.000000") costs)
+       (map #(decimal %) <>)
+       (reduce #(dec/add %1 %2 6 :HALF_UP) (decimal "0.000000") <>)
+       (dec/scale <> 2 :HALF_UP)))
 
 
 
