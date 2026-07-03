@@ -45,7 +45,7 @@ public class QueryUsageCosts {
         this.client = client;
     }
 
-    public List<Map<String,Object>> query(final int lastNdays) {
+    public List<Map<String,Object>> query(final int lastNdays, final int limit) {
         final long startTime = LocalDate
                                 .now(ZoneOffset.UTC)
                                 .minusDays(lastNdays)
@@ -61,7 +61,7 @@ public class QueryUsageCosts {
                                             .bucketWidth(UsageCostsParams.BucketWidth._1D)
                                             .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
                                             .addGroupBy(UsageCostsParams.GroupBy.LINE_ITEM)
-                                            .limit(30)
+                                            .limit(limit)
                                             .build();
 
         final UsageCostsResponse response = client
@@ -73,8 +73,8 @@ public class QueryUsageCosts {
         return parseResponse(response);
     }
 
-    public String queryFormatted(final int lastNdays) {
-        return query(lastNdays)
+    public String queryFormatted(final int lastNdays, final int limit) {
+        return query(lastNdays, limit)
                 .stream()
                 .map(it -> formatCostItem(it))
                 .collect(Collectors.joining("\n"));

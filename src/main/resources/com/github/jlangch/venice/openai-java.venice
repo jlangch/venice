@@ -1887,7 +1887,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(costs client last-n-days)" )
+          "(costs client last-n-days limit)" )
      :doc """
           Returns a list of costs items for the last N days.
 
@@ -1899,21 +1899,23 @@
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)]
-              (openai-java/costs client 30)))
+              (openai-java/costs client 60 180)))
           """)
      :see-also '(
           "openai-java/aggregate-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs [client last-n-days]
+  costs [client last-n-days limit]
 
   { :pre [(instance-of? :OpenAIClient client) 
           (long? last-n-days)
-          (pos? last-n-days)] }
+          (pos? last-n-days)
+          (long? limit)
+          (pos? limit)] }
  
   (-<> (. :QueryUsageCosts :new client)
-       (. <> :query last-n-days)
+       (. <> :query last-n-days limit)
        (java->venice <>)
        (map #(map-keys keyword %) <>)))
 
@@ -1930,7 +1932,7 @@
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)]
-              (doseq [v (openai-java/costs client 30)] 
+              (doseq [v (openai-java/costs client 30 180)] 
                  (println (openai-java/format-cost-item v)))))
           """)
      :see-also '(
@@ -1964,7 +1966,7 @@
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)]
-              (->> (openai-java/costs client 30)
+              (->> (openai-java/costs client 30 180)
                    (openai-java/aggregate-cost))))
           """)
      :see-also '(
