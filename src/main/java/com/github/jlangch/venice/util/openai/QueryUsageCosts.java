@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.openai.client.OpenAIClient;
 import com.openai.models.admin.organization.usage.UsageCostsParams;
@@ -45,7 +44,10 @@ public class QueryUsageCosts {
         this.client = client;
     }
 
-    public List<Map<String,Object>> query(final int lastNdays, final int limit) {
+    public List<Map<String,Object>> queryByLastNDays(
+            final int lastNdays,
+            final int limit
+    ) {
         final long startTime = LocalDate
                                 .now(ZoneOffset.UTC)
                                 .minusDays(lastNdays)
@@ -54,6 +56,68 @@ public class QueryUsageCosts {
 
         final long endTime = Instant.now().getEpochSecond();
 
+        return query(startTime, endTime, limit);
+    }
+
+    public List<Map<String,Object>> queryByDayPeriod(
+            final LocalDate startDate,
+            final LocalDate endDate,
+            final int limit
+    ) {
+        final long startTime = startDate
+                                .atStartOfDay(ZoneOffset.UTC)
+                                .toEpochSecond();
+
+        final long endTime = endDate
+                               .plusDays(1)
+                               .atStartOfDay(ZoneOffset.UTC)
+                               .toEpochSecond();
+
+        return query(startTime, endTime, limit);
+    }
+
+    public List<Map<String,Object>> queryByMonth(
+            final LocalDate date,
+            final int limit
+    ) {
+        final LocalDate startDate =  LocalDate.of(date.getYear(), date.getMonthValue(), 1);
+
+        final long startTime = startDate
+                                .atStartOfDay(ZoneOffset.UTC)
+                                .toEpochSecond();
+
+        final long endTime = startDate
+                               .plusMonths(1)
+                               .atStartOfDay(ZoneOffset.UTC)
+                               .toEpochSecond();
+
+        return query(startTime, endTime, limit);
+    }
+
+    public String formatCostItem(final Map<String,Object> item) {
+        return String.format(
+                "%s – %s | %.6f %s | project=%s | lineItem=%s | apiKey=%s%n",
+                item.get("bucket-start"),
+                item.get("bucket-end"),
+                item.get("value"),
+                item.get("currency"),
+                item.getOrDefault("project-id", "-"),
+                item.getOrDefault("lineitem", "-"),
+                item.getOrDefault("api-key-id", "-"));
+    }
+
+    public BigDecimal aggregateCosts(final List<Map<String,Object>> costItems) {
+        return costItems.isEmpty()
+                ? new BigDecimal("0.00")
+                : costItems
+                    .stream()
+                    .map(it -> (String)it.getOrDefault("value", "0.0"))
+                    .map(it -> new BigDecimal(it))
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
+                    .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public List<Map<String,Object>> query(final long startTime, final long endTime, final int limit) {
         final UsageCostsParams params = UsageCostsParams
                                             .builder()
                                             .startTime(startTime)
@@ -72,25 +136,6 @@ public class QueryUsageCosts {
 
         return parseResponse(response);
     }
-
-    public String queryFormatted(final int lastNdays, final int limit) {
-        return query(lastNdays, limit)
-                .stream()
-                .map(it -> formatCostItem(it))
-                .collect(Collectors.joining("\n"));
-    }
-
-    public BigDecimal aggregateCosts(final List<Map<String,Object>> costItems) {
-        return costItems.isEmpty()
-                ? new BigDecimal("0.00")
-                : costItems
-                    .stream()
-                    .map(it -> (String)it.getOrDefault("value", "0.0"))
-                    .map(it -> new BigDecimal(it))
-                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
-                    .setScale(2, RoundingMode.HALF_UP);
-    }
-
 
     private List<Map<String,Object>> parseResponse(final UsageCostsResponse response) {
         final List<Map<String,Object>> items = new ArrayList<>();
@@ -153,18 +198,6 @@ public class QueryUsageCosts {
         });
 
         return items;
-    }
-
-    private String formatCostItem(final Map<String,Object> item) {
-        return String.format(
-                "%s – %s | %.6f %s | project=%s | lineItem=%s | apiKey=%s%n",
-                item.get("bucket-start"),
-                item.get("bucket-end"),
-                item.get("value"),
-                item.get("currency"),
-                item.getOrDefault("project-id", "-"),
-                item.getOrDefault("lineitem", "-"),
-                item.getOrDefault("api-key-id", "-"));
     }
 
     private LocalDateTime toLocalDateTime(final long epochSeconds) {

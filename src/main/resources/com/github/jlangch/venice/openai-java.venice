@@ -392,7 +392,9 @@
           "openai-java/client"
           "openai-java/close"
           "openai-java/models"
-          "openai-java/format-usage") }
+          "openai-java/format-usage"
+          "openai-java/costs"
+) }
 
   chat-completion 
   
@@ -1891,6 +1893,9 @@
      :doc """
           Returns a list of costs items for the last N days.
 
+          A limit on the number of buckets to be returned. Limit can range 
+          between 1 and 180
+
           Note: Requires an admin API key!
           """
      :examples '(
@@ -1902,6 +1907,9 @@
               (openai-java/costs client 60 180)))
           """)
      :see-also '(
+          "openai-java/costs-by-month"
+          "openai-java/costs-by-days"
+          "openai-java/aggregate-costs"
           "openai-java/aggregate-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
@@ -1915,7 +1923,90 @@
           (pos? limit)] }
  
   (-<> (. :QueryUsageCosts :new client)
-       (. <> :query last-n-days limit)
+       (. <> :queryByLastNDays last-n-days limit)
+       (java->venice <>)
+       (map #(map-keys keyword %) <>)))
+
+(defn 
+  ^{ :arglists '(
+          "(costs-by-month client year month limit)" )
+     :doc """
+          Returns a list of costs items for a specific year and month [1,2,..,12].
+
+          A limit on the number of buckets to be returned. Limit can range 
+          between 1 and 180
+
+          Note: Requires an admin API key!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [admin-key  "sk-admin-1234"
+                  client     (openai-java/client :openai-admin-key admin-key)]
+              (openai-java/costs-by-month client 2026 5 180)))
+          """)
+     :see-also '(
+          "openai-java/costs"
+          "openai-java/costs-by-days"
+          "openai-java/aggregate-costs"
+          "openai-java/format-cost-item"
+          "openai-java/chat-completion") }
+
+  costs-by-month [client year month limit]
+
+  { :pre [(instance-of? :OpenAIClient client) 
+          (long? year)
+          (long? month)
+          (<= 1 month 12)
+          (long? limit)
+          (pos? limit)] }
+ 
+  (-<> (. :QueryUsageCosts :new client)
+       (. <> :queryByMonth (time/local-date year month 1) limit)
+       (java->venice <>)
+       (map #(map-keys keyword %) <>)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(costs-by-days client start-day end-day limit)" )
+     :doc """
+          Returns a list of costs items for a specific day period .
+
+          A limit on the number of buckets to be returned. Limit can range 
+          between 1 and 180
+
+          Note: Requires an admin API key!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [admin-key  "sk-admin-1234"
+                  client     (openai-java/client :openai-admin-key admin-key)]
+              (openai-java/costs-by-days client 
+                                         (time/local-date 2026 5 1) 
+                                         (time/local-date 2026 5 31) 
+                                         180)))
+          """)
+     :see-also '(
+          "openai-java/costs"
+          "openai-java/costs-by-month"
+          "openai-java/aggregate-costs"
+          "openai-java/format-cost-item"
+          "openai-java/chat-completion") }
+
+  costs-by-days [client start-day end-day limit]
+
+  { :pre [(instance-of? :OpenAIClient client) 
+          (time/local-date? start-day)
+          (time/local-date? end-day)
+          (long? limit)
+          (pos? limit)] }
+ 
+  (-<> (. :QueryUsageCosts :new client)
+       (. <> :queryByDayPeriod start-day end-day limit)
        (java->venice <>)
        (map #(map-keys keyword %) <>)))
 
@@ -1937,6 +2028,9 @@
           """)
      :see-also '(
           "openai-java/costs"
+          "openai-java/costs-by-month"
+          "openai-java/costs-by-days"
+          "openai-java/aggregate-costs"
           "openai-java/aggregate-costs"
           "openai-java/chat-completion") }
 
@@ -1971,6 +2065,9 @@
           """)
      :see-also '(
           "openai-java/costs"
+          "openai-java/costs-by-month"
+          "openai-java/costs-by-days"
+          "openai-java/aggregate-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
