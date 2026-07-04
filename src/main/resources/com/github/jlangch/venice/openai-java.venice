@@ -1997,8 +1997,7 @@
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)
                   data       (openai-java/costs-by-month-daily client 2026 6)
-                  zero       (decimal "0.00")
-                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second data))]
+                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second data))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body { :align :left } 
@@ -2123,7 +2122,7 @@
 
 (defn 
   ^{ :arglists '(
-          "(Total-costs items)" )
+          "(total-costs items)" )
      :doc """
           Calculates the total costs. Returns a decimal.
           """
