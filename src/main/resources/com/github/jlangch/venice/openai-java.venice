@@ -1896,7 +1896,7 @@
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
 
-          Note: Requires an admin API key!
+          Note: Requires an **Admin** API key!
           """
      :examples '(
           """
@@ -1909,8 +1909,8 @@
      :see-also '(
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
-          "openai-java/aggregate-costs"
-          "openai-java/aggregate-costs"
+          "openai-java/total-costs"
+          "openai-java/total-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
@@ -1936,7 +1936,7 @@
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
 
-          Note: Requires an admin API key!
+          Note: Requires an **Admin** API key!
           """
      :examples '(
           """
@@ -1949,7 +1949,7 @@
      :see-also '(
           "openai-java/costs"
           "openai-java/costs-by-days"
-          "openai-java/aggregate-costs"
+          "openai-java/total-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
@@ -1977,7 +1977,7 @@
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
 
-          Note: Requires an admin API key!
+          Note: Requires an **Admin** API key!
           """
      :examples '(
           """
@@ -1993,7 +1993,7 @@
      :see-also '(
           "openai-java/costs"
           "openai-java/costs-by-month"
-          "openai-java/aggregate-costs"
+          "openai-java/total-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
@@ -2030,8 +2030,8 @@
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
-          "openai-java/aggregate-costs"
-          "openai-java/aggregate-costs"
+          "openai-java/total-costs"
+          "openai-java/total-costs"
           "openai-java/chat-completion") }
 
   format-cost-item [item]
@@ -2050,9 +2050,9 @@
 
 (defn 
   ^{ :arglists '(
-          "(aggregate-costs items)" )
+          "(Total-costs items)" )
      :doc """
-          Aggregates the costs. Returns a decimal.
+          Calculates the total costs. Returns a decimal.
           """
      :examples '(
           """
@@ -2061,17 +2061,17 @@
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)]
               (->> (openai-java/costs-by-month client 2026 6 180)
-                   (openai-java/aggregate-costs))))
+                   (openai-java/total-costs))))
           """)
      :see-also '(
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
-          "openai-java/aggregate-costs"
+          "openai-java/total-costs"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  aggregate-costs [costs]
+  total-costs [costs]
 
   { :pre [(list? costs)] }
  

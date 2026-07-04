@@ -88,13 +88,13 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         files.addItem(diBuilder.getDocItem("openai-java/create-file-object", false));
         files.addItem(diBuilder.getDocItem("openai-java/create-file-object-binary", false));
 
-        final DocSection admin = new DocSection("Admin", id());
-        all.addSection(admin);
-        admin.addItem(diBuilder.getDocItem("openai-java/costs", false));
-        admin.addItem(diBuilder.getDocItem("openai-java/costs-by-month", false));
-        admin.addItem(diBuilder.getDocItem("openai-java/costs-by-days", false));
-        admin.addItem(diBuilder.getDocItem("openai-java/format-cost-item", false));
-        admin.addItem(diBuilder.getDocItem("openai-java/aggregate-costs", false));
+        final DocSection costs = new DocSection("Costs", id());
+        all.addSection(costs);
+        costs.addItem(diBuilder.getDocItem("openai-java/costs", false));
+        costs.addItem(diBuilder.getDocItem("openai-java/costs-by-month", false));
+        costs.addItem(diBuilder.getDocItem("openai-java/costs-by-days", false));
+        costs.addItem(diBuilder.getDocItem("openai-java/format-cost-item", false));
+        costs.addItem(diBuilder.getDocItem("openai-java/total-costs", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
