@@ -73,7 +73,7 @@
           | :size  s       | Size {`:large`, `:medium`, `:small`}. Defaults to `:medium` |
           | :title-color c | Title ansi color. E.g. `(str (ansi/ansi :bold) (ansi/ansi :black))` |
           | :axis-color c  | Axis ansi color. E.g. `(ansi/ansi (ansi/fg-color 242))` |
-          | :bar-color c   | Bar ansi color. E.g. `(ansi/ansi (ansi/fg-color 22))` |
+          | :bar-color c   | Bar ansi color. E.g. `(ansi/ansi (ansi/fg-color 28))` |
 
           To get a list of the defined ansi colors run 
           

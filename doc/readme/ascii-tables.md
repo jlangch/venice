@@ -1,4 +1,4 @@
-# ASCII tables
+# ASCII Tables
 
 
 The ASCII tables module provides a simple way to render tabular data in pure ascii.

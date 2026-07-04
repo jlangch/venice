@@ -159,6 +159,7 @@ venice>
 * [EXCEL](doc/readme/excel.md)
 * [Charts](doc/readme/charts.md)
 * [ASCII Tables](doc/readme/ascii-tables.md)
+* [ASCII Charts](doc/readme/ascii-charts.md)
 
 **Modules**
 
