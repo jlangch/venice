@@ -255,5 +255,4 @@ This code is licensed under the [Apache License v2](LICENSE).
 
 ## Stargazers over time
 
-[![Star History Chart](https://api.star-history.com/svg?repos=jlangch/venice&type=Date)](https://star-history.com/#jlangch/venice&Date)
-
+[![Star History Chart](https://api.star-history.com/chart?repos=jlangch/venice&type=date&legend=top-left)](https://www.star-history.com/?type=date&repos=jlangch%2Fvenice)
