@@ -26,12 +26,12 @@ The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice i
 
 ### 2. Get the Venice JAR file
 
-Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.13.8/jar)
+Manually download the JAR from Maven: [Venice JAR](https://search.maven.org/artifact/com.github.jlangch/venice/1.13.9/jar)
 
 or download it with `curl`:
 
 ```
-curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.13.8/venice-1.13.8.jar
+curl -O https://repo1.maven.org/maven2/com/github/jlangch/venice/1.13.9/venice-1.13.9.jar
 ```
 
  
@@ -46,7 +46,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 the REPL in setup:
 
 ``` text
-java -jar venice-1.13.8.jar -setup -colors -dir ./repl
+java -jar venice-1.13.9.jar -setup -colors -dir ./repl
 ```
 
 For a REPL run in a darkmode terminal use the option `-colors-dark` instead of
@@ -73,7 +73,7 @@ The `-setup` option will cause the Venice setup to:
 ``` text
 REPL_HOME
 ├── libs
-│   ├── venice-1.13.8.jar
+│   ├── venice-1.13.9.jar
 │   └── repl.json
 ├── tools
 │   └── apache-maven-3.9.15
@@ -92,7 +92,7 @@ REPL_HOME
 ``` text
 REPL_HOME
 ├── libs
-│   ├── venice-1.13.8.jar
+│   ├── venice-1.13.9.jar
 │   └── repl.json
 ├── tools
 │   └── apache-maven-3.9.15
@@ -111,7 +111,7 @@ REPL_HOME
 To setup a minimal REPL add the option `-minimal`:
 
 ``` text
-java -jar venice-1.13.8.jar -setup -minimal -colors -dir ./repl
+java -jar venice-1.13.9.jar -setup -minimal -colors -dir ./repl
 ```
 
 This will setup a fully functional REPL but omits the demo scripts and the local Maven.
@@ -120,7 +120,7 @@ This will setup a fully functional REPL but omits the demo scripts and the local
 ``` text
 REPL_HOME
 ├── libs
-│   ├── venice-1.13.8.jar
+│   ├── venice-1.13.9.jar
 │   └── repl.json
 ├── tmp
 ├── repl.env
@@ -148,7 +148,7 @@ Open a terminal and run the REPL start script.
 The REPL is started and prompts for input:
 
 ``` text
-Venice REPL: 1.13.8
+Venice REPL: 1.13.9
 Home: /Users/juerg/Desktop/venice
 Java: 1.8.0_462
 Jansi: 2.4.1
