@@ -1992,9 +1992,21 @@
           """
           (do
             (load-module :openai-java)
+            (load-module :ascii-table)
+  
             (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)]
-              (openai-java/costs-by-month-daily client 2026 6)))
+                  client     (openai-java/client :openai-admin-key admin-key)
+                  data       (openai-java/costs-by-month-daily client 2026 6)
+                  zero       (decimal "0.00")
+                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second data))]
+              (ascii-table/print 
+                [ {:header {:text "Date" }  :body {:align :left} 
+                            :footer {:text ""}  :width 10}
+                  {:header {:text "Amount [USD]" :align :right}  :body {:align :right} 
+                            :footer {:text (str total) :align :right}  :width 14} ] 
+                data
+                :minimal
+                0)))
           """)
      :see-also '(
           "openai-java/costs"
