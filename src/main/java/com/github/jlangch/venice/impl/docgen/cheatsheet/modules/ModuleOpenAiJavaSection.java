@@ -92,6 +92,7 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         all.addSection(costs);
         costs.addItem(diBuilder.getDocItem("openai-java/costs", false));
         costs.addItem(diBuilder.getDocItem("openai-java/costs-by-month", false));
+        costs.addItem(diBuilder.getDocItem("openai-java/costs-by-month-daily", false));
         costs.addItem(diBuilder.getDocItem("openai-java/costs-by-days", false));
         costs.addItem(diBuilder.getDocItem("openai-java/format-cost-item", false));
         costs.addItem(diBuilder.getDocItem("openai-java/total-costs", false));
