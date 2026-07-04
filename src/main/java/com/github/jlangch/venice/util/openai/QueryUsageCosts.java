@@ -128,6 +128,7 @@ public class QueryUsageCosts {
                                             .endTime(endTime)
                                             .bucketWidth(UsageCostsParams.BucketWidth._1D)
                                             .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
+                                            .addGroupBy(UsageCostsParams.GroupBy.API_KEY_ID)
                                             .addGroupBy(UsageCostsParams.GroupBy.LINE_ITEM)
                                             .limit(limit)
                                             .build();
@@ -173,7 +174,6 @@ public class QueryUsageCosts {
                                             cost.amount().isPresent()
                                                 ? cost.amount().get()._value().asString().orElse("0.0")
                                                 : "0.0");
-
 
 // This throws an exception
 //                    final double value = cost.amount()
