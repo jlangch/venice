@@ -8,7 +8,7 @@ The ASCII charts module provides a simple way to render charts in pure ascii.
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/ascii-charts/ascii-chart-percentage-1.png" width="500">
 
-```
+``` clojure
 (do
   (load-module :ascii-charts)
   (println)
@@ -29,7 +29,7 @@ The ASCII charts module provides a simple way to render charts in pure ascii.
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/ascii-charts/ascii-chart-percentage-2.png" width="500">
 
-```
+``` clojure
 (do
   (load-module :ascii-charts)
   (load-module :ansi)
@@ -54,7 +54,7 @@ The ASCII charts module provides a simple way to render charts in pure ascii.
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/ascii-charts/ascii-chart-percentage-3.png" width="500">
 
-```
+``` clojure
 (do
   (load-module :ascii-charts)
   (load-module :ansi)
@@ -78,7 +78,7 @@ The ASCII charts module provides a simple way to render charts in pure ascii.
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/ascii-charts/ascii-chart-percentage-4.png" width="500">
 
-```
+``` clojure
 (do
   (load-module :ascii-charts)
   (println)
