@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiChartSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironCyclerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAvironLimiterSection;
@@ -410,6 +411,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("RSA", "modules.rsa"));
         extmod.addSection(new DocSection("Keystores", "modules.keystores"));
         extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
+        extmod.addSection(new DocSection("AsciiChart", "modules.asciichart"));
         extmod.addSection(new DocSection("Matrix", "modules.matrix"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
@@ -621,6 +623,7 @@ public class DocGenerator {
                 new ModuleQrBillSection(diBuilder).section(),
                 new ModuleQrCodeSection(diBuilder).section(),
                 new ModuleAsciiTableSection(diBuilder).section(),
+                new ModuleAsciiChartSection(diBuilder).section(),
                 new ModuleMatrixSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),
                 new ModuleMimetypesSection(diBuilder).section(),
