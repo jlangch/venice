@@ -111,7 +111,7 @@ public class QueryUsageCosts {
                 ? new BigDecimal("0.00")
                 : costItems
                     .stream()
-                    .map(it -> (String)it.getOrDefault("value", "0.0"))
+                    .map(it -> (String)it.getOrDefault("value", "0.00"))
                     .map(it -> new BigDecimal(it).setScale(6, RoundingMode.HALF_UP))
                     .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
                     .setScale(2, RoundingMode.HALF_UP);
