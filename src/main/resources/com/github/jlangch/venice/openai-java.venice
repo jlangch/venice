@@ -2060,8 +2060,8 @@
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)]
-              (->> (openai-java/costs client 30 180)
-                   (openai-java/aggregate-cost))))
+              (->> (openai-java/costs-by-month client 2026 6 180)
+                   (openai-java/aggregate-costs))))
           """)
      :see-also '(
           "openai-java/costs"

@@ -106,7 +106,7 @@ public class QueryUsageCosts {
                 item.getOrDefault("api-key-id", "-"));
     }
 
-    public BigDecimal aggregateCosts(final List<Map<String,Object>> costItems) {
+    public BigDecimal total(final List<Map<String,Object>> costItems) {
         return costItems.isEmpty()
                 ? new BigDecimal("0.00")
                 : costItems
@@ -117,7 +117,11 @@ public class QueryUsageCosts {
                     .setScale(2, RoundingMode.HALF_UP);
     }
 
-    public List<Map<String,Object>> query(final long startTime, final long endTime, final int limit) {
+    public List<Map<String,Object>> query(
+            final long startTime,
+            final long endTime,
+            final int limit
+    ) {
         final UsageCostsParams params = UsageCostsParams
                                             .builder()
                                             .startTime(startTime)
@@ -135,6 +139,18 @@ public class QueryUsageCosts {
                                                 .costs(params);
 
         return parseResponse(response);
+    }
+
+    public Map<LocalDate,BigDecimal> aggregateByDay(final List<Map<String,Object>> items) {
+        final Map<LocalDate,BigDecimal> aggregated = new LinkedHashMap<>();
+
+        items.forEach(it -> aggregated.compute(
+                                ((LocalDateTime)it.get("bucket-start")).toLocalDate(),
+                                (key, val) -> val == null
+                                                ? (BigDecimal)it.get("value")
+                                                : val.add((BigDecimal)it.get("value"))));
+
+        return aggregated;
     }
 
     private List<Map<String,Object>> parseResponse(final UsageCostsResponse response) {
