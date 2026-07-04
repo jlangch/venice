@@ -109,14 +109,14 @@
                         [ "00" "01" "02" "03" "04" "05" "06" "07" "08"
                           "09" "10" "11" "12" "13" "14" "15" "16" "17"
                           "18" "19" "20" "21" "22" "23" ]
-                        [   0    5   10   15   20   25   30   35   40  
+                        [   0    1   10   15   20   25   30   35   40  
                            45   50   55   60   65   70   75   80   85
                            90   95  100  100   95   90 ]
                         :resolution  :high
                         :size        :medium
                         :title-color (str (ansi/ansi :bold) (ansi/ansi :black))
                         :axis-color  (ansi/ansi (ansi/fg-color 242))
-                        :bar-color   (ansi/ansi (ansi/fg-color 22)))))
+                        :bar-color   (ansi/ansi (ansi/fg-color 35)))))
           """,
           """
           (do
@@ -127,13 +127,13 @@
                         "Demo Custom Bar Width"
                         [ "Jan" "Feb" "Mar" "Apr" "Mai" "Jun" 
                           "Jul" "Aug" "Sep" "Oct" "Nov" "Dec" ]
-                        [   80    60     0     5    20    25   
-                            45    80    55    60    65   100  ]
+                        [   80    60     0     2    18    25   
+                            47    80    55    60    65   100  ]
                         :resolution  :high
                         :size        :medium
                         :title-color (str (ansi/ansi :bold) (ansi/ansi :black))
                         :axis-color  (ansi/ansi (ansi/fg-color 242))
-                        :bar-color   (ansi/ansi (ansi/fg-color 13))
+                        :bar-color   (ansi/ansi (ansi/fg-color 213))
                         :bar-width   3)))
           """,
           """
@@ -199,10 +199,12 @@
 
       ;; bars
       (doseq [n (range (count vals))]
-        (let [x   (+ bar-area-x (* n bar-col-width))
-              bar (render-bar-fn (nth vals n) bar-area-height)]
+        (let [x          (+ bar-area-x (* n bar-col-width))
+              percentage (nth vals n)
+              bar        (render-bar-fn percentage bar-area-height)
+              color      (if (zero? percentage) axis-color bar-color)]
           (doseq [n (range bar-width)]
-            (ac/draw-vertical-up canvas bar (+ x n) bar-area-y bar-color))))
+            (ac/draw-vertical-up canvas bar (+ x n) bar-area-y color))))
     
       (ac/string-ansi canvas)))
 
