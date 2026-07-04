@@ -121,6 +121,24 @@
           """
           (do
             (load-module :ascii-charts)
+            (load-module :ansi)
+            (println)
+            (println (ascii-charts/percentage-bar-chart 
+                        "Demo Custom Bar Width"
+                        [ "Jan" "Feb" "Mar" "Apr" "Mai" "Jun" 
+                          "Jul" "Aug" "Sep" "Oct" "Nov" "Dec" ]
+                        [   80    60     0     5    20    25   
+                            45    80    55    60    65   100  ]
+                        :resolution  :high
+                        :size        :medium
+                        :title-color (str (ansi/ansi :bold) (ansi/ansi :black))
+                        :axis-color  (ansi/ansi (ansi/fg-color 242))
+                        :bar-color   (ansi/ansi (ansi/fg-color 13))
+                        :bar-width   3)))
+          """,
+          """
+          (do
+            (load-module :ascii-charts)
             (println)
             (println (ascii-charts/percentage-bar-chart 
                         "Demo Small Percentage Increments"
@@ -149,7 +167,8 @@
           y-axis-width     8
           x-axis-height    2
           header-height    3
-          bar-col-width    3
+          bar-width        (clamp (:bar-width opts 2) 1 10)
+          bar-col-width    (+ bar-width 1)
           bar-area-x       y-axis-width
           bar-area-y       x-axis-height
           bar-area-width   (* bar-col-width (count values))
@@ -162,7 +181,7 @@
           canvas           (ac/create w h)
           title            (str/align w :center :ellipsis-left title)
           vals             (map #(clamp (long %) 0 100) values)
-          x-axis-labels    (map #(str/nfirst % 2) x-axis-labels)]
+          x-axis-labels    (map #(str/nfirst % bar-width) x-axis-labels)]
     
       ;; title
       (ac/draw-text canvas title 0 (dec h) title-color)
@@ -182,8 +201,8 @@
       (doseq [n (range (count vals))]
         (let [x   (+ bar-area-x (* n bar-col-width))
               bar (render-bar-fn (nth vals n) bar-area-height)]
-          (ac/draw-vertical-up canvas bar x bar-area-y bar-color)
-          (ac/draw-vertical-up canvas bar (inc x) bar-area-y bar-color)))
+          (doseq [n (range bar-width)]
+            (ac/draw-vertical-up canvas bar (+ x n) bar-area-y bar-color))))
     
       (ac/string-ansi canvas)))
 

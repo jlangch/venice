@@ -57,6 +57,30 @@ The ASCII charts module provides a simple way to render charts in pure ascii.
 ```
 (do
   (load-module :ascii-charts)
+  (load-module :ansi)
+  (println)
+  (println (ascii-charts/percentage-bar-chart 
+              "Demo Custom Bar Width"
+              [ "Jan" "Feb" "Mar" "Apr" "Mai" "Jun" 
+                "Jul" "Aug" "Sep" "Oct" "Nov" "Dec" ]
+              [   80    60     0     5    20    25   
+                  45    80    55    60    65   100  ]
+              :resolution  :high
+              :size        :medium
+              :title-color (str (ansi/ansi :bold) (ansi/ansi :black))
+              :axis-color  (ansi/ansi (ansi/fg-color 242))
+              :bar-color   (ansi/ansi (ansi/fg-color 13))
+              :bar-width   3)))
+```
+
+
+## Example Percentage Bar Chart 4
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/ascii-charts/ascii-chart-percentage-4.png" width="500">
+
+```
+(do
+  (load-module :ascii-charts)
   (println)
   (println (ascii-charts/percentage-bar-chart 
               "Demo Small Percentage Increments"
