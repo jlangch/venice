@@ -1,7 +1,8 @@
 # ASCII Charts
 
 
-The ASCII charts module provides a simple way to render charts in pure ascii.
+The ASCII charts module provides a simple way to render charts in pure ascii 
+and print it in a terminal.
 
 
 ## Example Percentage Bar Chart 1
