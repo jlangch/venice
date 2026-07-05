@@ -28,62 +28,62 @@ import com.openai.models.completions.CompletionUsage;
 
 public class ChatCompletionStreamResult {
 
-	public ChatCompletionStreamResult(
-			final String delta,
-			final boolean terminated
-	) {
-		this.delta = delta;
-		this.terminated = terminated;
-		this.exception = null;
-		this.usage = null;
-	}
+    public ChatCompletionStreamResult(
+            final String delta,
+            final boolean terminated
+    ) {
+        this.delta = delta;
+        this.terminated = terminated;
+        this.exception = null;
+        this.usage = null;
+    }
 
-	public ChatCompletionStreamResult(
-			final String delta,
-			final boolean terminated,
-			final CompletionUsage usage
-	) {
-		this.delta = delta;
-		this.terminated = terminated;
-		this.exception = null;
-		this.usage = usage;
-	}
+    public ChatCompletionStreamResult(
+            final String delta,
+            final boolean terminated,
+            final CompletionUsage usage
+    ) {
+        this.delta = delta;
+        this.terminated = terminated;
+        this.exception = null;
+        this.usage = usage;
+    }
 
-	public ChatCompletionStreamResult(
-			final RuntimeException exception
-	) {
-		Objects.requireNonNull(exception);
+    public ChatCompletionStreamResult(
+            final RuntimeException exception
+    ) {
+        Objects.requireNonNull(exception);
 
-		this.delta = null;
-		this.terminated = true;
-		this.exception = exception;
-		this.usage = null;
-	}
+        this.delta = null;
+        this.terminated = true;
+        this.exception = exception;
+        this.usage = null;
+    }
 
 
-	public String getDelta() {
-		return delta;
-	}
+    public String getDelta() {
+        return delta;
+    }
 
-	public boolean isTerminated() {
-		return terminated;
-	}
+    public boolean isTerminated() {
+        return terminated;
+    }
 
-	public RuntimeException getException() {
-		return exception;
-	}
+    public RuntimeException getException() {
+        return exception;
+    }
 
-	public boolean hasException() {
-		return exception != null;
-	}
+    public boolean hasException() {
+        return exception != null;
+    }
 
     public CompletionUsage getUsage() {
         return usage;
     }
 
 
-	private final String delta;
-	private final boolean terminated;
-	private final RuntimeException exception;
-	private final CompletionUsage usage;
+    private final String delta;
+    private final boolean terminated;
+    private final RuntimeException exception;
+    private final CompletionUsage usage;
 }
