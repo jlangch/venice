@@ -94,7 +94,7 @@ public class QueryUsageCosts {
         return query(startTime, endTime, limit);
     }
 
-    public String formatCostItem(final Map<String,Object> item) {
+    public static String formatCostItem(final Map<String,Object> item) {
         return String.format(
                 "%s – %s | %.6f %s | project=%s | lineItem=%s | apiKey=%s%n",
                 item.get("bucket-start"),
@@ -106,14 +106,14 @@ public class QueryUsageCosts {
                 item.getOrDefault("api-key-id", "-"));
     }
 
-    public BigDecimal total(final List<Map<String,Object>> costItems) {
+    public static BigDecimal total(final List<Map<String,Object>> costItems) {
         return costItems.isEmpty()
                 ? new BigDecimal("0.00")
                 : costItems
                     .stream()
-                    .map(it -> (String)it.getOrDefault("value", "0.00"))
-                    .map(it -> new BigDecimal(it).setScale(6, RoundingMode.HALF_UP))
-                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
+                    .map(it -> (Double)it.getOrDefault("value", 0.0D))
+                    .map(it -> scale(new BigDecimal(it), 6))
+                    .reduce(scale(BigDecimal.ZERO, 6), (a, b) -> a.add(b))
                     .setScale(2, RoundingMode.HALF_UP);
     }
 
@@ -216,8 +216,12 @@ public class QueryUsageCosts {
         return items;
     }
 
-    private LocalDateTime toLocalDateTime(final long epochSeconds) {
+    private static LocalDateTime toLocalDateTime(final long epochSeconds) {
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(epochSeconds), ZoneOffset.UTC);
+    }
+
+    private static BigDecimal scale(final BigDecimal dec, final int scale) {
+        return dec.setScale(6, RoundingMode.HALF_UP);
     }
 
 
