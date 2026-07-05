@@ -23,6 +23,9 @@ package com.github.jlangch.venice.util.openai;
 
 import java.util.Objects;
 
+import com.openai.models.completions.CompletionUsage;
+
+
 public class ChatCompletionStreamResult {
 
 	public ChatCompletionStreamResult(
@@ -32,6 +35,18 @@ public class ChatCompletionStreamResult {
 		this.delta = delta;
 		this.terminated = terminated;
 		this.exception = null;
+		this.usage = null;
+	}
+
+	public ChatCompletionStreamResult(
+			final String delta,
+			final boolean terminated,
+			final CompletionUsage usage
+	) {
+		this.delta = delta;
+		this.terminated = terminated;
+		this.exception = null;
+		this.usage = usage;
 	}
 
 	public ChatCompletionStreamResult(
@@ -42,6 +57,7 @@ public class ChatCompletionStreamResult {
 		this.delta = null;
 		this.terminated = true;
 		this.exception = exception;
+		this.usage = null;
 	}
 
 
@@ -61,8 +77,13 @@ public class ChatCompletionStreamResult {
 		return exception != null;
 	}
 
+    public CompletionUsage getUsage() {
+        return usage;
+    }
+
 
 	private final String delta;
 	private final boolean terminated;
 	private final RuntimeException exception;
+	private final CompletionUsage usage;
 }

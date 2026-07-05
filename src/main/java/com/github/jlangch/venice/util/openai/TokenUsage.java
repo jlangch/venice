@@ -77,16 +77,21 @@ public class TokenUsage {
 
         final CompletionUsage usage = response.getUsage();
 
-        final CompletionTokensDetails details = usage.completionTokensDetails().orElse(null);
+        if (usage == null) {
+            return new TokenUsage();
+        }
+        else {
+            final CompletionTokensDetails details = usage.completionTokensDetails().orElse(null);
 
-        final long reasoningTokens = details == null ? 0L : details.reasoningTokens().orElse(0L);
+            final long reasoningTokens = details == null ? 0L : details.reasoningTokens().orElse(0L);
 
-        return new TokenUsage(
-                usage.promptTokens(),
-                usage.completionTokens(),
-                usage.totalTokens(),
-                0, 0, 0,
-                reasoningTokens, 0, 0, 0);
+            return new TokenUsage(
+                    usage.promptTokens(),
+                    usage.completionTokens(),
+                    usage.totalTokens(),
+                    0, 0, 0,
+                    reasoningTokens, 0, 0, 0);
+        }
     }
 
 
@@ -146,6 +151,29 @@ public class TokenUsage {
                     0, 0, 0, 0);
         }
     }
+
+    public static TokenUsage of(final ChatCompletionStreamResult streamResult) {
+        Objects.requireNonNull(streamResult);
+
+        final CompletionUsage usage = streamResult.getUsage();
+
+        if (usage == null) {
+            return null;
+        }
+        else {
+            final CompletionTokensDetails details = usage.completionTokensDetails().orElse(null);
+
+            final long reasoningTokens = details == null ? 0L : details.reasoningTokens().orElse(0L);
+
+            return new TokenUsage(
+                    usage.promptTokens(),
+                    usage.completionTokens(),
+                    usage.totalTokens(),
+                    0, 0, 0,
+                    reasoningTokens, 0, 0, 0);
+        }
+    }
+
 
     public long getInputTokens() {
         return inputTokens;

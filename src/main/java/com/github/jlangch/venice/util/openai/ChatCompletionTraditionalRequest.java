@@ -46,6 +46,8 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import com.openai.models.chat.completions.ChatCompletionCreateParams.WebSearchOptions;
 import com.openai.models.chat.completions.ChatCompletionCreateParams.WebSearchOptions.SearchContextSize;
 import com.openai.models.chat.completions.ChatCompletionFunctionTool;
+import com.openai.models.chat.completions.ChatCompletionStreamOptions;
+import com.openai.models.completions.CompletionUsage;
 import com.openai.models.files.FileObject;
 
 
@@ -224,6 +226,16 @@ public class ChatCompletionTraditionalRequest {
         return this;
     }
 
+    public ChatCompletionTraditionalRequest includeStreamingUsage() {
+        paramsBuilder.streamOptions(
+            ChatCompletionStreamOptions
+                .builder()
+                .includeUsage(true)
+                .build());
+        streamingUsageEnabled = true;
+        return this;
+    }
+
     public ChatCompletionTraditionalRequest reasoningEffort(final ReasoningEffort effort) {
         Objects.requireNonNull(effort);
         this.paramsBuilder.reasoningEffort(effort);
@@ -234,9 +246,9 @@ public class ChatCompletionTraditionalRequest {
         Objects.requireNonNull(ctxSize);
         this.paramsBuilder.webSearchOptions(
                 WebSearchOptions
-                	.builder()
-                	.searchContextSize(ctxSize)
-                	.build());
+                    .builder()
+                    .searchContextSize(ctxSize)
+                    .build());
         return this;
     }
 
@@ -293,6 +305,10 @@ public class ChatCompletionTraditionalRequest {
         return debug;
     }
 
+    public boolean isStreamingUsageEnabled() {
+        return streamingUsageEnabled;
+    }
+
     public long getStartTimeMillis() {
         return startMillis;
     }
@@ -330,24 +346,48 @@ public class ChatCompletionTraditionalRequest {
         ) {
             final StringBuilder sb = new StringBuilder();
 
-            streamResponse
-                .stream()
-                .flatMap(completion -> completion.choices().stream())
-                .map(choice -> choice.delta().content())
-                .filter(text -> text.isPresent())
-                .map(text -> text.get())
-                .forEach(text -> {
-                    sb.append(text);
-                    if (sb.length() >= minChunkSize) {
-                        safeStreaming(handler, new ChatCompletionStreamResult(sb.toString(), false));
-                        sb.setLength(0);
-                    }});
+            final CompletionUsage[] finalUsage = new CompletionUsage[1];
+
+            if (streamingUsageEnabled) {
+                streamResponse
+                    .stream()
+                    .forEach(chunk -> {
+                        chunk.choices().stream()
+                            .map(choice -> choice.delta().content())
+                            .filter(text -> text.isPresent())
+                            .map(text -> text.get())
+                            .forEach(text -> {
+                                sb.append(text);
+                                if (sb.length() >= minChunkSize) {
+                                    safeStreaming(handler, new ChatCompletionStreamResult(sb.toString(), false));
+                                    sb.setLength(0);
+                                }});
+
+                        // Final usage chunk, when includeUsage(true) is set
+                        chunk.usage().ifPresent(usage -> finalUsage[0] = usage);
+                    });
+            }
+            else {
+                streamResponse
+                    .stream()
+                    .flatMap(chunk -> chunk.choices().stream())
+                    .map(choice -> choice.delta().content())
+                    .filter(text -> text.isPresent())
+                    .map(text -> text.get())
+                    .forEach(text -> {
+                        sb.append(text);
+                        if (sb.length() >= minChunkSize) {
+                            safeStreaming(handler, new ChatCompletionStreamResult(sb.toString(), false));
+                            sb.setLength(0);
+                        }});
+            }
 
             safeStreaming(
                 handler,
                 new ChatCompletionStreamResult(
                         sb.length() == 0 ? null : sb.toString(),
-                        true));
+                        true,
+                        finalUsage[0]));
         }
         catch(RuntimeException ex) {
             safeStreaming(handler, new ChatCompletionStreamResult(ex));
@@ -386,6 +426,7 @@ public class ChatCompletionTraditionalRequest {
     public static enum MessageType {User, Assistant, Developer, System};
 
     private volatile boolean debug;
+    private volatile boolean streamingUsageEnabled = false;
 
     private final long startMillis = System.currentTimeMillis();
     private final OpenAIClient client;

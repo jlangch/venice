@@ -11,12 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- OpenAI: The minimum chunk size for chat completion streaming can now 
-  be configured to control the frequency of streaming callbacks. Because 
-  OpenAI streams individual tokens, callbacks may occur at a very high 
-  rate. To reduce this overhead, Venice can aggregate tokens into strings 
-  that meet a configurable minimum length before invoking the callback.
-- OpenAI: added support for retrieving costs
+- OpenAI: chat completion streaming supports now usage tokens if requested
 
 
 
