@@ -2364,9 +2364,9 @@
             (or (nil? project-ids) (sequential? project-ids))] }
   
     (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
-        (. <> :queryByDayPeriod start-day end-day limit)
-        (java->venice <>)
-        (map #(map-keys keyword %) <>))))
+         (. <> :queryByDayPeriod start-day end-day limit)
+         (java->venice <>)
+         (map #(map-keys keyword %) <>))))
 
 
 (defn 
