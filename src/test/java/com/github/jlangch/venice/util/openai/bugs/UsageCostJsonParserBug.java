@@ -33,7 +33,6 @@ import com.openai.models.admin.organization.usage.UsageCostsResponse;
 import com.openai.models.admin.organization.usage.UsageCostsResponse.Data.Result.OrganizationCostsResult;
 
 
-
 /**
  * Demonstrates the openai-java <code>OrganizationCostsResult</code> value parser bug
  *
