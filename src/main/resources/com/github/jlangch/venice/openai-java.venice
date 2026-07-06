@@ -103,6 +103,16 @@
 (import :com.github.jlangch.venice.util.openai.TemporaryFile)
 
 
+(def- err-msg-api-key """
+                      No OpenAI API key supplied. 
+                      API key:   Pass the option ':openai-api-key key' or set env var "OPENAI_API_KEY"!
+                      """)
+
+(def- err-msg-adm-key """
+                      No OpenAI ADMIN key supplied. 
+                      ADMIN key: Pass the option ':openai-admin-key key' or set env var "OPENAI_ADMIN_KEY"!
+                      """)
+
 
 ;; -----------------------------------------------------------------------------
 ;; CLIENT 
@@ -112,24 +122,13 @@
   ^{ :arglists '(
           "(client & options)" )
      :doc """
-          Creates an OpenAI client.
-
-          **Api/Admin key precedence rules:**
-
-          * An argument api key takes precedence over an env var api key
-          * An argument admin key takes precedence over an env var admin key
-          * If both env var api and env var admin key are set but no argument key \
-            is passed use `:prefer-key` to select the apropriate env var key
-          * If both argument api and argument admin key are passed use `:prefer-key`\
-            to select the appropriate argument key
-          * If neither env var api nor env var admin key is set but either an \
-            argument api or argument admin key is passed, the argument key is used
+          Creates an OpenAI client for API calls.
 
           **Note:**
 
-          Don’t create more than one client in the same application. Each client 
-          has a connection pool and thread pools, which are more efficient to 
-          share between requests.
+          Don’t create more than one api client in the same application. Each 
+          client has a connection pool and thread pools, which are more efficient
+          to share between requests.
 
           ¶**Parameter «options»**
 
@@ -137,6 +136,95 @@
           | :openai-api-key k  | An optional OpenAI API Key. As fallback the key \
                                  is read from the environment variable \
                                  "OPENAI_API_KEY". |
+          | :openai-org-id k   | An optional OpenAI organisation ID. As fallback \
+                                 the id is read from the environment variable \
+                                 "OPENAI_ORG_ID". |
+          | :openai-proj-id k  | An optional OpenAI project ID. As fallback the id \
+                                 is read from the environment variable  \
+                                 "OPENAI_PROJECT_ID". |
+          | :openai-base-url u | An optional OpenAI baseURL. As fallback the url \
+                                 is read from the environment variable  \
+                                 "OPENAI_BASE_URL". ¶\
+                                 OpenAI uses the standard base URL \
+                                 'https://api.openai.com/v1' if it is not \
+                                 explicitely defined. |
+
+          ¶**Install OpenAI Java libraries in the REPL**
+
+          ```
+          (do
+            (load-module :openai-java-install)
+            (openai-java-install/install :dir (repl/libs-dir) :silent false))
+          ```
+
+          Restart the REPL after installing the libraries!
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            ;; Read the api key from the environment var "OPENAI_API_KEY"
+            (let [client (openai-java/client)]
+              ;; ...
+              (openai-java/close client)))
+          """,
+          """
+          (do
+            (load-module :openai-java)
+            ;; Pass an explicit api key
+            (let [client (openai-java/client :openai-api-key "sk-1234")]
+              ;; ...
+              (openai-java/close client)))
+          """)
+     :see-also '(
+        "openai-java/client-admin"
+        "openai-java/close"
+        "openai-java/version"
+        "openai-java/models"
+        "openai-java/chat-completion"
+        "openai-java/generate-image"
+        "openai-java/create-speech") }
+
+  client [& options]
+
+  (validate-libs-installed)
+
+  (let [opts                 (apply hash-map options)
+        openai-api-key       (or (:openai-api-key opts)   (openai-api-key-from-env))
+        openai-org-id        (or (:openai-org-id opts)    (openai-org-id-from-env))
+        openai-proj-id       (or (:openai-proj-id opts)   (openai-proj-id-from-env))
+        openai-base-url      (or (:openai-base-url opts)  (openai-base-url-from-env))
+        prefer-key           (:prefer-key opts :api)
+        max-retries          (:max-retries opts)]
+    (let [builder (. :OpenAIOkHttpClient :builder)]
+      (when (nil? openai-api-key)
+        (throw (ex :VncException err-msg-api-key)))
+
+      (. builder :apiKey openai-api-key)
+
+      (when (some? openai-org-id)    (. builder :organization openai-org-id))
+      (when (some? openai-proj-id)   (. builder :project openai-proj-id))
+      (when (some? openai-base-url)  (. builder :baseUrl openai-base-url))
+      (when (some? max-retries)      (. builder :maxRetries max-retries))
+
+      (. builder :build))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(client-admin & options)" )
+     :doc """
+          Creates an OpenAI client for ADMIN calls.
+
+          **Note:**
+
+          Don’t create more than one admin client in the same application. Each 
+          client has a connection pool and thread pools, which are more efficient
+          to share between requests.
+
+          ¶**Parameter «options»**
+
+          | [![width: 15%]]    | [![width: 85%]] |
           | :openai-admin-key k | An optional OpenAI Admin Key. As fallback the key \
                                  is read from the environment variable \
                                  "OPENAI_ADMIN_KEY". |
@@ -171,79 +259,50 @@
           """
           (do
             (load-module :openai-java)
-            ;; Environment var "OPENAI_API_KEY" is set only
-            (let [client (openai-java/client)]
+            ;; Read the api key from the environment var "OPENAI_ADMIN_KEY"
+            (let [client (openai-java/client-admin)]
               ;; ...
               (openai-java/close client)))
           """,
           """
           (do
             (load-module :openai-java)
-            ;; Environment vars "OPENAI_API_KEY" and "OPENAI_ADMIN_KEY" are set
-            ;; Explicitly select admin key
-            (let [client (openai-java/client :prefer-key :admin)]
-              ;; ...
-              (openai-java/close client)))
-          """,
-          """
-          (do
-            (load-module :openai-java)
-            (let [client (openai-java/client :openai-api-key "sk-1234")]
-              ;; ...
-              (openai-java/close client)))
-          """
-          """
-          (do
-            (load-module :openai-java)
-            (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
+            ;; Pass an explicit admmin key
+            (let [client (openai-java/client-admin :openai-admin-key "sk-admin-1234")]
               ;; ...
               (openai-java/close client)))
           """)
      :see-also '(
-        "openai-java/version"
+        "openai-java/client"
         "openai-java/close"
+        "openai-java/version"
         "openai-java/models"
         "openai-java/chat-completion"
         "openai-java/generate-image"
         "openai-java/create-speech") }
 
-  client [& options]
+  client-admin [& options]
 
   (validate-libs-installed)
 
   (let [opts                 (apply hash-map options)
-        openai-api-key-env   (openai-api-key-from-env)
-        openai-admin-key-env (openai-admin-key-from-env)
-        openai-api-key-arg   (:openai-api-key opts)
-        openai-admin-key-arg (:openai-admin-key opts)
-        openai-api-key       (or openai-api-key-arg  openai-api-key-env)
-        openai-admin-key     (or openai-admin-key-arg openai-admin-key-env)
-        openai-org-id        (or (:openai-org-id opts)   (openai-org-id-from-env))
-        openai-proj-id       (or (:openai-proj-id opts)  (openai-proj-id-from-env))
-        openai-base-url      (or (:openai-base-url opts) (openai-base-url-from-env))
+        openai-admin-key     (or (:openai-admin-key opts) (openai-admin-key-from-env))
+        openai-org-id        (or (:openai-org-id opts)    (openai-org-id-from-env))
+        openai-proj-id       (or (:openai-proj-id opts)   (openai-proj-id-from-env))
+        openai-base-url      (or (:openai-base-url opts)  (openai-base-url-from-env))
         prefer-key           (:prefer-key opts :api)
-        max-retries          (get opts :max-retries)]
+        max-retries          (:max-retries opts)]
     (let [builder (. :OpenAIOkHttpClient :builder)]
-      (cond
-        (and (some? openai-api-key) (some? openai-admin-key))
-           (if (= prefer-key :api)
-             (. builder :apiKey openai-api-key)
-             (. builder :adminApiKey openai-admin-key))
-        (some? openai-api-key)  
-          (. builder :apiKey openai-api-key)
-        (some? openai-admin-key) 
-          (. builder :adminApiKey openai-admin-key)
-        :else 
-          (throw (ex :VncException 
-                     """
-                     No OpenAI API or ADMIN key supplied. 
-                     API key:   Pass the option ':openai-api-key key' or set env var "OPENAI_API_KEY"!
-                     ADMIN key: Pass the option ':openai-admin-key key' or set env var "OPENAI_ADMIN_KEY"!
-                     """)))
+      (when (nil? openai-admin-key)
+        (throw (ex :VncException err-msg-adm-key)))
+
+      (. builder :adminApiKey openai-admin-key)
+
       (when (some? openai-org-id)    (. builder :organization openai-org-id))
       (when (some? openai-proj-id)   (. builder :project openai-proj-id))
       (when (some? openai-base-url)  (. builder :baseUrl openai-base-url))
       (when (some? max-retries)      (. builder :maxRetries max-retries))
+
       (. builder :build))))
 
 
@@ -308,9 +367,24 @@
           """
      :examples '(
           """
+          ;; Read the api key from the environment var "OPENAI_API_KEY"
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                               (openai-java/max-completion-tokens 2048)
+                               (openai-java/reasoning-effort :MEDIUM)
+                               (openai-java/add-user-message "Say this is a test"))
+                  response (openai-java/execute chat)
+                  msg      (first (openai-java/messages response))]
+              (println msg)))
+          """,
+          """
+          ;; Pass an explicit api key
+          (do
+            (load-module :openai-java)
+            (let [api-key  "sk-1234"
+                  client   (openai-java/client :openai-api-key api-key)
                   chat     (-> (openai-java/chat-completion client "gpt-5.4")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
@@ -2013,20 +2087,22 @@
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
 
-          Note: Requires an **Admin** API key!
+          Note: Requires an **Admin** client with an ADMIN key!
           """
      :examples '(
           """
+          ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
+          (do
+            (load-module :openai-java)
+            (let [client  (openai-java/client-admin)]
+              (openai-java/costs client 60 180)))
+          """
+          """
+          ;; Pass an explicit admin key
           (do
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)]
-              (openai-java/costs client 60 180)))
-          """,
-          """
-          (do
-            (load-module :openai-java)
-            (let [client  (openai-java/client :prefer-key :admin)]
+                  client     (openai-java/client-admin :openai-admin-key admin-key)]
               (openai-java/costs client 60 180)))
           """)
      :see-also '(
@@ -2066,20 +2142,22 @@
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
 
-          Note: Requires an **Admin** API key!
+          Note: Requires an **Admin** client with an ADMIN key!
           """
      :examples '(
           """
+          ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
           (do
             (load-module :openai-java)
-            (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)]
+            (let [client  (openai-java/client-admin)]
               (openai-java/costs-by-month client 2026 5)))
           """,
           """
+          ;; Pass an explicit admin key
           (do
             (load-module :openai-java)
-            (let [client  (openai-java/client :prefer-key :admin)]
+            (let [admin-key  "sk-admin-1234"
+                  client     (openai-java/client-admin :openai-admin-key admin-key)]
               (openai-java/costs-by-month client 2026 5)))
           """)
      :see-also '(
@@ -2125,7 +2203,7 @@
              [2026-06-30 0.16M] )
           ```
 
-          Note: Requires an **Admin** API key!
+          Note: Requires an **Admin** client with an ADMIN key!
           """
      :examples '(
           """
@@ -2133,10 +2211,10 @@
             (load-module :openai-java)
             (load-module :ascii-table)
   
-            (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)
-                  costs      (openai-java/costs-by-month-daily client 2026 6)
-                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
+            ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
+            (let [client  (openai-java/client-admin)
+                  costs   (openai-java/costs-by-month-daily client 2026 6)
+                  total   (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body { :align :left } 
@@ -2151,13 +2229,13 @@
                 0)))
           """,
           """
+          ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
           (do
             (load-module :openai-java)
             (load-module :ascii-table)
   
-            ;; Use `:prefer-key` if both environment vars `OPENAI_API_KEY` and 
-            :: `OPENAI_ADMIN_KEY` are defined
-            (let [client     (openai-java/client :prefer-key :admin)
+            (let [admin-key  "sk-admin-1234"
+                  client     (openai-java/client-admin :openai-admin-key admin-key)
                   costs      (openai-java/costs-by-month-daily client 2026 6)
                   total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
               (ascii-table/print 
@@ -2210,16 +2288,26 @@
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
 
-          Note: Requires an **Admin** API key!
+          Note: Requires an **Admin** client with an ADMIN key!
           """
      :examples '(
           """
+          ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
+          (do
+            (load-module :openai-java)
+            (let [start      (time/local-date 2026 6 1) 
+                  end        (time/local-date 2026 6 3) 
+                  client     (openai-java/client-admin)]
+              (openai-java/costs-by-days client start end)))
+          """,
+          """
+          ;; Pass an explicit admin key
           (do
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
-                  start      (time/local-date 2026 5 1) 
-                  end        (time/local-date 2026 5 31) 
-                  client     (openai-java/client :openai-admin-key admin-key)]
+                  start      (time/local-date 2026 6 1) 
+                  end        (time/local-date 2026 6 3) 
+                  client     (openai-java/client-admin :openai-admin-key admin-key)]
               (openai-java/costs-by-days client start end)))
           """)
      :see-also '(

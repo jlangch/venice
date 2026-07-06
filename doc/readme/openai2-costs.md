@@ -12,7 +12,7 @@
 (do
   (load-module :openai-java)
   (let [admin-key  "sk-admin-1234"
-        client     (openai-java/client :openai-admin-key admin-key)]
+        client     (openai-java/client-admin :openai-admin-key admin-key)]
      (openai-java/costs client 2)))
 ```
 
@@ -40,7 +40,7 @@
 (do
   (load-module :openai-java)
   (let [admin-key  "sk-admin-1234"
-        client     (openai-java/client :openai-admin-key admin-key)]
+        client     (openai-java/client-admin :openai-admin-key admin-key)]
      (openai-java/costs-by-month client 2026 6)))
 ```
 
@@ -69,7 +69,7 @@
   (let [admin-key  "sk-admin-1234"
         start      (time/local-date 2026 6 10) 
         end        (time/local-date 2026 6 12) 
-        client     (openai-java/client :openai-admin-key admin-key)]
+        client     (openai-java/client-admin :openai-admin-key admin-key)]
      (openai-java/costs-by-days client start end)))
 ```
 
@@ -108,7 +108,7 @@ d" :value 0.0 :bucket-end 2026-06-12T00:00 :api-key-id "key_vE...Me" :bucket-sta
   (load-module :ascii-table)
 
   (let [admin-key  "sk-admin-1234"
-        client     (openai-java/client :openai-admin-key admin-key)]
+        client     (openai-java/client-admin :openai-admin-key admin-key)]
     (openai-java/costs-by-month-daily client 2026 6)))
 ```
 
@@ -132,7 +132,7 @@ d" :value 0.0 :bucket-end 2026-06-12T00:00 :api-key-id "key_vE...Me" :bucket-sta
   (load-module :ascii-table)
 
   (let [admin-key  "sk-admin-1234"
-        client     (openai-java/client :openai-admin-key admin-key)
+        client     (openai-java/client-admin :openai-admin-key admin-key)
         costs      (openai-java/costs-by-month-daily client 2026 6)
         total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
     ;; format the daily costs

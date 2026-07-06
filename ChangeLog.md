@@ -7,10 +7,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.13.10] - 2026-07-xx
+## [1.13.10] - 2026-07-06
 
 ### Enhancements
 
+- OpenAI: Simplified the creation of admin clients to use the *Cost* admin api
 - OpenAI: Chat completion streaming can now include token usage information when requested.
 
 
