@@ -44,6 +44,7 @@ public class ModuleOpenAiJavaSection implements ISectionBuilder {
         final DocSection client = new DocSection("Client", id());
         all.addSection(client);
         client.addItem(diBuilder.getDocItem("openai-java/client", false));
+        client.addItem(diBuilder.getDocItem("openai-java/client-admin", false));
         client.addItem(diBuilder.getDocItem("openai-java/close", false));
         client.addItem(diBuilder.getDocItem("openai-java/version", false));
 

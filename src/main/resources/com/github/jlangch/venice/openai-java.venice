@@ -214,7 +214,7 @@
   ^{ :arglists '(
           "(client-admin & options)" )
      :doc """
-          Creates an OpenAI client for ADMIN calls.
+          Creates an OpenAI admin client for ADMIN calls.
 
           **Note:**
 
@@ -240,10 +240,6 @@
                                  OpenAI uses the standard base URL \
                                  'https://api.openai.com/v1' if it is not \
                                  explicitely defined. |
-          | :prefer-key k      | If both api and admin keys are configured, either \
-                                 explicit or as env vars, `:prefer-key` selects \
-                                 the api or admin key. Supported values are `:api` \
-                                 or `:admin`. Defaults to `:api`.|
 
           ¶**Install OpenAI Java libraries in the REPL**
 
@@ -2106,6 +2102,7 @@
               (openai-java/costs client 60 180)))
           """)
      :see-also '(
+          "openai-java/client-admin"
           "openai-java/costs-by-month"
           "openai-java/costs-by-month-daily"
           "openai-java/costs-by-days"
@@ -2161,6 +2158,7 @@
               (openai-java/costs-by-month client 2026 5)))
           """)
      :see-also '(
+          "openai-java/client-admin"
           "openai-java/costs"
           "openai-java/costs-by-month-daily"
           "openai-java/costs-by-days"
@@ -2252,6 +2250,7 @@
                 0)))
           """)
      :see-also '(
+          "openai-java/client-admin"
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
@@ -2311,6 +2310,7 @@
               (openai-java/costs-by-days client start end)))
           """)
      :see-also '(
+          "openai-java/client-admin"
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-month-daily"
