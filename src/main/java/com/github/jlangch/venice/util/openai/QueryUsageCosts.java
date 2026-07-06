@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.openai.client.OpenAIClient;
 import com.openai.models.admin.organization.usage.UsageCostsParams;
 import com.openai.models.admin.organization.usage.UsageCostsResponse;
@@ -41,8 +42,33 @@ import com.openai.models.admin.organization.usage.UsageCostsResponse.Data.Result
 public class QueryUsageCosts {
 
     public QueryUsageCosts(final OpenAIClient client) {
-        this.client = client;
+        this(client, (ArrayList<String>)null, (ArrayList<String>)null);
     }
+
+    public QueryUsageCosts(
+            final OpenAIClient client,
+            final String apiKeyId,
+            final String projectId
+    ) {
+        this(client,
+             CollectionUtil.toList(apiKeyId),
+             CollectionUtil.toList(projectId));
+    }
+
+    public QueryUsageCosts(
+            final OpenAIClient client,
+            final List<String> apiKeyIds,
+            final List<String> projectIds
+    ) {
+        this.client = client;
+        if (apiKeyIds != null) {
+            apiKeyIds.forEach(id -> {if (id != null) this.apiKeyIds.add(id);});
+        }
+        if (projectIds != null) {
+            projectIds.forEach(id -> {if (id != null) this.projectIds.add(id);});
+        }
+    }
+
 
     public List<Map<String,Object>> queryByLastNDays(
             final int lastNdays,
@@ -117,21 +143,31 @@ public class QueryUsageCosts {
                     .setScale(2, RoundingMode.HALF_UP);
     }
 
-    public List<Map<String,Object>> query(
+    private List<Map<String,Object>> query(
             final long startTime,
             final long endTime,
             final int limit
     ) {
-        final UsageCostsParams params = UsageCostsParams
-                                            .builder()
-                                            .startTime(startTime)
-                                            .endTime(endTime)
-                                            .bucketWidth(UsageCostsParams.BucketWidth._1D)
-                                            .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
-                                            .addGroupBy(UsageCostsParams.GroupBy.API_KEY_ID)
-                                            .addGroupBy(UsageCostsParams.GroupBy.LINE_ITEM)
-                                            .limit(limit)
-                                            .build();
+        final UsageCostsParams.Builder paramsBuilder =
+                UsageCostsParams
+                    .builder()
+                    .startTime(startTime)
+                    .endTime(endTime)
+                    .bucketWidth(UsageCostsParams.BucketWidth._1D)
+                    .addGroupBy(UsageCostsParams.GroupBy.PROJECT_ID)
+                    .addGroupBy(UsageCostsParams.GroupBy.API_KEY_ID)
+                    .addGroupBy(UsageCostsParams.GroupBy.LINE_ITEM)
+                    .limit(limit);
+
+        if (!apiKeyIds.isEmpty()) {
+            paramsBuilder.apiKeyIds(apiKeyIds);
+        }
+
+        if (!projectIds.isEmpty()) {
+            paramsBuilder.projectIds(projectIds);
+        }
+
+        final UsageCostsParams params = paramsBuilder.build();
 
         final UsageCostsResponse response = client
                                                 .admin()
@@ -226,4 +262,6 @@ public class QueryUsageCosts {
 
 
     private final OpenAIClient client;
+    private final List<String> apiKeyIds = new ArrayList<>();
+    private final List<String> projectIds = new ArrayList<>();
 }

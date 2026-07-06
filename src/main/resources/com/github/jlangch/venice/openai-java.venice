@@ -2114,16 +2114,24 @@
   costs 
   
   ([client last-n-days]
-    (openai-java/costs client last-n-days 180))    ;; 180 buckets is the max limit
+    (openai-java/costs client last-n-days 180 nil nil))    ;; 180 buckets is the max limit
 
   ([client last-n-days limit]
+    (openai-java/costs client last-n-days limit nil nil))
+
+  ([client last-n-days limit api-key-ids]
+    (openai-java/costs client last-n-days limit api-key-ids nil))
+
+  ([client last-n-days limit api-key-ids project-ids]
     { :pre [(instance-of? :OpenAIClient client) 
             (long? last-n-days)
             (pos? last-n-days)
             (long? limit)
-            (pos? limit)] }
+            (pos? limit)
+            (or (nil? api-key-ids) (sequential? api-key-ids))
+            (or (nil? project-ids) (sequential? project-ids))] }
   
-    (-<> (. :QueryUsageCosts :new client)
+    (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
          (. <> :queryByLastNDays last-n-days limit)       
          (java->venice <>)
          (map #(map-keys keyword %) <>))))
@@ -2169,20 +2177,28 @@
   costs-by-month 
   
   ([client year month]
-    (openai-java/costs-by-month client year month 180))    ;; 180 buckets is the max limit
+    (openai-java/costs-by-month client year month 180 nil nil))
 
   ([client year month limit]
+    (openai-java/costs-by-month client year month limit nil nil))
+
+  ([client year month limit api-key-ids]
+    (openai-java/costs-by-month client year month limit api-key-ids nil))
+
+  ([client year month limit api-key-ids project-ids]
     { :pre [(instance-of? :OpenAIClient client) 
             (long? year)
             (long? month)
             (<= 1 month 12)
             (long? limit)
-            (pos? limit)] }
+            (pos? limit)
+            (or (nil? api-key-ids) (sequential? api-key-ids))
+            (or (nil? project-ids) (sequential? project-ids))] }
   
-    (-<> (. :QueryUsageCosts :new client)
-        (. <> :queryByMonth (time/local-date year month 1) limit)
-        (java->venice <>)
-        (map #(map-keys keyword %) <>))))
+    (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
+         (. <> :queryByMonth (time/local-date year month 1) limit)
+         (java->venice <>)
+         (map #(map-keys keyword %) <>))))
 
 
 (defn 
@@ -2258,24 +2274,33 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs-by-month-daily [client year month]
+  costs-by-month-daily 
+  
+  ([client year month]
+    (openai-java/costs-by-month-daily client year month nil nil))
 
-  { :pre [(instance-of? :OpenAIClient client) 
-          (long? year)
-          (long? month)
-          (<= 1 month 12)] }
- 
-  (let [items (openai-java/costs-by-month client year month 180)
-        days  (time/length-of-month (time/local-date year month 1))
-        costs (for [d (range 1 (inc days))] [(time/local-date year month d) 0.0D])]
-    (loop [items items, costs costs]
-      (if (empty? items)
-        (map (fn [x] [(first x) (dec/scale (decimal (second x)) 2 :HALF_UP)]) costs)
-        (let [item (first items)
-              day0 (dec (time/day-of-month (:bucket-start item)))
-              cost (nth costs day0)
-              amt  (+ (second cost) (:value item))]
-          (recur (rest items) (assoc costs day0 [(first cost) amt])))))))
+  ([client year month api-key-ids]
+    (openai-java/costs-by-month-daily client year month api-key-ids nil))
+
+  ([client year month api-key-ids project-ids]
+    { :pre [(instance-of? :OpenAIClient client) 
+            (long? year)
+            (long? month)
+            (<= 1 month 12)
+            (or (nil? api-key-ids) (sequential? api-key-ids))
+            (or (nil? project-ids) (sequential? project-ids))] }
+  
+    (let [items (openai-java/costs-by-month client year month 180 api-key-ids project-ids)
+          days  (time/length-of-month (time/local-date year month 1))
+          costs (for [d (range 1 (inc days))] [(time/local-date year month d) 0.0D])]
+      (loop [items items, costs costs]
+        (if (empty? items)
+          (map (fn [x] [(first x) (dec/scale (decimal (second x)) 2 :HALF_UP)]) costs)
+          (let [item (first items)
+                day0 (dec (time/day-of-month (:bucket-start item)))
+                cost (nth costs day0)
+                amt  (+ (second cost) (:value item))]
+            (recur (rest items) (assoc costs day0 [(first cost) amt]))))))))
 
 
 (defn 
@@ -2321,16 +2346,24 @@
   costs-by-days 
 
   ([client start-day end-day]
-    (openai-java/costs-by-days client start-day end-day 180))
-  
+    (openai-java/costs-by-days client start-day end-day 180 nil nil))
+
   ([client start-day end-day limit]
+    (openai-java/costs-by-days client start-day end-day limit nil nil))
+
+  ([client start-day end-day limit api-key-ids]
+    (openai-java/costs-by-days client start-day end-day limit api-key-ids nil))
+
+  ([client start-day end-day limit api-key-ids project-ids]
     { :pre [(instance-of? :OpenAIClient client) 
             (time/local-date? start-day)
             (time/local-date? end-day)
             (long? limit)
-            (pos? limit)] }
+            (pos? limit)
+            (or (nil? api-key-ids) (sequential? api-key-ids))
+            (or (nil? project-ids) (sequential? project-ids))] }
   
-    (-<> (. :QueryUsageCosts :new client)
+    (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
         (. <> :queryByDayPeriod start-day end-day limit)
         (java->venice <>)
         (map #(map-keys keyword %) <>))))
