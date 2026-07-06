@@ -4,9 +4,9 @@
 
 ## Costs for the last N days (raw cost buckets)
 
-Example: Return the raw cost buckets for the last 2 days:
+*Example:* Return the raw cost buckets for the last 2 days:
 
-Note: OpenAI limits the number of returned cost buckets to 180 per call
+*Note:* OpenAI limits the number of returned cost buckets to 180 per call
 
 ``` clojure
 (do
@@ -16,7 +16,7 @@ Note: OpenAI limits the number of returned cost buckets to 180 per call
      (openai-java/costs client 2)))
 ```
 
-Output:
+*Output:*
 
 ```
 ( {:lineitem "gpt-5.4-2026-03-05, cached input" :project-id "proj_xt...nN" :currency "usd" :value 0.0 :bucket-end 2026-07-05T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-07-04T00:00} 
@@ -32,9 +32,9 @@ Output:
 
 ## Costs for a month (raw cost buckets)
 
-Example: Return the raw cost buckets for June 2026:
+*Example:* Return the raw cost buckets for June 2026:
 
-Note: OpenAI limits the number of returned cost buckets to 180 per call
+*Note:* OpenAI limits the number of returned cost buckets to 180 per call
 
 ``` clojure
 (do
@@ -44,7 +44,7 @@ Note: OpenAI limits the number of returned cost buckets to 180 per call
      (openai-java/costs-by-month client 2026 6)))
 ```
 
-Output:
+*Output:*
 
 ```
 ({:lineitem "gpt-5.4-2026-03-05, cached input" :project-id "proj_xt...nN" :currency "usd" :value 0.0 :bucket-end 2026-06-02T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-01T00:00}
@@ -61,9 +61,9 @@ Output:
 
 ## Costs for a period (raw cost buckets)
 
-Example: Return the raw cost buckets for June 2026:
+*Example:* Return the raw cost buckets for June 2026:
 
-Note: OpenAI limits the number of returned cost buckets to 180 per call
+*Note:* OpenAI limits the number of returned cost buckets to 180 per call
 
 ``` clojure
 (do
@@ -75,7 +75,7 @@ Note: OpenAI limits the number of returned cost buckets to 180 per call
      (openai-java/costs-by-days client start end)))
 ```
 
-Output:
+*Output:*
 
 ```
 ({:lineitem "gpt-5.4-2026-03-05, cached input" :project-id "proj_xt...nN" :currency "usd" :value 0.0 :bucket-end 2026-06-11T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-10T00:00} 
@@ -102,7 +102,7 @@ d" :value 0.0 :bucket-end 2026-06-12T00:00 :api-key-id "key_vE...Me" :bucket-sta
 
 ## Costs for a month aggregated by day
 
-Example: Retrieve the costs for June 2026 aggregated by day
+*Example:* Retrieve the costs for June 2026 aggregated by day
 
 ``` clojure
 (do
@@ -114,7 +114,7 @@ Example: Retrieve the costs for June 2026 aggregated by day
     (openai-java/costs-by-month-daily client 2026 6)))
 ```
 
-Output:
+*Output:*
 
 ``` clojure
 ( [2026-06-01 0.09M] 
@@ -126,7 +126,7 @@ Output:
   [2026-06-30 0.16M])
 ```
 
-Example: Retrieve the costs for 2026 June aggregated by day and format it 
+*Example:* Retrieve the costs for 2026 June aggregated by day and format it 
 
 ``` clojure
 (do
@@ -152,7 +152,7 @@ Example: Retrieve the costs for 2026 June aggregated by day and format it
       0)))
 ```
 
-Output:
+*Output:*
 
 ```
 Date        Amount [USD]
