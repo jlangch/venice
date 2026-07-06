@@ -50,9 +50,7 @@
 ({:lineitem "gpt-5.4-2026-03-05, cached input" :project-id "proj_xt...nN" :currency "usd" :value 0.0 :bucket-end 2026-06-02T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-01T00:00}
  {:lineitem "gpt-5.4-2026-03-05, input" :project-id "proj_xt...nN" :currency "usd" :value 0.017735 :bucket-end 2026-06-02T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-01T00:00}
  {:lineitem "gpt-5.4-2026-03-05, output" :project-id "proj_xt...nN" :currency "usd" :value 0.06879 :bucket-end 2026-06-02T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-01T00:00}
- 
  ...
- 
  {:lineitem "gpt-5.5-2026-04-23, cached input" :project-id "proj_xt...nN" :currency "usd" :value 0.0 :bucket-end 2026-07-01T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-30T00:00}
  {:lineitem "gpt-5.5-2026-04-23, input" :project-id "proj_xt...nN" :currency "usd" :value 0.00741 :bucket-end 2026-07-01T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-30T00:00}
  {:lineitem "gpt-5.5-2026-04-23, output" :project-id "proj_xt...nN" :currency "usd" :value 0.10017 :bucket-end 2026-07-01T00:00 :api-key-id "key_vE...Me" :bucket-start 2026-06-30T00:00})
