@@ -6,7 +6,7 @@
 
 Example: Return the raw cost buckets for the last 2 days:
 
-Note: OpenAI limits the number of costs buckets to 180 per call
+Note: OpenAI limits the number of returned cost buckets to 180 per call
 
 ``` clojure
 (do
@@ -34,7 +34,7 @@ Output:
 
 Example: Return the raw cost buckets for June 2026:
 
-Note: OpenAI limits the number of costs buckets to 180 per call
+Note: OpenAI limits the number of returned cost buckets to 180 per call
 
 ``` clojure
 (do
@@ -63,7 +63,7 @@ Output:
 
 Example: Return the raw cost buckets for June 2026:
 
-Note: OpenAI limits the number of costs buckets to 180 per call
+Note: OpenAI limits the number of returned cost buckets to 180 per call
 
 ``` clojure
 (do
