@@ -8,6 +8,7 @@
 * [Files](openai2-files.md)
 * [Images](openai2-images.md)
 * [Audio](openai2-audio.md)
+* [Costs](openai2-costs.md)
 
  
  

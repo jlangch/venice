@@ -1990,9 +1990,10 @@
 
 (defn 
   ^{ :arglists '(
+          "(costs client last-n-days)"
           "(costs client last-n-days limit)" )
      :doc """
-          Returns a list of costs items for the last N days.
+          Returns a list of costs item buckets for the last N days.
 
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
@@ -2022,24 +2023,30 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs [client last-n-days limit]
+  costs 
+  
+  ([client last-n-days]
+    (openai-java/costs client last-n-days 180))    ;; 180 buckets is the max limit
 
-  { :pre [(instance-of? :OpenAIClient client) 
-          (long? last-n-days)
-          (pos? last-n-days)
-          (long? limit)
-          (pos? limit)] }
- 
-  (-<> (. :QueryUsageCosts :new client)
-       (. <> :queryByLastNDays last-n-days limit)
-       (java->venice <>)
-       (map #(map-keys keyword %) <>)))
+  ([client last-n-days limit]
+    { :pre [(instance-of? :OpenAIClient client) 
+            (long? last-n-days)
+            (pos? last-n-days)
+            (long? limit)
+            (pos? limit)] }
+  
+    (-<> (. :QueryUsageCosts :new client)
+         (. <> :queryByLastNDays last-n-days limit)       
+         (java->venice <>)
+         (map #(map-keys keyword %) <>))))
 
 (defn 
   ^{ :arglists '(
+          "(costs-by-month client year month)" 
           "(costs-by-month client year month limit)" )
      :doc """
-          Returns a list of costs items for a specific year and month [1,2,..,12].
+          Returns a list of costs item buckets for a specific year and month 
+          [1,2,..,12].
 
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
@@ -2052,13 +2059,13 @@
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)]
-              (openai-java/costs-by-month client 2026 5 180)))
+              (openai-java/costs-by-month client 2026 5)))
           """,
           """
           (do
             (load-module :openai-java)
             (let [client  (openai-java/client :prefer-key :admin)]
-              (openai-java/costs-by-month client 2026 5 180)))
+              (openai-java/costs-by-month client 2026 5)))
           """)
      :see-also '(
           "openai-java/costs"
@@ -2068,19 +2075,23 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs-by-month [client year month limit]
+  costs-by-month 
+  
+  ([client year month]
+    (openai-java/costs-by-month client year month 180))    ;; 180 buckets is the max limit
 
-  { :pre [(instance-of? :OpenAIClient client) 
-          (long? year)
-          (long? month)
-          (<= 1 month 12)
-          (long? limit)
-          (pos? limit)] }
- 
-  (-<> (. :QueryUsageCosts :new client)
-       (. <> :queryByMonth (time/local-date year month 1) limit)
-       (java->venice <>)
-       (map #(map-keys keyword %) <>)))
+  ([client year month limit]
+    { :pre [(instance-of? :OpenAIClient client) 
+            (long? year)
+            (long? month)
+            (<= 1 month 12)
+            (long? limit)
+            (pos? limit)] }
+  
+    (-<> (. :QueryUsageCosts :new client)
+        (. <> :queryByMonth (time/local-date year month 1) limit)
+        (java->venice <>)
+        (map #(map-keys keyword %) <>))))
 
 
 (defn 
@@ -2109,8 +2120,8 @@
   
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client :openai-admin-key admin-key)
-                  data       (openai-java/costs-by-month-daily client 2026 6)
-                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second data))]
+                  costs      (openai-java/costs-by-month-daily client 2026 6)
+                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body { :align :left } 
@@ -2120,7 +2131,7 @@
                     :body { :align :right } 
                     :footer { :text (str total) :align :right }  
                     :width 14 } ] 
-                data
+                costs
                 :minimal
                 0)))
           """,
@@ -2129,9 +2140,11 @@
             (load-module :openai-java)
             (load-module :ascii-table)
   
+            ;; Use `:prefer-key` if both environment vars `OPENAI_API_KEY` and 
+            :: `OPENAI_ADMIN_KEY` are defined
             (let [client     (openai-java/client :prefer-key :admin)
-                  data       (openai-java/costs-by-month-daily client 2026 6)
-                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second data))]
+                  costs      (openai-java/costs-by-month-daily client 2026 6)
+                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body { :align :left } 
@@ -2141,7 +2154,7 @@
                     :body { :align :right } 
                     :footer { :text (str total) :align :right }  
                     :width 14 } ] 
-                data
+                costs
                 :minimal
                 0)))
           """)
@@ -2177,7 +2190,7 @@
   ^{ :arglists '(
           "(costs-by-days client start-day end-day limit)" )
      :doc """
-          Returns a list of costs items for a specific day period .
+          Returns a list of costs item buckets for a specific day period .
 
           A limit on the number of buckets to be returned. Limit can range 
           between 1 and 180
@@ -2203,18 +2216,22 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs-by-days [client start-day end-day limit]
+  costs-by-days 
 
-  { :pre [(instance-of? :OpenAIClient client) 
-          (time/local-date? start-day)
-          (time/local-date? end-day)
-          (long? limit)
-          (pos? limit)] }
- 
-  (-<> (. :QueryUsageCosts :new client)
-       (. <> :queryByDayPeriod start-day end-day limit)
-       (java->venice <>)
-       (map #(map-keys keyword %) <>)))
+  ([client start-day end-day]
+    (openai-java/costs-by-days client start-day end-day 180))
+  
+  ([client start-day end-day limit]
+    { :pre [(instance-of? :OpenAIClient client) 
+            (time/local-date? start-day)
+            (time/local-date? end-day)
+            (long? limit)
+            (pos? limit)] }
+  
+    (-<> (. :QueryUsageCosts :new client)
+        (. <> :queryByDayPeriod start-day end-day limit)
+        (java->venice <>)
+        (map #(map-keys keyword %) <>))))
 
 
 (defn 
