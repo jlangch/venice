@@ -14,7 +14,7 @@
  
 
 > [!NOTE]
-> Venice' OpenAI module requires Venice 1.13.5+
+> Venice' OpenAI module requires Venice 1.13.10+
 >
 
  
