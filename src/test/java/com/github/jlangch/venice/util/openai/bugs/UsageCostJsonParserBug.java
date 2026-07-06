@@ -1,24 +1,3 @@
-/*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___
- *    \ \/ / _ \ '_ \| |/ __/ _ \
- *     \  /  __/ | | | | (_|  __/
- *      \/ \___|_| |_|_|\___\___|
- *
- *
- * Copyright 2017-2026 Venice
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.github.jlangch.venice.util.openai.bugs;
 
 import java.time.Instant;
@@ -133,17 +112,17 @@ public class UsageCostJsonParserBug {
                         Exception in thread "main" com.openai.errors.OpenAIInvalidDataException: `value` is invalid, received 0E-6176
                             at com.openai.core.JsonField.getOptional$openai_java_core(Values.kt:191)
                             at com.openai.models.admin.organization.usage.UsageCostsResponse$Data$Result$OrganizationCostsResult$Amount.value(UsageCostsResponse.kt:6680)
-                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.lambda$2(UsageCostJsonParserBug.java:95)
+                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.lambda$2(UsageCostJsonParserBug.java:72)
                             at java.util.Optional.flatMap(Optional.java:241)
-                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.lambda$1(UsageCostJsonParserBug.java:95)
+                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.lambda$1(UsageCostJsonParserBug.java:72)
                             at java.util.ArrayList.forEach(ArrayList.java:1259)
-                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.lambda$0(UsageCostJsonParserBug.java:75)
+                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.lambda$0(UsageCostJsonParserBug.java:59)
                             at java.util.ArrayList.forEach(ArrayList.java:1259)
-                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.main(UsageCostJsonParserBug.java:71)
+                            at com.github.jlangch.venice.util.openai.bugs.UsageCostJsonParserBug.main(UsageCostJsonParserBug.java:55)
                      */
                     System.out.println("Exception: " + ex.getMessage());
 
-                    //throw ex;
+                    throw ex;
                 }
             });
         });
