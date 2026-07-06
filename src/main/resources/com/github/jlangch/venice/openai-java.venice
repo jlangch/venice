@@ -114,6 +114,17 @@
      :doc """
           Creates an OpenAI client.
 
+          **Api/Admin key precedence rules:**
+
+          * An argument api key takes precedence over an env var api key
+          * An argument admin key takes precedence over an env var admin key
+          * If both env var api and env var admin key are set but no argument key \
+            is passed use `:prefer-key` to select the apropriate env var key
+          * If both argument api and argument admin key are passed use `:prefer-key`\
+            to select the appropriate argument key
+          * If neither env var api nor env var admin key is set but either an \
+            argument api or argument admin key is passed, the argument key is used
+
           **Note:**
 
           Don’t create more than one client in the same application. Each client 
@@ -200,14 +211,18 @@
 
   (validate-libs-installed)
 
-  (let [opts              (apply hash-map options)
-        openai-api-key    (or (:openai-api-key opts)   (openai-api-key-from-env))
-        openai-admin-key  (or (:openai-admin-key opts) (openai-admin-key-from-env))
-        openai-org-id     (or (:openai-org-id opts)    (openai-org-id-from-env))
-        openai-proj-id    (or (:openai-proj-id opts)   (openai-proj-id-from-env))
-        openai-base-url   (or (:openai-base-url opts)  (openai-base-url-from-env))
-        prefer-key        (:prefer-key opts :api)
-        max-retries       (get opts :max-retries)]
+  (let [opts                 (apply hash-map options)
+        openai-api-key-env   (openai-api-key-from-env)
+        openai-admin-key-env (openai-admin-key-from-env)
+        openai-api-key-arg   (:openai-api-key opts)
+        openai-admin-key-arg (:openai-admin-key opts)
+        openai-api-key       (or openai-api-key-arg  openai-api-key-env)
+        openai-admin-key     (or openai-admin-key-arg openai-admin-key-env)
+        openai-org-id        (or (:openai-org-id opts)   (openai-org-id-from-env))
+        openai-proj-id       (or (:openai-proj-id opts)  (openai-proj-id-from-env))
+        openai-base-url      (or (:openai-base-url opts) (openai-base-url-from-env))
+        prefer-key           (:prefer-key opts :api)
+        max-retries          (get opts :max-retries)]
     (let [builder (. :OpenAIOkHttpClient :builder)]
       (cond
         (and (some? openai-api-key) (some? openai-admin-key))
@@ -2202,11 +2217,10 @@
           (do
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
+                  start      (time/local-date 2026 5 1) 
+                  end        (time/local-date 2026 5 31) 
                   client     (openai-java/client :openai-admin-key admin-key)]
-              (openai-java/costs-by-days client 
-                                         (time/local-date 2026 5 1) 
-                                         (time/local-date 2026 5 31) 
-                                         180)))
+              (openai-java/costs-by-days client start end)))
           """)
      :see-also '(
           "openai-java/costs"
