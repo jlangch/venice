@@ -66,7 +66,7 @@ public class UsageCostJsonParserBug {
                 try {
                     final double value;
 
-                    if (true) {
+                    if (false) {
                         // The OpenAI value Json number parser throws an exception
                         value = costs.amount()
                                      .flatMap(amount -> amount.value())  // <== exception
