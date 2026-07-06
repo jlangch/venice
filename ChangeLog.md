@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- OpenAI: chat completion streaming supports now usage tokens if requested
+- OpenAI: Chat completion streaming can now include token usage information when requested.
 
 
 
