@@ -133,8 +133,11 @@ d" :value 0.0 :bucket-end 2026-06-12T00:00 :api-key-id "key_vE...Me" :bucket-sta
 
   (let [admin-key  "sk-admin-1234"
         client     (openai-java/client-admin :openai-admin-key admin-key)
-        costs      (openai-java/costs-by-month-daily client 2026 6)
-        total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
+        today      (time/local-date)
+        costs      (->> (openai-java/costs-by-month-daily client 2026 6)
+                        (filter #(time/not-after? (first %) today)))
+        zero       (decimal "0.00")
+        total      (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
     ;; format the daily costs
     (ascii-table/print 
       [ { :header {:text "Date" }  
