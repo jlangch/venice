@@ -2261,13 +2261,13 @@
                   total   (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
-                    :body { :align :left } 
+                    :body   { :align :left } 
                     :footer { :text "" }  
-                    :width 10 }
+                    :width  10 }
                   { :header { :text "Amount [USD]" :align :right }  
-                    :body { :align :right } 
+                    :body   { :align :right } 
                     :footer { :text (str total) :align :right }  
-                    :width 14 } ] 
+                    :width  14 } ] 
                 costs
                 :minimal
                 0)))
@@ -2287,13 +2287,13 @@
                   total   (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
-                    :body { :align :left } 
+                    :body   { :align :left } 
                     :footer { :text "" }  
-                    :width 10 }
+                    :width  10 }
                   { :header { :text "Amount [USD]" :align :right }  
-                    :body { :align :right } 
+                    :body   { :align :right } 
                     :footer { :text (str total) :align :right }  
-                    :width 14 } ] 
+                    :width  14 } ] 
                 costs
                 :minimal
                 0)))
