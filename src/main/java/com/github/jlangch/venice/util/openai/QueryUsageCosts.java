@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.util.openai;
 
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toList;
+import static com.github.jlangch.venice.impl.util.StringUtil.isNotBlank;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -32,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.openai.client.OpenAIClient;
 import com.openai.models.admin.organization.usage.UsageCostsParams;
 import com.openai.models.admin.organization.usage.UsageCostsResponse;
@@ -51,8 +53,8 @@ public class QueryUsageCosts {
             final String projectId
     ) {
         this(client,
-             CollectionUtil.toList(apiKeyId),
-             CollectionUtil.toList(projectId));
+             toList(apiKeyId),
+             toList(projectId));
     }
 
     public QueryUsageCosts(
@@ -62,10 +64,10 @@ public class QueryUsageCosts {
     ) {
         this.client = client;
         if (apiKeyIds != null) {
-            apiKeyIds.forEach(id -> {if (id != null) this.apiKeyIds.add(id);});
+            apiKeyIds.forEach(id -> {if (isNotBlank(id)) this.apiKeyIds.add(id);});
         }
         if (projectIds != null) {
-            projectIds.forEach(id -> {if (id != null) this.projectIds.add(id);});
+            projectIds.forEach(id -> {if (isNotBlank(id)) this.projectIds.add(id);});
         }
     }
 
