@@ -148,6 +148,8 @@
                                  OpenAI uses the standard base URL \
                                  'https://api.openai.com/v1' if it is not \
                                  explicitely defined. |
+          | :debug t           | If `true` prints the found keys (obfuscated). \
+                                 defaults to `false`. |
 
           ¶**Install OpenAI Java libraries in the REPL**
 
@@ -190,13 +192,21 @@
   (validate-libs-installed)
 
   (let [opts                 (apply hash-map options)
-        openai-api-key       (or (:openai-api-key opts)   (openai-api-key-from-env))
+        openai-api-key-arg   (:openai-api-key opts)
+        openai-api-key-env   (openai-api-key-from-env)
+        openai-api-key       (or openai-api-key-arg openai-api-key-env)
         openai-org-id        (or (:openai-org-id opts)    (openai-org-id-from-env))
         openai-proj-id       (or (:openai-proj-id opts)   (openai-proj-id-from-env))
         openai-base-url      (or (:openai-base-url opts)  (openai-base-url-from-env))
         prefer-key           (:prefer-key opts :api)
-        max-retries          (:max-retries opts)]
+        max-retries          (:max-retries opts)
+        debug                (:debug opts false)]
     (let [builder (. :OpenAIOkHttpClient :builder)]
+      (when debug
+        (println "Api key arg: " (obfuscate-openai-key openai-api-key-arg))
+        (println "Api key env: " (obfuscate-openai-key openai-api-key-env))
+        (println "Api key:     " (obfuscate-openai-key openai-api-key)))
+
       (when (nil? openai-api-key)
         (throw (ex :VncException err-msg-api-key)))
 
@@ -240,6 +250,8 @@
                                  OpenAI uses the standard base URL \
                                  'https://api.openai.com/v1' if it is not \
                                  explicitely defined. |
+          | :debug t           | If `true` prints the found keys (obfuscated). \
+                                 defaults to `false`. |
 
           ¶**Install OpenAI Java libraries in the REPL**
 
@@ -282,13 +294,21 @@
   (validate-libs-installed)
 
   (let [opts                 (apply hash-map options)
-        openai-admin-key     (or (:openai-admin-key opts) (openai-admin-key-from-env))
+        openai-admin-key-arg (:openai-admin-key opts)
+        openai-admin-key-env (openai-admin-key-from-env)
+        openai-admin-key     (or openai-admin-key-arg openai-admin-key-env)
         openai-org-id        (or (:openai-org-id opts)    (openai-org-id-from-env))
         openai-proj-id       (or (:openai-proj-id opts)   (openai-proj-id-from-env))
         openai-base-url      (or (:openai-base-url opts)  (openai-base-url-from-env))
         prefer-key           (:prefer-key opts :api)
-        max-retries          (:max-retries opts)]
+        max-retries          (:max-retries opts)
+        debug                (:debug opts false)]
     (let [builder (. :OpenAIOkHttpClient :builder)]
+      (when debug
+        (println "Admin key arg: " (obfuscate-openai-key openai-admin-key-arg))
+        (println "Admin key env: " (obfuscate-openai-key openai-admin-key-env))
+        (println "Admin key:     " (obfuscate-openai-key openai-admin-key)))
+
       (when (nil? openai-admin-key)
         (throw (ex :VncException err-msg-adm-key)))
 
@@ -2666,6 +2686,13 @@
   (if (sequential? m)
     (filter #(and (some? %) (string? %)) m)
     m))
+
+(defn- obfuscate-openai-key [key]
+  (cond
+    (nil? key)          key
+    (<= (count key) 10) key
+    (<= (count key) 12) (str (str/nfirst key 10)  "...")
+    :else               (str (str/nfirst key 10)  "..." (str/nfirst key 2))))
 
 (defn- openai-api-key-from-env []
   (system-env "OPENAI_API_KEY"))
