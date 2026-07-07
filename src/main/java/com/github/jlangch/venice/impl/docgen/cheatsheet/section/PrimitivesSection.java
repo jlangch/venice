@@ -138,6 +138,7 @@ public class PrimitivesSection implements ISectionBuilder {
         use.addItem(diBuilder.getDocItem("butlast"));
         use.addItem(diBuilder.getDocItem("reverse"));
         use.addItem(diBuilder.getDocItem("shuffle"));
+        use.addItem(diBuilder.getDocItem("str/length"));
         use.addItem(diBuilder.getDocItem("str/subs"));
         use.addItem(diBuilder.getDocItem("str/nfirst"));
         use.addItem(diBuilder.getDocItem("str/nlast"));

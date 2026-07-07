@@ -78,6 +78,37 @@ public class StringFunctions {
     // String
     ///////////////////////////////////////////////////////////////////////////
 
+
+    public static VncFunction str_length =
+        new VncFunction(
+                "str/length",
+                VncFunction
+                    .meta()
+                    .arglists("(str/length s)")
+                    .doc("Returns the length of a string.")
+                    .examples(
+                        "(str/length nil)",
+                        "(str/length \"\")",
+                        "(str/length \"qbcdef\")")
+                    .seeAlso("count", "str/blank?", "str/not-blank?", "empty?", "not-empty?", "nil?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                if (args.first() == Nil) {
+                    return new VncLong(0);
+                }
+
+                final String s = Coerce.toVncString(args.first()).getValue();
+
+                return new VncLong(s.length());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction str_blank_Q =
         new VncFunction(
                 "str/blank?",
@@ -3196,6 +3227,7 @@ public class StringFunctions {
 
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
+                    .add(str_length)
                     .add(str_blank_Q)
                     .add(str_not_blank_Q)
                     .add(str_starts_with_Q)
