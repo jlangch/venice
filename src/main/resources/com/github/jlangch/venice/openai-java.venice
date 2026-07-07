@@ -203,9 +203,9 @@
         debug                (:debug opts false)]
     (let [builder (. :OpenAIOkHttpClient :builder)]
       (when debug
-        (println "Api key arg: " (obfuscate-openai-key openai-api-key-arg))
-        (println "Api key env: " (obfuscate-openai-key openai-api-key-env))
-        (println "Api key:     " (obfuscate-openai-key openai-api-key)))
+        (println "OpenAI api key arg: " (obfuscate-openai-key openai-api-key-arg))
+        (println "OpenAI api key env: " (obfuscate-openai-key openai-api-key-env))
+        (println "OpenAI api key:     " (obfuscate-openai-key openai-api-key)))
 
       (when (nil? openai-api-key)
         (throw (ex :VncException err-msg-api-key)))
@@ -305,9 +305,9 @@
         debug                (:debug opts false)]
     (let [builder (. :OpenAIOkHttpClient :builder)]
       (when debug
-        (println "Admin key arg: " (obfuscate-openai-key openai-admin-key-arg))
-        (println "Admin key env: " (obfuscate-openai-key openai-admin-key-env))
-        (println "Admin key:     " (obfuscate-openai-key openai-admin-key)))
+        (println "OpenAI admin key arg: " (obfuscate-openai-key openai-admin-key-arg))
+        (println "OpenAI admin key env: " (obfuscate-openai-key openai-admin-key-env))
+        (println "OpenAI admin key:     " (obfuscate-openai-key openai-admin-key)))
 
       (when (nil? openai-admin-key)
         (throw (ex :VncException err-msg-adm-key)))
