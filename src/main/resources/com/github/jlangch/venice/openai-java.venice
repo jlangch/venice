@@ -2234,8 +2234,11 @@
   
             ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
             (let [client  (openai-java/client-admin)
-                  costs   (openai-java/costs-by-month-daily client 2026 6)
-                  total   (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
+                  today   (time/local-date)
+                  costs   (->> (openai-java/costs-by-month-daily client 2026 6)
+                               (filter #(time/not-after? (first %) today)))
+                  zero    (decimal "0.00")
+                  total   (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body { :align :left } 
@@ -2256,9 +2259,11 @@
             (load-module :ascii-table)
   
             (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client-admin :openai-admin-key admin-key)
-                  costs      (openai-java/costs-by-month-daily client 2026 6)
-                  total      (reduce #(dec/add %1 %2 2 :HALF_UP) (map second costs))]
+                  client  (openai-java/client-admin :openai-admin-key admin-key)
+                  costs   (->> (openai-java/costs-by-month-daily client 2026 6)
+                               (filter #(time/not-after? (first %) today)))
+                  zero    (decimal "0.00")
+                  total   (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body { :align :left } 
