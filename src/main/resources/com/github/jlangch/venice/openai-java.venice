@@ -2075,13 +2075,17 @@
 
 (defn 
   ^{ :arglists '(
-          "(costs client last-n-days)"
-          "(costs client last-n-days limit)" )
+          "(costs client last-n-days & options)" )
      :doc """
           Returns a list of costs item buckets for the last N days.
 
-          A limit on the number of buckets to be returned. Limit can range 
-          between 1 and 180
+          ¶**Parameter «options»**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :limit n        | A limit on the number of buckets to be returned. \
+                              Limit can range between 1 and 180. |
+          | :api-key-ids k  | A list of api key ids |
+          | :project-ids k  | A list of project ids |
 
           Note: Requires an **Admin** client with an ADMIN key!
           """
@@ -2091,7 +2095,7 @@
           (do
             (load-module :openai-java)
             (let [client  (openai-java/client-admin)]
-              (openai-java/costs client 60 180)))
+              (openai-java/costs client 60)))
           """
           """
           ;; Pass an explicit admin key
@@ -2099,7 +2103,7 @@
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
                   client     (openai-java/client-admin :openai-admin-key admin-key)]
-              (openai-java/costs client 60 180)))
+              (openai-java/costs client 60 :limit 180)))
           """)
      :see-also '(
           "openai-java/client-admin"
@@ -2111,41 +2115,41 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs 
-  
-  ([client last-n-days]
-    (openai-java/costs client last-n-days 180 nil nil))    ;; 180 buckets is the max limit
+  costs [client last-n-days & options]
 
-  ([client last-n-days limit]
-    (openai-java/costs client last-n-days limit nil nil))
+  { :pre [(instance-of? :OpenAIClient client) 
+          (long? last-n-days)
+          (pos? last-n-days)] }
 
-  ([client last-n-days limit api-key-ids]
-    (openai-java/costs client last-n-days limit api-key-ids nil))
+  (let [opts        (apply hash-map options)
+        limit       (:limit opts 180)
+        api-key-ids (:api-key-ids opts)
+        project-ids (:project-ids opts)]
 
-  ([client last-n-days limit api-key-ids project-ids]
-    { :pre [(instance-of? :OpenAIClient client) 
-            (long? last-n-days)
-            (pos? last-n-days)
-            (long? limit)
-            (pos? limit)
-            (or (nil? api-key-ids) (sequential? api-key-ids))
-            (or (nil? project-ids) (sequential? project-ids))] }
-  
+    (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
+    (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
+
     (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
          (. <> :queryByLastNDays last-n-days limit)       
          (java->venice <>)
          (map #(map-keys keyword %) <>))))
 
+
 (defn 
   ^{ :arglists '(
-          "(costs-by-month client year month)" 
-          "(costs-by-month client year month limit)" )
+          "(costs-by-month client year month & options)" )
      :doc """
           Returns a list of costs item buckets for a specific year and month 
           [1,2,..,12].
 
-          A limit on the number of buckets to be returned. Limit can range 
-          between 1 and 180
+          ¶**Parameter «options»**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :limit n        | A limit on the number of buckets to be returned. \
+                              Limit can range between 1 and 180. |
+          | :api-key-ids k  | A list of api key ids |
+          | :project-ids k  | A list of project ids |
 
           Note: Requires an **Admin** client with an ADMIN key!
           """
@@ -2174,27 +2178,22 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs-by-month 
+  costs-by-month [client year month & options]
+
+  { :pre [(instance-of? :OpenAIClient client) 
+          (long? year)
+          (long? month)
+          (<= 1 month 12)] }
   
-  ([client year month]
-    (openai-java/costs-by-month client year month 180 nil nil))
+  (let [opts        (apply hash-map options)
+        limit       (:limit opts 180)
+        api-key-ids (:api-key-ids opts)
+        project-ids (:project-ids opts)]
 
-  ([client year month limit]
-    (openai-java/costs-by-month client year month limit nil nil))
+    (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
+    (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
 
-  ([client year month limit api-key-ids]
-    (openai-java/costs-by-month client year month limit api-key-ids nil))
-
-  ([client year month limit api-key-ids project-ids]
-    { :pre [(instance-of? :OpenAIClient client) 
-            (long? year)
-            (long? month)
-            (<= 1 month 12)
-            (long? limit)
-            (pos? limit)
-            (or (nil? api-key-ids) (sequential? api-key-ids))
-            (or (nil? project-ids) (sequential? project-ids))] }
-  
     (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
          (. <> :queryByMonth (time/local-date year month 1) limit)
          (java->venice <>)
@@ -2203,9 +2202,17 @@
 
 (defn 
   ^{ :arglists '(
-          "(costs-by-month-daily client year month)" )
+          "(costs-by-month-daily client year month & options)" )
      :doc """
           Returns the daily costs for a specific year and month [1,2,..,12].
+
+          ¶**Parameter «options»**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :limit n        | A limit on the number of buckets to be returned. \
+                              Limit can range between 1 and 180. |
+          | :api-key-ids k  | A list of api key ids |
+          | :project-ids k  | A list of project ids |
 
           Returns a list of daily cost items:
 
@@ -2274,23 +2281,23 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs-by-month-daily 
-  
-  ([client year month]
-    (openai-java/costs-by-month-daily client year month nil nil))
+  costs-by-month-daily [client year month & options]
 
-  ([client year month api-key-ids]
-    (openai-java/costs-by-month-daily client year month api-key-ids nil))
+  { :pre [(instance-of? :OpenAIClient client) 
+          (long? year)
+          (long? month)
+          (<= 1 month 12)] }
 
-  ([client year month api-key-ids project-ids]
-    { :pre [(instance-of? :OpenAIClient client) 
-            (long? year)
-            (long? month)
-            (<= 1 month 12)
-            (or (nil? api-key-ids) (sequential? api-key-ids))
-            (or (nil? project-ids) (sequential? project-ids))] }
-  
-    (let [items (openai-java/costs-by-month client year month 180 api-key-ids project-ids)
+  (let [opts        (apply hash-map options)
+        limit       (:limit opts 180)
+        api-key-ids (:api-key-ids opts)
+        project-ids (:project-ids opts)]
+
+    (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
+    (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
+
+    (let [items (apply openai-java/costs-by-month client year month options)
           days  (time/length-of-month (time/local-date year month 1))
           costs (for [d (range 1 (inc days))] [(time/local-date year month d) 0.0D])]
       (loop [items items, costs costs]
@@ -2305,12 +2312,17 @@
 
 (defn 
   ^{ :arglists '(
-          "(costs-by-days client start-day end-day limit)" )
+          "(costs-by-days client start-day end-day & options)" )
      :doc """
           Returns a list of costs item buckets for a specific day period .
 
-          A limit on the number of buckets to be returned. Limit can range 
-          between 1 and 180
+          ¶**Parameter «options»**
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :limit n        | A limit on the number of buckets to be returned. \
+                              Limit can range between 1 and 180. |
+          | :api-key-ids k  | A list of api key ids |
+          | :project-ids k  | A list of project ids |
 
           Note: Requires an **Admin** client with an ADMIN key!
           """
@@ -2343,26 +2355,21 @@
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
-  costs-by-days 
+  costs-by-days [client start-day end-day & options]
 
-  ([client start-day end-day]
-    (openai-java/costs-by-days client start-day end-day 180 nil nil))
+  { :pre [(instance-of? :OpenAIClient client) 
+          (time/local-date? start-day)
+          (time/local-date? end-day)] }
 
-  ([client start-day end-day limit]
-    (openai-java/costs-by-days client start-day end-day limit nil nil))
+  (let [opts        (apply hash-map options)
+        limit       (:limit opts 180)
+        api-key-ids (:api-key-ids opts)
+        project-ids (:project-ids opts)]
 
-  ([client start-day end-day limit api-key-ids]
-    (openai-java/costs-by-days client start-day end-day limit api-key-ids nil))
+    (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
+    (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
 
-  ([client start-day end-day limit api-key-ids project-ids]
-    { :pre [(instance-of? :OpenAIClient client) 
-            (time/local-date? start-day)
-            (time/local-date? end-day)
-            (long? limit)
-            (pos? limit)
-            (or (nil? api-key-ids) (sequential? api-key-ids))
-            (or (nil? project-ids) (sequential? project-ids))] }
-  
     (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
          (. <> :queryByDayPeriod start-day end-day limit)
          (java->venice <>)
