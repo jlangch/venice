@@ -141,13 +141,13 @@ d" :value 0.0 :bucket-end 2026-06-12T00:00 :api-key-id "key_vE...Me" :bucket-sta
     ;; format the daily costs
     (ascii-table/print 
       [ { :header {:text "Date" }  
-          :body { :align :left } 
+          :body   { :align :left } 
           :footer { :text "" }  
-          :width 10 }
+          :width  10 }
         { :header { :text "Amount [USD]" :align :right }  
-          :body { :align :right } 
+          :body   { :align :right } 
           :footer { :text (str total) :align :right }  
-          :width 14 } ] 
+          :width  14 } ] 
       costs
       :minimal
       0)))
