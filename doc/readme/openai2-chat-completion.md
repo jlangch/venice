@@ -20,6 +20,8 @@
 
 #### Example: Counting numbers (full model response)
 
+Variant a) load OpenAI api key from env var OPENAI_API_KEY:
+
 ``` clojure
 """
 (do
@@ -42,6 +44,29 @@
     (printf "Result:  %n%s%n" msg)))
 ```
 
+Variant b) passing an explicit OpenAI api key:
+
+``` clojure
+"""
+(do
+  (load-module :openai-java)
+  
+  (let [client   (openai-java/client :openai-api-key "sk-1234")
+        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                     (openai-java/max-completion-tokens 2048)
+                     (openai-java/add-user-message 
+                         """
+                         Count to 10, with a comma between each number "
+                         and no newlines. E.g., 1, 2, 3, ...
+                         """ ))
+        response (openai-java/execute chat)
+        elapsed  (openai-java/elapsed chat)
+        usage    (openai-java/usage response)
+        msg      (first (openai-java/messages response))]
+    (printf "Elapsed: %dms%n%n" elapsed)
+    (printf "Tokens:  %n%s%n" (openai-java/format-usage usage "  "))
+    (printf "Result:  %n%s%n" msg)))
+```
 Answer:
 
 ```
