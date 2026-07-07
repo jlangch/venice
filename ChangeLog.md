@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- OpenAI: Enhanced the *Cost* admin api for optional api key ids and project ids
 
 
 
