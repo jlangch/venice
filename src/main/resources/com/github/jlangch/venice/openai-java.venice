@@ -2692,7 +2692,7 @@
     (nil? key)          key
     (<= (count key) 10) key
     (<= (count key) 12) (str (str/nfirst key 10)  "...")
-    :else               (str (str/nfirst key 10)  "..." (str/nfirst key 2))))
+    :else               (str (str/nfirst key 10)  "..." (str/nlast key 2))))
 
 (defn- openai-api-key-from-env []
   (system-env "OPENAI_API_KEY"))
