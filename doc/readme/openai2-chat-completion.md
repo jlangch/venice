@@ -20,7 +20,7 @@
 
 #### Example: Counting numbers (full model response)
 
-Variant a) load OpenAI api key from env var OPENAI_API_KEY:
+Variant a) load OpenAI api key from env var OPENAI_API_KEY to create the client:
 
 ``` clojure
 """
@@ -44,7 +44,7 @@ Variant a) load OpenAI api key from env var OPENAI_API_KEY:
     (printf "Result:  %n%s%n" msg)))
 ```
 
-Variant b) passing an explicit OpenAI api key:
+Variant b) passing an explicit OpenAI api key to create the client:
 
 ``` clojure
 """
