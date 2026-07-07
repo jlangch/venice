@@ -2260,6 +2260,7 @@
   
             (let [admin-key  "sk-admin-1234"
                   client  (openai-java/client-admin :openai-admin-key admin-key)
+                  today   (time/local-date)
                   costs   (->> (openai-java/costs-by-month-daily client 2026 6)
                                (filter #(time/not-after? (first %) today)))
                   zero    (decimal "0.00")
