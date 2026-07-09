@@ -55,7 +55,7 @@ public class UsageCostJsonParserBug {
     private UsageCostJsonParserBug() {}
 
     public static void main(String[] args) {
-        run(true);
+        run(false);
     }
 
     public static void run(final boolean workaround) {
