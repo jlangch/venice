@@ -15,7 +15,7 @@ import com.openai.models.admin.organization.usage.UsageCostsResponse.Data.Result
 /**
  * Demonstrates the openai-java <code>OrganizationCostsResult</code> value parser bug
  *
- * Depends on OpenAI:  com.openai:openai-java:4.41.0
+ * Depends on OpenAI:  com.openai:openai-java:4.42.0
  */
 public class UsageCostJsonParserBug {
 
@@ -66,7 +66,7 @@ public class UsageCostJsonParserBug {
                 try {
                     final double value;
 
-                    if (false) {
+                    if (true) {
                         // The OpenAI value Json number parser throws an exception
                         value = costs.amount()
                                      .flatMap(amount -> amount.value())  // <== exception

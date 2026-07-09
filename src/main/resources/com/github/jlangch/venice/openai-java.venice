@@ -281,7 +281,7 @@
           """
           (do
             (load-module :openai-java)
-            ;; Pass an explicit admmin key
+            ;; Pass an explicit admin key
             (let [client (openai-java/client-admin :openai-admin-key "sk-admin-1234")]
               ;; ...
               (openai-java/close client)))
