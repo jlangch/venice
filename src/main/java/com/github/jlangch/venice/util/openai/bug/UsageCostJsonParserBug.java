@@ -41,7 +41,7 @@ import com.openai.models.admin.organization.usage.UsageCostsResponse.Data.Result
  * <p>Call from Venice REPL:
  *
  * <pre>
- * ;; 1. Install Venice 1.13.12+ with
+ * ;; 1. Install Venice 1.13.12
  * > curl -O https://maven.org/maven2/com/github/jlangch/venice/1.13.12/venice-1.13.12.jar
  * > java -jar venice-1.13.12.jar -setup -colors -dir ./repl
  *
