@@ -47,13 +47,13 @@ import com.openai.models.admin.organization.usage.UsageCostsResponse.Data.Result
  *
  * ;; 2. Install the "com.openai:openai-java:4.42.0" dependencies
  * > cd repl
- * >./repl.sh
+ * > ./repl.sh
  * venice> (load-module :openai-java-install)
  * venice> (openai-java-install/install :dir (repl/libs-dir) :silent false)
  *
  * ;; 3. Run the bug demo in the REPL
  * > cd repl
- * >./repl.sh
+ * > ./repl.sh
  * > venice> (let [workaround  false]
  *              (. :com.github.jlangch.venice.util.openai.bug.UsageCostJsonParserBug :run false))
  *
