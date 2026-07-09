@@ -71,6 +71,10 @@ public class UsageCostJsonParserBug {
     }
 
     public static void run(final boolean workaround) {
+        System.out.println("Running UsageCostJsonParserBug demo. Workaround: " + workaround);
+        System.out.println();
+        System.out.println();
+
         final OpenAIClient client = OpenAIOkHttpClient
                                         .builder()
                                         .adminApiKey(System.getenv("OPENAI_ADMIN_KEY"))
