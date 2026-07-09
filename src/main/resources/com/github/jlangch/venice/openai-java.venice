@@ -103,16 +103,6 @@
 (import :com.github.jlangch.venice.util.openai.TemporaryFile)
 
 
-(def- err-msg-api-key """
-                      No OpenAI API key supplied. 
-                      API key:   Pass the option ':openai-api-key key' or set env var "OPENAI_API_KEY"!
-                      """)
-
-(def- err-msg-adm-key """
-                      No OpenAI ADMIN key supplied. 
-                      ADMIN key: Pass the option ':openai-admin-key key' or set env var "OPENAI_ADMIN_KEY"!
-                      """)
-
 
 ;; -----------------------------------------------------------------------------
 ;; CLIENT 
@@ -132,24 +122,27 @@
 
           ¶**Parameter «options»**
 
-          | [![width: 15%]]    | [![width: 85%]] |
-          | :openai-api-key k  | An optional OpenAI API Key. As fallback the key \
-                                 is read from the environment variable \
-                                 "OPENAI_API_KEY". |
-          | :openai-org-id k   | An optional OpenAI organisation ID. As fallback \
-                                 the id is read from the environment variable \
-                                 "OPENAI_ORG_ID". |
-          | :openai-proj-id k  | An optional OpenAI project ID. As fallback the id \
-                                 is read from the environment variable  \
-                                 "OPENAI_PROJECT_ID". |
-          | :openai-base-url u | An optional OpenAI baseURL. As fallback the url \
-                                 is read from the environment variable  \
-                                 "OPENAI_BASE_URL". ¶\
-                                 OpenAI uses the standard base URL \
-                                 'https://api.openai.com/v1' if it is not \
-                                 explicitely defined. |
-          | :debug t           | If `true` prints the found keys (obfuscated). \
-                                 defaults to `false`. |
+          | [![width: 15%]]     | [![width: 85%]] |
+          | :openai-api-key k   | An optional OpenAI API Key. As fallback the key \
+                                  is read from the environment variable \
+                                  "OPENAI_API_KEY". |
+          | :openai-admin-key k | An optional OpenAI Admin Key. As fallback the key \
+                                  is read from the environment variable \
+                                  "OPENAI_ADMIN_KEY". |
+          | :openai-org-id k    | An optional OpenAI organisation ID. As fallback \
+                                  the id is read from the environment variable \
+                                  "OPENAI_ORG_ID". |
+          | :openai-proj-id k   | An optional OpenAI project ID. As fallback the id \
+                                  is read from the environment variable  \
+                                  "OPENAI_PROJECT_ID". |
+          | :openai-base-url u  | An optional OpenAI baseURL. As fallback the url \
+                                  is read from the environment variable  \
+                                  "OPENAI_BASE_URL". ¶\
+                                  OpenAI uses the standard base URL \
+                                  'https://api.openai.com/v1' if it is not \
+                                  explicitely defined. |
+          | :debug t            | If `true` prints the found keys (obfuscated). \
+                                  defaults to `false`. |
 
           ¶**Install OpenAI Java libraries in the REPL**
 
@@ -179,13 +172,13 @@
               (openai-java/close client)))
           """)
      :see-also '(
-        "openai-java/client-admin"
         "openai-java/close"
         "openai-java/version"
         "openai-java/models"
         "openai-java/chat-completion"
         "openai-java/generate-image"
-        "openai-java/create-speech") }
+        "openai-java/create-speech"
+        "openai-java/costs") }
 
   client [& options]
 
@@ -195,23 +188,36 @@
         openai-api-key-arg   (:openai-api-key opts)
         openai-api-key-env   (openai-api-key-from-env)
         openai-api-key       (or openai-api-key-arg openai-api-key-env)
+        openai-admin-key-arg (:openai-admin-key opts)
+        openai-admin-key-env (openai-admin-key-from-env)
+        openai-admin-key     (or openai-admin-key-arg openai-admin-key-env)
         openai-org-id        (or (:openai-org-id opts)    (openai-org-id-from-env))
         openai-proj-id       (or (:openai-proj-id opts)   (openai-proj-id-from-env))
         openai-base-url      (or (:openai-base-url opts)  (openai-base-url-from-env))
-        prefer-key           (:prefer-key opts :api)
         max-retries          (:max-retries opts)
         debug                (:debug opts false)]
     (let [builder (. :OpenAIOkHttpClient :builder)]
       (when debug
-        (println "OpenAI api key arg: " (obfuscate-openai-key openai-api-key-arg))
-        (println "OpenAI api key env: " (obfuscate-openai-key openai-api-key-env))
-        (println "OpenAI api key:     " (obfuscate-openai-key openai-api-key)))
+        (println "OpenAI api key arg:   " (obfuscate-openai-key openai-api-key-arg))
+        (println "OpenAI api key env:   " (obfuscate-openai-key openai-api-key-env))
+        (println "OpenAI api key:       " (obfuscate-openai-key openai-api-key))
+        (println "OpenAI admin key arg: " (obfuscate-openai-key openai-admin-key-arg))
+        (println "OpenAI admin key env: " (obfuscate-openai-key openai-admin-key-env))
+        (println "OpenAI admin key:     " (obfuscate-openai-key openai-admin-key)))
 
-      (when (nil? openai-api-key)
-        (throw (ex :VncException err-msg-api-key)))
+      (when (and (nil? openai-api-key) (nil? openai-admin-key))
+        (throw (ex :VncException 
+                   """
+                   No OpenAI API or ADMIN key supplied. 
+                   Any combination of:
+                     - pass option ':openai-api-key key'
+                     - pass option ':openai-admin-key key'
+                     - set env var "OPENAI_API_KEY"
+                     - set env var "OPENAI_ADMIN_KEY"
+                   """)))
 
-      (. builder :apiKey openai-api-key)
-
+      (when (some? openai-api-key)   (. builder :apiKey openai-api-key))
+      (when (some? openai-admin-key) (. builder :adminApiKey openai-admin-key))
       (when (some? openai-org-id)    (. builder :organization openai-org-id))
       (when (some? openai-proj-id)   (. builder :project openai-proj-id))
       (when (some? openai-base-url)  (. builder :baseUrl openai-base-url))
@@ -283,43 +289,11 @@
      :see-also '(
         "openai-java/client"
         "openai-java/close"
-        "openai-java/version"
-        "openai-java/models"
-        "openai-java/chat-completion"
-        "openai-java/generate-image"
-        "openai-java/create-speech") }
+        "openai-java/costs" ) }
 
   client-admin [& options]
 
-  (validate-libs-installed)
-
-  (let [opts                 (apply hash-map options)
-        openai-admin-key-arg (:openai-admin-key opts)
-        openai-admin-key-env (openai-admin-key-from-env)
-        openai-admin-key     (or openai-admin-key-arg openai-admin-key-env)
-        openai-org-id        (or (:openai-org-id opts)    (openai-org-id-from-env))
-        openai-proj-id       (or (:openai-proj-id opts)   (openai-proj-id-from-env))
-        openai-base-url      (or (:openai-base-url opts)  (openai-base-url-from-env))
-        prefer-key           (:prefer-key opts :api)
-        max-retries          (:max-retries opts)
-        debug                (:debug opts false)]
-    (let [builder (. :OpenAIOkHttpClient :builder)]
-      (when debug
-        (println "OpenAI admin key arg: " (obfuscate-openai-key openai-admin-key-arg))
-        (println "OpenAI admin key env: " (obfuscate-openai-key openai-admin-key-env))
-        (println "OpenAI admin key:     " (obfuscate-openai-key openai-admin-key)))
-
-      (when (nil? openai-admin-key)
-        (throw (ex :VncException err-msg-adm-key)))
-
-      (. builder :adminApiKey openai-admin-key)
-
-      (when (some? openai-org-id)    (. builder :organization openai-org-id))
-      (when (some? openai-proj-id)   (. builder :project openai-proj-id))
-      (when (some? openai-base-url)  (. builder :baseUrl openai-base-url))
-      (when (some? max-retries)      (. builder :maxRetries max-retries))
-
-      (. builder :build))))
+  (apply openai-java/client options))  ;; delegate
 
 
 (defn 
@@ -2114,7 +2088,7 @@
           ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
           (do
             (load-module :openai-java)
-            (let [client  (openai-java/client-admin)]
+            (let [client  (openai-java/client)]
               (openai-java/costs client 60)))
           """
           """
@@ -2122,11 +2096,11 @@
           (do
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client-admin :openai-admin-key admin-key)]
+                  client     (openai-java/client :openai-admin-key admin-key)]
               (openai-java/costs client 60 :limit 180)))
           """)
      :see-also '(
-          "openai-java/client-admin"
+          "openai-java/client"
           "openai-java/costs-by-month"
           "openai-java/costs-by-month-daily"
           "openai-java/costs-by-days"
@@ -2178,7 +2152,7 @@
           ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
           (do
             (load-module :openai-java)
-            (let [client  (openai-java/client-admin)]
+            (let [client  (openai-java/client)]
               (openai-java/costs-by-month client 2026 5)))
           """,
           """
@@ -2186,11 +2160,11 @@
           (do
             (load-module :openai-java)
             (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client-admin :openai-admin-key admin-key)]
+                  client     (openai-java/client :openai-admin-key admin-key)]
               (openai-java/costs-by-month client 2026 5)))
           """)
      :see-also '(
-          "openai-java/client-admin"
+          "openai-java/client"
           "openai-java/costs"
           "openai-java/costs-by-month-daily"
           "openai-java/costs-by-days"
@@ -2253,7 +2227,7 @@
             (load-module :ascii-table)
   
             ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
-            (let [client  (openai-java/client-admin)
+            (let [client  (openai-java/client)
                   today   (time/local-date)
                   costs   (->> (openai-java/costs-by-month-daily client 2026 6)
                                (filter #(time/not-after? (first %) today)))
@@ -2279,7 +2253,7 @@
             (load-module :ascii-table)
   
             (let [admin-key  "sk-admin-1234"
-                  client  (openai-java/client-admin :openai-admin-key admin-key)
+                  client  (openai-java/client :openai-admin-key admin-key)
                   today   (time/local-date)
                   costs   (->> (openai-java/costs-by-month-daily client 2026 6)
                                (filter #(time/not-after? (first %) today)))
@@ -2299,7 +2273,7 @@
                 0)))
           """)
      :see-also '(
-          "openai-java/client-admin"
+          "openai-java/client"
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
@@ -2359,7 +2333,7 @@
             (load-module :openai-java)
             (let [start      (time/local-date 2026 6 1) 
                   end        (time/local-date 2026 6 3) 
-                  client     (openai-java/client-admin)]
+                  client     (openai-java/client)]
               (openai-java/costs-by-days client start end)))
           """,
           """
@@ -2369,11 +2343,11 @@
             (let [admin-key  "sk-admin-1234"
                   start      (time/local-date 2026 6 1) 
                   end        (time/local-date 2026 6 3) 
-                  client     (openai-java/client-admin :openai-admin-key admin-key)]
+                  client     (openai-java/client :openai-admin-key admin-key)]
               (openai-java/costs-by-days client start end)))
           """)
      :see-also '(
-          "openai-java/client-admin"
+          "openai-java/client"
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-month-daily"
