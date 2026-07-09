@@ -15,7 +15,14 @@ import com.openai.models.admin.organization.usage.UsageCostsResponse.Data.Result
 /**
  * Demonstrates the openai-java <code>OrganizationCostsResult</code> value parser bug
  *
- * Depends on OpenAI:  com.openai:openai-java:4.42.0
+ * <p>Depends on OpenAI:  com.openai:openai-java:4.42.0
+ *
+ * <p>Call from Venice REPL:
+ *
+ * <pre>
+ * ;; workaround: false
+ * (. :com.github.jlangch.venice.util.openai.bug.UsageCostJsonParserBug :run false)
+ * </pre>
  */
 public class UsageCostJsonParserBug {
 
