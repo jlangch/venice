@@ -1,4 +1,4 @@
-package com.github.jlangch.venice.util.openai.bugs;
+package com.github.jlangch.venice.util.openai.bug;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -22,6 +22,10 @@ public class UsageCostJsonParserBug {
     private UsageCostJsonParserBug() {}
 
     public static void main(String[] args) {
+        run(true);
+    }
+
+    public static void run(final boolean workaround) {
         final OpenAIClient client = OpenAIOkHttpClient
                                         .builder()
                                         .adminApiKey(System.getenv("OPENAI_ADMIN_KEY"))
@@ -66,7 +70,7 @@ public class UsageCostJsonParserBug {
                 try {
                     final double value;
 
-                    if (true) {
+                    if (!workaround) {
                         // The OpenAI value Json number parser throws an exception
                         value = costs.amount()
                                      .flatMap(amount -> amount.value())  // <== exception
