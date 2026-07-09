@@ -31,7 +31,8 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - OpenAI: Simplified the creation of admin clients to use the *Cost* admin api
-- OpenAI: Chat completion streaming can now include token usage information when requested.
+- OpenAI: Chat completion streaming can now include token usage information when
+  requested.
 
 
 
