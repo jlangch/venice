@@ -13,7 +13,8 @@ All notable changes to this project will be documented in this file.
 
 - OpenAI: simplified the client to use api and admin functions interchangeably. 
   The OpenAI client knows when to use a supplied api or admin key.
-- Bumped the OpenAI Java library to v4.42.0
+- Bumped the OpenAI Java library to v4.42.0 with definitions for gpt-5.6-sol, 
+  gpt-5.6-terra, and gpt-5.6-luna
 
 
 
