@@ -11,8 +11,8 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- OpenAI: simplified the client to use api and admin functions. The OpenAI
-  client knows when to use a supplied api or admin key.
+- OpenAI: simplified the client to use api and admin functions interchangeably. 
+  The OpenAI client knows when to use a supplied api or admin key.
 
 
 
