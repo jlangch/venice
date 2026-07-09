@@ -7,7 +7,7 @@ Kira is a simple templating module for Venice.
 
 ## Syntax
 
-The `<% %>` tags are used to embed a section of Clojure code with side-effects. 
+The `<% %>` tags are used to embed a section of Venice code with side-effects. 
 This is commonly used for control structures like loops or conditionals.
 
 For example:
