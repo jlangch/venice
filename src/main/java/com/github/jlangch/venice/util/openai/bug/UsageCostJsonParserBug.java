@@ -41,13 +41,25 @@ import com.openai.models.admin.organization.usage.UsageCostsResponse.Data.Result
  * <p>Call from Venice REPL:
  *
  * <pre>
- * ;; 1. Install Venice 1.13.12+ (depends on "com.openai:openai-java:4.42.0")
+ * ;; 1. Install Venice 1.13.12+ with
  * > curl -O https://maven.org/maven2/com/github/jlangch/venice/1.13.12/venice-1.13.12.jar
  * > java -jar venice-1.13.12.jar -setup -colors -dir ./repl
  *
- * ;; 2. Run the bug demo in the REPL
- * (let [workaround  false]
- *   (. :com.github.jlangch.venice.util.openai.bug.UsageCostJsonParserBug :run false))
+ * ;; 2. Install the "com.openai:openai-java:4.42.0" dependencies
+ * > cd repl
+ * >./repl.sh
+ * venice> (load-module :openai-java-install)
+ * venice> (openai-java-install/install :dir (repl/libs-dir) :silent false)
+ *
+ * ;; 3. Run the bug demo in the REPL
+ * > cd repl
+ * >./repl.sh
+ * > venice> (let [workaround  false]
+ *              (. :com.github.jlangch.venice.util.openai.bug.UsageCostJsonParserBug :run false))
+ *
+ * ;; 4. Or run with Java
+ * > cd repl
+ * > java -cp "libs:libs/*" com.github.jlangch.venice.util.openai.bug.UsageCostJsonParserBug
  * </pre>
  */
 public class UsageCostJsonParserBug {
