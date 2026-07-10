@@ -2046,6 +2046,15 @@
                  (openai-java/models)
                  (sort-by :id)
                  (docoll println)))
+          """,
+          """
+          (do
+            (load-module :openai-java)
+            (-<> (openai-java/client)
+                 (openai-java/models <>)
+                 (filter #(str/starts-with? (:id %) "gpt-") <>)
+                 (sort-by :id <>)
+                 (docoll println <>)))
           """)
      :see-also '(
           "openai-java/chat-completion") }
