@@ -112,13 +112,24 @@
   ^{ :arglists '(
           "(client & options)" )
      :doc """
-          Creates an OpenAI client for API calls.
+          Creates an OpenAI client for API or ADMIN calls.
+
+          **For API calls**
+
+          Define the env var "OPENAI_API_KEY" or pass `:openai-api-key ` 
+
+          **For ADMIN calls**
+
+          Define the env var "OPENAI_ADMIN_KEY" or pass `:openai-admin-key ` 
+
 
           **Note:**
 
-          Don’t create more than one api client in the same application. Each 
-          client has a connection pool and thread pools, which are more efficient
-          to share between requests.
+          A client can handle both API and ADMIN calls!
+
+          Don’t create more than one client in the same application. Each client
+          has a connection pool and thread pools, which are more efficient to
+          share between requests.
 
           ¶**Parameter «options»**
 
@@ -209,11 +220,13 @@
         (throw (ex :VncException 
                    """
                    No OpenAI API or ADMIN key supplied. 
-                   Any combination of:
-                     - pass option ':openai-api-key key'
-                     - pass option ':openai-admin-key key'
-                     - set env var "OPENAI_API_KEY"
-                     - set env var "OPENAI_ADMIN_KEY"
+
+                   Any combination of
+                      - pass option ':openai-api-key key'
+                      - pass option ':openai-admin-key key'
+                      - set env var "OPENAI_API_KEY"
+                      - set env var "OPENAI_ADMIN_KEY"
+                   will work.
                    """)))
 
       (when (some? openai-api-key)   (. builder :apiKey openai-api-key))
