@@ -2117,8 +2117,8 @@
           "openai-java/costs-by-month-daily"
           "openai-java/costs-by-days"
           "openai-java/total-costs"
-          "openai-java/total-costs"
           "openai-java/format-cost-item"
+          "openai-java/aggregate-by-day"
           "openai-java/chat-completion") }
 
   costs [client last-n-days & options]
@@ -2182,6 +2182,7 @@
           "openai-java/costs-by-days"
           "openai-java/total-costs"
           "openai-java/format-cost-item"
+          "openai-java/aggregate-by-day"
           "openai-java/chat-completion") }
 
   costs-by-month [client year month & options]
@@ -2309,17 +2310,8 @@
     (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
     (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
 
-    (let [items (apply openai-java/costs-by-month client year month options)
-          days  (time/length-of-month (time/local-date year month 1))
-          costs (for [d (range 1 (inc days))] [(time/local-date year month d) 0.0D])]
-      (loop [items items, costs costs]
-        (if (empty? items)
-          (map (fn [x] [(first x) (dec/scale (decimal (second x)) 2 :HALF_UP)]) costs)
-          (let [item (first items)
-                day0 (dec (time/day-of-month (:bucket-start item)))
-                cost (nth costs day0)
-                amt  (+ (second cost) (:value item))]
-            (recur (rest items) (assoc costs day0 [(first cost) amt]))))))))
+    (->> (apply openai-java/costs-by-month client year month options)
+         (openai-java/aggregate-by-day))))
 
 
 (defn 
@@ -2364,6 +2356,7 @@
           "openai-java/costs-by-month"
           "openai-java/costs-by-month-daily"
           "openai-java/total-costs"
+          "openai-java/aggregate-by-day"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
@@ -2394,10 +2387,12 @@
      :doc """
           Aggregate cost items by day.
 
-          Filter the aggregated item by its value. E.g. to return only
-          cost items with an amount > 0.0
+          Filter the aggregated item by its value through the single arg function
+          `amt-filter-fn`. E.g. to return only cost items with an amount > 0.0:
 
-          Returns a list of aggregated daily cost items:
+          pass `(fn [v] (pos? v))` or simply  `pos?`
+
+          Returns a list of aggregated daily cost items as date, value tuples:
 
           ```
            ( [2026-06-01 0.09M] 
@@ -2429,7 +2424,7 @@
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
           "openai-java/total-costs"
-          "openai-java/total-costs"
+          "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
   aggregate-by-day 
@@ -2474,7 +2469,7 @@
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
-          "openai-java/total-costs"
+          "openai-java/aggregate-by-day"
           "openai-java/total-costs"
           "openai-java/chat-completion") }
 
@@ -2511,7 +2506,7 @@
           "openai-java/costs"
           "openai-java/costs-by-month"
           "openai-java/costs-by-days"
-          "openai-java/total-costs"
+          "openai-java/aggregate-by-day"
           "openai-java/format-cost-item"
           "openai-java/chat-completion") }
 
