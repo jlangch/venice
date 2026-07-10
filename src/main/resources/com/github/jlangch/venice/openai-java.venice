@@ -2106,7 +2106,7 @@
           | :api-key-ids k  | A list of api key ids |
           | :project-ids k  | A list of project ids |
 
-          Note: Requires an **Admin** client with an ADMIN key!
+          Note: Requires a client with an ADMIN key!
           """
      :examples '(
           """
@@ -2170,7 +2170,7 @@
           | :api-key-ids k  | A list of api key ids |
           | :project-ids k  | A list of project ids |
 
-          Note: Requires an **Admin** client with an ADMIN key!
+          Note: Requires a client with an ADMIN key!
           """
      :examples '(
           """
@@ -2244,7 +2244,7 @@
              [2026-06-30 0.16M] )
           ```
 
-          Note: Requires an **Admin** client with an ADMIN key!
+          Note: Requires a client with an ADMIN key!
           """
      :examples '(
           """
@@ -2341,7 +2341,7 @@
           | :api-key-ids k  | A list of api key ids |
           | :project-ids k  | A list of project ids |
 
-          Note: Requires an **Admin** client with an ADMIN key!
+          Note: Requires a client with an ADMIN key!
           """
      :examples '(
           """
