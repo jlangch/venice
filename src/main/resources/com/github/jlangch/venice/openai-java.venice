@@ -2113,15 +2113,14 @@
           ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
           (do
             (load-module :openai-java)
-            (let [client  (openai-java/client)]
+            (let [client (openai-java/client)]
               (openai-java/costs client 60)))
           """
           """
           ;; Pass an explicit admin key
           (do
             (load-module :openai-java)
-            (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)]
+            (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
               (openai-java/costs client 60 :limit 180)))
           """)
      :see-also '(
@@ -2147,7 +2146,7 @@
 
     (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
     (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
-    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must be a sequence of strings")
 
     (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
          (. <> :queryByLastNDays last-n-days limit)       
@@ -2184,8 +2183,7 @@
           ;; Pass an explicit admin key
           (do
             (load-module :openai-java)
-            (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)]
+            (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
               (openai-java/costs-by-month client 2026 5)))
           """)
      :see-also '(
@@ -2212,7 +2210,7 @@
 
     (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
     (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
-    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must be a sequence of strings")
 
     (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
          (. <> :queryByMonth (time/local-date year month 1) limit)
@@ -2253,12 +2251,12 @@
             (load-module :ascii-table)
   
             ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
-            (let [client  (openai-java/client)
-                  today   (time/local-date)
-                  costs   (->> (openai-java/costs-by-month-daily client 2026 6)
-                               (filter #(time/not-after? (first %) today)))
-                  zero    (decimal "0.00")
-                  total   (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
+            (let [client (openai-java/client)
+                  today  (time/local-date)
+                  costs  (->> (openai-java/costs-by-month-daily client 2026 6)
+                             (filter #(time/not-after? (first %) today)))
+                  zero   (decimal "0.00")
+                  total  (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body   { :align :left } 
@@ -2278,13 +2276,12 @@
             (load-module :openai-java)
             (load-module :ascii-table)
   
-            (let [admin-key  "sk-admin-1234"
-                  client  (openai-java/client :openai-admin-key admin-key)
-                  today   (time/local-date)
-                  costs   (->> (openai-java/costs-by-month-daily client 2026 6)
-                               (filter #(time/not-after? (first %) today)))
-                  zero    (decimal "0.00")
-                  total   (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
+            (let [client (openai-java/client :openai-admin-key "sk-admin-1234")
+                  today  (time/local-date)
+                  costs  (->> (openai-java/costs-by-month-daily client 2026 6)
+                              (filter #(time/not-after? (first %) today)))
+                  zero   (decimal "0.00")
+                  total  (reduce #(dec/add %1 %2 2 :HALF_UP) zero (map second costs))]
               (ascii-table/print 
                 [ { :header {:text "Date" }  
                     :body   { :align :left } 
@@ -2321,7 +2318,7 @@
 
     (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
     (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
-    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must be a sequence of strings")
 
     (->> (apply openai-java/costs-by-month client year month options)
          (openai-java/aggregate-by-day))))
@@ -2348,19 +2345,18 @@
           ;; Read the admin key from the environment var "OPENAI_ADMIN_KEY"
           (do
             (load-module :openai-java)
-            (let [start      (time/local-date 2026 6 1) 
-                  end        (time/local-date 2026 6 3) 
-                  client     (openai-java/client)]
+            (let [start  (time/local-date 2026 6 1) 
+                  end    (time/local-date 2026 6 3) 
+                  client (openai-java/client)]
               (openai-java/costs-by-days client start end)))
           """,
           """
           ;; Pass an explicit admin key
           (do
             (load-module :openai-java)
-            (let [admin-key  "sk-admin-1234"
-                  start      (time/local-date 2026 6 1) 
-                  end        (time/local-date 2026 6 3) 
-                  client     (openai-java/client :openai-admin-key admin-key)]
+            (let [start  (time/local-date 2026 6 1) 
+                  end    (time/local-date 2026 6 3) 
+                  client (openai-java/client :openai-admin-key "sk-admin-1234")]
               (openai-java/costs-by-days client start end)))
           """)
      :see-also '(
@@ -2386,7 +2382,7 @@
 
     (assert (and (long? limit) (pos? limit)) "limit arg must be a positive long")
     (assert (or (nil? api-key-ids) (sequential? api-key-ids)) "api-key-ids arg must be a sequence of strings")
-    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must bea sequence of strings")
+    (assert (or (nil? project-ids) (sequential? project-ids)) "project-ids arg must be a sequence of strings")
 
     (-<> (. :QueryUsageCosts :new client api-key-ids project-ids)
          (. <> :queryByDayPeriod start-day end-day limit)
@@ -2473,8 +2469,7 @@
           """
           (do
             (load-module :openai-java)
-            (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)]
+            (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
               (doseq [v (openai-java/costs client 30 180)] 
                  (println (openai-java/format-cost-item v)))))
           """)
@@ -2510,8 +2505,7 @@
           """
           (do
             (load-module :openai-java)
-            (let [admin-key  "sk-admin-1234"
-                  client     (openai-java/client :openai-admin-key admin-key)]
+            (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
               (->> (openai-java/costs-by-month client 2026 6 180)
                    (openai-java/total-costs))))
           """)
