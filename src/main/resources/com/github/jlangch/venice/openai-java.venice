@@ -2042,7 +2042,10 @@
           """
           (do
             (load-module :openai-java)
-            (openai-java/models (openai-java/client)))
+            (->> (openai-java/client)
+                 (openai-java/models)
+                 (sort-by :id)
+                 (docoll println)))
           """)
      :see-also '(
           "openai-java/chat-completion") }
