@@ -2,12 +2,9 @@
 
  
 
-List the available models
+List the available models:
 
- 
- 
-
-```
+``` clojure
 (do
   (load-module :openai-java)
   (->> (openai-java/client)
