@@ -2387,6 +2387,73 @@
          (java->venice <>)
          (map #(map-keys keyword %) <>))))
 
+(defn
+  ^{ :arglists '(
+          "(aggregate-by-day items)"
+          "(aggregate-by-day items amt-filter-fn)" )
+     :doc """
+          Aggregate cost items by day.
+
+          Filter the aggregated item by its value. E.g. to return only
+          cost items with an amount > 0.0
+
+          Returns a list of aggregated daily cost items:
+
+          ```
+           ( [2026-06-01 0.09M] 
+             [2026-06-02 0.01M] 
+             [2026-06-03 0.04M] 
+             ...
+             [2026-06-30 0.16M] )
+          ```
+          """
+     :examples '(
+          """
+          (do
+            (load-module :openai-java)
+            (let [client (openai-java/client)]
+              (->> (openai-java/costs client 30)
+                   (openai-java/aggregate-by-day)
+                   (docoll println))))
+          """,
+          """
+          (do
+            (load-module :openai-java)
+            (let [client (openai-java/client)]
+              (->> (openai-java/costs client 30)
+                   (openai-java/aggregate-by-day pos?)  ;; amounts > 0.0 only
+                   (docoll println))))
+          """)
+     :see-also '(
+          "openai-java/costs"
+          "openai-java/costs-by-month"
+          "openai-java/costs-by-days"
+          "openai-java/total-costs"
+          "openai-java/total-costs"
+          "openai-java/chat-completion") }
+
+  aggregate-by-day 
+  
+  ([items]
+    (openai-java/aggregate-by-day (fn [x] true) items))
+
+  ([amt-filter-fn items ]
+  { :pre [(sequential? items)] }
+  (if (empty? items)
+    []
+    (loop [items items, costs_ {}]
+      (if (empty? items)
+        (let [dates (sort (keys costs_))]
+          (for [d     (range-local-dates (first dates) (last dates))
+                :let  [v (dec/scale (decimal (get costs_ d 0.0)) 2 :HALF_UP)]
+                :when (amt-filter-fn v)]
+            [d v]))
+        (let [item  (first items)
+              day   (time/local-date (:bucket-start item))
+              amt   (get item :value 0.0)
+              old   (get costs_ day 0.0)]
+          (recur (rest items) (assoc costs_ day (+ old amt)))))))))
+
 
 (defn 
   ^{ :arglists '(
@@ -2679,6 +2746,15 @@
     (<= (count key) 10) key
     (<= (count key) 12) (str (str/nfirst key 10)  "...")
     :else               (str (str/nfirst key 10)  "..." (str/nlast key 2))))
+
+(defn- range-local-dates [from to]
+  { :pre [(time/local-date? from)
+          (time/local-date? to)
+          (time/not-after? from to)] }
+  (loop [dates [], d from]
+    (if (time/after? d to)
+      dates
+      (recur (conj dates d) (time/plus d :days 1)))))
 
 (defn- openai-api-key-from-env []
   (system-env "OPENAI_API_KEY"))
