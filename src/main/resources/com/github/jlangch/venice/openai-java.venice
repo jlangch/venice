@@ -2677,7 +2677,7 @@
           (do
             (load-module :openai-java)
   
-            (defn get-weather [fnArgsJson] "sunny, 21°C")
+            (defn get-weather [fn-json-args] "sunny, 21°C")
 
             (let [registry (-> (openai-java/create-function-registry)
                                (openai-java/register-function "GetWeather"
