@@ -350,7 +350,8 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | client | A client.¶Use `openai-java/client` to create a client |
-          | model  | An OpenAI model. E.g.: "gpt-5.4", "gpt-5.4-mini", "gpt-5.4-nano" |
+          | model  | An OpenAI model. E.g.: "gpt-5.6-sol", "gpt-5.6-terra", \
+                     "gpt-5.6-luna". |
 
           Returns the chat completion result.
 
@@ -374,7 +375,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
                                (openai-java/add-user-message "Say this is a test"))
@@ -388,7 +389,7 @@
             (load-module :openai-java)
             (let [api-key  "sk-1234"
                   client   (openai-java/client :openai-api-key api-key)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
                                (openai-java/add-user-message "Say this is a test"))
@@ -400,7 +401,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/add-user-message "Say this is a test"))
                   response (openai-java/execute chat)
@@ -416,7 +417,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/add-user-message "Say Hello!"))
                   response (openai-java/execute chat)]
@@ -437,7 +438,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/json-response-format 
                                     "employee-list"
@@ -478,7 +479,7 @@
                   registry (-> (openai-java/create-function-registry)
                                (openai-java/register-function "weather_get_current"
                                                               get-current-weather))
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4" registry)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra" registry)
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/debug false)
                                (openai-java/add-function 
@@ -574,7 +575,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
                                (openai-java/add-user-message "Say this is a test"))
@@ -604,7 +605,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/include-streaming-usage)
                                (openai-java/add-user-message "Say this is a test"))]
@@ -883,7 +884,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
                                (openai-java/add-user-message "Say this is a test"))
@@ -896,7 +897,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/add-user-message "Say this is a test"))
                   response (openai-java/execute chat)
@@ -936,7 +937,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
                                (openai-java/add-user-message "Tell me a joke"))]
@@ -947,7 +948,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
                                (openai-java/add-user-message "Tell me a joke"))]
@@ -959,7 +960,7 @@
           (do
             (load-module :openai-java)
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client "gpt-5.4")
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/reasoning-effort :MEDIUM)
                                ;; include usage tokens
