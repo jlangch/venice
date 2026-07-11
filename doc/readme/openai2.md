@@ -48,8 +48,6 @@ and restart the REPL
 
 ## How to get an OpenAI api or admin key
 
- 
-
 **Api key**
 
 Go to [platform.openai.com](https://platform.openai.com/api-keys) and log-in with your
@@ -78,8 +76,6 @@ You can check your credit balance at
  
 
 ## Configuring OpenAI api keys
-
- 
 
 **Option 1**
 
@@ -159,7 +155,6 @@ Create a client that reads the OpenAI API key from the env var:
     ;; ...
     (openai-java/close client)))
 ```
-
 
  
 
