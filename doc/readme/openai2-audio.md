@@ -21,7 +21,7 @@ Example:
                       "gpt-4o-mini-tts"
                       "Today is a wonderful day to build something people love!"
                       :format :MP3
-                      :voice "cedar")]
+                      :voice "alloy")]  ;; male: "alloy", female: "coral"
     (->> (io/slurp-stream is :binary true)
           (io/spit (io/file "./audio.mp3")))
     (println "Audio saved to ./audio.mp3")))
@@ -40,7 +40,7 @@ Example with playing the created audio (MacOS only):
                       "gpt-4o-mini-tts"
                       "Today is a wonderful day to build something people love!"
                       :format :MP3
-                      :voice "cedar")]
+                      :voice "alloy")]  ;; male: "alloy", female: "coral"
     (let [audio-file (io/file "./audio.mp3")]
       (println "Downloading audio ...")
       (->> (io/slurp-stream is :binary true)
