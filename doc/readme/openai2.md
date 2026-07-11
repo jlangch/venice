@@ -4,8 +4,7 @@
 
 * [Installing OpenAI 3rd party libraries](#installing-openai-3rd-party-libraries)
 * [How to get an OpenAI api or admin key](#how-to-get-an-openai-api-or-admin-key)
-* [Configuring OpenAI API keys](#configuring-openai-api-keys)
-* [Configuring OpenAI ADMIN keys](#configuring-openai-admin-keys)
+* [Configuring OpenAI api and admin keys](#configuring-openai-api-and-admin-keys)
 * [Chat Completion](openai2-chat-completion.md)
 * [Files](openai2-files.md)
 * [Images](openai2-images.md)
@@ -17,7 +16,7 @@
  
 
 > [!NOTE]
-> Venice' OpenAI module requires Venice 1.13.10+
+> Venice' OpenAI module requires Venice 1.13.12+
 >
 
  
@@ -76,9 +75,15 @@ You can check your credit balance at
  
  
 
-## Configuring OpenAI api keys
+## Configuring OpenAI api and admin keys
+
+**Note:** An admin key is required only if the OpenAI *cost* functions are called.
+
+ 
 
 ### Option 1
+
+#### API key
 
 Pass the OpenAI API key as an option `:openai-api-key "sk-proj-1234"` for creating
 the OpenAI client:
@@ -91,23 +96,42 @@ the OpenAI client:
     (openai-java/close client)))
 ```
 
+#### ADMIN key
+
+Pass the OpenAI API key as an option `:openai-admin-key "sk-admin-1234"` for creating
+the OpenAI client:
+
+```
+(do
+  (load-module :openai-java)
+  (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
+    ;; ...
+    (openai-java/close client)))
+```
+
+> [!NOTE]
+> An api and an admin can be passed together to the client. The client knows which key
+> to use and throws an exception if a key is missing.
+>
+
  
 
 ### Option 2
 
-Define an environment variable at the OS Shell level:
+Define an environment variable `OPENAI_API_KEY` and/or `OPENAI_ADMIN_KEY` at the OS Shell level:
 
 On MacOS update the profile `~/.zprofile`
 
 ```
 export OPENAI_API_KEY=sk-proj-1234
-# export OPENAI_ORG_ID=
-# export OPENAI_PROJECT_ID=
+export OPENAI_ADMIN_KEY=sk-admin-1234
+#export OPENAI_ORG_ID=
+#export OPENAI_PROJECT_ID=
 ```
 
  
 
-Create a client that reads the OpenAI API key from the env var:
+Create a client that reads the OpenAI API and/or ADMIN key from the env vars:
 
 ```
 (do
@@ -125,13 +149,14 @@ Create a client that reads the OpenAI API key from the env var:
 
 ### Option 3
 
-Add the key to the `repl.env` file in the REPL home directory. 
+Add the keys to the `repl.env` file in the REPL home directory. 
 
 Linux/Mac OS:
 
 ```
 # OpenAI api key
 export OPENAI_API_KEY=sk-proj-1234
+export OPENAI_ADMIN_KEY=sk-admin-1234
 export OPENAI_ORG_ID=
 export OPENAI_PROJECT_ID=
 ```
@@ -141,13 +166,14 @@ Windows:
 ```
 REM OpenAI api key
 set OPENAI_API_KEY=sk-proj-1234
+set OPENAI_ADMIN_KEY=sk-admin-1234
 set OPENAI_ORG_ID=
 set OPENAI_PROJECT_ID=
 ```
 
  
 
-Create a client that reads the OpenAI API key from the env var:
+Create a client that reads the OpenAI API and/or ADMIN key from the env vars:
 
 ```
 (do
@@ -198,33 +224,3 @@ Save this file in `~/Library/LaunchAgents/setenv.OPENAI.plist`! On a restart, `l
 will arrange this to be run for us and provide the *OPENAI_API_KEY* env var to all
 Apps.
 
- 
- 
-
-## Configuring OpenAI admin keys
-
-### Option 1
-
-Pass the OpenAI ADMIN key as an option `:openai-admin-key "sk-admin-1234"` for creating
-the OpenAI client:
-
-```
-(do
-  (load-module :openai-java)
-  (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
-    ;; ...
-    (openai-java/close client)))
-```
-
- 
-
-### Option 2
-
-Define an environment variable at the OS Shell level:
-
-```
-export OPENAI_AMDIN_KEY=sk-admin-1234
-```
-
-See [Configuring OpenAI API keys](#configuring-openai-api-keys) for other options to define 
-environment variables.
