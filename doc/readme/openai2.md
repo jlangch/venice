@@ -23,7 +23,7 @@
  
  
 
-### Installing OpenAI 3rd party libraries
+## Installing OpenAI 3rd party libraries
 
 *In the REPL run:*
 ```
@@ -46,9 +46,10 @@ and restart the REPL
  
  
 
-### How to get an OpenAI api or admin key
+## How to get an OpenAI api or admin key
 
  
+
 **Api key**
 
 Go to [platform.openai.com](https://platform.openai.com/api-keys) and log-in with your
@@ -76,9 +77,10 @@ You can check your credit balance at
  
  
 
-#### Configuring OpenAI api keys
+## Configuring OpenAI api keys
 
  
+
 **Option 1**
 
 Pass the OpenAI API key as an option `:openai-api-key "sk-123456789"` for creating
