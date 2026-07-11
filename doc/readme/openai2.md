@@ -61,9 +61,9 @@ and click on "Create new Admin key"
 
 ### OpenAI credits
 
-You need to create a create a payment method and add some credits. Navigate to 
+You need to create a payment method and add some credits. Navigate to 
 [platform.openai.com](https://platform.openai.com/settings/organization/billing/overview):
-1. Click on "Payment methods" to a payment method
+1. Click on "Payment methods" to add a payment method
 2. Click on "Add to credit balance" to top up your credit 
 3. Click on "Credit Grants" to check your current credit grants
 
