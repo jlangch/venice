@@ -5,6 +5,7 @@
 * [Installing OpenAI 3rd party libraries](#installing-openai-3rd-party-libraries)
 * [How to get an OpenAI api or admin key](#how-to-get-an-openai-api-or-admin-key)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
+* [Configuring OpenAI ADMIN keys](#configuring-openai-admin-keys)
 * [Chat Completion](openai2-chat-completion.md)
 * [Files](openai2-files.md)
 * [Images](openai2-images.md)
@@ -79,13 +80,13 @@ You can check your credit balance at
 
 ### Option 1
 
-Pass the OpenAI API key as an option `:openai-api-key "sk-123456789"` for creating
+Pass the OpenAI API key as an option `:openai-api-key "sk-proj-1234"` for creating
 the OpenAI client:
 
 ```
 (do
   (load-module :openai-java)
-  (let [client (openai-java/client :openai-api-key "sk-123456789")]
+  (let [client (openai-java/client :openai-api-key "sk-proj-1234")]
     ;; ...
     (openai-java/close client)))
 ```
@@ -99,7 +100,7 @@ Define an environment variable at the OS Shell level:
 On MacOS update the profile `~/.zprofile`
 
 ```
-export OPENAI_API_KEY=sk-123456789
+export OPENAI_API_KEY=sk-proj-1234
 # export OPENAI_ORG_ID=
 # export OPENAI_PROJECT_ID=
 ```
@@ -130,7 +131,7 @@ Linux/Mac OS:
 
 ```
 # OpenAI api key
-export OPENAI_API_KEY=sk-123456789
+export OPENAI_API_KEY=sk-proj-1234
 export OPENAI_ORG_ID=
 export OPENAI_PROJECT_ID=
 ```
@@ -139,7 +140,7 @@ Windows:
 
 ```
 REM OpenAI api key
-set OPENAI_API_KEY=sk-123456789
+set OPENAI_API_KEY=sk-proj-1234
 set OPENAI_ORG_ID=
 set OPENAI_PROJECT_ID=
 ```
@@ -185,7 +186,7 @@ place we want for this task is `~/Library/LaunchAgents`, and the file is pretty 
       <string>/bin/launchctl</string>
       <string>setenv</string>
       <string>OPENAI_API_KEY</string>
-      <string>sk-12345678</string>
+      <string>sk-proj-1234</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -196,3 +197,34 @@ place we want for this task is `~/Library/LaunchAgents`, and the file is pretty 
 Save this file in `~/Library/LaunchAgents/setenv.OPENAI.plist`! On a restart, `launchctl` 
 will arrange this to be run for us and provide the *OPENAI_API_KEY* env var to all
 Apps.
+
+ 
+ 
+
+## Configuring OpenAI admin keys
+
+### Option 1
+
+Pass the OpenAI ADMIN key as an option `:openai-admin-key "sk-admin-1234"` for creating
+the OpenAI client:
+
+```
+(do
+  (load-module :openai-java)
+  (let [client (openai-java/client :openai-admin-key "sk-admin-1234")]
+    ;; ...
+    (openai-java/close client)))
+```
+
+ 
+
+### Option 2
+
+Define an environment variable at the OS Shell level:
+
+```
+export OPENAI_AMDIN_KEY=sk-admin-1234
+```
+
+See [Configuring OpenAI API keys](#configuring-openai-api-keys) for other options to define 
+environment variables.
