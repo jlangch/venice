@@ -3,6 +3,7 @@
  
 
 * [Installing OpenAI 3rd party libraries](#installing-openai-3rd-party-libraries)
+* [How to get an OpenAI api or admin key](#how-to-get-an-openai-api-or-admin-key)
 * [Configuring OpenAI API keys](#configuring-openai-api-keys)
 * [Chat Completion](openai2-chat-completion.md)
 * [Files](openai2-files.md)
@@ -45,8 +46,40 @@ and restart the REPL
  
  
 
-### Configuring OpenAI API keys
+### How to get an OpenAI api or admin key
 
+ 
+
+**Api key**
+
+Go to [platform.openai.com](https://platform.openai.com/api-keys) and log-in with your
+OpenAI account (register for an account if you don't have one). Finally 
+click on "Create new secret key". That's it.
+
+**Admin key**
+
+Go to [platform.openai.com](https://platform.openai.com/settings/organization/admin-keys) 
+and click on "Create new Admin key"
+
+**OpenAI credits**
+
+You need to create a create a payment method and add some credits. Navigate to 
+[platform.openai.com](https://platform.openai.com/settings/organization/billing/overview):
+1. Click on "Payment methods" to a payment method
+2. Click on "Add to credit balance" to top up your credit 
+3. Click on "Credit Grants" to check your current credit grants
+
+**OpenAI credit balance**
+
+You can check your credit balance at 
+[platform.openai.com](https://platform.openai.com/settings/organization/billing/overview)
+
+ 
+ 
+
+#### Configuring OpenAI api keys
+
+ 
 
 **Option 1**
 
