@@ -18,7 +18,7 @@ Example:
   (let [client   (openai-java/client)
         is       (openai-java/create-speech
                       client 
-                      :GPT_4O_MINI_TTS
+                      "gpt-4o-mini-tts"
                       "Today is a wonderful day to build something people love!"
                       :format :MP3
                       :voice "cedar")]
@@ -37,7 +37,7 @@ Example with playing the created audio (MacOS only):
   (let [client   (openai-java/client)
         is       (openai-java/create-speech
                       client 
-                      :GPT_4O_MINI_TTS
+                      "gpt-4o-mini-tts"
                       "Today is a wonderful day to build something people love!"
                       :format :MP3
                       :voice "cedar")]

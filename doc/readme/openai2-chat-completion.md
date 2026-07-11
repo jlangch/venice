@@ -28,7 +28,7 @@ Variant a) load the OpenAI api key from the env var OPENAI_API_KEY to create the
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message 
                          """
@@ -52,7 +52,7 @@ Variant b) passing an explicit OpenAI api key to create the client:
   (load-module :openai-java)
   
   (let [client   (openai-java/client :openai-api-key "sk-1234")
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message 
                          """
@@ -90,7 +90,7 @@ Result:
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message 
                          """
@@ -118,7 +118,7 @@ She did not go to the market.
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message 
                          """
@@ -171,7 +171,7 @@ Chain of thought (CoT) is a method that encourages Large Language Models (LLMs) 
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message 
                          """
@@ -206,7 +206,7 @@ If you want, I can also suggest names that are **cute**, **elegant**, or **gende
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message 
                          """
@@ -255,7 +255,7 @@ If you want, I can also suggest:
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message 
                          """
@@ -326,7 +326,7 @@ Chat conversation with multiple questions and answers.
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-user-message "Say Hello!"))
         response (openai-java/execute chat)]
@@ -396,7 +396,7 @@ A full weather example. It answers questions like *"What is the weather in Zuric
         registry (-> (openai-java/create-function-registry)
                      (openai-java/register-function "GetWeather"
                                                     get-weather))
-        chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra" registry)
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-function 
                           "GetWeather"
@@ -456,7 +456,7 @@ Zurich: 21°C, mostly sunny.
         registry (-> (openai-java/create-function-registry)
                      (openai-java/register-function "GetWeather"
                                                     get-weather))
-        chat     (-> (openai-java/chat-completion client :GPT_5_4 registry)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra" registry)
                      (openai-java/max-completion-tokens 2048)
                      (openai-java/add-function 
                           "GetWeather"
@@ -510,7 +510,7 @@ Return the response in JSON format specified by a JSON schema:
   (load-module :openai-java)
   
   (let [client   (openai-java/client)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                       (openai-java/max-completion-tokens 2048)
                       (openai-java/json-response-format 
                           "employee-list"
@@ -549,7 +549,7 @@ Describe an image uploaded in the chat:
                                 (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")
                                 :USER_DATA
                                 3600)
-        chat     (-> (openai-java/chat-completion client :GPT_5_4)
+        chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                       (openai-java/max-completion-tokens 2048)
                       (openai-java/add-user-message-with-files 
                           "Describe this image"

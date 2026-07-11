@@ -706,7 +706,7 @@
                                           (io/file "/Users/foo/Desktop/Tour_Eiffel.pdf")
                                           :USER_DATA
                                           3600)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/max-completion-tokens 2048)
                                (openai-java/add-user-message-with-files 
                                     "Describe this image"
@@ -803,7 +803,7 @@
                  registry  (-> (openai-java/create-function-registry)
                                (openai-java/register-function "weather_get_current"
                                                               get-current-weather))                  
-                 chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                 chat     (-> (openai-java/chat-completion client gpt-5.6-terra)
                                (openai-java/add-function 
                                     "weather_get_current"
                                     "Gets the current weather for a city."
@@ -851,7 +851,7 @@
             (load-module :openai-java)
 
             (let [client   (openai-java/client)
-                  chat     (-> (openai-java/chat-completion client :GPT_5_4)
+                  chat     (-> (openai-java/chat-completion client "gpt-5.6-terra")
                                (openai-java/json-response-format 
                                     "employee-list"
                                     "A list of employees"
@@ -1430,14 +1430,10 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | :client c   | A client.¶ Use `openai-java/client` to create a client |
-          | :model m    | The model to use for image generation. One of \
-                          `:DALL_E_2`, `:DALL_E_3`, or a GPT image model (`:GPT_IMAGE_1`, \
-                          `:GPT_IMAGE_1_MINI`, `:GPT_IMAGE_1_5`, or `:GPT_IMAGE_2`). \
-                          Defaults to `:DALL_E_2` unless a parameter specific to \
-                          the GPT image models is used.|
+          | :model m    | The model to use for image generation. One of `"gpt-image-1"`, \
+                          `"gpt-image-1-mini"`, `"gpt-image-1.5"`, or `"gpt-image-2"`).|
           | :prompt p   | A text description of the desired image(s). The maximum \
-                          length is 32000 characters for the GPT image models, 1000 \
-                          characters for dall-e-2 and 4000 characters for dall-e-3. |
+                          length is 32000 characters for the GPT image models. |
 
 
           ¶**Parameter «options»**
@@ -1449,7 +1445,7 @@
                               Must be one of transparent, opaque, or auto (default value). \
                               When `:AUTO` is used, the model will automatically determine \
                               the best background for the image.¶\
-                              `:GPT-IMAGE-2` does not support transparent backgrounds. \
+                              `"gpt-image-2"` does not support transparent backgrounds. \
                               Requests with background set to transparent will return an \
                               error for these models; use opaque or auto instead.¶\
                               If transparent, the output format needs to support transparency, \
@@ -1471,7 +1467,7 @@
                               \u00A0 • `:HD` and `:STANDARD` are supported for `:DALL_E_3`.¶\
                               \u00A0 • `:STANDARD`is the only option for `:DALL_E_2`. |
           | :size f         | The size of the generated images.¶\
-                              For `:GPT_IMAGE_2`, arbitrary resolutions are supported as \
+                              For `"gpt-image-2"`, arbitrary resolutions are supported as \
                               WIDTHxHEIGHT strings, for example `1536x864`. Width and height \
                               must both be divisible by 16 and the requested aspect ratio \
                               must be between 1:3 and 3:1. Resolutions above `2560x1440` \
@@ -1479,19 +1475,7 @@
                               `3840x2160`. The requested size must also satisfy the model’s \
                               current pixel and edge limits. The standard sizes `1024x1024`, \
                               `1536x1024`, and `1024x1536` are supported by the GPT image models; \
-                              auto is supported for models that allow automatic sizing. \
-                              For `:DALL_E_2`, use one of `256x256`, `512x512`, or `1024x1024`. \
-                              For `:DALL_E_3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`. |
-          | :style f        | The style of the generated images. This parameter is only \
-                              supported for `:DALL_E_3`. Must be one of `:VIVID` or `:NATURAL`. \
-                              Vivid causes the model to lean towards generating hyper-real \
-                              and dramatic images. Natural causes the model to produce \
-                              more natural, less hyper-real looking images. |
-          | :response-format f | The format in which generated images with `:DALL_E_2` \
-                                 and `:DALL_E_3` are returned. Must be one of `:URL` or `:B64_JSON`. \
-                                 URLs are only valid for 60 minutes after the image has been \
-                                 generated. This parameter isn’t supported for the GPT image \
-                                 models, which always return base64-encoded images.|
+                              auto is supported for models that allow automatic sizing. |
 
           Returns an OpenAI image response
 
@@ -1504,7 +1488,7 @@
             (let [client   (openai-java/client)
                   response (openai-java/generate-image 
                                 client 
-                                :GPT_IMAGE_1_MINI
+                                "gpt-image-1-mini"
                                 "A cat on bicycle"
                                 :format :PNG
                                 :number 1
@@ -1566,11 +1550,8 @@
           | :image i    | The image to edit. An `io/file`, a `bytebuf`, or a Java  `:InputStream` |
           | :mimetype m | The image's mimetype. E.g.:  `image/png`¶ |
           | :name n     | The image's name. E.g.:  `sea-otter.png`¶ |
-          | :model m    | The model to use for image generation. One of \
-                          `:DALL_E_2`, `:DALL_E_3`, or a GPT image model (`:GPT_IMAGE_1`, \
-                          `:GPT_IMAGE_1_MINI`, `:GPT_IMAGE_1_5`, or `:GPT_IMAGE_2`). \
-                          Defaults to `:DALL_E_2` unless a parameter specific to \
-                          the GPT image models is used.|
+          | :model m    | The model to use for image generation. One of (`"gpt-image-1"`, \
+                          `"gpt-image-1-mini"`, `"gpt-image-1.5"`, or "gpt-image-2"`)|
           | :prompt p   | A text description of the desired image(s). The maximum \
                           length is 32000 characters for the GPT image models, 1000 \
                           characters for dall-e-2 and 4000 characters for dall-e-3. |
@@ -1590,8 +1571,7 @@
                               error for these models; use opaque or auto instead.¶\
                               If transparent, the output format needs to support transparency, \
                               so it should be set to either `:PNG` (default value) or `:WEBP`. |
-          | :number n       | The number of images to generate. Must be between 1 and 10. For \
-                              `:DALL_E_3`, only `n=1` is supported.¶\
+          | :number n       | The number of images to generate. Must be between 1 and 10.¶\
                               minimum: 1, maximum: 10 |
           | :compression c  | The compression level (0-100%) for the generated images. This \
                               parameter is only supported for the GPT image models with the \
@@ -1603,11 +1583,9 @@
                               \u00A0 • `:AUTO` (default value) will automatically select the \
                               best quality for the given model.¶\
                               \u00A0 • `:HIGH`, `:MEDIUM` and `:LOW` are supported for the \
-                              GPT image models.¶\
-                              \u00A0 • `:HD` and `:STANDARD` are supported for `:DALL_E_3`.¶\
-                              \u00A0 • `:STANDARD`is the only option for `:DALL_E_2`. |
+                              GPT image models. |
           | :size f         | The size of the generated images.¶\
-                              For `:GPT_IMAGE_2`, arbitrary resolutions are supported as \
+                              For `"gpt-image-2"`, arbitrary resolutions are supported as \
                               WIDTHxHEIGHT strings, for example `1536x864`. Width and height \
                               must both be divisible by 16 and the requested aspect ratio \
                               must be between 1:3 and 3:1. Resolutions above `2560x1440` \
@@ -1615,20 +1593,13 @@
                               `3840x2160`. The requested size must also satisfy the model’s \
                               current pixel and edge limits. The standard sizes `1024x1024`, \
                               `1536x1024`, and `1024x1536` are supported by the GPT image models; \
-                              auto is supported for models that allow automatic sizing. \
-                              For `:DALL_E_2`, use one of `256x256`, `512x512`, or `1024x1024`. \
-                              For `:DALL_E_3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`. |
+                              auto is supported for models that allow automatic sizing. |
           | :fidelity f     | Control how much effort the model will exert to match the style \
                               and features, especially facial features, of input images. \
-                              This parameter is only supported for `:GPT-IMAGE-1` and \
-                              `:GPT-IMAGE-1_5` and later models, unsupported for \
-                              `:GPT-IMAGE-1_MINI`. Supports `:HIGH` and `:LOW`. Defaults \
+                              This parameter is only supported for `"gpt-image-1"` and \
+                              `"gpt-image-1.5"` and later models, unsupported for \
+                              `"gpt-image-1-mini"`. Supports `:HIGH` and `:LOW`. Defaults \
                               to `:LOW`. |
-          | :response-format f | The format in which generated images with `:DALL_E_2` \
-                                 and `:DALL_E_3` are returned. Must be one of `:URL` or `:B64_JSON`. \
-                                 URLs are only valid for 60 minutes after the image has been \
-                                 generated. This parameter isn’t supported for the GPT image \
-                                 models, which always return base64-encoded images.|
 
           Returns an OpenAI image response
 
@@ -1642,7 +1613,7 @@
             (let [client       (openai-java/client)
                   response-gen (openai-java/generate-image 
                                   client 
-                                  :GPT_IMAGE_1_MINI
+                                  "gpt-image-1-mini"
                                   "A cute baby sea otter"
                                   :format :PNG
                                   :number 1
@@ -1660,7 +1631,7 @@
                                     (io/bytebuf-in-stream image-1-gen)
                                     "image/png"
                                     "sea-otter.png"
-                                    :GPT_IMAGE_1_MINI
+                                    "gpt-image-1-mini"
                                     "A cute baby sea otter wearing a beret"
                                     :format :PNG
                                     :number 1
@@ -1777,8 +1748,7 @@
           | [![width: 15%]] | [![width: 85%]] |
           | :client c   | A client.¶ Use `openai-java/client` to create a client |
           | :model m    | The model to use for audio generation. One of \
-                              `:TTS_1`, `:TTS_1_HD`, or a GPT image model \
-                              (`:GPT_4O_MINI_TTS`). |
+                          `"gpt-4o-mini-tts"`.|
           | :input s    | The text to generate audio for. The maximum length is \
                           4096 characters. |
 
@@ -1815,7 +1785,7 @@
             (let [client   (openai-java/client)
                   is       (openai-java/create-speech
                                 client 
-                                :GPT_4O_MINI_TTS
+                                "gpt-4o-mini-tts"
                                 "Today is a wonderful day to build something people love!"
                                 :format :MP3
                                 :voice "cedar")]
@@ -1830,7 +1800,7 @@
             (let [client   (openai-java/client)
                   is       (openai-java/create-speech
                                 client 
-                                :GPT_4O_MINI_TTS
+                                "gpt-4o-mini-tts"
                                 "Today is a wonderful day to build something people love!"
                                 :format :MP3
                                 :voice "cedar")]
@@ -1887,8 +1857,7 @@
           | [![width: 15%]] | [![width: 85%]] |
           | :client c   | A client.¶ Use `openai-java/client` to create a client |
           | :model m    | The model to use for transcription. One of \
-                              `:GTP_4O_TRANSCRIBE`, `:GTP_4O_MINI_TRANSCRIBE`, or a \
-                              `:WHISPER_1`, or `:GTP_4O_TRANSCRIBE_DIARIZE` |
+                          `"gpt-4o-mini-transcribe"` |
           | :audio a    | The audio data to transcribe, in one \
                           of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, \
                           or webm.¶\
@@ -1934,7 +1903,7 @@
                   client     (openai-java/client)
                   is         (openai-java/create-speech
                                 client 
-                                :GPT_4O_MINI_TTS
+                                "gpt-4o-mini-tts"
                                 "Today is a wonderful day to build something people love!"
                                 :format :WAV
                                 :voice "cedar")]
@@ -1944,7 +1913,7 @@
               
               (println "Transcribing" demo-file)
               (let [response  (openai-java/transcribe client
-                                      :GPT_4O_TRANSCRIBE
+                                      "gpt-4o-mini-transcribe"
                                       demo-file
                                       :language  "en"
                                       :temperature 0.1
@@ -1958,14 +1927,14 @@
             (let [client     (openai-java/client)
                   is         (openai-java/create-speech
                                 client 
-                                :GPT_4O_MINI_TTS
+                                "gpt-4o-mini-tts"
                                 "Today is a wonderful day to build something people love!"
                                 :format :WAV
                                 :voice "cedar")]
               
               (println "Transcribing..." )
               (let [response  (openai-java/transcribe client
-                                      :GPT_4O_TRANSCRIBE
+                                      "gpt-4o-mini-transcribe"
                                       is
                                       :filename "audio.wav"
                                       :language  "en"

@@ -17,7 +17,7 @@
   (let [client   (openai-java/client)
         response (openai-java/generate-image 
                       client 
-                      :GPT_IMAGE_1_MINI
+                      "gpt-image-2"
                       "A cat on bicycle"
                       :format :PNG
                       :number 1
@@ -40,7 +40,7 @@
   (let [client       (openai-java/client)
         response-gen (openai-java/generate-image 
                         client 
-                        :GPT_IMAGE_1_MINI
+                        "gpt-image-2"
                         "A cute baby sea otter"
                         :format :PNG
                         :number 1
@@ -58,7 +58,7 @@
                           (io/bytebuf-in-stream image-1-gen)
                           "image/png"
                           "sea-otter.png"
-                          :GPT_IMAGE_1_MINI
+                          "gpt-image-2"
                           "A cute baby sea otter wearing a beret"
                           :format :PNG
                           :number 1
