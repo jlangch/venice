@@ -48,18 +48,18 @@ and restart the REPL
 
 ## How to get an OpenAI api or admin key
 
-**Api key**
+### Api key
 
 Go to [platform.openai.com](https://platform.openai.com/api-keys) and log-in with your
 OpenAI account (register for an account if you don't have one). Finally 
 click on "Create new secret key". That's it.
 
-**Admin key**
+### Admin key
 
 Go to [platform.openai.com](https://platform.openai.com/settings/organization/admin-keys) 
 and click on "Create new Admin key"
 
-**OpenAI credits**
+### OpenAI credits
 
 You need to create a create a payment method and add some credits. Navigate to 
 [platform.openai.com](https://platform.openai.com/settings/organization/billing/overview):
@@ -67,7 +67,7 @@ You need to create a create a payment method and add some credits. Navigate to
 2. Click on "Add to credit balance" to top up your credit 
 3. Click on "Credit Grants" to check your current credit grants
 
-**OpenAI credit balance**
+### OpenAI credit balance
 
 You can check your credit balance at 
 [platform.openai.com](https://platform.openai.com/settings/organization/billing/overview)
@@ -77,7 +77,7 @@ You can check your credit balance at
 
 ## Configuring OpenAI api keys
 
-**Option 1**
+### Option 1
 
 Pass the OpenAI API key as an option `:openai-api-key "sk-123456789"` for creating
 the OpenAI client:
@@ -92,7 +92,7 @@ the OpenAI client:
 
  
 
-**Option 2**
+### Option 2
 
 Define an environment variable at the OS Shell level:
 
@@ -122,7 +122,7 @@ Create a client that reads the OpenAI API key from the env var:
 
  
 
-**Option 3**
+### Option 3
 
 Add the key to the `repl.env` file in the REPL home directory. 
 
@@ -158,7 +158,7 @@ Create a client that reads the OpenAI API key from the env var:
 
  
 
-**Option 4 (MacOS, system wide environment vars)**
+### Option 4 (MacOS, system wide environment vars)
 
 The above solutions just work for *MacOS* Apps or programs that are started from a *Terminal*.
 
