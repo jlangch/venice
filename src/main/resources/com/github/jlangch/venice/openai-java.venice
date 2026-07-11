@@ -1748,17 +1748,18 @@
           | [![width: 15%]] | [![width: 85%]] |
           | :client c   | A client.¶ Use `openai-java/client` to create a client |
           | :model m    | The model to use for audio generation. One of \
-                          `"gpt-4o-mini-tts"`.|
+                          `"gpt-4o-mini-tts"`, `"tts-1"`, or `"tts-1-hd"`.¶\
+                          Note: The available voices depend on the model. \
+                          Check the documentation! |
           | :input s    | The text to generate audio for. The maximum length is \
                           4096 characters. |
-
 
           ¶**Parameter «options»**
 
           | [![width: 15%]] | [![width: 85%]] |
           | :instructions s   | Control the voice of your generated audio with \
-                                additional instructions. Does not work with `:TTS_1` \
-                                or `:TTS_1_HD`.¶\
+                                additional instructions. Does not work with `"tts-1"` \
+                                or `"tts-1-hd"`.¶\
                                 max length: 4096 characters¶\
                                 You can prompt the model to control aspects of speech, \
                                 including:¶\
@@ -1774,9 +1775,17 @@
           | :voice v         | The voice (string) to use when generating the audio.¶\
                                High quality voices:¶\
                                \u00A0 • "marin" (en_US, female)¶\
-                               \u00A0 • "cedar" (en_US, male)|
+                               \u00A0 • "cedar" (en_US, male)¶\
+                               "coral" and "alloy" work for all models whereas "cedar" \
+                               works for `"gpt-4o-mini-tts" only`|
 
           Returns an `:InputStream` with the created audio
+
+          **Note:**¶
+          Do not use models like "gpt-audio-1.5" for text-to-speech. They are
+          not qualified for text-to-speech and throw a misleading 
+          `NotFoundException: 404: Invalid URL (POST /v1/audio/speech)`
+          exception!
           """ 
      :examples '(
           """
