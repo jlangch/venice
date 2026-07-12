@@ -11,7 +11,7 @@
 % cloc --timeout 20 \
        --exclude-lang=JavaScript,Smalltalk \
        --match-d='/(main|org)/' \
-       --read-lang-def=Documents/workspace-omni/venice/cloc-venice.txt \
+       --read-lang-def=Documents/workspace-omni/venice/tools/cloc-venice.txt \
        Documents/workspace-omni/venice/src 
 
      916 text files.
