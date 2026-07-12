@@ -59,6 +59,9 @@ click on "Create new secret key". That's it.
 Go to [platform.openai.com](https://platform.openai.com/settings/organization/admin-keys) 
 and click on "Create new Admin key"
 
+**Note:** An admin key is required only if you plan to use OpenAI admin functions, e.g. the *cost* functions.
+
+
 ### OpenAI credits
 
 You need to create a payment method and add some credits. Navigate to 
@@ -98,7 +101,7 @@ the OpenAI client:
 
 #### ADMIN key
 
-Pass the OpenAI API key as an option `:openai-admin-key "sk-admin-1234"` for creating
+Pass the OpenAI ADMIN key as an option `:openai-admin-key "sk-admin-1234"` for creating
 the OpenAI client:
 
 ```
