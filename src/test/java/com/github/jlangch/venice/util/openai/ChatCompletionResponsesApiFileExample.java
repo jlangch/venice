@@ -28,7 +28,6 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.files.FileCreateParams;
 import com.openai.models.files.FileObject;
 import com.openai.models.files.FilePurpose;
-import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseInputFile;
 import com.openai.models.responses.ResponseInputText;
 
@@ -68,8 +67,8 @@ public class ChatCompletionResponsesApiFileExample {
 //                        )
 //                )
 //                .build();
-
-        Response response = client.responses().create(params);
+//
+//        Response response = client.responses().create(params);
 
     }
 }
