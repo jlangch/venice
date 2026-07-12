@@ -8,6 +8,9 @@
 The file "cloc-custom-venice.txt" holds the Venice custom language definitions 
 for the cloc tool.
 
+Install via homebrew: brew install cloc
+
+
 See:  https://github.com/aldanial/cloc
 
 
