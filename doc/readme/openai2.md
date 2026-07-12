@@ -145,7 +145,7 @@ Create a client that reads the OpenAI API and/or ADMIN key from the env vars:
 ```
 
 > [!WARNING]
-> This approach does not work for MacOS Apps (e.g.: Eclipse IDE) not started from a *Terminal* ⇒ see **Option 4**
+> This approach does not work for MacOS Apps (e.g.: Eclipse, IDEA) not started from a *Terminal* ⇒ see **Option 4**
 >
 
  
