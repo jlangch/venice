@@ -1,0 +1,9 @@
+The file "cloc-custom-venice.txt" holds the Venice custom
+language definitions for the cloc tool.
+
+% cd /Users/juerg
+% cloc --timeout 20 \
+       --exclude-lang=JavaScript,Smalltalk \
+       --match-d='/(main|org)/' \
+       --read-lang-def=Documents/workspace-omni/venice/tools/cloc-custom-venice.txt \
+       Documents/workspace-omni/venice/src 
