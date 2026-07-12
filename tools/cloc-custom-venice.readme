@@ -1,5 +1,16 @@
-The file "cloc-custom-venice.txt" holds the Venice custom
-language definitions for the cloc tool.
+-------------------------------------------------------------------------------
+
+                    Count Lines of Code  -  cloc
+
+-------------------------------------------------------------------------------
+
+
+The file "cloc-custom-venice.txt" holds the Venice custom language definitions 
+for the cloc tool.
+
+See:  https://github.com/aldanial/cloc
+
+
 
 % cd /Users/juerg
 % cloc --timeout 20 \
