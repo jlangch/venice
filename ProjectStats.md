@@ -2,6 +2,7 @@
 
 ## 12. Juli 2026
 
+Note: 93 Java Packages (unit tests excluded)
 
 
 ```text
