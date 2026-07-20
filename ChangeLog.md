@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Bumped the OpenAI Java library to v4.44.0
+- Bumped the OpenAI Java library to v4.43.0
 
 
 
