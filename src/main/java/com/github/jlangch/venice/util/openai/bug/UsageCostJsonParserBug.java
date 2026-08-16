@@ -139,12 +139,15 @@ public class UsageCostJsonParserBug {
 
                     final String lineItem = costs.lineItem().orElse("-");
 
+                    final String keyId = costs.apiKeyId().orElse("-");
+
                     System.out.println(String.format(
-                            "%s – %s | %.6f %s | %s",
+                            "%s – %s | %.6f %s | %20s | %s",
                             bucketStart,
                             bucketEnd,
                             value,
                             currency,
+                            keyId,
                             lineItem));
                 }
                 catch(Exception ex) {
@@ -180,7 +183,6 @@ public class UsageCostJsonParserBug {
             });
         });
     }
-
 
     private static LocalDateTime toLocalDateTime(final long epochSeconds) {
         return LocalDateTime.ofInstant(
