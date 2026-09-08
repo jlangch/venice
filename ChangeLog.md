@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.13.13] - 2026-07-xx
+## [1.13.13] - 2026-09-xx
 
 ### Enhancements
 
