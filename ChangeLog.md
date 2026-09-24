@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Bumped the OpenAI Java library to v4.59.0
+- Bumped the OpenAI Java library to v4.69.2
 - Bumped the TamboUI library to v0.5.0
 
 ### Bugs
