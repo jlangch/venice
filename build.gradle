@@ -722,7 +722,14 @@ task updateReleaseVersion {
             fileset(dir: 'doc/readme', includes: 'shell-shebang.md')
             fileset(dir: 'src/main/resources', includes: '**/shebang-doc.md')
         }
-        
+        ant.replaceregexp(
+                match:   "com.github.jlangch:venice:${version_regex}",
+                replace: "com.github.jlangch:venice:${project.version}",
+                flags:   'g'
+        ) {
+            fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
+        }
+
         println "Updating version ${project.version} -> 'Launcher.java'"
         ant.replaceregexp(
                 match:   "venice-${version_regex}[.]jar",

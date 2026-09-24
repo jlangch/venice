@@ -14,6 +14,12 @@ All notable changes to this project will be documented in this file.
 - Bumped the OpenAI Java library to v4.59.0
 - Bumped the TamboUI library to v0.5.0
 
+### Bugs
+
+- Fixed: gradle build task 'updateReleaseVersion' to replace the Venice version 
+  in "doc/readme/build-dependencies.md" documentation for Gradle dependencies 
+  as well
+
 
 
 ## [1.13.12] - 2026-07-11
