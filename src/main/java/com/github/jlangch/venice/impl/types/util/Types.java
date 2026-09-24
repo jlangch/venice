@@ -343,6 +343,7 @@ public class Types {
             case ":core/number":         return Types.isVncNumber(val);
             case ":core/integer":        return Types.isVncInteger(val);
             case ":core/long":           return Types.isVncLong(val);
+            case ":core/float":          return Types.isVncFloat(val);
             case ":core/double":         return Types.isVncDouble(val);
             case ":core/decimal":        return Types.isVncBigDecimal(val);
             case ":core/bigint":         return Types.isVncBigInteger(val);

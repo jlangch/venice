@@ -19,6 +19,8 @@ All notable changes to this project will be documented in this file.
 - Fixed: gradle build task 'updateReleaseVersion' to replace the Venice version 
   in "doc/readme/build-dependencies.md" documentation for Gradle dependencies 
   as well
+- Fixed: `instance-of?` for float types. E.g.: `(instance-of? :float 1.0F)` returned 
+  false instead of true
 
 
 

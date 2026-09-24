@@ -2441,14 +2441,22 @@ public class CoreFunctionsTest {
         assertTrue((Boolean)venice.eval("(instance-of? :core/boolean true)"));
         assertTrue((Boolean)venice.eval("(instance-of? :core/boolean false)"));
 
+        assertTrue((Boolean)venice.eval("(instance-of? :core/char #\\π)"));
+        assertTrue((Boolean)venice.eval("(instance-of? :core/string \"a\")"));
+
         assertTrue((Boolean)venice.eval("(instance-of? :core/keyword :a)"));
         assertTrue((Boolean)venice.eval("(instance-of? :core/symbol 'a)"));
         assertTrue((Boolean)venice.eval("(instance-of? :core/atom (atom 0))"));
         assertTrue((Boolean)venice.eval("(instance-of? :core/thread-local (thread-local))"));
 
+        assertTrue((Boolean)venice.eval("(instance-of? :core/integer 1I)"));
         assertTrue((Boolean)venice.eval("(instance-of? :core/long 1)"));
+        assertTrue((Boolean)venice.eval("(instance-of? :core/float 1.0F)"));
         assertTrue((Boolean)venice.eval("(instance-of? :core/double 1.0)"));
         assertTrue((Boolean)venice.eval("(instance-of? :core/decimal 1.0M)"));
+        assertTrue((Boolean)venice.eval("(instance-of? :core/bigint 1N)"));
+
+        assertTrue((Boolean)venice.eval("(instance-of? :core/bytebuf (bytebuf [0 1 2]))"));
 
         assertTrue((Boolean)venice.eval("(instance-of? :core/just (just 1))"));
 
