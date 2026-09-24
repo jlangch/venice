@@ -202,6 +202,8 @@ throwing an exception if the value is not valid.
 
 **Available core types:**
 
+| Type | Description |
+| :-- | :-- |
 | `:string`  | string |
 | `:char`    | character |
 | `:boolean` | boolean |
