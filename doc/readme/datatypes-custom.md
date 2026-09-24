@@ -144,7 +144,6 @@ resulting value will not comply with the custom type's rules anymore.
 ```
 
 
-
 **ToString conversion:**
 
 All Custom types support out-of-the-box *toString* conversion:
@@ -199,6 +198,28 @@ throwing an exception if the value is not valid.
   (point. 1 2)    ; => OK
   (point. 0 2))   ; => FAILED
 ```
+
+
+**Available core types:**
+
+| `:string`  | string |
+| `:char`    | character |
+| `:boolean` | boolean |
+| `:number`  | any number type: `:integer`, `:long`, ... |
+| `:integer` | integer (32-bit) |
+| `:long`    | long (64-bit) |
+| `:float`   | float (32-bit) |
+| `:double`  | double(64-bit) |
+| `:decimal` | decimal (arbitrary length) |
+| `:bigint`  | big integer (arbitrary length) |
+| `:keyword` | keyword |
+| `:bytebuf` | byte buffer |
+| `:list`    | list |
+| `:vector`  | vector |
+| `:map`     | map |
+| `:set`     | set |
+| `:queue`   | queue|
+
 
  
  
