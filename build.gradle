@@ -71,6 +71,7 @@
 //       - Update the ChangeLog for the release version
 //       - Update files with release version: ./gradlew updateReleaseVersion
 //       - Generate cheatsheets: ./gradlew cheatsheet
+//       - Run Javadoc: ./gradlew javadoc
 //       - Commit the changes with message "bumped to new version"
 //       - Update the Git commit Id in the cheatsheet URLs in 'README.md':
 //           ./gradlew updateReadMeCheatsheetRef
