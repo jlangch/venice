@@ -490,7 +490,7 @@
             <div class="title">
                 <div class="title-left">
                     <div>Cheat Sheet</div>
-                    <div><span class="title-left-venice">Venice</span><span class="title-left-version">V 1.13.12</span></div>
+                    <div><span class="title-left-venice">Venice</span><span class="title-left-version">V 1.13.13</span></div>
                 </div> 
                 <div class="title-right">
                     <div class="logo">
@@ -14324,7 +14324,7 @@ nil</code></div>
 
   # Venice Shebang demo script
 
-  VERSION=1.13.12                      # Venice version to use
+  VERSION=1.13.13                      # Venice version to use
   DIR=/tmp/venice                      # Install dir
   REPO=https://repo1.maven.org/maven2  # Maven repository
 
@@ -15877,7 +15877,7 @@ Line 3</code></div>
                         
                         <code><span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.ZonedDateTime</span> <span style="color: #E9967A">:now</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T11:34:25.294+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-07T20:30:40.269+02:00[Europe/Zurich]</code>
                         
                         <code><span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.lang.Math</span> <span style="color: #E9967A">:min</span> <span style="color: #E9967A">10</span> <span style="color: #E9967A">20</span><span style="color: #404040">)</span>
@@ -18421,7 +18421,7 @@ compareTo: [[1 102] [2 100] [3 101]]</span>
     &quot;data/logo.jpg&quot;       &quot;/staging/data/logo.jpg&quot; }
   &quot;.&quot;)</code></div>
 <div class="md-text-block"><div class="md-text-normal">Loading Venice files works relative to the application. You can only load files that are in the app archive. If for instances &quot;billing.venice&quot; in the above example requires &quot;utils/render.venice&quot; just add </div><div class="md-inline-code">(load-file &quot;utils/render.venice&quot;)</div><div class="md-text-normal"> to &quot;billing.venice&quot;.</div></div>
-<div class="md-text-block"><div class="md-text-normal">The app can be run from the command line as:</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -jar venice-1.13.12.jar -app billing.zip</div><br/><div class="md-text-normal"> Venice reads the archive and loads the archive&apos;s main file.</div></div>
+<div class="md-text-block"><div class="md-text-normal">The app can be run from the command line as:</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -jar venice-1.13.13.jar -app billing.zip</div><br/><div class="md-text-normal"> Venice reads the archive and loads the archive&apos;s main file.</div></div>
 <div class="md-text-block"><div class="md-text-normal">Or with additional Java libraries (all JARs in &apos;libs&apos; dir):</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -cp &quot;libs/*&quot; com.github.jlangch.venice.Launcher -app billing.zip</div></div>
 </div>
 
@@ -25675,10 +25675,10 @@ Expression:
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">bytebuf-allocate-random</span> <span style="color: #E9967A">20</span><span style="color: #404040">)</span>
-=&gt; [189 246 100 97 125 43 230 114 128 184 146 8 164 80 103 1 182 225 244 133]</code>
+=&gt; [237 134 66 205 254 159 77 157 177 93 69 97 100 93 14 245 136 97 192 183]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">bytebuf-allocate-random</span> <span style="color: #E9967A">:2KB</span><span style="color: #404040">)</span>
-=&gt; [253 173 77 43 210 220 206 215 226 211 162 14 225 142 64 90 194 121 0 172 176 218 225 106 70 18 91 77 251 173 9 167 26 245 226 41 8 82 128 35 235 39 211 31 3 176 229 216 105 129 83 27 103 70 20 188 1 248 250 253 216 221 208 200 187 124 206 50 35 24 195 81 53 136 216 17 70 146 162 28 103 197 213 94 25 7 50 89 136 80 90 207 107 53 190 129 248 160 234 6 ...]</code>
+=&gt; [209 223 184 37 210 236 153 32 103 89 171 71 118 69 182 66 113 19 107 167 50 137 209 249 100 181 2 133 143 199 103 83 222 163 217 220 159 168 184 117 231 155 122 206 46 149 108 255 210 83 200 177 254 6 136 175 161 139 249 37 237 75 180 120 140 249 252 178 181 213 90 153 251 238 198 180 36 56 50 183 92 235 140 136 178 41 80 150 62 30 55 234 54 20 148 243 213 247 233 53 ...]</code>
                         
                     </div>
                     
@@ -31688,7 +31688,7 @@ p1&apos; -&gt; java.awt.Point[x=3,y=3]</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span>
-=&gt; anonymous-3ba99433-9537-4bf4-bf31-5a227ea03243</code>
+=&gt; anonymous-dac24ebe-19fc-4d82-bbe3-36fb2e6056bc</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">filter</span> <span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (1 3)</code>
@@ -35227,7 +35227,7 @@ venice&gt; (config/env &quot;java&quot;)
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">current-time-millis</span><span style="color: #404040">)</span>
-=&gt; 1783762517398</code>
+=&gt; 1791397892199</code>
                         
                     </div>
                     
@@ -39592,11 +39592,11 @@ venice&gt; (config/env &quot;java&quot;)
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                     
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (80 18 24 20)</code>
+=&gt; (46 13 63 8)</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (98 35 34 87)</code>
+=&gt; (20 1 79 42)</code>
                         
                     </div>
                     
@@ -39663,10 +39663,10 @@ venice&gt; (config/env &quot;java&quot;)
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">dobench</span> <span style="color: #E9967A">100</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (21297 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)</code>
+=&gt; (21582 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">dobench</span> <span style="color: #E9967A">1000</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">100</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (4398 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)</code>
+=&gt; (5421 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)</code>
                         
                     </div>
                     
@@ -55503,9 +55503,9 @@ Worker1</span>
   <span style="color: #404040">(</span><span style="color: #4169E1">defn</span> <span style="color: #404040">factory</span> <span style="color: #404040">[</span><span style="color: #404040">n</span><span style="color: #404040">]</span>                                
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
-<span style="color: #808080">Worker0
-Worker1
-Worker2</span>
+<span style="color: #808080">Worker1
+Worker2
+Worker0</span>
 =&gt; nil</code>
                         
                     </div>
@@ -57621,7 +57621,7 @@ Worker2</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">host-address</span><span style="color: #404040">)</span>
-=&gt; &quot;192.168.178.35&quot;</code>
+=&gt; &quot;127.0.0.1&quot;</code>
                         
                     </div>
                     
@@ -57670,7 +57670,7 @@ Worker2</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">host-name</span><span style="color: #404040">)</span>
-=&gt; &quot;Mac.fritz.box&quot;</code>
+=&gt; &quot;pluto.local&quot;</code>
                         
                     </div>
                     
@@ -71981,7 +71981,7 @@ line 2</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">io/temp-dir</span> <span style="color: #2E8B57">&quot;test-&quot;</span><span style="color: #404040">)</span>
-=&gt; /var/folders/q0/gg9f6pqx5079cfvp9g5lqbzh0000gn/T/test-687860641915155005</code>
+=&gt; /var/folders/q0/gg9f6pqx5079cfvp9g5lqbzh0000gn/T/test-3589674482560166439</code>
                         
                     </div>
                     
@@ -88053,7 +88053,7 @@ track          track_media_type_id_fkey        FOREIGN KEY (media_type_id) REFER
                                     <span style="color: #E9967A">:c</span> <span style="color: #404040">(</span><span style="color: #4169E1">decimal</span> <span style="color: #404040">v</span><span style="color: #404040">)</span> 
                                     <span style="color: #404040">v</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
                       <span style="color: #E9967A">:filter-fn</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">=</span> <span style="color: #E9967A">100</span> <span style="color: #404040">(</span><span style="color: #E9967A">:a</span> <span style="color: #404040">%</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; ({:a 100 :b 2026-07-12T11:35:44.694 :c 10.12M} {:a 100 :b 2026-07-14T11:35:44.694 :c 30.12M})</code>
+=&gt; ({:a 100 :b 2026-10-08T20:31:58.395 :c 10.12M} {:a 100 :b 2026-10-10T20:31:58.395 :c 30.12M})</code>
                         
                     </div>
                     
@@ -90364,7 +90364,7 @@ Hello Bob</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">rand-long</span><span style="color: #404040">)</span>                                       
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                                                   
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (1978097376522565816 976511270204050827 1064600687254594164 9074196858966500362)</code>
+=&gt; (8541447390250986750 7798023601811479459 7049972400034503121 973476996748534770)</code>
                         
                         <code><span style="color: #808080">; lazy sequence with a constant value                           </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">(</span><span style="color: #4169E1">constantly</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                                  
@@ -98402,7 +98402,7 @@ public class Hello implements HelloMBean {
           <span style="color: #E9967A">:else</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #E9967A">25</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 968.42µs</span>
+<span style="color: #808080">Elapsed time: 857.13µs</span>
 =&gt; 75025</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span>
@@ -99902,13 +99902,13 @@ content of picture.png
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>
-=&gt; 173244709099500</code>
+=&gt; 157352516819500</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">t</span> <span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>                        
       <span style="color: #404040">_</span> <span style="color: #404040">(</span><span style="color: #4169E1">sleep</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>                        
       <span style="color: #404040">e</span> <span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span><span style="color: #404040">]</span>                       
   <span style="color: #404040">(</span><span style="color: #4169E1">format-nano-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">e</span> <span style="color: #404040">t</span><span style="color: #404040">)</span> <span style="color: #E9967A">:precision</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
-=&gt; &quot;104.07ms&quot;</code>
+=&gt; &quot;101.85ms&quot;</code>
                         
                     </div>
                     
@@ -102098,7 +102098,7 @@ ns bar: (bar/y)</span>
        <span style="color: #404040">registry</span>  <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/create-function-registry</span><span style="color: #404040">)</span>
                      <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/register-function</span> <span style="color: #2E8B57">&quot;weather_get_current&quot;</span>
                                                     <span style="color: #404040">get-current-weather</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                  
-       <span style="color: #404040">chat</span>     <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/chat-completion</span> <span style="color: #404040">client</span> <span style="color: #E9967A">:GPT_5_4</span><span style="color: #404040">)</span>
+       <span style="color: #404040">chat</span>     <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/chat-completion</span> <span style="color: #404040">client</span> <span style="color: #404040">gpt-5.6-terra</span><span style="color: #404040">)</span>
                      <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/add-function</span> 
                           <span style="color: #2E8B57">&quot;weather_get_current&quot;</span>
                           <span style="color: #2E8B57">&quot;Gets the current weather for a city.&quot;</span>
@@ -102212,7 +102212,7 @@ ns bar: (bar/y)</span>
                                 <span style="color: #404040">(</span><span style="color: #4169E1">io/file</span> <span style="color: #2E8B57">&quot;/Users/foo/Desktop/Tour_Eiffel.pdf&quot;</span><span style="color: #404040">)</span>
                                 <span style="color: #E9967A">:USER_DATA</span>
                                 <span style="color: #E9967A">3600</span><span style="color: #404040">)</span>
-        <span style="color: #404040">chat</span>     <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/chat-completion</span> <span style="color: #404040">client</span> <span style="color: #E9967A">:GPT_5_4</span><span style="color: #404040">)</span>
+        <span style="color: #404040">chat</span>     <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/chat-completion</span> <span style="color: #404040">client</span> <span style="color: #2E8B57">&quot;gpt-5.6-terra&quot;</span><span style="color: #404040">)</span>
                      <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/max-completion-tokens</span> <span style="color: #E9967A">2048</span><span style="color: #404040">)</span>
                      <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/add-user-message-with-files</span> 
                           <span style="color: #2E8B57">&quot;Describe this image&quot;</span>
@@ -103863,7 +103863,7 @@ ns bar: (bar/y)</span>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:model m</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">The model to use for audio generation. One of </div><div class="md-inline-code">:TTS_1</div><div class="md-text-normal">, </div><div class="md-inline-code">:TTS_1_HD</div><div class="md-text-normal">, or a GPT image model (</div><div class="md-inline-code">:GPT_4O_MINI_TTS</div><div class="md-text-normal">).</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">The model to use for audio generation. One of </div><div class="md-inline-code">&quot;gpt-4o-mini-tts&quot;</div><div class="md-text-normal">, </div><div class="md-inline-code">&quot;tts-1&quot;</div><div class="md-text-normal">, or </div><div class="md-inline-code">&quot;tts-1-hd&quot;</div><div class="md-text-normal">.</div><br/><div class="md-text-normal">Note: The available voices depend on the model. Check the documentation!</div></td>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:input s</div></div></td>
@@ -103878,7 +103878,7 @@ ns bar: (bar/y)</span>
 <tbody>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:instructions s</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">Control the voice of your generated audio with additional instructions. Does not work with </div><div class="md-inline-code">:TTS_1</div><div class="md-text-normal"> or </div><div class="md-inline-code">:TTS_1_HD</div><div class="md-text-normal">.</div><br/><div class="md-text-normal">max length: 4096 characters</div><br/><div class="md-text-normal">You can prompt the model to control aspects of speech, including:</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Accent</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Emotional range</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Intonation</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Impressions</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Speed of speech</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Tone</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Whispering</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">Control the voice of your generated audio with additional instructions. Does not work with </div><div class="md-inline-code">&quot;tts-1&quot;</div><div class="md-text-normal"> or </div><div class="md-inline-code">&quot;tts-1-hd&quot;</div><div class="md-text-normal">.</div><br/><div class="md-text-normal">max length: 4096 characters</div><br/><div class="md-text-normal">You can prompt the model to control aspects of speech, including:</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Accent</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Emotional range</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Intonation</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Impressions</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Speed of speech</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Tone</div><br/><div class="md-text-normal">  • </div><div class="md-text-italic">Whispering</div></td>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:format f</div></div></td>
@@ -103886,12 +103886,13 @@ ns bar: (bar/y)</span>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:voice v</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">The voice (string) to use when generating the audio.</div><br/><div class="md-text-normal">High quality voices:</div><br/><div class="md-text-normal">  • &quot;marin&quot; (en_US, female)</div><br/><div class="md-text-normal">  • &quot;cedar&quot; (en_US, male)</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">The voice (string) to use when generating the audio.</div><br/><div class="md-text-normal">High quality voices:</div><br/><div class="md-text-normal">  • &quot;marin&quot; (en_US, female)</div><br/><div class="md-text-normal">  • &quot;cedar&quot; (en_US, male)</div><br/><div class="md-text-normal">&quot;coral&quot; and &quot;alloy&quot; work for all models whereas &quot;cedar&quot; works for </div><div class="md-inline-code">&quot;gpt-4o-mini-tts&quot; only</div></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="md-text-block"><div class="md-text-normal">Returns an </div><div class="md-inline-code">:InputStream</div><div class="md-text-normal"> with the created audio</div></div>
+<div class="md-text-block"><div class="md-text-bold">Note:</div><br/><div class="md-text-normal"> Do not use models like &quot;gpt-audio-1.5&quot; for text-to-speech. They are not qualified for text-to-speech and throw a misleading </div><div class="md-inline-code">NotFoundException: 404: Invalid URL (POST /v1/audio/speech)</div><div class="md-text-normal"> exception!</div></div>
 </div>
 
                         
@@ -103905,7 +103906,7 @@ ns bar: (bar/y)</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">client</span>   <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/client</span><span style="color: #404040">)</span>
         <span style="color: #404040">is</span>       <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/create-speech</span>
                       <span style="color: #404040">client</span> 
-                      <span style="color: #E9967A">:GPT_4O_MINI_TTS</span>
+                      <span style="color: #2E8B57">&quot;gpt-4o-mini-tts&quot;</span>
                       <span style="color: #2E8B57">&quot;Today is a wonderful day to build something people love!&quot;</span>
                       <span style="color: #E9967A">:format</span> <span style="color: #E9967A">:MP3</span>
                       <span style="color: #E9967A">:voice</span> <span style="color: #2E8B57">&quot;cedar&quot;</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
@@ -103919,7 +103920,7 @@ ns bar: (bar/y)</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">client</span>   <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/client</span><span style="color: #404040">)</span>
         <span style="color: #404040">is</span>       <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/create-speech</span>
                       <span style="color: #404040">client</span> 
-                      <span style="color: #E9967A">:GPT_4O_MINI_TTS</span>
+                      <span style="color: #2E8B57">&quot;gpt-4o-mini-tts&quot;</span>
                       <span style="color: #2E8B57">&quot;Today is a wonderful day to build something people love!&quot;</span>
                       <span style="color: #E9967A">:format</span> <span style="color: #E9967A">:MP3</span>
                       <span style="color: #E9967A">:voice</span> <span style="color: #2E8B57">&quot;cedar&quot;</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
@@ -104259,11 +104260,11 @@ ns bar: (bar/y)</span>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:model m</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">The model to use for image generation. One of </div><div class="md-inline-code">:DALL_E_2</div><div class="md-text-normal">, </div><div class="md-inline-code">:DALL_E_3</div><div class="md-text-normal">, or a GPT image model (</div><div class="md-inline-code">:GPT_IMAGE_1</div><div class="md-text-normal">, </div><div class="md-inline-code">:GPT_IMAGE_1_MINI</div><div class="md-text-normal">, </div><div class="md-inline-code">:GPT_IMAGE_1_5</div><div class="md-text-normal">, or </div><div class="md-inline-code">:GPT_IMAGE_2</div><div class="md-text-normal">). Defaults to </div><div class="md-inline-code">:DALL_E_2</div><div class="md-text-normal"> unless a parameter specific to the GPT image models is used.</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">The model to use for image generation. One of </div><div class="md-inline-code">&quot;gpt-image-1&quot;</div><div class="md-text-normal">, </div><div class="md-inline-code">&quot;gpt-image-1-mini&quot;</div><div class="md-text-normal">, </div><div class="md-inline-code">&quot;gpt-image-1.5&quot;</div><div class="md-text-normal">, or </div><div class="md-inline-code">&quot;gpt-image-2&quot;</div><div class="md-text-normal">).</div></td>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:prompt p</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">A text description of the desired image(s). The maximum length is 32000 characters for the GPT image models, 1000 characters for dall-e-2 and 4000 characters for dall-e-3.</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">A text description of the desired image(s). The maximum length is 32000 characters for the GPT image models.</div></td>
 </tr>
 </tbody>
 </table>
@@ -104274,7 +104275,7 @@ ns bar: (bar/y)</span>
 <tbody>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:background b</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">Allows to set transparency for the background of the generated image(s). This parameter is only supported for GPT image models that support transparent backgrounds. Must be one of transparent, opaque, or auto (default value). When </div><div class="md-inline-code">:AUTO</div><div class="md-text-normal"> is used, the model will automatically determine the best background for the image.</div><br/><div class="md-inline-code">:GPT-IMAGE-2</div><div class="md-text-normal"> does not support transparent backgrounds. Requests with background set to transparent will return an error for these models; use opaque or auto instead.</div><br/><div class="md-text-normal">If transparent, the output format needs to support transparency, so it should be set to either </div><div class="md-inline-code">:PNG</div><div class="md-text-normal"> (default value) or </div><div class="md-inline-code">:WEBP</div><div class="md-text-normal">.</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">Allows to set transparency for the background of the generated image(s). This parameter is only supported for GPT image models that support transparent backgrounds. Must be one of transparent, opaque, or auto (default value). When </div><div class="md-inline-code">:AUTO</div><div class="md-text-normal"> is used, the model will automatically determine the best background for the image.</div><br/><div class="md-inline-code">&quot;gpt-image-2&quot;</div><div class="md-text-normal"> does not support transparent backgrounds. Requests with background set to transparent will return an error for these models; use opaque or auto instead.</div><br/><div class="md-text-normal">If transparent, the output format needs to support transparency, so it should be set to either </div><div class="md-inline-code">:PNG</div><div class="md-text-normal"> (default value) or </div><div class="md-inline-code">:WEBP</div><div class="md-text-normal">.</div></td>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:number n</div></div></td>
@@ -104294,15 +104295,7 @@ ns bar: (bar/y)</span>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:size f</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">The size of the generated images.</div><br/><div class="md-text-normal">For </div><div class="md-inline-code">:GPT_IMAGE_2</div><div class="md-text-normal">, arbitrary resolutions are supported as WIDTHxHEIGHT strings, for example </div><div class="md-inline-code">1536x864</div><div class="md-text-normal">. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above </div><div class="md-inline-code">2560x1440</div><div class="md-text-normal"> are experimental, and the maximum supported resolution is </div><div class="md-inline-code">3840x2160</div><div class="md-text-normal">. The requested size must also satisfy the model’s current pixel and edge limits. The standard sizes </div><div class="md-inline-code">1024x1024</div><div class="md-text-normal">, </div><div class="md-inline-code">1536x1024</div><div class="md-text-normal">, and </div><div class="md-inline-code">1024x1536</div><div class="md-text-normal"> are supported by the GPT image models; auto is supported for models that allow automatic sizing. For </div><div class="md-inline-code">:DALL_E_2</div><div class="md-text-normal">, use one of </div><div class="md-inline-code">256x256</div><div class="md-text-normal">, </div><div class="md-inline-code">512x512</div><div class="md-text-normal">, or </div><div class="md-inline-code">1024x1024</div><div class="md-text-normal">. For </div><div class="md-inline-code">:DALL_E_3</div><div class="md-text-normal">, use one of </div><div class="md-inline-code">1024x1024</div><div class="md-text-normal">, </div><div class="md-inline-code">1792x1024</div><div class="md-text-normal">, or </div><div class="md-inline-code">1024x1792</div><div class="md-text-normal">.</div></td>
-</tr>
-<tr>
-<td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:style f</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">The style of the generated images. This parameter is only supported for </div><div class="md-inline-code">:DALL_E_3</div><div class="md-text-normal">. Must be one of </div><div class="md-inline-code">:VIVID</div><div class="md-text-normal"> or </div><div class="md-inline-code">:NATURAL</div><div class="md-text-normal">. Vivid causes the model to lean towards generating hyper-real and dramatic images. Natural causes the model to produce more natural, less hyper-real looking images.</div></td>
-</tr>
-<tr>
-<td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:response-format f</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">The format in which generated images with </div><div class="md-inline-code">:DALL_E_2</div><div class="md-text-normal"> and </div><div class="md-inline-code">:DALL_E_3</div><div class="md-text-normal"> are returned. Must be one of </div><div class="md-inline-code">:URL</div><div class="md-text-normal"> or </div><div class="md-inline-code">:B64_JSON</div><div class="md-text-normal">. URLs are only valid for 60 minutes after the image has been generated. This parameter isn’t supported for the GPT image models, which always return base64-encoded images.</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">The size of the generated images.</div><br/><div class="md-text-normal">For </div><div class="md-inline-code">&quot;gpt-image-2&quot;</div><div class="md-text-normal">, arbitrary resolutions are supported as WIDTHxHEIGHT strings, for example </div><div class="md-inline-code">1536x864</div><div class="md-text-normal">. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above </div><div class="md-inline-code">2560x1440</div><div class="md-text-normal"> are experimental, and the maximum supported resolution is </div><div class="md-inline-code">3840x2160</div><div class="md-text-normal">. The requested size must also satisfy the model’s current pixel and edge limits. The standard sizes </div><div class="md-inline-code">1024x1024</div><div class="md-text-normal">, </div><div class="md-inline-code">1536x1024</div><div class="md-text-normal">, and </div><div class="md-inline-code">1024x1536</div><div class="md-text-normal"> are supported by the GPT image models; auto is supported for models that allow automatic sizing.</div></td>
 </tr>
 </tbody>
 </table>
@@ -104322,7 +104315,7 @@ ns bar: (bar/y)</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">client</span>   <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/client</span><span style="color: #404040">)</span>
         <span style="color: #404040">response</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/generate-image</span> 
                       <span style="color: #404040">client</span> 
-                      <span style="color: #E9967A">:GPT_IMAGE_1_MINI</span>
+                      <span style="color: #2E8B57">&quot;gpt-image-1-mini&quot;</span>
                       <span style="color: #2E8B57">&quot;A cat on bicycle&quot;</span>
                       <span style="color: #E9967A">:format</span> <span style="color: #E9967A">:PNG</span>
                       <span style="color: #E9967A">:number</span> <span style="color: #E9967A">1</span>
@@ -104498,7 +104491,7 @@ ns bar: (bar/y)</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">load-module</span> <span style="color: #E9967A">:openai-java</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">client</span>   <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/client</span><span style="color: #404040">)</span>
-        <span style="color: #404040">chat</span>     <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/chat-completion</span> <span style="color: #404040">client</span> <span style="color: #E9967A">:GPT_5_4</span><span style="color: #404040">)</span>
+        <span style="color: #404040">chat</span>     <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/chat-completion</span> <span style="color: #404040">client</span> <span style="color: #2E8B57">&quot;gpt-5.6-terra&quot;</span><span style="color: #404040">)</span>
                      <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/json-response-format</span> 
                           <span style="color: #2E8B57">&quot;employee-list&quot;</span>
                           <span style="color: #2E8B57">&quot;A list of employees&quot;</span>
@@ -105141,7 +105134,7 @@ ns bar: (bar/y)</span>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:model m</div></div></td>
-<td style="text-align: left; width: 85%"><div class="md-text-normal">The model to use for transcription. One of </div><div class="md-inline-code">:GTP_4O_TRANSCRIBE</div><div class="md-text-normal">, </div><div class="md-inline-code">:GTP_4O_MINI_TRANSCRIBE</div><div class="md-text-normal">, or a </div><div class="md-inline-code">:WHISPER_1</div><div class="md-text-normal">, or </div><div class="md-inline-code">:GTP_4O_TRANSCRIBE_DIARIZE</div></td>
+<td style="text-align: left; width: 85%"><div class="md-text-normal">The model to use for transcription. One of </div><div class="md-inline-code">&quot;gpt-4o-mini-transcribe&quot;</div></td>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:audio a</div></div></td>
@@ -105192,7 +105185,7 @@ ns bar: (bar/y)</span>
         <span style="color: #404040">client</span>     <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/client</span><span style="color: #404040">)</span>
         <span style="color: #404040">is</span>         <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/create-speech</span>
                       <span style="color: #404040">client</span> 
-                      <span style="color: #E9967A">:GPT_4O_MINI_TTS</span>
+                      <span style="color: #2E8B57">&quot;gpt-4o-mini-tts&quot;</span>
                       <span style="color: #2E8B57">&quot;Today is a wonderful day to build something people love!&quot;</span>
                       <span style="color: #E9967A">:format</span> <span style="color: #E9967A">:WAV</span>
                       <span style="color: #E9967A">:voice</span> <span style="color: #2E8B57">&quot;cedar&quot;</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
@@ -105202,7 +105195,7 @@ ns bar: (bar/y)</span>
     
     <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;Transcribing&quot;</span> <span style="color: #404040">demo-file</span><span style="color: #404040">)</span>
     <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">response</span>  <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/transcribe</span> <span style="color: #404040">client</span>
-                            <span style="color: #E9967A">:GPT_4O_TRANSCRIBE</span>
+                            <span style="color: #2E8B57">&quot;gpt-4o-mini-transcribe&quot;</span>
                             <span style="color: #404040">demo-file</span>
                             <span style="color: #E9967A">:language</span>  <span style="color: #2E8B57">&quot;en&quot;</span>
                             <span style="color: #E9967A">:temperature</span> <span style="color: #E9967A">0.1</span>
@@ -105215,14 +105208,14 @@ ns bar: (bar/y)</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">client</span>     <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/client</span><span style="color: #404040">)</span>
         <span style="color: #404040">is</span>         <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/create-speech</span>
                       <span style="color: #404040">client</span> 
-                      <span style="color: #E9967A">:GPT_4O_MINI_TTS</span>
+                      <span style="color: #2E8B57">&quot;gpt-4o-mini-tts&quot;</span>
                       <span style="color: #2E8B57">&quot;Today is a wonderful day to build something people love!&quot;</span>
                       <span style="color: #E9967A">:format</span> <span style="color: #E9967A">:WAV</span>
                       <span style="color: #E9967A">:voice</span> <span style="color: #2E8B57">&quot;cedar&quot;</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
     
     <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;Transcribing...&quot;</span> <span style="color: #404040">)</span>
     <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">response</span>  <span style="color: #404040">(</span><span style="color: #4169E1">openai-java/transcribe</span> <span style="color: #404040">client</span>
-                            <span style="color: #E9967A">:GPT_4O_TRANSCRIBE</span>
+                            <span style="color: #2E8B57">&quot;gpt-4o-mini-transcribe&quot;</span>
                             <span style="color: #404040">is</span>
                             <span style="color: #E9967A">:filename</span> <span style="color: #2E8B57">&quot;audio.wav&quot;</span>
                             <span style="color: #E9967A">:language</span>  <span style="color: #2E8B57">&quot;en&quot;</span>
@@ -106015,7 +106008,7 @@ ns bar: (bar/y)</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">os-version</span><span style="color: #404040">)</span>
-=&gt; &quot;26.5.2&quot;</code>
+=&gt; &quot;27.0.1&quot;</code>
                         
                     </div>
                     
@@ -109035,7 +109028,7 @@ ns bar: (bar/y)</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">pid</span><span style="color: #404040">)</span>
-=&gt; &quot;28794&quot;</code>
+=&gt; &quot;64626&quot;</code>
                         
                     </div>
                     
@@ -112137,7 +112130,7 @@ line 2: 456</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-bigint</span> <span style="color: #E9967A">256</span><span style="color: #404040">)</span>
-=&gt; 13711306578570593173524904369767199678757333938798722417967884539176082017884N</code>
+=&gt; 81819433570806631625646014494754212365914646196709317859345046390070615499696N</code>
                         
                     </div>
                     
@@ -112204,10 +112197,10 @@ line 2: 456</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span><span style="color: #404040">)</span>
-=&gt; 0.07444800539485064</code>
+=&gt; 0.8340402046916006</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span> <span style="color: #E9967A">100.0</span><span style="color: #404040">)</span>
-=&gt; 69.16643409421093</code>
+=&gt; 0.4743315382981783</code>
                         
                     </div>
                     
@@ -112274,10 +112267,10 @@ line 2: 456</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span><span style="color: #404040">)</span>
-=&gt; 2.718968516219865</code>
+=&gt; -1.6539772266551551</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span> <span style="color: #E9967A">0.0</span> <span style="color: #E9967A">5.0</span><span style="color: #404040">)</span>
-=&gt; -2.9103769014804866</code>
+=&gt; 5.955214708533305</code>
                         
                     </div>
                     
@@ -112344,10 +112337,10 @@ line 2: 456</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span><span style="color: #404040">)</span>
-=&gt; 8126332502794398758</code>
+=&gt; 9024194136582024682</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>
-=&gt; 83</code>
+=&gt; 62</code>
                         
                     </div>
                     
@@ -112831,7 +112824,7 @@ true</span>
                         <code><span style="color: #808080">;; sliding window (width 3) average</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">partition</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">1</span> <span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">10</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">30</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
      <span style="color: #404040">(</span><span style="color: #4169E1">map</span> <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">window</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">/</span> <span style="color: #404040">(</span><span style="color: #4169E1">reduce</span> <span style="color: #404040">+</span> <span style="color: #404040">window</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">count</span> <span style="color: #404040">window</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (24 21 14 10 7 6 2 10)</code>
+=&gt; (16 7 6 5 6 12 16 14)</code>
                         
                         <code><span style="color: #808080">;; reduce all elements of a queue.                         </span>
 <span style="color: #808080">;; calls (take! queue) to get the elements of the queue.   </span>
@@ -114638,12 +114631,12 @@ p2 -&gt; :java.awt.Point</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">5</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (4 2 9 5 10)</code>
+=&gt; (5 6 1 2 4)</code>
                         
                         <code><span style="color: #808080">;; compare with repeat, which only calls the &apos;rand-long&apos;</span>
 <span style="color: #808080">;; function once, repeating the value five times. </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">repeat</span> <span style="color: #E9967A">5</span> <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2 2 2 2 2)</code>
+=&gt; (10 10 10 10 10)</code>
                         
                     </div>
                     
@@ -122937,13 +122930,13 @@ public static class Logger {
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (6 5 2 4 3 1)</code>
+=&gt; (1 2 3 4 5 6)</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-=&gt; [1 6 2 4 3 5]</code>
+=&gt; [1 6 2 3 5 4]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #2E8B57">&quot;abcdef&quot;</span><span style="color: #404040">)</span>
-=&gt; (#\f #\e #\a #\b #\c #\d)</code>
+=&gt; (#\b #\d #\f #\c #\a #\e)</code>
                         
                     </div>
                     
@@ -134052,7 +134045,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">100</span> <span style="color: #E9967A">200</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 5.08µs</span>
+<span style="color: #808080">Elapsed time: 4.33µs</span>
 =&gt; 300</code>
                         
                     </div>
@@ -134351,7 +134344,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/date</span><span style="color: #404040">)</span>
-=&gt; Sat Jul 11 11:35:29 CEST 2026</code>
+=&gt; Wed Oct 07 20:31:44 CEST 2026</code>
                         
                     </div>
                     
@@ -134429,13 +134422,13 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 11</code>
+=&gt; 7</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 11</code>
+=&gt; 7</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 11</code>
+=&gt; 7</code>
                         
                     </div>
                     
@@ -134509,13 +134502,13 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :SATURDAY</code>
+=&gt; :WEDNESDAY</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :SATURDAY</code>
+=&gt; :WEDNESDAY</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :SATURDAY</code>
+=&gt; :WEDNESDAY</code>
                         
                     </div>
                     
@@ -134589,13 +134582,13 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 192</code>
+=&gt; 280</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 192</code>
+=&gt; 280</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 192</code>
+=&gt; 280</code>
                         
                     </div>
                     
@@ -134708,13 +134701,13 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-01</code>
+=&gt; 2026-10-01</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-01</code>
+=&gt; 2026-10-01</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-01</code>
+=&gt; 2026-10-01</code>
                         
                     </div>
                     
@@ -134878,31 +134871,31 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;dd-MM-yyyy&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;11-07-2026&quot;</code>
+=&gt; &quot;07-10-2026&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;dd-MM-yyyy&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;11-07-2026&quot;</code>
+=&gt; &quot;07-10-2026&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:iso</span><span style="color: #404040">)</span>
-=&gt; &quot;2026-07-11&quot;</code>
+=&gt; &quot;2026-10-07&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;2026-07-11T11:35:33&quot;</code>
+=&gt; &quot;2026-10-07T20:31:47&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2026-07-11T11:35:33&quot;</code>
+=&gt; &quot;2026-10-07T20:31:47&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:iso</span><span style="color: #404040">)</span>
-=&gt; &quot;2026-07-11T11:35:33.465&quot;</code>
+=&gt; &quot;2026-10-07T20:31:48.028&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;2026-07-11T11:35:33.500CEST&quot;</code>
+=&gt; &quot;2026-10-07T20:31:48.063CEST&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:iso</span><span style="color: #404040">)</span>
-=&gt; &quot;2026-07-11T11:35:33.536+02:00&quot;</code>
+=&gt; &quot;2026-10-07T20:31:48.098+02:00&quot;</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2026-07-11T11:35:33.571CEST&quot;</code>
+=&gt; &quot;2026-10-07T20:31:48.133CEST&quot;</code>
                         
                     </div>
                     
@@ -135012,10 +135005,10 @@ Ran 2 tests with 2 assertions
 =&gt; 0</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 11</code>
+=&gt; 20</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 11</code>
+=&gt; 20</code>
                         
                     </div>
                     
@@ -135074,13 +135067,13 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-31</code>
+=&gt; 2026-10-31</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-31</code>
+=&gt; 2026-10-31</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-31</code>
+=&gt; 2026-10-31</code>
                         
                     </div>
                     
@@ -135468,7 +135461,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11</code>
+=&gt; 2026-10-07</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01</code>
@@ -135483,7 +135476,7 @@ Ran 2 tests with 2 assertions
 =&gt; 2013-08-01</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11</code>
+=&gt; 2026-10-07</code>
                         
                     </div>
                     
@@ -135596,7 +135589,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T11:35:29.904</code>
+=&gt; 2026-10-07T20:31:44.582</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00</code>
@@ -135617,7 +135610,7 @@ Ran 2 tests with 2 assertions
 =&gt; 2013-08-01T02:00</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T11:35:30.221</code>
+=&gt; 2026-10-07T20:31:44.827</code>
                         
                     </div>
                     
@@ -135803,10 +135796,10 @@ Ran 2 tests with 2 assertions
 =&gt; 0</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/milli</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 619</code>
+=&gt; 214</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/milli</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 654</code>
+=&gt; 249</code>
                         
                     </div>
                     
@@ -135868,22 +135861,22 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2026-07-09</code>
+=&gt; 2026-10-05</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2026-07-09T11:35:35.310</code>
+=&gt; 2026-10-05T20:31:49.796</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2026-07-09T11:35:35.345+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-05T20:31:49.831+02:00[Europe/Zurich]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.Period</span> <span style="color: #E9967A">:ofDays</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-09</code>
+=&gt; 2026-10-05</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.Period</span> <span style="color: #E9967A">:ofDays</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-09T11:35:35.417</code>
+=&gt; 2026-10-05T20:31:49.901</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.Period</span> <span style="color: #E9967A">:ofDays</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-09T11:35:35.452+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-05T20:31:49.936+02:00[Europe/Zurich]</code>
                         
                     </div>
                     
@@ -135935,10 +135928,10 @@ Ran 2 tests with 2 assertions
 =&gt; 0</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 35</code>
+=&gt; 31</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 35</code>
+=&gt; 31</code>
                         
                     </div>
                     
@@ -135997,13 +135990,13 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7</code>
+=&gt; 10</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7</code>
+=&gt; 10</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7</code>
+=&gt; 10</code>
                         
                     </div>
                     
@@ -136281,22 +136274,22 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2026-07-13</code>
+=&gt; 2026-10-09</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2026-07-13T11:35:35.096</code>
+=&gt; 2026-10-09T20:31:49.584</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2026-07-13T11:35:35.132+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-09T20:31:49.620+02:00[Europe/Zurich]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.Period</span> <span style="color: #E9967A">:ofDays</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-13</code>
+=&gt; 2026-10-09</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.Period</span> <span style="color: #E9967A">:ofDays</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-13T11:35:35.203</code>
+=&gt; 2026-10-09T20:31:49.691</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.Period</span> <span style="color: #E9967A">:ofDays</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-13T11:35:35.239+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-09T20:31:49.726+02:00[Europe/Zurich]</code>
                         
                     </div>
                     
@@ -136348,10 +136341,10 @@ Ran 2 tests with 2 assertions
 =&gt; 0</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 32</code>
+=&gt; 47</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 32</code>
+=&gt; 47</code>
                         
                     </div>
                     
@@ -136410,16 +136403,16 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1783762535733</code>
+=&gt; 1791397910203</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1783720800000</code>
+=&gt; 1791324000000</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1783762535804</code>
+=&gt; 1791397910273</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1783762535840</code>
+=&gt; 1791397910309</code>
                         
                     </div>
                     
@@ -136467,7 +136460,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/unix-timestamp</span><span style="color: #404040">)</span>
-=&gt; 1783769731</code>
+=&gt; 1791405106</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/unix-timestamp</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 1533081600</code>
@@ -136482,13 +136475,13 @@ Ran 2 tests with 2 assertions
 =&gt; 2018-08-01T14:20:10.200</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/unix-timestamp</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1783769731</code>
+=&gt; 1791405106</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/unix-timestamp</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; 1533081600</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/unix-timestamp</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1783769731</code>
+=&gt; 1791405106</code>
                         
                     </div>
                     
@@ -136553,7 +136546,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/unix-timestamp-to-local-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/unix-timestamp</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T11:35:31</code>
+=&gt; 2026-10-07T20:31:46</code>
                         
                     </div>
                     
@@ -136604,13 +136597,13 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T22:00:15.333</code>
+=&gt; 2026-10-07T22:00:15.333</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T22:00:15.333</code>
+=&gt; 2026-10-07T22:00:15.333</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-07T22:00:15.333+02:00[Europe/Zurich]</code>
                         
                     </div>
                     
@@ -136955,7 +136948,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T11:35:30.482+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-07T20:31:45.200+02:00[Europe/Zurich]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]</code>
@@ -136979,10 +136972,10 @@ Ran 2 tests with 2 assertions
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T11:35:30.765+02:00[Europe/Zurich]</code>
+=&gt; 2026-10-07T20:31:45.481+02:00[Europe/Zurich]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T09:35:30.801Z[UTC]</code>
+=&gt; 2026-10-07T18:31:45.516Z[UTC]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00Z[UTC]</code>
@@ -137006,7 +136999,7 @@ Ran 2 tests with 2 assertions
 =&gt; 2013-08-01T00:00Z[UTC]</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2026-07-11T09:35:31.099Z[UTC]</code>
+=&gt; 2026-10-07T18:31:45.800Z[UTC]</code>
                         
                     </div>
                     
@@ -137274,7 +137267,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">timing/elapsed</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">sleep</span> <span style="color: #E9967A">500</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 501</code>
+=&gt; 506</code>
                         
                     </div>
                     
@@ -137325,7 +137318,7 @@ Ran 2 tests with 2 assertions
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">timing/run</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">sleep</span> <span style="color: #E9967A">500</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed: 501ms</span>
+<span style="color: #808080">Elapsed: 505ms</span>
 =&gt; nil</code>
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">timing/run</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">sleep</span> <span style="color: #E9967A">500</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;Sleeping...&quot;</span><span style="color: #404040">)</span>
@@ -137999,7 +137992,7 @@ Elapsed: 505ms</span>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">total-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;2410.5MB&quot;</code>
+=&gt; &quot;2512.0MB&quot;</code>
                         
                     </div>
                     
@@ -139742,7 +139735,7 @@ sorted     reverse         max, min</code></div>
                     <div class="examples">
                         
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">uuid</span><span style="color: #404040">)</span>
-=&gt; &quot;88ae8774-5728-4a86-886b-1fa0ae60b250&quot;</code>
+=&gt; &quot;d3cf32c7-94e9-441e-be51-9ce27a7e2a10&quot;</code>
                         
                     </div>
                     

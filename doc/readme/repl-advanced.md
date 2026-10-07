@@ -166,7 +166,7 @@ list        list*       list?       list-comp
 ``` text
 REPL_HOME
 ├── libs
-│   ├── venice-1.13.12.jar
+│   ├── venice-1.13.13.jar
 │   ├── xchart-3.8.8.jar    (added jar)
 │   └── repl.json
 ├── tools
@@ -194,7 +194,7 @@ To check the new REPL classpath run the REPL `!classpath` command:
 venice> !classpath
 REPL classpath:
   libs
-  libs/venice-1.13.12.jar
+  libs/venice-1.13.13.jar
   libs/xchart-3.8.8.jar
 ```
 
