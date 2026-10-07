@@ -226,19 +226,25 @@
 
   (validate-installed tc-home)
 
-  (let [options          (apply hash-map options)
-        clean-logs       (:clean-logs options true)
-        clean-javamelody (:clean-javamelody options true)
-        clean-work       (:clean-work options true)]
+  (let [options           (apply hash-map options)
+        clean-logs?       (:clean-logs options true)
+        clean-javamelody? (:clean-javamelody options true)
+        clean-work?       (:clean-work options true)]
     (when (running? tc-home)
       (throw (ex :VncException "Tomcat running!")))
+    
     (println "Cleaning Tomcat...")
 
-    (when clean-logs 
+    (when clean-logs? 
+      (println "Cleaning Tomcat logs...")
       (clean-logs tc-home))
-    (when clean-logs 
+
+    (when clean-javamelody?
+      (println "Cleaning Tomcat JavaMelody...")
       (io/delete-file-tree (io/file tc-home "javamelody")))
-    (when clean-logs 
+
+    (when clean-work? 
+      (println "Cleaning Tomcat work dir...")
       (io/delete-file-tree (io/file tc-home "work")))))
 
 
@@ -349,13 +355,13 @@
 
   (validate-installed tc-home)
 
-  (let [source-war      (io/file war)
-        war-name         (io/file-name source-war)
-        target-war       (io/file tc-home "webapps" war-name)
-        options          (apply hash-map options)
-        clean-logs       (:clean-logs options true)
-        clean-javamelody (:clean-javamelody options true)
-        clean-work       (:clean-work options true)]
+  (let [source-war        (io/file war)
+        war-name          (io/file-name source-war)
+        target-war        (io/file tc-home "webapps" war-name)
+        options           (apply hash-map options)
+        clean-logs?       (:clean-logs options true)
+        clean-javamelody? (:clean-javamelody options true)
+        clean-work?       (:clean-work options true)]
 
     (when-not (io/exists-file? source-war)
       (throw (ex :VncException (str "The WAR " source-war " does not exist!"))))
@@ -367,9 +373,9 @@
       (throw (ex :VncException "Tomcat is running. Please stop it before deploying!")))
 
     (clean tc-home 
-           :clean-logs clean-logs 
-           :clean-javamelody clean-javamelody 
-           :clean-work clean-work)
+           :clean-logs clean-logs? 
+           :clean-javamelody clean-javamelody?
+           :clean-work clean-work?)
 
     (io/delete-file target-war)
     (->> (str/strip-end war-name ".war")
