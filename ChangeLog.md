@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Bumped the OpenAI Java library to v4.69.2
+- Bumped the OpenAI Java library to v4.78.0
 - Bumped the TamboUI library to v0.5.0
 - Enhanced the `clean` and `deploy-war` in the tomcat-util module to optionally
   control whether the {TC_HOME}/logs or {TC_HOME}/work dir are to be deleted

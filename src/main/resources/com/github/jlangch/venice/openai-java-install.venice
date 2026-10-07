@@ -37,7 +37,7 @@
 
 
 (defn libraries []
-  [ "com.openai:openai-java:4.69.2" ])
+  [ "com.openai:openai-java:4.78.0" ])
 
 
 (defn dependencies []
