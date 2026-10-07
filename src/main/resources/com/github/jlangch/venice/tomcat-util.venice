@@ -207,23 +207,39 @@
 
 
 (defn
-  ^{ :arglists '("(clean tc-home)")
+  ^{ :arglists '("(clean tc-home & options)")
      :doc """
           Cleans a non running Tomcat installation. Removes the log files,
           the work directory and the javamelody directory if they exist.
+
+          Options:
+
+          | :clean-logs true/false       | Removes the logs from {tc-home}/logs. Defaults to true. |
+          | :clean-javamelody true/false | Removes the javamelody from {tc-home}/javamelody. Defaults to true. |
+          | :clean-work true/false       | Removes the work dir from {tc-home}/work. Defaults to true. |
           """
      :examples '(
-          "(tomcat-util/clean \"/Users/tools/apache-tomcat-9.0.26\")") }
+          "(tomcat-util/clean \"/Users/tools/apache-tomcat-9.0.26\")"
+          "(tomcat-util/clean \"/Users/tools/apache-tomcat-9.0.26\" :clean-logs false)") }
 
-  clean [tc-home]
+  clean [tc-home & options]
 
   (validate-installed tc-home)
-  (when (running? tc-home)
-    (throw (ex :VncException "Tomcat running!")))
-  (println "Cleaning Tomcat...")
-  (clean-logs tc-home)
-  (io/delete-file-tree (io/file tc-home "javamelody"))
-  (io/delete-file-tree (io/file tc-home "work")))
+
+  (let [options          (apply hash-map options)
+        clean-logs       (:clean-logs options true)
+        clean-javamelody (:clean-javamelody options true)
+        clean-work       (:clean-work options true)]
+    (when (running? tc-home)
+      (throw (ex :VncException "Tomcat running!")))
+    (println "Cleaning Tomcat...")
+
+    (when clean-logs 
+      (clean-logs tc-home))
+    (when clean-logs 
+      (io/delete-file-tree (io/file tc-home "javamelody")))
+    (when clean-logs 
+      (io/delete-file-tree (io/file tc-home "work")))))
 
 
 (defn
@@ -314,20 +330,32 @@
 
 
 (defn
-  ^{ :arglists '("(deploy-war tc-home war)")
+  ^{ :arglists '("(deploy-war tc-home war & options)")
      :doc """
           Deploys a WAR file to a Tomcat installation. Throws an exception if
           the WAR does not exist or Tomcat is running.
+
+          Options:
+
+          | :clean-logs true/false       | Removes the logs from {tc-home}/logs. Defaults to true. |
+          | :clean-javamelody true/false | Removes the javamelody from {tc-home}/javamelody. Defaults to true. |
+          | :clean-work true/false       | Removes the work dir from {tc-home}/work. Defaults to true. |
           """
      :examples '(
-          "(tomcat-util/deploy-war \"/Users/tools/apache-tomcat-9.0.26\" \"/Users/tools/x.war\")") }
+          "(tomcat-util/deploy-war \"/Users/tools/apache-tomcat-9.0.26\" \"/Users/tools/x.war\")"
+          "(tomcat-util/deploy-war \"/Users/tools/apache-tomcat-9.0.26\" \"/Users/tools/x.war\" :clean-logs false)") }
 
-  deploy-war [tc-home war]
+  deploy-war [tc-home war & options]
 
   (validate-installed tc-home)
-  (let [source-war (io/file war)
-        war-name   (io/file-name source-war)
-        target-war (io/file tc-home "webapps" war-name)]
+
+  (let [source-war      (io/file war)
+        war-name         (io/file-name source-war)
+        target-war       (io/file tc-home "webapps" war-name)
+        options          (apply hash-map options)
+        clean-logs       (:clean-logs options true)
+        clean-javamelody (:clean-javamelody options true)
+        clean-work       (:clean-work options true)]
 
     (when-not (io/exists-file? source-war)
       (throw (ex :VncException (str "The WAR " source-war " does not exist!"))))
@@ -338,7 +366,11 @@
     (when (running? tc-home)
       (throw (ex :VncException "Tomcat is running. Please stop it before deploying!")))
 
-    (clean tc-home)
+    (clean tc-home 
+           :clean-logs clean-logs 
+           :clean-javamelody clean-javamelody 
+           :clean-work clean-work)
+
     (io/delete-file target-war)
     (->> (str/strip-end war-name ".war")
          (io/file tc-home "webapps")
