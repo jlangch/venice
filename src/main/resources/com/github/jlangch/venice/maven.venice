@@ -70,7 +70,34 @@
           :version      "3.8.6"
           :type         :jar
           :scope        :compile }
+
+        Form 4:  "org.knowm.xchart:jar:xchart:osx-aarch_64:3.8.6:compile"
+ 
         ```
+        { :group-id     "org.knowm.xchart"
+          :artifact-id  "xchart"
+          :arch         "osx-aarch_64"
+          :version      "3.8.6"
+          :type         :jar
+          :scope        :compile }
+        ```
+
+        Architectures:
+        
+          * linux-x86_64
+          * linux-aarch_64
+          * osx-x86_64
+          * osx-aarch_64
+          * windows-x86_64
+
+        Scopes:
+        
+          * compile
+          * provided
+          * runtime
+          * test
+          * system
+          * import
        """
      :examples '(
         """
@@ -104,6 +131,12 @@
            :version     (fourth elements)
            :scope       (keyword (nth elements 4)) }
          ;; "io.netty:netty-tcnative-boringssl-static:jar:osx-x86_64:2.0.84.Final:runtime"
+         ;; Architectures:
+         ;;   • linux-x86_64
+         ;;   • linux-aarch_64
+         ;;   • osx-x86_64
+         ;;   • osx-aarch_64
+         ;;   • windows-x86_64
       6  { :group-id    (first elements)
            :artifact-id (second elements)
            :type        (keyword (third elements))
