@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,84 @@ import com.github.jlangch.venice.Venice;
 
 
 public class MavenModuleTest {
+
+    @Test
+    public void test_parse_artifact_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/parse-artifact  \"org.knowm.xchart:xchart:3.8.6\") " +
+                ") ";
+
+        @SuppressWarnings("unchecked")
+        final Map<String,String> parts = (Map<String,String>)venice.eval(script);
+
+        assertEquals("org.knowm.xchart", parts.get("group-id"));
+        assertEquals("xchart", parts.get("artifact-id"));
+        assertEquals("3.8.6", parts.get("version"));
+    }
+
+    @Test
+    public void test_parse_artifact_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/parse-artifact  \"org.knowm.xchart:xchart:jar:3.8.6\") " +
+                ") ";
+
+        @SuppressWarnings("unchecked")
+        final Map<String,String> parts = (Map<String,String>)venice.eval(script);
+
+        assertEquals("org.knowm.xchart", parts.get("group-id"));
+        assertEquals("xchart", parts.get("artifact-id"));
+        assertEquals("jar", parts.get("type"));
+        assertEquals("3.8.6", parts.get("version"));
+    }
+
+    @Test
+    public void test_parse_artifact_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/parse-artifact  \"org.knowm.xchart:xchart:jar:3.8.6:runtime\") " +
+                ") ";
+
+        @SuppressWarnings("unchecked")
+        final Map<String,String> parts = (Map<String,String>)venice.eval(script);
+
+        assertEquals("org.knowm.xchart", parts.get("group-id"));
+        assertEquals("xchart", parts.get("artifact-id"));
+        assertEquals("jar", parts.get("type"));
+        assertEquals("3.8.6", parts.get("version"));
+        assertEquals("runtime", parts.get("scope"));
+    }
+
+    @Test
+    public void test_parse_artifact_6() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/parse-artifact  \"io.netty:netty-tcnative-boringssl-static:jar:osx-x86_64:2.0.84.Final:runtime\") " +
+                ") ";
+
+        @SuppressWarnings("unchecked")
+        final Map<String,String> parts = (Map<String,String>)venice.eval(script);
+
+        assertEquals("io.netty", parts.get("group-id"));
+        assertEquals("netty-tcnative-boringssl-static", parts.get("artifact-id"));
+        assertEquals("jar", parts.get("type"));
+        assertEquals("osx-x86_64", parts.get("arch"));
+        assertEquals("2.0.84.Final", parts.get("version"));
+        assertEquals("runtime", parts.get("scope"));
+    }
 
     @Test
     public void test_uri_jar() {

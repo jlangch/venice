@@ -97,12 +97,19 @@
            :artifact-id (second elements)
            :type        (keyword (third elements))
            :version     (fourth elements) }
-         ;; "org.knowm.xchart:xchart:jar:3.8.6:compile"
+         ;; "org.knowm.xchart:xchart:jar:3.8.6:runtime"
       5  { :group-id    (first elements)
            :artifact-id (second elements)
            :type        (keyword (third elements))
            :version     (fourth elements)
            :scope       (keyword (nth elements 4)) }
+         ;; "io.netty:netty-tcnative-boringssl-static:jar:osx-x86_64:2.0.84.Final:runtime"
+      6  { :group-id    (first elements)
+           :artifact-id (second elements)
+           :type        (keyword (third elements))
+           :arch        (keyword (fourth elements))
+           :version     (nth elements 4)
+           :scope       (keyword (nth elements 5)) }
       (throw (ex :VncException "Invalid artifact reference '~{artifact}'!")))))
 
 (defn 
@@ -224,6 +231,9 @@
                                     even if it exist already on the download \
                                     dir, else skip the download if it exists. \
                                     Defaults to true. |
+          | :fail-fast {true,false} | if true fail fast on the the artifact \
+                                      downloads.\
+                                      Defaults to true. |
           """
      :examples '(
           """
@@ -287,33 +297,43 @@
   maven/download [artifact & options]
 
   (if (sequential? artifact)
-    (docoll #(apply download % options) artifact)
-    (do
-      (let [opts        (apply hash-map options)
-            silent      (or (:silent opts true) (not (repl?)))
-            jar         (:jar opts true)
-            sources     (:sources opts false)
-            pom         (:pom opts false)
-            dir         (:dir opts ".")
-            repo        (:repo opts maven/repo)
-            force       (:force opts true)
-            progress-fn (maven/progress-bar silent)]
-        (when jar
-          (let [suffix         (maven/artifact-suffix :jar)
-                uri            (maven/artifact-uri artifact suffix repo)
-                filename       (maven/artifact-filename artifact suffix)]
-            (maven/download-artifact-file uri dir filename force progress-fn)))
-        (when sources
-          (let [suffix         (maven/artifact-suffix :sources)
-                uri            (maven/artifact-uri artifact suffix repo)
-                filename       (maven/artifact-filename artifact suffix)]
-            (maven/download-artifact-file uri dir filename force progress-fn)))
-        (when pom
-          (let [suffix         (maven/artifact-suffix :pom)
-                uri            (maven/artifact-uri artifact suffix repo)
-                filename       (maven/artifact-filename artifact suffix)]
-            (maven/download-artifact-file uri dir filename force progress-fn)))
-        nil))))
+    (let [opts       (apply hash-map options)
+          fail-fast  (:fail-fast opts true)]
+      (loop [artifacts artifact]
+        (if-let [artifact (first artifacts)]
+          (do
+            (try
+              (apply download artifact options)
+              (catch :RuntimeException e
+                (if fail-fast
+                  (throw e)               
+                  (println *err*  (ex-message e)))))
+            (recur (rest artifacts))))))
+    (let [opts        (apply hash-map options)
+          silent      (or (:silent opts true) (not (repl?)))
+          jar         (:jar opts true)
+          sources     (:sources opts false)
+          pom         (:pom opts false)
+          dir         (:dir opts ".")
+          repo        (:repo opts maven/repo)
+          force       (:force opts true)
+          progress-fn (maven/progress-bar silent)]
+      (when jar
+        (let [suffix         (maven/artifact-suffix :jar)
+              uri            (maven/artifact-uri artifact suffix repo)
+              filename       (maven/artifact-filename artifact suffix)]
+          (maven/download-artifact-file uri dir filename force progress-fn)))
+      (when sources
+        (let [suffix         (maven/artifact-suffix :sources)
+              uri            (maven/artifact-uri artifact suffix repo)
+              filename       (maven/artifact-filename artifact suffix)]
+          (maven/download-artifact-file uri dir filename force progress-fn)))
+      (when pom
+        (let [suffix         (maven/artifact-suffix :pom)
+              uri            (maven/artifact-uri artifact suffix repo)
+              filename       (maven/artifact-filename artifact suffix)]
+          (maven/download-artifact-file uri dir filename force progress-fn)))
+      nil)))
 
 
 (defn
