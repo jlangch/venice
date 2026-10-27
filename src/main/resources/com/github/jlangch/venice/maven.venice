@@ -310,10 +310,10 @@
     (let [opts       (apply hash-map options)
           fail-fast  (:fail-fast opts true)]
       (loop [artifacts artifact]
-        (if-let [artifact (first artifacts)]
+        (if-let [artifact* (first artifacts)]
           (do
             (try
-              (apply download artifact options)
+              (apply download artifact* options)
               (catch :RuntimeException e
                 (if fail-fast
                   (throw e)               
@@ -332,17 +332,17 @@
         (let [suffix         (maven/artifact-suffix :jar)
               uri            (maven/artifact-uri artifact suffix repo)
               filename       (maven/artifact-filename artifact suffix)]
-          (maven/download-artifact-file uri dir filename force progress-fn)))
+          (maven/download-artifact-file artifact uri dir filename force progress-fn)))
       (when sources
         (let [suffix         (maven/artifact-suffix :sources)
               uri            (maven/artifact-uri artifact suffix repo)
               filename       (maven/artifact-filename artifact suffix)]
-          (maven/download-artifact-file uri dir filename force progress-fn)))
+          (maven/download-artifact-file artifact uri dir filename force progress-fn)))
       (when pom
         (let [suffix         (maven/artifact-suffix :pom)
               uri            (maven/artifact-uri artifact suffix repo)
               filename       (maven/artifact-filename artifact suffix)]
-          (maven/download-artifact-file uri dir filename force progress-fn)))
+          (maven/download-artifact-file artifact uri dir filename force progress-fn)))
       nil)))
 
 
@@ -701,7 +701,7 @@
         (println "Maven ~{version} is already installed at ~{maven-dir}")
         (do
           ;; download Maven binary zip
-          (maven/download-artifact-file uri install-dir zip-name false progress-fn)
+          (maven/download-artifact-file nil uri install-dir zip-name false progress-fn)
           
           ;; unpack Maven binary zip
           (println "Unzipping ~{zip-name}...")
@@ -787,7 +787,7 @@
                        :failed-msg  "            FAILED")))
 
 
-(defn- download-artifact-file [uri target-dir target-file force progress-fn]
+(defn- download-artifact-file [artifact uri target-dir target-file force progress-fn]
   (when (nil? target-dir)  
     (throw (ex :VncExeption "The Maven artifact download dir is nil!")))
 
@@ -799,12 +799,14 @@
     (if download
       (do
         (when progress-fn
+          (when artifact (println (str "Artifact    " artifact)))
           (println (str "Downloading " uri))
           (println (str "         to " target "...")))
         (ansi/without-cursor
           (->> (io/download uri :binary true :progress-fn progress-fn :user-agent "Mozilla")
                (io/spit target))))
       (when progress-fn
+        (when artifact (println (str "Artifact    " artifact)))
         (println (str "Downloading " uri))
         (println (str "         to " target))
         (println (str "            " "ALREADY EXISTS (skipped)"))))))
@@ -877,8 +879,17 @@
        (filter some?)
        (filter #(not (str/starts-with? % "(")))
        (filter #(str/contains? % ":jar:"))
-       (map (fn [s] (as-> (str/split s ":") e
-                          (str/join ":" [(nth e 0) (nth e 1) (nth e 3)]))))
+       (map maven/parse-artifact )
+       (map (fn [elements] (let [group-id     (:group-id elements)
+                                 artifact-id  (:artifact-id elements)
+                                 version      (:version elements)
+                                 arch         (:arch elements)]
+                             (str group-id
+                                  ":"
+                                  artifact-id 
+                                  ":"
+                                  (if arch (str (name arch) ":") "") 
+                                  version))))
        (sort)))
 
 
