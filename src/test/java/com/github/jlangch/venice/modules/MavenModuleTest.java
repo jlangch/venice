@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -56,7 +57,10 @@ public class MavenModuleTest {
 
         assertEquals("org.knowm.xchart", parts.get("group-id"));
         assertEquals("xchart", parts.get("artifact-id"));
+        assertNull(parts.get("type"));
+        assertNull(parts.get("arch"));
         assertEquals("3.8.6", parts.get("version"));
+        assertNull(parts.get("scope"));
     }
 
     @Test
@@ -75,7 +79,9 @@ public class MavenModuleTest {
         assertEquals("org.knowm.xchart", parts.get("group-id"));
         assertEquals("xchart", parts.get("artifact-id"));
         assertEquals("jar", parts.get("type"));
+        assertNull(parts.get("arch"));
         assertEquals("3.8.6", parts.get("version"));
+        assertNull(parts.get("scope"));
     }
 
     @Test
@@ -94,6 +100,7 @@ public class MavenModuleTest {
         assertEquals("org.knowm.xchart", parts.get("group-id"));
         assertEquals("xchart", parts.get("artifact-id"));
         assertEquals("jar", parts.get("type"));
+        assertNull(parts.get("arch"));
         assertEquals("3.8.6", parts.get("version"));
         assertEquals("runtime", parts.get("scope"));
     }
@@ -120,7 +127,7 @@ public class MavenModuleTest {
     }
 
     @Test
-    public void test_uri_jar() {
+    public void test_uri_jar_3() {
         final Venice venice = new Venice();
 
         final String script =
@@ -133,6 +140,57 @@ public class MavenModuleTest {
 
         assertEquals(
                 "https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1.jar",
+                venice.eval(script));
+    }
+
+    @Test
+    public void test_uri_jar_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                         " +
+                "   (load-module :maven)                                     " +
+                "                                                            " +
+                "   (maven/artifact-uri \"org.knowm.xchart:xchart:jar:3.6.1\"    " +
+                "                       \".jar\")                            " +
+                ") ";
+
+        assertEquals(
+                "https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1.jar",
+                venice.eval(script));
+    }
+
+    @Test
+    public void test_uri_jar_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                         " +
+                "   (load-module :maven)                                     " +
+                "                                                            " +
+                "   (maven/artifact-uri \"org.knowm.xchart:xchart:jar:3.6.1:runtime\"    " +
+                "                       \".jar\")                            " +
+                ") ";
+
+        assertEquals(
+                "https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1.jar",
+                venice.eval(script));
+    }
+
+    @Test
+    public void test_uri_jar_6() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                         " +
+                "   (load-module :maven)                                     " +
+                "                                                            " +
+                "   (maven/artifact-uri \"io.netty:netty-tcnative-boringssl-static:jar:osx-x86_64:2.0.84.Final:runtime\"    " +
+                "                       \".jar\")                            " +
+                ") ";
+
+        assertEquals(
+                "https://repo1.maven.org/maven2/io/netty/netty-tcnative-boringssl-static/2.0.84.Final/netty-tcnative-boringssl-static-osx-x86_64-2.0.84.Final.jar",
                 venice.eval(script));
     }
 

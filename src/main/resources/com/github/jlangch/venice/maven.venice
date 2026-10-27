@@ -195,7 +195,12 @@
           group-id     (:group-id elements)
           artifact-id  (:artifact-id elements)
           version      (:version elements)
-          filename     (str artifact-id "-" version file-suffix)
+          arch         (:arch elements)
+          filename     (str artifact-id 
+                            (if arch (str "-" (name arch)) "") 
+                            "-" 
+                            version 
+                            file-suffix)
           group-path   (str/replace-all group-id "." "/")
           repo         (str/strip-end repo "/")]
       (str/join "/" [repo group-path artifact-id version filename]))))
