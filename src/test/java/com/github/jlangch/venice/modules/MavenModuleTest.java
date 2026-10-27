@@ -127,6 +127,66 @@ public class MavenModuleTest {
     }
 
     @Test
+    public void test_filename_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/artifact-filename  \"org.knowm.xchart:xchart:3.8.6\" \".jar\") " +
+                ") ";
+
+        final String filename = (String)venice.eval(script);
+
+        assertEquals("xchart-3.8.6.jar", filename);
+    }
+
+    @Test
+    public void test_filename_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/artifact-filename  \"org.knowm.xchart:xchart:jar:3.8.6\" \".jar\") " +
+                ") ";
+
+        final String filename = (String)venice.eval(script);
+
+        assertEquals("xchart-3.8.6.jar", filename);
+    }
+
+    @Test
+    public void test_filename_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/artifact-filename  \"org.knowm.xchart:xchart:jar:3.8.6:runtime\" \".jar\") " +
+                ") ";
+
+        final String filename = (String)venice.eval(script);
+
+        assertEquals("xchart-3.8.6.jar", filename);
+    }
+
+    @Test
+    public void test_filename_6() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "   (maven/artifact-filename  \"io.netty:netty-tcnative-boringssl-static:jar:osx-x86_64:2.0.84.Final:runtime\" \".jar\") " +
+                ") ";
+
+        final String filename = (String)venice.eval(script);
+
+        assertEquals("netty-tcnative-boringssl-static-osx-x86_64-2.0.84.Final.jar", filename);
+    }
+
+    @Test
     public void test_uri_jar_3() {
         final Venice venice = new Venice();
 

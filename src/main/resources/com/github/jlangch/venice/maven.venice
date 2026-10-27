@@ -112,6 +112,11 @@
            :scope       (keyword (nth elements 5)) }
       (throw (ex :VncException "Invalid artifact reference '~{artifact}'!")))))
 
+
+(defn maven/parse-artifact-to-map [artifact]
+  (parse-artifact artifact))
+
+
 (defn 
  ^{ :arglists '(
         "(maven/artifact-filename artifact file-suffix)")
@@ -140,8 +145,15 @@
 
   maven/artifact-filename [artifact file-suffix]
 
-  (let [a (maven/parse-artifact artifact)]
-    (str (:artifact-id a) "-" (:version a) file-suffix)))
+  (let [elements     (maven/parse-artifact artifact)
+        artifact-id  (:artifact-id elements)
+        version      (:version elements)
+        arch         (:arch elements)]
+    (str artifact-id 
+         (if arch (str "-" (name arch)) "") 
+         "-" 
+         version 
+         file-suffix)))
 
 
 (defn 
@@ -204,13 +216,6 @@
           group-path   (str/replace-all group-id "." "/")
           repo         (str/strip-end repo "/")]
       (str/join "/" [repo group-path artifact-id version filename]))))
-
-
-(defn maven/parse-artifact-to-map [artifact]
-  (let [elements (str/split artifact ":")]
-    { :group-id    (first elements)
-      :artifact-id (second elements)
-      :version     (third elements) }))
 
 
 (defn
@@ -953,7 +958,7 @@
 
 
 (defn- pom-dependencies [artifacts scope]
-  (let [artifacts (->> (map parse-artifact-to-map artifacts)
+  (let [artifacts (->> (map parse-artifact artifacts)
                        (map #(assoc % :scope scope)))]
     (kira/eval """
                <% (doseq [it items] %>
@@ -969,7 +974,7 @@
 
 
 (defn- pom-managed-dependencies [artifacts scope]
-  (let [artifacts (->> (map parse-artifact-to-map artifacts)
+  (let [artifacts (->> (map parse-artifact artifacts)
                        (map #(assoc % :scope scope)))]
     (kira/eval """
                <dependencyManagement>
