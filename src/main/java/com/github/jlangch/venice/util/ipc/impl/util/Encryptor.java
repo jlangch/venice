@@ -36,15 +36,21 @@ public class Encryptor {
     }
 
 
-    public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
+    public static Encryptor aes(final String secret) {
         Objects.requireNonNull(secret);
 
         try {
-            return new Encryptor(Encryptor_AES256_GCM.create(secret.getSecretBase64()));
+            return new Encryptor(Encryptor_AES256_GCM.create(secret));
         }
         catch(Exception ex) {
             throw new IpcException("Failed to create encryptor", ex);
         }
+    }
+
+    public static Encryptor aes(final DiffieHellmanSharedSecret secret) {
+        Objects.requireNonNull(secret);
+
+       return Encryptor.aes(secret.getSecretBase64());
     }
 
     public static Encryptor off() {
