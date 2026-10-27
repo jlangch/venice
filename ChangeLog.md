@@ -11,7 +11,13 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- ...
+- Bumped the OpenAI Java library to v4.94.0
+- The :maven module supports now artifact architectures (e.g. "org.foo:bar:osx-aarch_64:1.0.0"):
+    * linux-x86_64
+    * linux-aarch_64
+    * osx-x86_64
+    * osx-aarch_64
+    * windows-x86_64
 
 
 
