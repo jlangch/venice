@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Updated dependencies:
+
+- Bumped VAVR from 1.0.1 to 1.1.0
+
 
 
 
@@ -20,7 +24,6 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Bumped the OpenAI Java library to v4.94.0
 - The :maven module supports now artifact architectures (e.g. "org.foo:bar:osx-aarch_64:1.0.0"):
     * linux-x86_64
     * linux-aarch_64
@@ -28,14 +31,16 @@ All notable changes to this project will be documented in this file.
     * osx-aarch_64
     * windows-x86_64
 
+### Updated dependencies:
+
+- Bumped the OpenAI Java library to v4.94.0
+
 
 
 ## [1.13.13] - 2026-10-07
 
 ### Enhancements
 
-- Bumped the OpenAI Java library to v4.78.0
-- Bumped the TamboUI library to v0.5.0
 - Enhanced the `clean` and `deploy-war` functions in the tomcat-util module
   to optionally control whether the {TC_HOME}/logs or {TC_HOME}/work 
   directories are to be deleted
@@ -47,6 +52,11 @@ All notable changes to this project will be documented in this file.
   as well
 - Fixed: `instance-of?` for float types. E.g.: `(instance-of? :float 1.0F)` returned 
   false instead of true
+
+### Updated dependencies:
+
+- Bumped the OpenAI Java library to v4.78.0
+- Bumped the TamboUI library to v0.5.0
 
 
 
