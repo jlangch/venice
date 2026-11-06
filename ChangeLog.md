@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 ### Updated dependencies:
 
 - Bumped VAVR from 1.0.1 to 1.1.0
+- Bumped the OpenAI Java library to v4.101.0
 
 
 
