@@ -62,24 +62,25 @@
           :type         :jar }
         ```
 
-        Form 3:  "org.knowm.xchart:jar:xchart:3.8.6:compile"
+        Form 3:  "org.knowm.xchart:jar:xchart:3.8.6:runtime"
  
         ```
         { :group-id     "org.knowm.xchart"
           :artifact-id  "xchart"
           :version      "3.8.6"
           :type         :jar
-          :scope        :compile }
+          :scope        :runtime }
+        ```
 
-        Form 4:  "org.knowm.xchart:jar:xchart:osx-aarch_64:3.8.6:compile"
+        Form 4:  "org.foo:jar:planner:osx-aarch_64:3.2.0:runtime"
  
         ```
-        { :group-id     "org.knowm.xchart"
-          :artifact-id  "xchart"
+        { :group-id     "org.foo"
+          :artifact-id  "planner"
           :arch         "osx-aarch_64"
-          :version      "3.8.6"
+          :version      "3.2.0"
           :type         :jar
-          :scope        :compile }
+          :scope        :runtime }
         ```
 
         Architectures:
@@ -324,7 +325,7 @@
           """
           (do
             (load-module :maven)
-            ;; download all langchain4j artifacts
+            ;; download all langchain4j artifacts with it's transient dependencies
             (maven/download (maven/dependencies 
                                 [ "dev.langchain4j:langchain4j:0.28.0" ] 
                                 :format :list 
